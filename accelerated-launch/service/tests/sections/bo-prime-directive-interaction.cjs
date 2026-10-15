@@ -48,12 +48,18 @@ function makeContext(baseUrl, token) {
       try { json = JSON.parse(text); } catch { json = {}; }
       return { ok: res.status < 400, status: res.status, json: async () => json, text: async () => text,headers:res.headers,blob:async()=>new Blob([bytes],{type:res.headers.get('content-type')||'application/octet-stream'}) };
     },
-    document: { getElementById: elementById, createElement: tag=>{const node=makeElement(tag);node.click=()=>{downloads.push({filename:node.download,blob:objects.get(node.href)});calls.push('BLOB_DOWNLOAD '+node.download);};return node;} },
+    document: { getElementById: id=>id==='packet-date'&&!elementById('panel').querySelector('#packet-block').innerHTML.includes('id="packet-date"')?null:elementById(id), createElement: tag=>{const node=makeElement(tag);node.click=()=>{downloads.push({filename:node.download,blob:objects.get(node.href)});calls.push('BLOB_DOWNLOAD '+node.download);};return node;} },
     URL: { createObjectURL: blob=>{const url='blob:fixture-'+objects.size;objects.set(url,blob);return url;}, revokeObjectURL: () => {} },
     Blob: globalThis.Blob,
     FileReader: class FileReader { readAsDataURL() { this.result = 'data:application/pdf;base64,x'; this.onload(); } }
   };
   context.window = context;
+  // This transport/handler test supplies the page renderer boundary; ga/gl exercise
+  // actual browser layout and every independently rendered physical PDF page.
+  context.CRP_PACKET_REVIEW = {mount: options => {
+    const input=elementById('packet-letter');input.value=options.letter;input.oninput=()=>options.changed('letter');
+    return {letter:()=>input.value,annotations:()=>[],dispose(){},ready:options.request(`/api/cases/${options.caseId}/packet/preview/pages?version=${options.version}`).then(data=>{options.ensure();return data;})};
+  }};
   context.window.location = { assign: (u) => calls.push(`NAVIGATE ${u}`) };
   context.globalThis = context;
   vm.createContext(context);
@@ -177,13 +183,15 @@ async function run(service, check) {
   await dom.elementById('packet-save').onclick();
   await waitFor(() => block.innerHTML.includes('Changed wording (unsaved before approve).'));
   const beforeLetterEdit = (await service.request('GET', `/api/cases/${c.case_id}/packet`, { token: owner.token })).json.view;
-  check.ok(/iframe title="Your complete dispute packet"/.test(block.innerHTML), 'the saved complete PDF appears inline for review');
-  check.ok(/id="packet-letter"/.test(block.innerHTML), 'the consumer can edit all letter text on the review page');
+  await waitFor(() => !dom.elementById('packet-preview-reviewed').disabled);
+  check.ok(/id="packet-all-pages"/.test(block.innerHTML), 'the complete packet has an inline all-page review');
+  check.ok(dom.calls.some(call=>/GET .*packet\/preview\/pages\?version=/.test(call)) && typeof dom.elementById('packet-letter').oninput==='function', 'the version-bound page editor loads through the owned route');
   dom.elementById('packet-letter').value = beforeLetterEdit.packet.correspondence_preview.replace('Thank you for your help.', 'Thank you. Please send your reply to me.');
   dom.elementById('packet-letter').oninput();
   check.equal(dom.elementById('packet-approve').disabled, true, 'an edited full letter needs a saved fresh PDF preview');
   await dom.elementById('packet-save').onclick();
   await waitFor(() => block.innerHTML.includes('Thank you. Please send your reply to me.'));
+  await waitFor(() => !dom.elementById('packet-preview-reviewed').disabled);
   dom.elementById('packet-preview-reviewed').checked = true;
   dom.elementById('packet-preview-reviewed').onchange();
   await dom.elementById('packet-approve').onclick();

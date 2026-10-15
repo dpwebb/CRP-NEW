@@ -39,10 +39,12 @@
   </main>
   <footer class="story-footer story-container">
     <section id="credit-news" class="credit-news" aria-labelledby="credit-news-title">
-      <div class="credit-news-heading"><h2 id="credit-news-title">When credit records get it wrong</h2><div class="credit-news-controls"><button type="button" data-news-direction="-1" aria-label="Scroll reports up">↑ Previous</button><button type="button" data-news-pause aria-pressed="false">Pause scrolling</button><button type="button" data-news-direction="1" aria-label="Scroll reports down">Next ↓</button></div></div>
+      <div class="credit-news-heading"><h2 id="credit-news-title">When credit records get it wrong</h2><div class="credit-news-filter"><label for="credit-news-country">Read stories from</label><select id="credit-news-country" data-news-country><option value="ALL">All countries</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="AU">Australia</option></select></div></div>
       <p class="credit-news-scope" data-news-scope role="status">Loading recent reports and decisions…</p>
-      <div class="credit-news-window" data-news-window tabindex="0" role="region" aria-label="Recent credit-report stories; scroll to read more"><ul class="credit-news-list"></ul></div>
-      <p class="credit-news-note">Each item links to its source. Reported experiences, allegations, settlements and court findings are identified separately.</p>
+      <div class="credit-news-window" data-news-window tabindex="0" role="region" aria-roledescription="carousel" aria-label="Recent credit-report stories; use left and right arrow keys to change story"><ul class="credit-news-list"></ul></div>
+      <div class="credit-news-controls"><button type="button" data-news-direction="-1" aria-label="Previous story">← Previous</button><button type="button" data-news-pause aria-pressed="false">Pause stories</button><button type="button" data-news-direction="1" aria-label="Next story">Next →</button><p class="credit-news-position" data-news-position aria-live="off" aria-atomic="true"></p></div>
+      <p class="credit-news-coverage" data-news-coverage></p>
+      <p class="credit-news-note">Each story links to its source. Reported losses, allegations, settlements and court findings are identified separately. Stories stay dated and rotate while you read; you can pause them.</p>
       <noscript><p>Enable JavaScript to load reports selected for your country.</p></noscript>
     </section>
     <div><a class="story-brand" href="/" aria-label="Credit Regulator Pro home"><span class="story-mark" aria-hidden="true">C</span><span>Credit Regulator Pro</span></a><p>Clear facts. Informed decisions. Consumer control.</p></div><nav aria-label="Footer navigation"><a href="#how">How it works</a><a href="#plans">Your options</a><a href="index.html#signin">Log in</a><a href="mailto:admin@creditregulatorpro.com">Contact support</a></nav><p class="story-footer-disclaimer">Credit Regulator Pro provides credit-report information, not legal advice.</p></footer>

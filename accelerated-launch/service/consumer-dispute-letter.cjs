@@ -4,7 +4,7 @@
 // These are requests to check report information, never invented personal experiences.
 const { sourceForField } = require('./report-fact-sources.cjs');
 const accountDisplay = require('./account-display.cjs');
-const VERSION = 'consumer-business-letter-2';
+const VERSION = 'consumer-business-letter-3';
 
 function dateLabel(value) {
   if (/^\d{4}-\d{2}$/.test(String(value || ''))) {
@@ -100,6 +100,43 @@ function requestFor(issue) {
     ? 'The report does not show when the debt began. Please check the right starting date for this time limit.' : '';
   return [observation, anchor, startingDate, sentence(checklistBasis?.request_wording || issue.request_wording)].filter(Boolean).join(' ');
 }
+function ruleReferences(issue) {
+  // These citations come only from the same assessed, selected issue. Naming a
+  // rule asks the bureau to apply it; it does not create a new legal conclusion.
+  if (issue.report_concern === true || issue.classification === 'NON_VIOLATION') return [];
+  const references = [];
+  const add = (citation, sourceVersion) => {
+    if (typeof citation !== 'string' || !citation.trim() || !sourceVersion) return;
+    const value = citation.trim();
+    if (!references.includes(value)) references.push(value);
+  };
+  const assessed = ['VIOLATION', 'PROBABLE_VIOLATION', 'POTENTIAL_VIOLATION'];
+  if (assessed.includes(issue.classification) && (issue.rule_assessment
+      || ['STATUTORY_RETENTION', 'CONTENT_FINDING'].includes(issue.basis_type))) {
+    add(issue.citation, issue.source_version);
+    for (const source of issue.rule_assessment?.supporting_statutes || []) add(source.citation, source.source_version);
+  }
+  for (const basis of issue.supported_bases || []) {
+    if (assessed.includes(basis.classification)
+        && ['STATUTORY_RETENTION', 'CONTENT_FINDING'].includes(basis.basis_type)) add(basis.citation, basis.source_version);
+    if (assessed.includes(basis.rule_assessment?.classification)) {
+      for (const source of basis.rule_assessment.supporting_statutes || []) add(source.citation, source.source_version);
+    }
+  }
+  const review = issue.retention_review;
+  if (review?.region && review.anchor_iso && review.period_years != null
+      && !review.exception_resolved_against_applicability) {
+    // A retained comparison may warrant a check without establishing a breach.
+    // Its recorded citations are named as a request, with that same limitation.
+    for (const citation of review.citations || [review.citation]) if (typeof citation === 'string'
+        && citation.trim() && !references.includes(citation.trim())) references.push(citation.trim());
+  }
+  return references;
+}
+function ruleRequest(issue) {
+  const references = ruleReferences(issue);
+  return references.length ? `Please check this information under ${references.join('; ')} and apply any relevant exception.` : '';
+}
 function accountReference(record) {
   for (const field of ['account.masked_identifier', 'tradeline.accountNumber', 'collection.accountNumber',
     'overdue.accountReference', 'liability.accountReference']) {
@@ -179,7 +216,7 @@ function lines(packet, row, selected) {
     const accounts = data.items.filter(item => item.letter_item === index + 1);
     const names = accounts.map(item => item.name + (item.account_reference ? ' (account ' + item.account_reference + ')' : '')).join(' and ');
     const references = [...new Set(accounts.map(item => item.report_reference).filter(Boolean))];
-    out.push(`${index + 1}. ${names}`, requestFor(issue),
+    out.push(`${index + 1}. ${names}`, requestFor(issue), ...(ruleRequest(issue) ? [ruleRequest(issue)] : []),
       ...(references.length ? ['Please see ' + references.map(ref => ref.replace(/^Report/, 'report')).join(' and ') + ' in the attached copies.'] : []), '');
   });
   if (packet.wording) out.push(packet.wording, '');
@@ -189,4 +226,4 @@ function lines(packet, row, selected) {
   return out;
 }
 
-module.exports = { VERSION, dateLabel, requestFor, itemsFor, payloadFor, lines };
+module.exports = { VERSION, dateLabel, requestFor, ruleReferences, ruleRequest, itemsFor, payloadFor, lines };

@@ -143,9 +143,90 @@ async function letterPages(doc, text) {
     // The appearance has its own local font resource; edits resolve this separate alias
     // through AcroForm DR. pdf-lib customName alone does not change PDFFont.name.
     field.acroField.setDefaultAppearance(`/${fontName} ${size} Tf 0 g`);
-    fields.push({ name: fieldName, type: 'TEXT', section: 'letter', page: pageNumber, font_size: size, min_font_size: 10 });
+    fields.push({ name: fieldName, type: 'TEXT', section: 'letter', page: pageNumber, text: chunk.join('\n'),
+      x: 50, y: 50, width, height, page_width: 612, page_height: 792, font_size: size, min_font_size: 10 });
   }
   return fields;
+}
+function sourceGeometry(page) {
+  const size = page.getSize(), media = page.getMediaBox(), crop = page.getCropBox();
+  const rotation = ((page.getRotation().angle % 360) + 360) % 360;
+  const safe = rotation === 0 && media.x === 0 && media.y === 0 && crop.x === 0 && crop.y === 0
+    && Math.abs(crop.width - size.width) < .01 && Math.abs(crop.height - size.height) < .01;
+  return { source_width: size.width, source_height: size.height, page_width: rotation === 90 || rotation === 270 ? size.height : size.width,
+    page_height: rotation === 90 || rotation === 270 ? size.width : size.height, annotation_available: safe };
+}
+function markerRectangle(marker, width, height) {
+  const box = marker.bbox;
+  if (!box || !['x0', 'y0', 'x1', 'y1'].every(key => Number.isFinite(box[key]))
+      || box.x0 < 0 || box.y0 < 0 || box.x1 <= box.x0 || box.y1 <= box.y0 || box.x1 > width || box.y1 > height) return null;
+  return { x: box.x0 / width, y: box.y0 / height, width: (box.x1 - box.x0) / width, height: (box.y1 - box.y0) / height };
+}
+function markerNotes(markers, annotations) {
+  const captionLabel = value => {
+    const caption = label(value);
+    if (!/^[A-Za-z][A-Za-z0-9_.]*$/.test(caption)) return caption;
+    const leaf = caption.split('.').pop();
+    const familiar = { closeddate: 'Date closed', openeddate: 'Date opened', dateclosed: 'Date closed', dateopened: 'Date opened',
+      firstdelinquencydate: 'First missed-payment date', lastpaymentdate: 'Last payment date', reporteddate: 'Date reported',
+      maskedidentifier: 'Account number', pastdueamount: 'Amount overdue', creditlimit: 'Credit limit' };
+    const known = familiar[leaf.replace(/_/g, '').toLowerCase()];
+    if (known) return known;
+    const words = leaf.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+    return words.charAt(0).toUpperCase() + words.slice(1);
+  };
+  const grouped = new Map();
+  for (const marker of markers) {
+    if (!grouped.has(marker.item_number)) grouped.set(marker.item_number, []);
+    grouped.get(marker.item_number).push(marker);
+  }
+  let notes;
+  if (grouped.size > 12) notes = ['Letter items ' + [...grouped.keys()].join(', ') + '. See the numbered requests in your letter.'];
+  else notes = [...grouped].map(([number, entries]) => {
+    const captions = [...new Set(entries.map(entry => captionLabel(entry.caption)).filter(Boolean))];
+    const detail = captions.join('; ');
+    return `Item ${number}: ${detail.length > 120 ? detail.slice(0, 117) + '...' : detail || 'report entry'}`
+      + (entries.some(entry => entry.omitted_value) ? '. A marked caption has a blank value on the report.' : '.');
+  });
+  notes.push('Yellow marks identify report details for the letter. Unmarked items are explained in the letter.');
+  for (const annotation of annotations) notes.push('Your note: ' + (annotation.note || 'Please check the marked area.'));
+  return notes;
+}
+async function reportMarkup(doc, page, entry, sourcePage, noteFont) {
+  const geometry = sourceGeometry(page), markers = (entry.markers || []).filter(marker => marker.page === sourcePage);
+  const annotations = (entry.annotations || []).filter(annotation => annotation.page === sourcePage);
+  if (annotations.length && (!geometry.annotation_available || annotations.length > 4)) throw coded('INVALID_REQUEST');
+  const notes = markerNotes(markers, annotations);
+  if (!markers.length && !annotations.length) return { ...geometry, annotations: [] };
+  const face = fontkit.create(fs.readFileSync(path.join(__dirname, 'packet-fonts', 'NotoSans-Regular.ttf')));
+  const printable = value => [...String(value)].map(char => /\s/.test(char) || face.hasGlyphForCodePoint(char.codePointAt(0)) ? char : '?').join('');
+  if (annotations.some(annotation => printable(annotation.note) !== annotation.note)) throw coded('INVALID_REQUEST');
+  const metadata = [], width = geometry.source_width, height = geometry.source_height;
+  for (const marker of markers) {
+    const rectangle = geometry.annotation_available && entry.content_type === 'application/pdf' ? markerRectangle(marker, width, height) : null;
+    metadata.push({ issue_id: marker.issue_id, item_number: marker.item_number, note: marker.caption,
+      omitted_value: Boolean(marker.omitted_value), automatic: true, ...(rectangle || {}) });
+  }
+  for (const annotation of annotations) metadata.push({ ...annotation, automatic: false });
+  if (geometry.annotation_available) for (const annotation of metadata) {
+    if (!Number.isFinite(annotation.x)) continue;
+    page.drawRectangle({ x: annotation.x * width, y: height - (annotation.y + annotation.height) * height,
+      width: annotation.width * width, height: annotation.height * height, color: rgb(1, .85, 0), opacity: .25,
+      borderColor: rgb(.65, .45, .05), borderOpacity: .6, borderWidth: .5 });
+  }
+  // Every report keeps its original print dimensions. Explanations follow on
+  // their own printable pages, so a printer never shrinks the report to fit a gutter.
+  const size = 11, leading = size * 1.4, capacity = Math.floor(600 / leading);
+  const lines = wrapped(notes.flatMap(note => [printable(note), '']).join('\n'), noteFont, size, 512), notePages = [];
+  for (let offset = 0; offset < lines.length; offset += capacity) {
+    const notePage = doc.addPage([612, 792]);
+    notePage.drawText('NOTES FOR YOUR DISPUTED REPORT DETAILS', { x: 50, y: 740, size: 15, font: noteFont, color: rgb(.13, .19, .25) });
+    notePage.drawText('Source report page ' + sourcePage + (offset ? ' - continued' : ''), { x: 50, y: 708, size, font: noteFont, color: rgb(.13, .19, .25) });
+    for (const [index, line] of lines.slice(offset, offset + capacity).entries()) if (line) notePage.drawText(line,
+      { x: 50, y: 676 - index * leading, size, font: noteFont, color: rgb(.13, .19, .25) });
+    notePages.push(notePage);
+  }
+  return { ...geometry, annotations: metadata, note_pages: notePages };
 }
 async function appendEvidence(target, entry, isReport, position, copyBudget) {
   const bytes = Buffer.isBuffer(entry.bytes) ? entry.bytes : Buffer.from(entry.bytes || '', 'base64');
@@ -207,10 +288,27 @@ async function compose(input) {
   const doc = await PDFDocument.create({ updateMetadata: false });
   doc.setCreationDate(new Date('2000-01-01T00:00:00Z')); doc.setModificationDate(new Date('2000-01-01T00:00:00Z'));
   const fields = await letterPages(doc, input.letter_text), sections = [{ kind: 'letter', label: 'My dispute letter', start_page: 1, page_count: fields.length }];
+  const reviewPages = fields.map(field => ({ page: field.page, kind: 'letter', page_width: field.page_width, page_height: field.page_height, annotation_available: false }));
+  const noteFont = await doc.embedFont(fs.readFileSync(path.join(__dirname, 'packet-fonts', 'NotoSans-Regular.ttf')), { subset: true });
   let position = fields.length;
   for (const [kind, entries] of [['report', input.reports || []], ['document', input.documents || []]]) for (const entry of entries) {
     const pages = await appendEvidence(doc, entry, kind === 'report', position, copyBudget);
-    sections.push({ kind, label: label(entry.label), start_page: position + 1, page_count: pages.length, source_pages: pages }); position += pages.length;
+    let inserted = 0;
+    for (const sourcePage of pages) {
+      const page = doc.getPage(position + inserted), metadata = kind === 'report' ? await reportMarkup(doc, page, entry, sourcePage, noteFont)
+        : { ...sourceGeometry(page), annotation_available: false, annotations: [] };
+      const notePages = metadata.note_pages || []; delete metadata.note_pages;
+      reviewPages.push({ page: position + inserted + 1, kind, label: label(entry.label), file_id: entry.file_id || null, source_page: sourcePage, ...metadata });
+      inserted++;
+      for (let removed = 0; removed < notePages.length; removed++) doc.removePage(doc.getPageCount() - 1);
+      for (const notePage of notePages) {
+        doc.insertPage(position + inserted, notePage);
+        reviewPages.push({ page: position + inserted + 1, kind: 'report-note', label: 'Notes for report page ' + sourcePage,
+          file_id: entry.file_id || null, source_page: sourcePage, page_width: 612, page_height: 792, annotation_available: false });
+        inserted++;
+      }
+    }
+    sections.push({ kind, label: label(entry.label), file_id: entry.file_id || null, start_page: position + 1, page_count: inserted, source_pages: pages }); position += inserted;
   }
   if (input.instructions != null) {
     if (typeof input.instructions !== 'string' || !input.instructions.trim() || input.instructions.length > 6000) throw coded('INVALID_REQUEST');
@@ -223,11 +321,13 @@ async function compose(input) {
     page.drawText('Do not send this instruction sheet to the bureau.', { x: 50, y: 60, size: 13, font: bold });
     for (const section of sections) section.start_page++;
     for (const field of fields) field.page++;
+    for (const page of reviewPages) page.page++;
+    reviewPages.unshift({ page: 1, kind: 'instructions', page_width: 612, page_height: 792, annotation_available: false });
     sections.unshift({ kind: 'instructions', label: 'For you only - remove before mailing', start_page: 1, page_count: 1, send_to_bureau: false });
   }
   if (doc.getPageCount() > 400) throw coded('INVALID_REQUEST');
   const bytes = Buffer.from(await doc.save({ useObjectStreams: false, addDefaultPage: false, updateFieldAppearances: false }));
-  return { bytes: bytes.toString('base64'), sha256: digest(bytes), page_count: doc.getPageCount(), sections, editable_fields: fields, version: input.version };
+  return { bytes: bytes.toString('base64'), sha256: digest(bytes), page_count: doc.getPageCount(), sections, editable_fields: fields, review_pages: reviewPages, version: input.version };
 }
 if (require.main === module) {
   try {

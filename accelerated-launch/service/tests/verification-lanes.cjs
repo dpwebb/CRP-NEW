@@ -12,4 +12,6 @@ const LANE_IDS = {
 LANE_IDS.security.unshift('gh-audit-billing-lifecycle', 'gj-audit-maintenance', 'gk-audit-api-correctness');
 LANE_IDS.browser.unshift('gi-audit-consumer-flow');
 LANE_IDS.consumer.unshift('gi-audit-consumer-flow', 'gk-audit-api-correctness');
+LANE_IDS.security.unshift('gl-inline-packet-pages');
+LANE_IDS.consumer.unshift('gl-inline-packet-pages');
 module.exports = { SOURCE_AUDIT_FILES, LANE_IDS };

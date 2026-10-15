@@ -7,6 +7,15 @@ const letter = require('../../consumer-dispute-letter.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 
 async function run(t, check) {
+  const sourceBound = { basis_type: 'FACTUAL_CONSISTENCY', classification: 'POTENTIAL_VIOLATION',
+    citation: 'Fictional sourced accuracy provision', source_version: 'fictional-pinned-source',
+    rule_assessment: { classification: 'POTENTIAL_VIOLATION' } };
+  check.ok(letter.ruleRequest(sourceBound).includes(sourceBound.citation) && /Please check/.test(letter.ruleRequest(sourceBound)),
+    'a supported reference is integrated as a qualified check request rather than a new breach assertion');
+  check.equal(letter.ruleRequest({ ...sourceBound, source_version: null }), '', 'an unbound citation does not become a legal reference in the letter');
+  check.equal(letter.ruleRequest({ ...sourceBound, report_concern: true, classification: 'NON_VIOLATION' }), '', 'a non-violation concern gains no statute from nearby rule data');
+  check.deepEqual(letter.ruleReferences({ ...sourceBound, supported_bases: [{ ...sourceBound, basis_type: 'STATUTORY_RETENTION' }] }), [sourceBound.citation],
+    'overlapping support names each available reference once');
   const partialPair = letter.itemsFor({ extraction: { records: [{ record_index: 1, kind: 'COLLECTION', kind_label: 'Collection entry' },
     { record_index: 2, kind: 'COLLECTION', kind_label: 'Collection entry' }] } }, [{ issue_id: 'pair', record_index: 1,
     check_id: 'COMMON-ERROR-DUPLICATE-REPORTING', evidence: { duplicate_of_record: 2 },

@@ -14,12 +14,16 @@ async function run(t,check){
  try{
   const page=await browser.newPage({viewport:{width:1440,height:1000}});page.setDefaultTimeout(20000);await page.goto(t.base+'/index.html#signin');await page.locator('#email').fill(a.email);await page.locator('#password').fill('a-long-enough-password');await page.locator('#signin').click();await page.locator('#open').waitFor();await page.locator('#refresh').click();await page.locator('[data-open="'+c.case_id+'"]').click();await page.locator('#create-packet').waitFor();await page.locator('[data-step="6"]').click();await page.locator('#packet-pdf-review').waitFor();
   check.ok(await page.locator('#packet-selection').isHidden(),'review hides the previous issue choices');check.ok(await page.locator('#packet-preparation-content').isHidden(),'review hides previous document preparation');check.ok(!(await page.locator('#panel').innerText()).includes('Choose the issues you want the bureau'),'review does not repeat the issue-choice instruction');
-  check.ok((await page.locator('#packet-pdf-review').boundingBox()).y<(await page.locator('#packet-letter').boundingBox()).y,'the actual PDF precedes editing fields');
+  await page.locator('#packet-letter').waitFor(); await page.locator('#packet-preview-reviewed:enabled').waitFor();
+  const currentView=(await req('GET',route+'/packet')).json.view,metadata=(await req('GET',route+'/packet/preview/pages?version='+currentView.packet.preview_version)).json;
+  check.equal(await page.locator('[data-packet-page]').count(),metadata.page_count,'every physical page is visible inline, including report and ID/address copies');
+  check.equal(await page.locator('.packet-page-image').evaluateAll(images=>images.every(image=>image.complete&&image.naturalWidth>0)),true,'every inline physical page actually rendered');
+  check.equal(await page.locator('#packet-letter').evaluate(node=>Boolean(node.closest('[data-packet-page]'))),true,'the consumer edits the letter within its actual packet page');
   check.equal(await page.locator('#review').isVisible(),false,'review does not repeat the assessment-review button');
   check.ok(await page.locator('#packet-approve').isDisabled()&&await page.locator('#packet-print').isDisabled()&&await page.locator('#packet-download').isDisabled(),'unapproved printing and downloading are blocked with clear requirements');
   const original=await page.locator('#packet-letter').inputValue();await page.locator('#packet-letter').fill(original+'\nFictional custom edit.');await page.locator('#packet-save').click();await page.getByText('Packet saved. Check your letter and every page in the PDF.',{exact:true}).waitFor();check.ok((await page.locator('#packet-letter').inputValue()).includes('Fictional custom edit.'),'Save persists the full consumer letter');
   await page.locator('#packet-reset-letter').click();await page.getByText('The prepared letter is restored. Check it and every page before approving.',{exact:true}).waitFor();check.equal(await page.locator('#packet-letter').inputValue(),original,'Use the prepared letter visibly restores it without another save click');check.equal((await req('GET',route+'/packet')).json.view.packet.letter_text,null,'reset removes the stored override through the owned API');
-  await page.locator('#packet-preview-reviewed').check();check.ok(await page.locator('#packet-approve').isEnabled(),'page acknowledgement enables approval');await page.locator('#packet-approve').click();await page.locator('#packet-approved-status').waitFor();check.ok(await page.locator('#packet-print').isEnabled()&&await page.locator('#packet-download').isEnabled(),'approval enables the actual print/download controls');
+  await page.locator('#packet-preview-reviewed').check();check.ok(await page.locator('#packet-approve').isEnabled(),'page acknowledgement enables approval');await page.locator('#packet-approve').click();await page.locator('#packet-approved-status').waitFor();await page.locator('#packet-download:enabled').waitFor();check.ok(await page.locator('#packet-print').isEnabled()&&await page.locator('#packet-download').isEnabled(),'approval enables the actual print/download controls');
   const download=page.waitForEvent('download');await page.locator('#packet-download').click();const artifact=await download;await artifact.saveAs(path.join(out,'approved-packet.pdf'));const bytes=fs.readFileSync(path.join(out,'approved-packet.pdf'));
   const preview=(await req('GET',(await req('GET',route+'/packet')).json.view.packet.letter_preview_url)).bytes;check.ok(bytes.equals(preview),'actual browser download equals the reviewed PDF');
   const popup=page.waitForEvent('popup'),response=page.waitForResponse(r=>new URL(r.url()).pathname===route+'/packet-print');await page.locator('#packet-print').click();const printPage=await popup;await printPage.waitForURL('blob:**');check.ok((await(await response).body()).equals(bytes),'print receives those same approved bytes');await printPage.close();
@@ -28,9 +32,40 @@ async function run(t,check){
   check.ok(first.includes('REMOVE THIS PAGE BEFORE MAILING')&&first.includes('Print pages 2 onward')&&first.includes('Do not put this instruction sheet in the envelope'),'the standalone instruction page tells the consumer to exclude it');check.ok(!letter.includes('YOUR MAILING INSTRUCTIONS')&&letter.includes('Re: Credit report dispute'),'instructions are separate from the signed letter');
   check.ok((await page.locator('#packet-ready-status').innerText()).includes('Remove it before mailing'),'the visible ready message reinforces removal');
   const before=sha(bytes);await page.locator('[data-step="5"]').click();await page.locator('#packet-preparation-content').waitFor();await page.locator('#packet-prepare-next').click();await page.locator('#packet-approved-status').waitFor();check.equal(sha((await req('GET',route+'/packet-download')).bytes),before,'unchanged backward/forward navigation preserves approval and bytes');
+  await page.locator('#packet-download:enabled').waitFor();
+  await page.locator('#packet-date').fill('2026-10-14');await page.locator('#packet-save').click();await page.locator('#packet-preview-reviewed:enabled').waitFor();
+  check.equal((await req('GET',route+'/packet')).json.view.packet.letter_date,'2026-10-14','the consumer can set the letter date before approval');
+  const sourcePage=page.locator('[data-packet-page]').filter({has:page.locator('.packet-position-add')}).first();
+  await sourcePage.locator('summary').click();await sourcePage.locator('.packet-position-add').click();
+  check.ok(await page.locator('#packet-download').isDisabled()&&await page.locator('#packet-approve').isDisabled(),'adding an inline highlight requires saved review and new approval');
+  await sourcePage.locator('.packet-highlight-row textarea').fill('Please compare these impossible account dates.');
+  await page.locator('#packet-save').click();await page.locator('#packet-preview-reviewed:enabled').waitFor();
+  let annotated=(await req('GET',route+'/packet')).json.view;
+  check.equal(annotated.packet.annotations.length,1,'the inline source-page highlight is saved on the owned packet');
+  check.equal(annotated.packet.annotations[0].note,'Please compare these impossible account dates.','consumer annotation words survive saving and review');
+  const longLetter=original+'\n\n'+Array.from({length:28},(_,i)=>'Fictional paragraph '+(i+1)+': Please review the dates shown on my selected report page and explain your correction.').join('\n\n');
+  await page.locator('#packet-letter').fill(longLetter);await page.locator('#packet-save').click();await page.locator('#packet-preview-reviewed:enabled').waitFor();
+  check.ok(await page.locator('[data-packet-letter-page]').count()>1,'long inline wording reflows to visible editable continuation pages');
+  const editorDrafts=await page.locator('[data-packet-letter-page]').evaluateAll(nodes=>nodes.map(node=>node.value));
+  await page.locator('[data-packet-letter-page]').nth(0).fill('x'.repeat(14000));await page.locator('[data-packet-letter-page]').nth(1).fill('y'.repeat(14000));
+  await page.locator('#packet-save').click();await page.getByText('Your letter is too long. Shorten it to 24,000 characters, then save again.',{exact:true}).waitFor();
+  check.equal(await page.locator('[data-packet-letter-page]').nth(0).inputValue(),'x'.repeat(14000),'a rejected aggregate letter save preserves the first inline draft');
+  check.equal(await page.locator('[data-packet-letter-page]').nth(1).inputValue(),'y'.repeat(14000),'a rejected aggregate letter save preserves continuation-page edits');
+  check.ok(await page.locator('#packet-download').isDisabled()&&await page.locator('#packet-approve').isDisabled(),'a rejected save never restores old approval');
+  for(let i=0;i<editorDrafts.length;i++)await page.locator('[data-packet-letter-page]').nth(i).fill(editorDrafts[i]);
+  const last=page.locator('[data-packet-letter-page]').last();await last.fill((await last.inputValue())+'\nFictional final-page consumer edit.');
+  await page.locator('#packet-save').click();await page.locator('#packet-preview-reviewed:enabled').waitFor();
+  check.ok((await page.locator('[data-packet-letter-page]').last().inputValue()).includes('Fictional final-page consumer edit.'),'the final inline letter page is editable and saved');
+  await page.locator('#packet-preview-reviewed').check();await page.locator('#packet-approve').click();await page.locator('#packet-download:enabled').waitFor();
+  const finalDownload=page.waitForEvent('download');await page.locator('#packet-download').click();await(await finalDownload).saveAs(path.join(out,'complete-edited-packet.pdf'));
+  const editedBytes=fs.readFileSync(path.join(out,'complete-edited-packet.pdf')),finalView=(await req('GET',route+'/packet')).json.view;
+  check.ok(editedBytes.equals((await req('GET',finalView.packet.letter_preview_url)).bytes),'the browser downloads the exact complete packet reviewed after all inline edits');
+  const normalized=require('../packet-pdf-assertions.cjs').comparableText(require('../packet-pdf-assertions.cjs').pdfText(editedBytes));
+  check.ok(normalized.includes('Fictional final-page consumer edit.')&&normalized.includes('Please compare these impossible account dates.'),'the printable packet retains the last-page edit and evidence note');
+  const finalPrintResponse=page.waitForResponse(r=>new URL(r.url()).pathname===route+'/packet-print'),finalPopup=page.waitForEvent('popup');await page.locator('#packet-print').click();const finalPrintPage=await finalPopup;await finalPrintPage.waitForURL('blob:**');check.ok((await(await finalPrintResponse).body()).equals(editedBytes),'printing uses that same saved and approved edited PDF');await finalPrintPage.close();
   for(const width of [1440,390]){await page.setViewportSize({width,height:1000});await page.screenshot({path:path.join(out,'review-'+width+'.png'),fullPage:true});check.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'review has no horizontal overflow at '+width+'px');}
-  execFileSync('pdftoppm',['-scale-to','1000','-png',path.join(out,'approved-packet.pdf'),path.join(out,'packet-page')],{timeout:30000,stdio:['ignore','pipe','pipe']});
-  return{actual_browser:true,review_content_isolated:true,prepared_letter_reset:true,instruction_page_separate:true,actual_print_download:true,pdf_sha256:before,sections:printed.sections,screenshots:['review-1440.png','review-390.png']};
+  execFileSync('pdftoppm',['-scale-to','1000','-png',path.join(out,'complete-edited-packet.pdf'),path.join(out,'packet-page')],{timeout:30000,stdio:['ignore','pipe','pipe']});
+  return{actual_browser:true,all_pages_inline:true,inline_last_page_edit:true,inline_source_annotation:true,review_content_isolated:true,prepared_letter_reset:true,instruction_page_separate:true,actual_print_download:true,pdf_sha256:sha(editedBytes),original_pdf_sha256:before,sections:packets.packetPrint(t.service.store,a,c.case_id).sections,screenshots:['review-1440.png','review-390.png']};
  }finally{await browser.close();}
 }
 module.exports={run,id:'ga-packet-review-mailing',title:'Focused packet review, working reset/approval/print/download and removable self-mail instructions'};

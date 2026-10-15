@@ -85,7 +85,7 @@ const STATIC_TYPES = Object.freeze({
   '.ttf': 'font/ttf',
   '.txt': 'text/plain; charset=utf-8'
 });
-const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/style.css', '/favicon.svg', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/story-font-license.txt']);
+const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/packet-review.js', '/style.css', '/favicon.svg', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/story-font-license.txt']);
 const STAGING_SCORE_SIMULATOR_ASSETS = Object.freeze(['/score-simulator.html', '/score-simulator.css', '/score-simulator.js']);
 const STAGING_MAILING_ASSETS = Object.freeze(['/mailing-preview.html', '/mailing-preview.css', '/mailing-preview.js']);
 const STAGING_REFERRAL_ASSETS = Object.freeze(['/referrals.html', '/referrals.css', '/referrals.js']);
@@ -215,6 +215,7 @@ const ROUTES = Object.freeze([
   ['POST', '/api/cases/:caseId/packet/select', true, 'packetSelect'],
   ['POST', '/api/cases/:caseId/packet/wording', true, 'packetWording'],
   ['POST', '/api/cases/:caseId/packet/letter', true, 'packetLetter'],
+  ['POST', '/api/cases/:caseId/packet/annotations', true, 'packetAnnotations'],
   ['POST', '/api/cases/:caseId/packet/correspondence', true, 'packetCorrespondence'],
   ['POST', '/api/cases/:caseId/packet/reports', true, 'packetReports'],
   ['GET', '/api/cases/:caseId/packet/reports/:fileId', true, 'packetReport'],
@@ -222,6 +223,8 @@ const ROUTES = Object.freeze([
   ['GET', '/api/cases/:caseId/packet-download', true, 'packetDownload'],
   ['GET', '/api/cases/:caseId/packet-print', true, 'packetPrint'],
   ['GET', '/api/cases/:caseId/packet/preview', true, 'packetPreview'],
+  ['GET', '/api/cases/:caseId/packet/preview/pages', true, 'packetReviewPages'],
+  ['GET', '/api/cases/:caseId/packet/preview/pages/:pageNumber', true, 'packetReviewPage'],
   ['GET', '/api/cases/:caseId/packet/forms/:filename', true, 'packetForm'],
   /* BLOCKER-SUBSCRIPTION-VALUE-001 — owned report history and evidence-based comparison. */
   ['GET', '/api/history', true, 'historyView'],
@@ -719,6 +722,13 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency) {
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
     },
 
+    packetAnnotations: ({ params, body, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      if (!body?.expected_version || body.expected_version !== packets.packetView(store, actor, params.caseId).packet.preview_version) throw new ServiceError('PACKET_APPROVAL_STALE');
+      packets.setAnnotations(store, actor, params.caseId, body?.annotations, body.expected_version);
+      return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
+    },
     packetReports: ({ params, actor, body }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
       entitlement.requireSubscriberFeature(store, actor);
@@ -782,6 +792,29 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency) {
       return { status: 200, text: file.body, content_type: file.content_type,
         headers: { 'Content-Disposition': `inline; filename="${file.filename}"`, 'X-CRP-Packet-Version': file.approved_version,
           'X-Frame-Options': 'SAMEORIGIN', 'Content-Security-Policy': "default-src 'none'; frame-ancestors 'self'; form-action 'none'; base-uri 'none'" } };
+    },
+    packetReviewPages: ({ params, actor, req }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      const version = new URL(req.url, 'http://127.0.0.1').searchParams.get('version');
+      if (!/^[a-f0-9]{64}$/.test(version || '')) throw new ServiceError('INVALID_REQUEST');
+      return { status: 200, json: { ok: true, preview_version:version, ...packets.packetReview(store, actor, params.caseId, version) } };
+    },
+    packetReviewPage: async ({ params, actor, req }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      if (!/^[1-9]\d{0,2}$/.test(params.pageNumber)) throw new ServiceError('INVALID_REQUEST');
+      const version = new URL(req.url, 'http://127.0.0.1').searchParams.get('version');
+      if (!/^[a-f0-9]{64}$/.test(version || '')) throw new ServiceError('INVALID_REQUEST');
+      const file = packets.packetPreview(store, actor, params.caseId, version);
+      const image = await require('./packet-page-renderer.cjs').renderPage(file, Number(params.pageNumber));
+      // An asynchronous raster must never return an artifact from a superseded packet.
+      const currentActor = accounts.resolveSession(store, sessionToken(req));
+      if (currentActor.account_id !== actor.account_id) throw new ServiceError('NOT_AUTHORIZED');
+      require('./signup-security.cjs').requireReady(store, currentActor);
+      entitlement.requireSubscriberFeature(store, currentActor);
+      packets.packetPreview(store, actor, params.caseId, version);
+      return { status: 200, text: image, content_type: 'image/png', headers: { 'X-CRP-Packet-Version': file.approved_version } };
     },
     packetForm: ({ params, actor, req }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
@@ -851,7 +884,18 @@ function createService(options) {
     buildBillingHandlers(store, logger, pricingCurrency),
     {requestPasswordReset: ({body}) => ({status:200,json:{ok:true,...passwordReset.request(body)}}),
       completePasswordReset: ({body}) => ({status:200,json:{ok:true,...passwordReset.complete(body)},headers:{'Set-Cookie':[sessionCookie('',0),`${ADMIN_COOKIE}=; HttpOnly; SameSite=Strict; Path=/api/admin/; Max-Age=0${process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : ''}`]}}),
-      contactLocation: async ({req}) => {const geo=require('./pricing-location.cjs');let value=null;try{value=await(opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}const country=typeof value==='string'?value:value?.country;const rawRegion=typeof value==='object'?value?.region:null;const region=surface.regions.find(r=>r.country===country&&(r.value===rawRegion||r.value===country+'-'+rawRegion));return {status:200,json:{ok:true,country:surface.countries.some(c=>c.value===country)?country:null,region:region?.value||null,source:'IP_SUGGESTION'}};},publicCreditNews: async ({ req }) => {const geo=require('./pricing-location.cjs');let country=null;try{country=await (opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}return {status:200,json:require('./credit-news.cjs').select(country)};}}
+      contactLocation: async ({req}) => {const geo=require('./pricing-location.cjs');let value=null;try{value=await(opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}const country=typeof value==='string'?value:value?.country;const rawRegion=typeof value==='object'?value?.region:null;const region=surface.regions.find(r=>r.country===country&&(r.value===rawRegion||r.value===country+'-'+rawRegion));return {status:200,json:{ok:true,country:surface.countries.some(c=>c.value===country)?country:null,region:region?.value||null,source:'IP_SUGGESTION'}};},
+      publicCreditNews: async ({ req }) => {
+        const requested = new URL(req.url, 'http://127.0.0.1').searchParams.get('country');
+        const news = require('./credit-news.cjs');
+        if (requested != null) {
+          if (requested !== 'ALL' && !Object.hasOwn(news.COUNTRIES, requested)) throw new ServiceError('INVALID_REQUEST');
+          return {status:200,json:news.select(requested === 'ALL' ? null : requested)};
+        }
+        const geo=require('./pricing-location.cjs');let country=null;
+        try { const value=await(opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req)); country=typeof value==='string'?value:value?.country; } catch {}
+        return {status:200,json:news.select(country)};
+      }}
   );
 
   /**

@@ -1,0 +1,25 @@
+# Complete inline dispute packet and footer corrections - local work
+
+Owner authority, October 14, 2026 (America/Halifax): "Proceed with these dispute packet and footer corrections locally. Make the complete packet visible and editable inline before printing. Do not deploy yet."
+
+Status: IMPLEMENTATION_IN_PROGRESS. Local verification/package: PENDING. Staging and production for this candidate: NOT_RUN / NOT_AUTHORIZED. No existing runtime, account data, provider configuration or hosted release is selected for replacement.
+
+## Bounded correction
+
+One complete PDF is rendered as every physical page inline, with a page count, navigation and zoom. Native letter text fields are edited within the letter pages; saving reflows the whole letter, regenerates the complete PDF and clears approval. Consumers can set a generated letter date, edit supplied wording directly, choose source pages and supporting copies, and add/remove source-page highlights and explanations. Original report, identification and address bytes remain unchanged. Current owned subscription, source/version, consumer review/approval and equal preview/download/print safeguards remain.
+
+Packet sequence: removable consumer-only instructions; ordinary professional letter with supplied bureau reference, item-specific account references, factual requests and verified applicable rule references; selected actual report pages with source-bound highlights and adjacent explanatory notes at original print dimensions; selected other supporting evidence; identification copies; address verification copies. No retired bureau-specific forms are reinstated. Unlocated or unsafe crop/rotation geometry uses an explicit explanatory companion page without claiming a precise highlighted location. Consumer-drawn rectangles are unavailable for those unsafe source transformations.
+
+The landing footer and public account-entry footer use a readable story carousel. Consumers can choose US, UK, CA, AU or all countries; visitor location only selects the initial country. Original source dates, genuine fixed source-review date, source links, case-status qualifications and documented consequences are shown. Five-year maximum age and future-date refusal remain. Reliable media reports are explicitly within this newly authorized scope. Court/appeal/settlement/regulatory findings and allegations are distinguished. The curated inventory does not establish a live automated news acquisition service, and missing qualifying country/category entries are disclosed.
+
+## Source and verification custody
+
+Implementation worktree: C:/Users/webbd/.codex/worktrees/packet-footer-local/CRP-NEW, starting at clean accepted main 550196c2f326bee6322e5b9e621f601255800c4b. Accepted executable baseline: a1dde64364dddfc15c1afc3d2bab7528a7e26cb8 / crp-v1-31b54e126354ac04. Its raw full receipt is preserved unchanged at C:/Users/webbd/.codex/private/crp-operational-audit-fixes-20261014/mobile-release-31b-immutable/release/checks/attempts/product-verification-442ca3e5-b9b4-409b-b345-f7e27c462abb/outputs/full-regression.json, SHA256 1331C26F7F138B2D8AF2197D95491BD6DE65A191EB77344A7FD10F3948737CB7, 16,798/0/0 across 181 completed sections and 375 tested sources.
+
+All 55 declared ignored prerequisite files were restored as exact hash-checked copies in the isolated worktree. The initial 375 baseline source hashes and 11 executable hashes matched before implementation. No fixture or historical full receipt was rewritten. New shared UI/runtime/test changes require one governed current full through prepare/check/record/package, with local source-freeze assembly and no duplicate final product run solely for bookkeeping.
+
+Development evidence stays under ignored accelerated-launch/service/out/packet-footer-* and out/packet-review-mailing. Preserve failed focused attempts: integration-01 exposed disallowed blob image rendering under existing img-src self and the fake-DOM phantom date input; the image path was corrected to the authenticated same-origin page URL without broadening CSP. Integration-02 proved the actual inline browser journey (36/0) and retained the fake-DOM failure separately. The fixture now represents an absent date input as absent. The first gl attempt (120/2) is retained; only wrapped-PDF-text assertion whitespace was corrected for its passing 122/0 successor. Companion-page print-layout and familiar-caption changes retain their earlier focused receipts with original scope.
+
+## Remaining boundary
+
+Final exact-source full, rendered PDF/browser review and packaging are pending until explicitly recorded below. Hosted acceptance, provider purchases, staging/production activation, mailing, payouts and customer outreach remain outside this local authorization. Existing staging31b and production391d provenance remain as documented in their own accepted release reports; no fresh hosted claim is made here.

@@ -56,7 +56,7 @@ function locations(value, visit) {
 function available(store, actor, current, selected) {
   const state = store.state(), references = new Map(), blocked = new Set();
   const currentCase = state.cases.find(row => row.case_id === current.case_id);
-  function add(resultId, fileId, role, record, source) {
+  function add(resultId, fileId, role, record, source, issue, fact) {
     if (!fileId) return;
     const result = state.results.find(row => row.result_id === resultId);
     const ownCase = result && state.cases.find(row => row.case_id === result.case_id);
@@ -83,7 +83,7 @@ function available(store, actor, current, selected) {
     }
     let ref = references.get(fileId);
     if (!ref) {
-      ref = { file, roles: new Set(), dates: new Set(), pages: new Set(), sources: new Map() };
+      ref = { file, roles: new Set(), dates: new Set(), pages: new Set(), sources: new Map(), markers: new Map() };
       references.set(fileId, ref);
     }
     ref.roles.add(role);
@@ -95,7 +95,17 @@ function available(store, actor, current, selected) {
       record_index: record?.record_index ?? null, record_sha256: sha256(Buffer.from(JSON.stringify(record || null)))
     });
     locations(source || record?.location, loc => {
-      if (!loc.file_id || loc.file_id === fileId) ref.pages.add(loc.page);
+      if (!loc.file_id || loc.file_id === fileId) {
+        ref.pages.add(loc.page);
+        if (issue && !fact?.privacy_redacted && !source?.privacy_redacted && !fact?.code_definition && !fact?.period_definition) {
+          const marker = { issue_id: issue.issue_id, item_number: selected.indexOf(issue) + 1, page: loc.page,
+            caption: String(source?.source_field || fact?.source_field || '').slice(0, 160),
+            omitted_value: Boolean(source?.omitted_value || fact?.omitted_value),
+            // Geometry is inherited from trusted extraction provenance only.
+            bbox: loc.bbox || loc.caption_location?.bbox || null };
+          ref.markers.set(JSON.stringify(marker), marker);
+        }
+      }
     });
   }
   function fileFor(result, record, source) {
@@ -133,22 +143,22 @@ function available(store, actor, current, selected) {
       if (!reading || source.trusted === false || source.location?.trusted === false) {
         if (fileId) blocked.add(fileId); return;
       }
-      add(resultId, fileId, role, null, source);
+      add(resultId, fileId, role, null, source, issue, fact);
       return;
     }
     if (!record) { if (source.source_file_id) blocked.add(source.source_file_id); return; }
     const fileId = fileFor(result, record, source);
-    add(resultId, fileId, role, record, source);
+    add(resultId, fileId, role, record, source, issue, fact);
   }
   for (const issue of selected || []) {
     for (const index of relatedIndices(issue)) {
       const record = current.extraction?.records?.find(row => row.record_index === index);
       if (!record) continue;
       const fileId = fileFor(current, record);
-      add(current.result_id, fileId, 'CURRENT', record, record.location);
+      add(current.result_id, fileId, 'CURRENT', record, record.location, issue);
       // A merged continuation is an explicit source of this account, not another report chosen by proximity.
       for (const continuation of record.continuation_merged_from || []) {
-        add(current.result_id, continuation.file_id, 'CURRENT', record, continuation);
+        add(current.result_id, continuation.file_id, 'CURRENT', record, continuation, issue);
       }
     }
     const required = issue.rule_assessment?.required_facts || [];
@@ -175,7 +185,8 @@ function available(store, actor, current, selected) {
     const label = roles.length === 1 ? `${role === 'EARLIER' ? 'Earlier' : 'Current'} report${dates.length ? ' — ' + dates.join(', ') : ''}` : 'Report copy';
     out.push({ file_id: fileId, role, roles, label, original_filename: ref.file.original_filename,
       content_type: type, page_count: count, relevant_pages: [...ref.pages].sort((a, b) => a - b),
-      scope: 'RELEVANT_PAGES', bytes, sha256: digest, sources: [...ref.sources.values()]
+      scope: 'RELEVANT_PAGES', bytes, sha256: digest, markers: [...ref.markers.values()]
+        .sort((a, b) => a.page - b.page || a.item_number - b.item_number || a.caption.localeCompare(b.caption)), sources: [...ref.sources.values()]
         .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))) });
   }
   return out.sort((a, b) => a.role.localeCompare(b.role) || a.label.localeCompare(b.label) || a.file_id.localeCompare(b.file_id));
@@ -227,7 +238,7 @@ function prepare(store, actor, caseId, result, selected, fileIds, pageChoices = 
     copy.consumer_pages = [...new Set(chosen)].sort((a,b) => a-b);
   }
   const view = copies.map(copy => {
-    const { bytes, sha256: digest, sources, ...publicCopy } = copy;
+    const { bytes, sha256: digest, sources, markers, ...publicCopy } = copy;
     return { ...publicCopy, selected: true,
       review_url: `/api/cases/${caseId}/packet/reports/${copy.file_id}` };
   });
@@ -238,9 +249,10 @@ function prepare(store, actor, caseId, result, selected, fileIds, pageChoices = 
       archive_name: `report-${String(index + 1).padStart(2, '0')}-${copy.role.toLowerCase()}.${ext}` };
   });
   return { view, manifest, material: chosen.map(copy => ({ ...manifest.find(item => item.file_id === copy.file_id),
-    stored_bytes: copy.bytes.length, stored_sha256: copy.sha256, sources: copy.sources })),
+    stored_bytes: copy.bytes.length, stored_sha256: copy.sha256, sources: copy.sources, markers: copy.markers })),
     copies: chosen.map(copy => ({ name: manifest.find(item => item.file_id === copy.file_id).archive_name,
-      bytes: copy.bytes, content_type: copy.content_type, relevant_pages: copy.relevant_pages, label: copy.label })),
+      bytes: copy.bytes, content_type: copy.content_type, relevant_pages: copy.relevant_pages, label: copy.label,
+      file_id: copy.file_id, markers: copy.markers })),
     missing: copies.filter(copy => !copy.relevant_pages.length).map(copy => `Choose the report pages to include for ${copy.original_filename}.`) };
 }
 

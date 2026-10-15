@@ -30,6 +30,7 @@ const SECTION_FILES = [
   'gc-admin-service.cjs',
   'gd-admin-http-browser.cjs',
   'ga-packet-review-mailing.cjs',
+  'gl-inline-packet-pages.cjs',
   'fz-signup-user-experience.cjs',
   'fy-operational-hardening.cjs',
   'fx-consumer-issue-precision.cjs',

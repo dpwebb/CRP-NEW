@@ -179,13 +179,15 @@ function canonicalVersion(packetRow, resultRow, selectedIssues) {
   // Display order is material to the numbered letter requests.
   const ordered = selectedIssues;
   const parts = [
-    'packet-format:consumer-letter-evidence-pdf-2',
+    'packet-format:consumer-letter-evidence-pdf-3',
     `composer:${COMPOSER_VERSION}`,
     `result:${packetRow.result_id || ''}`,
     `selection:${ordered.map((i) => i.issue_id).join(',')}`,
     `issues:${ordered.map(issueContent).join(';')}`,
     `wording:${packetRow.wording || ''}`,
     `letter:${packetRow.letter_text || ''}`,
+    `letter-date:${packetRow.letter_date || String(packetRow.created_at || '').slice(0, 10)}`,
+    `annotations:${JSON.stringify(packetRow.annotations || [])}`,
     `recipient:${recipientTypeOf(packetRow)}`,
     `correspondence:${JSON.stringify(correspondenceOf(packetRow))}`,
     `support:${JSON.stringify(packetRow.support_snapshot || null)}`,
@@ -246,6 +248,9 @@ function packetView(store, actor, caseId) {
       selected_count: packet ? (packet.selected_issue_ids || []).length : 0,
       wording: packet ? packet.wording : null,
       letter_text: packet?.letter_text || null,
+      letter_date: packet?.letter_date || String(packet?.created_at || '').slice(0, 10),
+      annotations: (packet?.annotations || []).filter(annotation => packet.report_snapshot?.copies?.some(copy =>
+        copy.file_id === annotation.file_id && copy.relevant_pages.includes(annotation.page))),
       approved: Boolean(packet && packet.approved_version && !approvalStale),
       approved_version: packet ? packet.approved_version : null,
       approved_at: packet ? packet.approved_at : null,
@@ -374,6 +379,9 @@ function setWording(store, actor, caseId, wording) {
 function setCorrespondence(store, actor, caseId, details) {
   const { row } = requireResultAndEligible(store, actor, caseId);
   const input = details && typeof details === 'object' ? details : {};
+  if (input.letter_date !== undefined && (typeof input.letter_date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(input.letter_date)
+      || !Number.isFinite(new Date(input.letter_date + 'T00:00:00Z').getTime())
+      || new Date(input.letter_date + 'T00:00:00Z').toISOString().slice(0, 10) !== input.letter_date)) throw new ServiceError('INVALID_REQUEST');
   return store.update((state) => {
     let packet = state.packets.find((p) => p.case_id === caseId);
     if (!packet) {
@@ -400,6 +408,7 @@ function setCorrespondence(store, actor, caseId, details) {
     }
     packet.result_id = row.result_id;
     packet.correspondence = next;
+    if (input.letter_date !== undefined) packet.letter_date = input.letter_date;
     packet.approved_version = null;
     packet.approved_at = null;
     packet.updated_at = nowIso();
@@ -434,6 +443,42 @@ function setLetter(store, actor, caseId, text) {
     const live = state.packets.find(item => item.packet_id === packet.packet_id);
     live.letter_text = text === null ? null : text.replace(/\r\n?/g, '\n').trim();
     live.approved_version = null; live.approved_at = null; live.approved_pdf_sha256 = null; live.updated_at = nowIso();
+    return live;
+  });
+}
+
+/** Consumer marks are an overlay on owned report copies, never edited report facts. */
+function setAnnotations(store, actor, caseId, annotations, expectedVersion) {
+  const review = packetReview(store, actor, caseId, expectedVersion);
+  if (!Array.isArray(annotations) || annotations.length > 128) throw new ServiceError('INVALID_REQUEST');
+  const allowed = new Set(['file_id', 'page', 'x', 'y', 'width', 'height', 'note', 'issue_id']);
+  const packet = currentPacket(store, caseId), counts = new Map();
+  const normalized = annotations.map(annotation => {
+    if (!annotation || typeof annotation !== 'object' || Array.isArray(annotation)
+        || Object.keys(annotation).some(key => !allowed.has(key))
+        || typeof annotation.file_id !== 'string' || !Number.isSafeInteger(annotation.page)
+        || !['x', 'y', 'width', 'height'].every(key => Number.isFinite(annotation[key]))
+        || annotation.x < 0 || annotation.y < 0 || annotation.width <= 0 || annotation.height <= 0
+        || annotation.x + annotation.width > 1 || annotation.y + annotation.height > 1
+        || annotation.note !== undefined && (typeof annotation.note !== 'string' || annotation.note.length > 200
+          || /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(annotation.note))
+        || annotation.issue_id !== undefined && !packet.selected_issue_ids.includes(annotation.issue_id)) throw new ServiceError('INVALID_REQUEST');
+    const page = review.review_pages.find(page => page.kind === 'report' && page.file_id === annotation.file_id && page.source_page === annotation.page);
+    if (!page?.annotation_available) throw new ServiceError('INVALID_REQUEST');
+    const key = annotation.file_id + ':' + annotation.page;
+    counts.set(key, (counts.get(key) || 0) + 1);
+    if (counts.get(key) > 4) throw new ServiceError('INVALID_REQUEST');
+    return { file_id: annotation.file_id, page: annotation.page, x: annotation.x, y: annotation.y,
+      width: annotation.width, height: annotation.height, note: String(annotation.note || '').trim(),
+      ...(annotation.issue_id ? { issue_id: annotation.issue_id } : {}) };
+  });
+  // Validate glyphs and printable note layout before changing the saved packet.
+  const { packet: enriched, row, selected } = resolvePreview(store, actor, caseId, review.version);
+  completePdf(store, actor, { ...enriched, annotations: normalized }, row, selected);
+  return store.update(state => {
+    const live = state.packets.find(item => item.packet_id === packet.packet_id);
+    live.annotations = normalized; live.approved_version = null; live.approved_at = null;
+    live.approved_pdf_sha256 = null; live.updated_at = nowIso();
     return live;
   });
 }
@@ -742,7 +787,15 @@ function packetPreview(store, actor, caseId, expectedVersion) {
   if (!packet.support_snapshot || packet.support_snapshot.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   const pdf = completePdf(store, actor, packet, row, selected);
   return { body: pdf.bytes, content_type: 'application/pdf', filename: 'dispute-packet-review.pdf', approved_version: version,
-    page_count: pdf.page_count };
+    page_count: pdf.page_count, sections: pdf.sections, editable_fields: pdf.editable_fields, review_pages: pdf.review_pages };
+}
+function packetReview(store, actor, caseId, expectedVersion) {
+  const { packet, row, selected, version } = resolvePreview(store, actor, caseId, expectedVersion);
+  requireCorrespondence(packet);
+  if (!packet.support_snapshot || packet.support_snapshot.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
+  const pdf = completePdf(store, actor, packet, row, selected);
+  return { version, sha256: pdf.sha256, page_count: pdf.page_count, sections: pdf.sections,
+    editable_fields: pdf.editable_fields, review_pages: pdf.review_pages };
 }
 function packetForm(store, actor, caseId) {
   cases.requireOwnedCase(store, actor, caseId);
@@ -756,8 +809,10 @@ function documentText(packet, row, selected) {
 function completePdf(store, actor, packet, row, selected) {
   const documents = (packet.support?.document_ids || []).map(id => {
     const file = accountDocuments.getDocument(store, actor, id);
-    return { bytes: file.bytes, content_type: file.document.content_type, label: file.document.document_type };
-  }).sort((a,b) => (/^IDENTITY|^IDENTIFICATION/.test(a.label) ? 0 : 1) - (/^IDENTITY|^IDENTIFICATION/.test(b.label) ? 0 : 1));
+    return { bytes: file.bytes, content_type: file.document.content_type, label: file.document.document_type, file_id: id };
+  }).sort((a,b) => ({ SUPPORTING: 0, IDENTITY: 1, ADDRESS: 2 }[a.label] ?? 3) - ({ SUPPORTING: 0, IDENTITY: 1, ADDRESS: 2 }[b.label] ?? 3));
+  const reports = (packet.report_snapshot?.copies || []).map(copy => ({ ...copy,
+    annotations: (packet.annotations || []).filter(annotation => annotation.file_id === copy.file_id && copy.relevant_pages.includes(annotation.page)) }));
   return composePacket({ letter_text: documentText(packet, row, selected), instructions: packet.support?.channel === 'POSTAL' ? [
     '1. Keep this instruction sheet for yourself. It is not part of the packet you send to the bureau.',
     '', '2. Check every remaining page. Make sure the letter, report pages and supporting copies are the ones you approved.',
@@ -766,7 +821,7 @@ function completePdf(store, actor, packet, row, selected) {
     '', '5. Mail the packet to the bureau address shown on your letter.',
     '', '6. Keep a copy of what you sent and your mailing receipt, if you have one.'
   ].join('\n') : null,
-    reports: packet.report_snapshot?.copies || [], documents });
+    reports, documents });
 }
 
 /** The same approved PDF is opened for printing and included in the download. */
@@ -789,11 +844,13 @@ module.exports = {
   selectIssues,
   setWording,
   setLetter,
+  setAnnotations,
   setCorrespondence,
   setSupport,
   setReportFiles,
   packetReport,
   packetPreview,
+  packetReview,
   packetForm,
   approvePacket,
   packetDownload,

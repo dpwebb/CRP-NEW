@@ -5,7 +5,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const { spawnSync } = require('node:child_process');
 const { ServiceError } = require('./errors.cjs');
-const FORMAT_VERSION = 'inline-editable-packet-v1';
+const FORMAT_VERSION = 'inline-editable-packet-v2';
 const MAX_BYTES = 64 * 1024 * 1024;
 let rendererVersion;
 // Review, approve, print and download often request the exact same immutable recipe in quick
@@ -15,7 +15,8 @@ const CACHE_LIMIT = 16 * 1024 * 1024, CACHE_TTL_MS = 60000, CACHE_ENTRIES = 4;
 let cachedBytes = 0;
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 function copyResult(result) {
-  return { ...result, bytes: Buffer.from(result.bytes), sections: JSON.parse(JSON.stringify(result.sections)), editable_fields: JSON.parse(JSON.stringify(result.editable_fields)) };
+  return { ...result, bytes: Buffer.from(result.bytes), sections: JSON.parse(JSON.stringify(result.sections)),
+    editable_fields: JSON.parse(JSON.stringify(result.editable_fields)), review_pages: JSON.parse(JSON.stringify(result.review_pages)) };
 }
 function forget(key) { const row = cache.get(key); if (row) { clearTimeout(row.timer); cachedBytes -= row.result.bytes.length; cache.delete(key); } }
 function version() {
@@ -39,7 +40,7 @@ function composePacket(input) {
   if (!input || typeof input.letter_text !== 'string' || !input.letter_text.trim() || input.letter_text.length > 200000) throw new ServiceError('INVALID_REQUEST');
   // OWNER-BUREAU-FORMS-RETIREMENT-001: reject retired packet components.
   if (input.forms != null && (!Array.isArray(input.forms) || input.forms.length)) throw new ServiceError('INVALID_REQUEST');
-  let total = 0;
+  let total = 0, markerCount = 0;
   const encode = (entries, limit, isReport = false) => {
     if (!Array.isArray(entries) || entries.length > limit) throw new ServiceError('INVALID_REQUEST');
     return entries.map(entry => {
@@ -48,8 +49,21 @@ function composePacket(input) {
       total += bytes.length;
       if (total > MAX_BYTES) throw new ServiceError('INVALID_REQUEST');
       if (isReport && (!Array.isArray(entry.relevant_pages) || !entry.relevant_pages.length || entry.relevant_pages.some(page => !Number.isSafeInteger(page) || page < 1))) throw new ServiceError('INVALID_REQUEST');
+      const markers = isReport ? entry.markers || [] : [];
+      if (!Array.isArray(markers) || markers.length > 1024 || (markerCount += markers.length) > 4096
+          || markers.some(marker => !marker || !Number.isSafeInteger(marker.page) || marker.page < 1
+            || !Number.isSafeInteger(marker.item_number) || marker.item_number < 1
+            || typeof marker.issue_id !== 'string' || typeof marker.caption !== 'string' || marker.caption.length > 160)) throw new ServiceError('INVALID_REQUEST');
+      const annotations = isReport ? entry.annotations || [] : [];
+      if (!Array.isArray(annotations) || annotations.length > 128 || annotations.some(annotation => !annotation
+          || !Number.isSafeInteger(annotation.page) || !entry.relevant_pages.includes(annotation.page)
+          || !['x', 'y', 'width', 'height'].every(key => Number.isFinite(annotation[key]))
+          || annotation.x < 0 || annotation.y < 0 || annotation.width <= 0 || annotation.height <= 0
+          || annotation.x + annotation.width > 1 || annotation.y + annotation.height > 1
+          || typeof annotation.note !== 'string' || annotation.note.length > 200)) throw new ServiceError('INVALID_REQUEST');
       return { bytes: bytes.toString('base64'), content_type: entry.content_type, relevant_pages: entry.relevant_pages,
-        label: typeof entry.label === 'string' ? entry.label.slice(0, 300) : '', filename: typeof entry.filename === 'string' ? entry.filename.slice(0, 300) : '' };
+        label: typeof entry.label === 'string' ? entry.label.slice(0, 300) : '', filename: typeof entry.filename === 'string' ? entry.filename.slice(0, 300) : '',
+        file_id: entry.file_id || null, markers, annotations };
     });
   };
   if (input.instructions != null && (typeof input.instructions !== 'string' || !input.instructions.trim() || input.instructions.length > 6000)) throw new ServiceError('INVALID_REQUEST');
@@ -70,7 +84,8 @@ function composePacket(input) {
   if (child.status !== 0 || result.error) throw new ServiceError(['PACKET_ATTACHMENT_UNREADABLE', 'SERVICE_STATE_UNAVAILABLE'].includes(result.error) ? result.error : 'INVALID_REQUEST');
   const bytes = Buffer.from(result.bytes || '', 'base64');
   if (bytes.subarray(0, 5).toString('ascii') !== '%PDF-' || result.version !== payload.version || result.sha256 !== digest(bytes) || !Number.isSafeInteger(result.page_count) || result.page_count < 1) throw new ServiceError('SERVICE_STATE_UNAVAILABLE');
-  const composed = { bytes, sha256: result.sha256, page_count: result.page_count, sections: result.sections, editable_fields: result.editable_fields, version: result.version };
+  const composed = { bytes, sha256: result.sha256, page_count: result.page_count, sections: result.sections,
+    editable_fields: result.editable_fields, review_pages: result.review_pages, version: result.version };
   if (bytes.length <= CACHE_LIMIT) {
     while (cache.size >= CACHE_ENTRIES || cachedBytes + bytes.length > CACHE_LIMIT) forget(cache.keys().next().value);
     const timer = setTimeout(() => forget(key), CACHE_TTL_MS); timer.unref();

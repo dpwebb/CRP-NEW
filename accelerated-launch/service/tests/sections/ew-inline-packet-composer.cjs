@@ -193,6 +193,9 @@ async function run(t, check) {
   check.ok(long.page_count > 1, 'a long letter has clean continuation pages instead of clipping or smaller type');
   check.ok(long.editable_fields.every(field => field.font_size >= 10), 'every long-letter page remains at least 10 points');
   check.equal(comparableText(long.editable_fields.map(field => longDoc.getForm().getTextField(field.name).getText()).join(' ')), comparableText(longLetter), 'all long-letter text survives editable pagination');
+  check.equal(comparableText(long.editable_fields.map(field => field.text).join(' ')), comparableText(longLetter), 'inline page metadata includes the actual complete native editable chunks');
+  check.ok(long.editable_fields.every(field => field.x === 50 && field.y === 50 && field.width === 512 && field.height === 692
+    && field.page_width === 612 && field.page_height === 792), 'inline edit geometry is the native field rectangle in top-origin page points');
   const longText = comparableText(pdfText(long.bytes));
   check.ok(longText.includes('Item 1:') && longText.includes('Item 180:') && longText.endsWith('Morgan Fiction'), 'first and last long-letter content print without truncation');
   for (const field of long.editable_fields) {
@@ -205,6 +208,40 @@ async function run(t, check) {
   const interactiveReport = composePacket({ letter_text: LETTER, reports: [{ bytes: form, content_type: 'application/pdf', relevant_pages: [1] }] });
   check.ok((await lib.PDFDocument.load(interactiveReport.bytes)).getForm().getFields().every(field => field.getName().startsWith('CRP_letter')), 'report form values are frozen as evidence, never consumer-editable report facts');
   check.ok(pdfText(interactiveReport.bytes).includes('Original consumer'), 'frozen original report values still print');
+  const marker = { issue_id: 'fictional-selected-issue', item_number: 1, page: 2, caption: 'Collection entry',
+    bbox: { x0: 40, y0: 82, x1: 370, y1: 98 }, omitted_value: false };
+  const markedInput = { letter_text: LETTER, reports: [{ bytes: report, content_type: 'application/pdf', relevant_pages: [2],
+    file_id: 'fictional-report-file', markers: [marker], annotations: [{ page: 2, x: .1, y: .2, width: .2, height: .05, note: 'Please check this amount.' }] }] };
+  const originalReportHash = hash(report), marked = composePacket(markedInput), markedDoc = await lib.PDFDocument.load(marked.bytes);
+  check.equal(hash(report), originalReportHash, 'adding print-visible annotations never mutates the original report bytes');
+  check.ok(pdfText(marked.bytes).includes('REPORT PAGE 2 CEDAR AND MAPLE COLLECTIONS') && pdfText(marked.bytes).includes('Please check this amount.'), 'complete annotated PDF retains original source text and prints the saved consumer callout');
+  const sourceDoc = await lib.PDFDocument.load(report), originalStreams = streams(sourceDoc, sourceDoc.getPage(1)), markedStreams = streams(markedDoc, markedDoc.getPage(1));
+  check.ok(originalStreams.every(original => markedStreams.some(candidate => candidate.equals(original))), 'source artwork streams remain byte-identical underneath the annotation overlay');
+  const markedPage = marked.review_pages.find(page => page.kind === 'report');
+  check.ok(markedPage.page_width === markedPage.source_width && markedPage.page_height === markedPage.source_height,
+    'source page retains its original print dimensions instead of shrinking to fit callouts');
+  check.deepEqual(marked.review_pages.map(page => page.kind), ['letter', 'report', 'report-note'], 'complete printed callout follows its source copy immediately');
+  check.deepEqual(markedDoc.getPage(1).getSize(), sourceDoc.getPage(1).getSize(), 'adding highlights preserves the original source media dimensions');
+  check.deepEqual(markedDoc.getPage(1).getCropBox(), sourceDoc.getPage(1).getCropBox(), 'adding highlights preserves the original source crop dimensions');
+  const manyNotes = composePacket({ letter_text: LETTER, reports: [{ bytes: report, content_type: 'application/pdf', relevant_pages: [2],
+    markers: Array.from({ length: 12 }, (_, index) => ({ ...marker, item_number: index + 1, caption: ('Fictional field caption ' + index + ' ').repeat(6).slice(0, 160) })),
+    annotations: Array.from({ length: 4 }, (_, index) => ({ page: 2, x: .1, y: .1 + index * .1, width: .1, height: .05,
+      note: ('Consumer note ' + index + ' with full text. ').repeat(7).slice(0, 180) + ' FINAL-' + index })) }] });
+  check.ok(manyNotes.review_pages.filter(page => page.kind === 'report-note').length > 1
+    && pdfText(manyNotes.bytes).includes('FINAL-3'), 'long permitted callouts paginate at readable size and retain the last consumer note');
+  check.equal(markedPage.annotations.find(annotation => annotation.automatic)?.x, marker.bbox.x0 / 612, 'automatic rectangle uses the measured source geometry rather than a guessed field location');
+  check.ok(!render(marked.bytes, 2).equals(render(packet.bytes, 2)), 'independent renderer observes the actual print-visible highlight and callout');
+  const ambiguous = composePacket({ letter_text: LETTER, reports: [{ bytes: report, content_type: 'application/pdf', relevant_pages: [2],
+    markers: [{ ...marker, bbox: { x0: 0, y0: 0, x1: 10000, y1: 10000 } }] }] });
+  check.ok(ambiguous.review_pages.find(page => page.kind === 'report').annotations.every(annotation => !Number.isFinite(annotation.x)), 'out-of-page source geometry falls back to a page callout without a guessed highlight');
+  const familiarCaption = composePacket({ letter_text: LETTER, reports: [{ bytes: report, content_type: 'application/pdf', relevant_pages: [2], markers: [{ ...marker, caption: 'closed_date' }] }] });
+  check.ok(pdfText(familiarCaption.bytes).includes('Date closed') && !pdfText(familiarCaption.bytes).includes('closed_date'), 'printed consumer callout uses a familiar date label without an internal field key');
+  const rotatedDoc = await lib.PDFDocument.load(report); rotatedDoc.getPage(1).setRotation(lib.degrees(90));
+  const rotated = composePacket({ letter_text: LETTER, reports: [{ bytes: Buffer.from(await rotatedDoc.save()), content_type: 'application/pdf', relevant_pages: [2], markers: [marker] }] });
+  check.deepEqual(rotated.review_pages.map(page => page.kind), ['letter', 'report', 'report-note'], 'rotated source gets a separate callout page while retaining the original page');
+  check.equal((await lib.PDFDocument.load(rotated.bytes)).getPage(1).getRotation().angle, 90, 'fallback never rotates or redraws the original evidence');
+  check.equal(rotated.review_pages[1].annotation_available, false, 'unsafe rotated coordinate mapping refuses consumer rectangles');
+  refuses(check, { ...markedInput, reports: [{ ...markedInput.reports[0], annotations: [{ page: 2, x: .9, y: .1, width: .2, height: .1, note: '' }] }] }, 'a consumer rectangle cannot extend beyond source bounds');
   for (const pages of [undefined, [], [0], [-1], [1.5], [5]]) refuses(check, { letter_text: LETTER, reports: [{ bytes: report, content_type: 'application/pdf', relevant_pages: pages }] }, 'missing or invalid relevant source pages cannot silently include the whole report: ' + JSON.stringify(pages));
   refuses(check, { letter_text: LETTER, reports: [{ bytes: png, content_type: 'image/png', relevant_pages: [2] }] }, 'image source refuses an invented page number');
   refuses(check, { letter_text: LETTER, documents: [{ bytes: Buffer.from('%PDF-1.7\ninvalid'), content_type: 'application/pdf' }] }, 'damaged support PDF cannot silently disappear from the complete packet', 'PACKET_ATTACHMENT_UNREADABLE');

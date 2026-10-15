@@ -77,6 +77,7 @@ let accountOperationSequence = 0;
 let assessmentOperationSequence = 0;
 let assessmentCaseId = null;
 let packetLeave = null;
+let packetReviewController = null;
 let checkoutReturnSequence = 0;
 let lastRenderedStep = 0;
 function cancelledAction() { const error = new Error('Action cancelled after navigation.'); error.cancelled = true; return error; }
@@ -379,6 +380,7 @@ function notices(accessible = false) {
 }
 
 function render() {
+  packetReviewController?.dispose(); packetReviewController = null;
   renderSequence++;
   if(state.account&&state.accountSecurity?.signup_complete===false)state.step=STEP.ACCOUNT;
   const recovering = state.recoveryMode || state.emailRecoveryMode || state.emailResetMode;
@@ -2043,9 +2045,9 @@ function renderPacketBlock(pv) {
     </div><div class="packet-review">
       <h3>Review and edit</h3>
       <p class="evidence" id="packet-preview-status">${packet.selected_count && packet.correspondence_preview ? 'Read your letter. You can change the words below, then save your changes.' : 'Choose your disputes, then select Save and review packet.'}</p>
-      ${packet.correspondence_preview ? `<label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000">${esc(packet.correspondence_preview)}</textarea><button class="secondary" id="packet-reset-letter">Use the prepared letter</button>` : ''}
+      ${packet.correspondence_preview ? `${packet.preview_ready ? '' : `<label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000">${esc(packet.correspondence_preview)}</textarea>`}<button class="secondary" id="packet-reset-letter">Use the prepared letter</button>` : ''}
       <pre id="packet-preview" hidden>${esc(packet.correspondence_preview || '')}</pre>
-      ${packet.preview_ready && packet.letter_preview_url ? `<div id="packet-pdf-review"><p><a href="${esc(packet.letter_preview_url)}" target="_blank" rel="noopener noreferrer">Open your complete packet PDF</a></p><iframe title="Your complete dispute packet" src="${esc(packet.letter_preview_url)}" style="width:100%;height:720px;border:1px solid #dbe3d5"></iframe><p class="evidence">Check every page. You can edit the letter in your downloaded PDF before printing. To change your personal details, update your account details, then save and review your packet again.</p></div>` : ''}
+      ${packet.preview_ready && packet.letter_preview_url ? `<div id="packet-pdf-review"><div class="packet-review-choices"><button class="secondary" id="packet-edit-documents">Change report pages or document copies</button><button class="secondary" id="packet-edit-account">Update contact details or upload copies</button><label for="packet-date">Letter date<input id="packet-date" type="date" value="${esc(packet.letter_date || '')}" ${packet.letter_text ? 'disabled' : ''}></label></div>${packet.letter_text ? '<p class="evidence">You edited this letter. Change its date directly on the letter page.</p>' : ''}<div id="packet-all-pages" aria-label="Complete editable dispute packet"><p role="status">Preparing all packet pages...</p></div></div>` : ''}
       <div id="packet-action-bar">${packet.approval_stale ? '<p class="note stop">The packet changed since approval; review and approve it again.</p>' : ''}<p class="evidence" id="${packet.approved ? 'packet-approved-status' : 'packet-action-help'}">${packet.approved ? 'Your packet is approved. You can print or download it.' : packet.preview_ready ? 'Check every page, tick the box below, then approve this version to enable printing and downloading.' : 'Complete your issue and document choices in the previous steps, then save and review your packet before approving.'}</p>
       <label><input id="packet-preview-reviewed" type="checkbox" ${packet.approved ? 'checked' : ''} ${(packet.preview_ready ?? Boolean(packet.selected_count && packet.correspondence_preview)) ? '' : 'disabled'}>I have checked every page of my packet</label>
       <button class="primary" id="packet-approve" disabled ${packet.approved ? 'hidden' : ''}>Approve this version</button>
@@ -2103,7 +2105,8 @@ async function wirePacket(panel) {
   const reviewBody = block.querySelector('.packet-review'), pdfReview = el('packet-pdf-review');
   if (pdfReview) { reviewBody.prepend(pdfReview); pdfReview.after(el('packet-action-bar')); }
   const saveButton = el('packet-save'), resetButton = el('packet-reset-letter');
-  if (resetButton) resetButton.after(saveButton);
+  if (pdfReview) pdfReview.querySelector('.packet-review-choices').append(saveButton, ...(resetButton ? [resetButton] : []));
+  else if (resetButton) resetButton.after(saveButton);
   else reviewBody.append(saveButton);
   el('packet-choose-next').hidden = !choosing;
   el('packet-details').hidden = choosing;
@@ -2119,7 +2122,8 @@ async function wirePacket(panel) {
     consumer_name: el('packet-name') ? el('packet-name').value : '',
     contact: el('packet-contact') ? el('packet-contact').value : '',
     account_reference: el('packet-reference') ? el('packet-reference').value : '',
-    bureau_reference: el('packet-bureau-reference') ? el('packet-bureau-reference').value : ''
+    bureau_reference: el('packet-bureau-reference') ? el('packet-bureau-reference').value : '',
+    ...(el('packet-date') ? {letter_date:el('packet-date').value || pv.packet.letter_date} : {})
   });
   const currentSupport = () => {
     const document_ids = [...panel.querySelectorAll('[data-packet-document]:checked')].map(node => node.getAttribute('data-packet-document'));
@@ -2137,29 +2141,32 @@ async function wirePacket(panel) {
       document_dates: Object.fromEntries(document_ids.map(id => [id, el('packet-document-date-' + id).value])) };
   };
   let edits = 0;
-  let letterEdited = false, resetLetter = false;
-  let previewCurrent = pv.packet?.preview_ready ?? Boolean(pv.packet?.selected_count && pv.packet?.correspondence_preview);
+  let letterEdited = false, resetLetter = false, annotationsEdited = false;
+  let previewCurrent = !pdfReview && (pv.packet?.preview_ready ?? Boolean(pv.packet?.selected_count && pv.packet?.correspondence_preview));
   const persistSelection = async () => {
     ensureOrigin();
-    const captured = edits, chosenIssues = currentSelection(), chosenReports = currentReports(), letterText = el('packet-letter')?.value,
+    const captured = edits, chosenIssues = currentSelection(), chosenReports = currentReports(), letterText = packetReviewController?.letter() ?? el('packet-letter')?.value,
+      capturedAnnotations = packetReviewController?.annotations() || pv.packet.annotations || [],
       pageChoices = Object.fromEntries([...panel.querySelectorAll('[data-packet-pages]')].map(node => [node.getAttribute('data-packet-pages'),
         node.value.trim() ? node.value.split(',').map(value => Number(value.trim())) : []])), payloads = [
       ['select', { issue_ids: chosenIssues }], ['correspondence', { correspondence: currentCorrespondence() }],
       ['wording', { wording: currentWording() }], ...(pv.support?.catalog?.length ? [['support', { support: currentSupport() }]] : [])
     ];
     const ensureCurrent = () => { ensureOrigin(); if (edits !== captured) throw cancelledAction(); };
-    let allowedReports = null;
+    let allowedReports = null, savedVersion = pv.packet.preview_version;
     for (const [action, body] of payloads) {
       ensureCurrent(); const answer = await api('POST', `/api/cases/${caseId}/packet/${action}`, body); ensureCurrent();
+      savedVersion = answer.view?.packet?.preview_version;
       if (action === 'select' && Array.isArray(answer.view?.packet?.report_exhibits)) allowedReports = new Set(answer.view.packet.report_exhibits.map(report => report.file_id));
     }
     if (chosenIssues.length && Array.isArray(pv.packet?.report_exhibits)) {
       if (chosenReports.length && !allowedReports) throw new Error('We could not save your report choices. Try saving again.');
       const file_ids = chosenReports.filter(fileId => allowedReports?.has(fileId));
       const page_choices = Object.fromEntries(Object.entries(pageChoices).filter(([fileId]) => allowedReports?.has(fileId)));
-      ensureCurrent(); await api('POST', `/api/cases/${caseId}/packet/reports`, { file_ids, page_choices }); ensureCurrent();
+      ensureCurrent(); const answer = await api('POST', `/api/cases/${caseId}/packet/reports`, { file_ids, page_choices }); ensureCurrent(); savedVersion = answer.view?.packet?.preview_version;
     }
-    if (chosenIssues.length && letterEdited) { ensureCurrent(); await api('POST', `/api/cases/${caseId}/packet/letter`, { letter_text: resetLetter ? null : letterText }); ensureCurrent(); }
+    if (chosenIssues.length && letterEdited) { ensureCurrent(); const answer = await api('POST', `/api/cases/${caseId}/packet/letter`, { letter_text: resetLetter ? null : letterText }); ensureCurrent(); savedVersion = answer.view?.packet?.preview_version; }
+    if (chosenIssues.length && annotationsEdited) { ensureCurrent(); await api('POST', `/api/cases/${caseId}/packet/annotations`, {annotations:capturedAnnotations,expected_version:savedVersion}); ensureCurrent(); }
     return ensureCurrent;
   };
 
@@ -2183,7 +2190,8 @@ async function wirePacket(panel) {
     const ensureCurrent = await persistSelection();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
     state.notice = 'Packet saved. Check your letter and every page in the PDF.';
-  });
+    render();
+  }, {redraw:false});
 
   const approve = el('packet-approve');
   if (approve) approve.onclick = () => run(async () => {
@@ -2200,14 +2208,14 @@ async function wirePacket(panel) {
   const dl = el('packet-download');
   if (dl) dl.onclick = () => {
     try { ensureOrigin(); } catch { return; }
-    if (edits || !pv.packet.download_available) return;
+    if (!previewCurrent || edits || !pv.packet.download_available) return;
     note(`GET /api/cases/${caseId}/packet-download -> browser download`);
     return run(()=>retrieveFile(`/api/cases/${caseId}/packet-download`,'CRP-dispute-packet.pdf'),{redraw:false,canResume:()=>!edits&&pv.packet.download_available});
   };
   const print = el('packet-print');
   if (print) print.onclick = () => {
     try { ensureOrigin(); } catch { return; }
-    if (edits || !(pv.packet.print_available ?? pv.packet.download_available)) return;
+    if (!previewCurrent || edits || !(pv.packet.print_available ?? pv.packet.download_available)) return;
     const preview=window.open('about:blank','_blank');if(!preview){state.error='Allow this window to open so you can print your packet.';render();return;}preview.opener=null;return run(()=>retrieveFile(`/api/cases/${caseId}/packet-print`,'CRP-dispute-packet.pdf',preview),{redraw:false,canResume:()=>!edits&&(pv.packet.print_available??pv.packet.download_available)});
   };
 
@@ -2218,7 +2226,7 @@ async function wirePacket(panel) {
     edits++;
     previewCurrent = false;
     state.notice = null;
-    for (const id of ['consumer-notice', 'packet-approved-status', 'packet-ready-status', 'packet-pdf-review']) if (el(id)) el(id).hidden = true;
+    for (const id of ['consumer-notice', 'packet-approved-status', 'packet-ready-status']) if (el(id)) el(id).hidden = true;
     for (const id of ['packet-download', 'packet-print', 'packet-approve', 'packet-preview-reviewed']) if (el(id)) el(id).disabled = true;
     if (reviewed) reviewed.checked = false;
     if (approve) approve.hidden = false;
@@ -2229,13 +2237,15 @@ async function wirePacket(panel) {
   if (wording) wording.oninput = markChanged;
   const letterInput = el('packet-letter');
   if (letterInput) letterInput.oninput = () => { letterEdited = true; resetLetter = false; markChanged(); };
+  if (el('packet-date')) el('packet-date').oninput = markChanged;
   const reset = el('packet-reset-letter');
   if (reset) reset.onclick = () => run(async () => {
     letterEdited = true; resetLetter = true; markChanged();
     const ensureCurrent = await persistSelection();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
     state.notice = 'The prepared letter is restored. Check it and every page before approving.';
-  });
+    render();
+  }, {redraw:false});
   for (const node of panel.querySelectorAll('[data-packet-pages]')) node.oninput = markChanged;
   for (const node of panel.querySelectorAll('[data-check-issue]')) node.onchange = markChanged;
   for (const id of ['packet-name', 'packet-contact', 'packet-reference', 'packet-bureau-reference']) {
@@ -2251,8 +2261,11 @@ async function wirePacket(panel) {
       state.accountProfile = null;
     }
     state.step = step;
-  });
+    render();
+  }, {redraw:false});
   if (accountDetails) accountDetails.onclick = () => packetLeave(STEP.ACCOUNT);
+  if (el('packet-edit-documents')) el('packet-edit-documents').onclick = () => packetLeave(STEP.PREPARE);
+  if (el('packet-edit-account')) el('packet-edit-account').onclick = () => packetLeave(STEP.ACCOUNT);
   let checklistSequence = 0;
   const refreshChecklist = async () => {
     markChanged(); const sequence = ++checklistSequence;
@@ -2275,6 +2288,26 @@ async function wirePacket(panel) {
   for (const node of panel.querySelectorAll('[data-check-issue]')) node.onchange = refreshChecklist;
   for (const node of panel.querySelectorAll('[data-packet-report]')) node.onchange = markChanged;
   if (pv.support?.suggested_purpose && !pv.support.settings && pv.support.suggested_purpose !== pv.support.requirements?.purpose) refreshChecklist();
+  if (pdfReview && pv.packet?.preview_ready && !choosing && !preparing) {
+    for (const node of [reviewed, approve, dl, print]) if (node) node.disabled = true;
+    try {
+      packetReviewController = window.CRP_PACKET_REVIEW.mount({root:el('packet-all-pages'),caseId,version:pv.packet.preview_version,
+        ensure:ensureOrigin,request:path=>currentRequest(ensureOrigin,'GET',path),letter:pv.packet.correspondence_preview,
+        annotations:pv.packet.annotations || [],changed:kind=>{if(kind==='letter'){letterEdited=true;resetLetter=false;}else annotationsEdited=true;markChanged();}});
+      await packetReviewController.ready; ensureOrigin();
+      previewCurrent = edits === 0;
+      if (reviewed) reviewed.disabled = !previewCurrent;
+      if (approve) approve.disabled = !previewCurrent || !reviewed?.checked || pv.packet.approved;
+      if (dl) dl.disabled = !previewCurrent || !pv.packet.download_available;
+      if (print) print.disabled = !previewCurrent || !(pv.packet.print_available ?? pv.packet.download_available);
+    } catch (error) {
+      if (error.cancelled) return;
+      try { ensureOrigin(); } catch { return; }
+      previewCurrent = false;
+      if (el('packet-preview-status')) el('packet-preview-status').textContent = error.message || 'We could not show every packet page. Save and review again.';
+      if (el('packet-page-load-status')) el('packet-page-load-status').textContent = 'Some pages could not be shown. Save and review again before printing.';
+    }
+  }
 }
 
 /* ------------------------------------------------------------------ step 5: report history and comparison */
