@@ -9,9 +9,9 @@ const LANE_IDS = {
   consumer: ['k-ui-smoke', 'av-consumer-results', 'aw-consumer-explanations', 'bl-us-ca-correction-packet', 'bm-prime-directive-batch1', 'bn-prime-directive-ui', 'bo-prime-directive-interaction', 'bp-prime-directive-batch2', 'br-qualified-assessment', 'bs-prime-directive-delivery', 'bt-ordinary-field-coverage', 'bu-gb-tu-ca-fields', 'by-packet-reconciliation', 'bz-report-history'],
   'source-audit': ['historical-legacy-source', 'historical-gb-source']
 };
-LANE_IDS.security.unshift('gh-audit-billing-lifecycle', 'gj-audit-maintenance', 'gk-audit-api-correctness');
+LANE_IDS.security.unshift('gh-audit-billing-lifecycle', 'gj-audit-maintenance', 'gk-audit-api-correctness', 'gl-remaining-consumer-flow');
 LANE_IDS.browser.unshift('gi-audit-consumer-flow');
-LANE_IDS.consumer.unshift('gi-audit-consumer-flow', 'gk-audit-api-correctness');
+LANE_IDS.consumer.unshift('gi-audit-consumer-flow', 'gk-audit-api-correctness', 'gl-remaining-consumer-flow');
 LANE_IDS.security.unshift('gl-inline-packet-pages');
 LANE_IDS.consumer.unshift('gl-inline-packet-pages');
 module.exports = { SOURCE_AUDIT_FILES, LANE_IDS };

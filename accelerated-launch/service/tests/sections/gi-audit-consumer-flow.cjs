@@ -142,16 +142,17 @@ async function browserChecks(t, check) {
       let billingEnt = { entitled: false, renewal_cancellation_available: true, renewing_subscription_recorded: true, renewal_status: 'CANCELLATION_UNCONFIRMED' };
       let pendingCheckout = null, failUnfinished = true;
       let packetSelectWait = null, failPacketSelect = false;
-      const packetView = { eligible_issues: view().result.issues, packet: { result_id: 'result-current', selected_issue_ids: ['issueA'], selected_count: 1, approved: true, approved_version: 'fictional-approved', preview_version: 'fictional-approved', letter_preview_url:'/api/cases/caseA/packet/preview?version=fictional-approved',preview_ready: true, download_available: true, wording: 'Saved fictional wording', correspondence_preview: 'Saved fictional approved letter' }, support: { catalog: [], missing: [], requirements: { country: 'CA', bureau: 'TRANSUNION', label: 'Fictional bureau', items: [], sources: [] } } };
+      const packetView = { eligible_issues: view().result.issues, packet: { packet_id: 'packetA', result_id: 'result-current', selected_issue_ids: ['issueA'], selected_count: 1, approved: true, approved_version: 'fictional-approved', preview_version: 'fictional-approved', letter_preview_url: '/api/cases/caseA/packet/preview?version=fictional-approved', preview_ready: true, download_available: true, wording: 'Saved fictional wording', letter_date: '2026-10-14', letter_text: 'Saved fictional approved letter\nOctober 15, 2026', correspondence_preview: 'Saved fictional approved letter\nOctober 15, 2026' }, support: { catalog: [], missing: [], requirements: { country: 'CA', bureau: 'TRANSUNION', label: 'Fictional bureau', items: [], sources: [] } } };
       // Guarded navigation/transport boundary. Actual complete PDF fields/images
       // and print/download custody run against the real service in ga/gl.
-      await page.route('**/packet-review.js',route=>route.fulfill({contentType:'application/javascript',body:`window.CRP_PACKET_REVIEW={mount(options){options.root.innerHTML='<section data-packet-page="1"><textarea id="packet-letter" aria-label="Fictional letter editor"></textarea></section>';const input=options.root.querySelector('textarea');input.value=options.letter;input.oninput=()=>options.changed('letter');return{letter:()=>input.value,annotations:()=>[],dispose(){},ready:Promise.resolve({page_count:1})};}};`}));
+      await page.route('**/packet-review.js',route=>route.fulfill({contentType:'application/javascript',body:`window.CRP_PACKET_REVIEW={mount(options){options.root.innerHTML='<section data-packet-page="1"><textarea id="packet-letter" data-packet-letter-page="1" aria-label="Fictional letter editor"></textarea></section>';const input=options.root.querySelector('textarea');input.value=options.letter;input.disabled=Boolean(options.letterDisabled?.());input.oninput=()=>options.changed('letter');return{letter:()=>input.value,annotations:()=>[],dispose(){},ready:Promise.resolve({page_count:1})};}};`}));
       await page.route('**/api/**', async route => {
         const request = route.request(), url = new URL(request.url()), p = url.pathname; requests.push({ p, method: request.method(), search: url.search, body: request.postData() });
         let status = 200, data = { ok: true };
         if (p === '/api/jurisdictions') data.surface = surface;
         else if (p === '/api/pricing') data.plan_catalog = planCatalog;
         else if (p === '/api/session') { if (signedIn) data.account = { account_id: 'accountA', email: 'fictional@example.test' }; else { status = 401; data = { ok: false, error: { message: 'Sign in to continue.' } }; } }
+        else if (p === '/api/sessions' && request.method() === 'POST') { signedIn = true; Object.assign(data, { account: { account_id: 'accountA', email: 'fictional@example.test' }, signup_complete: true }); }
         else if (p === '/api/account/security') data.signup_complete = true;
         else if (p === '/api/account/profile') data.profile = {};
         else if (p === '/api/account/documents') data.documents = [];
@@ -180,7 +181,8 @@ async function browserChecks(t, check) {
       await page.locator('.signup-details > summary').click(); await page.locator('#signup-full_name').fill('Fictional Consumer');
       check.equal(await page.locator('#signup-full_name').inputValue(), 'Fictional Consumer', 'optional fields remain editable when expanded');
       check.ok((await page.locator('.support-contact a').getAttribute('href')).startsWith('mailto:admin@'), 'anonymous signup provides an actionable established support contact');
-      signedIn = true; await page.reload(); await page.locator('#resume-latest').waitFor();
+      await page.goto(t.base + '/index.html#signin'); await page.locator('#email').fill('fictional@example.test'); await page.locator('#password').fill('fictional-password'); await page.locator('#signin').click(); await page.locator('#resume-latest').waitFor();
+      check.ok((await page.locator('#saved-report-list').innerText()).includes('TransUnion'), `${width}px fresh sign-in shows owned reports without a Refresh click`);
       await page.locator('#storage-help').getByText(/38.0 MB left/).waitFor();
       check.ok((await page.locator('#storage-help').innerText()).includes('Reports and ID copies share'), 'initial upload explains shared account quota');
       await page.locator('#saved-report-filter').fill('Equifax');
@@ -194,6 +196,16 @@ async function browserChecks(t, check) {
       check.ok(true, 'historical packet entry explicitly returns to latest assessment');
       await page.locator('#packet-choose-next').waitFor();
       const navigate = async step => { const target = page.locator(`[data-step="${step}"]`); if (!await target.isVisible()) await page.getByRole('button', { name: 'Navigation menu', exact: true }).click(); await target.click(); };
+      await navigate(6); await page.locator('#packet-letter').waitFor();
+      check.equal(await page.getByLabel('Date for the prepared letter', { exact: true }).inputValue(), '2026-10-14', `${width}px custom letters clearly distinguish prepared date from their own written date`);
+      check.ok((await page.locator('#packet-letter-date-help').innerText()).includes('Check its date below'), 'date guidance refers to the actual custom letter');
+      const datePostsBefore = requests.filter(row => row.method === 'POST' && row.p.includes('/packet/')).length;
+      page.once('dialog', dialog => dialog.dismiss()); await page.locator('#packet-letter-date').fill('2026-10-16');
+      check.equal(await page.locator('#packet-letter-date').inputValue(), '2026-10-14', 'cancelling date replacement restores the earlier date');
+      check.equal(await page.locator('#packet-letter').inputValue(), packetView.packet.letter_text, 'cancelled replacement preserves the exact custom words and written date');
+      check.equal(await page.locator('#packet-download').isEnabled(), true, 'cancelled date choice preserves the unchanged approved download');
+      check.equal(requests.filter(row => row.method === 'POST' && row.p.includes('/packet/')).length, datePostsBefore, 'cancelled date choice sends no packet mutation');
+      await navigate(4); await page.locator('#packet-choose-next').waitFor();
       if (width === 390) {
         const savesBefore = requests.filter(row => row.method === 'POST' && row.p.includes('/packet/')).length;
         for (const step of [4, 5, 6]) {

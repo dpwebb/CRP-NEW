@@ -79,6 +79,29 @@ async function recoveryChecks(t,browser,actor,source,check,out){
   check.ok(saved.packet.annotations.some(annotation=>annotation.note===draftNote),'raster recovery preserves and saves the unsaved evidence annotation too');
   await page.locator('#packet-preview-reviewed').check();await page.locator('#packet-approve').click();await page.locator('#packet-download:enabled').waitFor();
   check.equal((await req('GET',glyphCase.route+'/packet-download')).status,200,'recovered full raster review can be explicitly approved and downloaded');
+  const approvedBeforeDate=(await req('GET',glyphCase.route+'/packet-download')).bytes;
+  const dateBefore=await page.locator('#packet-letter-date').inputValue(),nextDate=dateBefore==='2026-10-16'?'2026-10-17':'2026-10-16';
+  const nativeBeforeDate=await page.locator('[data-packet-letter-page]').evaluateAll(nodes=>nodes.map(node=>node.value));
+  let datePosts=0;const countDatePosts=request=>{if(request.method()==='POST'&&new URL(request.url()).pathname.startsWith(glyphCase.route+'/packet/'))datePosts++;};
+  page.on('request',countDatePosts);
+  page.once('dialog',async dialog=>{check.equal(dialog.type(),'confirm','changing a custom native letter date asks for explicit replacement');await dialog.dismiss();});
+  await page.locator('#packet-letter-date').evaluate((node,value)=>{node.value=value;node.dispatchEvent(new Event('input',{bubbles:true}));node.dispatchEvent(new Event('change',{bubbles:true}));},nextDate);
+  check.equal(await page.locator('#packet-letter-date').inputValue(),dateBefore,'Cancel restores the accepted letter-date choice');
+  check.deepEqual(await page.locator('[data-packet-letter-page]').evaluateAll(nodes=>nodes.map(node=>node.value)),nativeBeforeDate,'Cancel preserves every native continuation-page edit');
+  check.equal(datePosts,0,'Cancel sends no packet write');
+  check.ok(await page.locator('#packet-download').isEnabled()&&await page.locator('#packet-print').isEnabled(),'Cancel preserves current approval and print/download controls');
+  check.ok((await req('GET',glyphCase.route+'/packet-download')).bytes.equals(approvedBeforeDate),'Cancel preserves the exact approved PDF bytes');
+  await page.locator('[data-packet-letter-page]').nth(0).fill('x'.repeat(14000));await page.locator('[data-packet-letter-page]').nth(1).fill('y'.repeat(14000));
+  page.once('dialog',dialog=>dialog.accept());
+  await page.locator('#packet-letter-date').evaluate((node,value)=>{node.value=value;node.dispatchEvent(new Event('input',{bubbles:true}));node.dispatchEvent(new Event('change',{bubbles:true}));},nextDate);
+  check.equal(await page.locator('[data-packet-letter-page]').evaluateAll(nodes=>nodes.length>1&&nodes.every(node=>node.disabled)),true,'confirmed replacement disables every old native letter page');
+  await page.locator('#packet-save').click();await restored(page,'Confirmed prepared-letter date replacement');
+  const dated=(await req('GET',glyphCase.route+'/packet')).json.view.packet;
+  check.equal(dated.letter_date,nextDate,'confirmed replacement stores the explicitly chosen prepared-letter date');
+  check.equal(dated.letter_text,null,'explicit replacement can discard an oversized unsaved native draft without silently keeping old prose');
+  check.ok(dated.annotations.some(annotation=>annotation.note===draftNote),'date replacement retains the consumer evidence note');
+  check.ok(await page.locator('#packet-print').isDisabled()&&await page.locator('#packet-download').isDisabled(),'replacement requires fresh review and approval before print/download');
+  page.off('request',countDatePosts);
   await page.screenshot({path:path.join(out,'recovered-later-raster.png'),fullPage:true});
  }finally{releaseImage();await rasterUi.context.close();}
 
@@ -119,7 +142,7 @@ async function recoveryChecks(t,browser,actor,source,check,out){
   check.ok(text.includes('Fictional fallback edit remains after choosing a clear copy.')&&text.includes('FICTIONAL SUPPORTING EVIDENCE'),'the actual recovered download contains the retained words and readable replacement evidence');
   await page.screenshot({path:path.join(out,'recovered-supporting-copy.png'),fullPage:true});
  }finally{await copyUi.context.close();}
- return{unsupported_glyph_wording_preserved:true,unreadable_copy_replaced:true,later_raster_drafts_and_annotations_preserved:true};
+ return{unsupported_glyph_wording_preserved:true,unreadable_copy_replaced:true,later_raster_drafts_and_annotations_preserved:true,native_date_cancel_preserves_all_pages:true,confirmed_date_replacement_discards_only_accepted_letter_edits:true};
 }
 async function run(t,check){
  const out=path.join(R,'accelerated-launch/service/out/packet-review-mailing');fs.mkdirSync(out,{recursive:true});
@@ -153,7 +176,7 @@ async function run(t,check){
   check.ok((await page.locator('#packet-ready-status').innerText()).includes('Remove it before mailing'),'the visible ready message reinforces removal');
   const before=sha(bytes);await page.locator('[data-step="5"]').click();await page.locator('#packet-preparation-content').waitFor();await page.locator('#packet-prepare-next').click();await page.locator('#packet-approved-status').waitFor();check.equal(sha((await req('GET',route+'/packet-download')).bytes),before,'unchanged backward/forward navigation preserves approval and bytes');
   await page.locator('#packet-download:enabled').waitFor();
-  await page.locator('#packet-date').fill('2026-10-14');await page.locator('#packet-save').click();await page.locator('#packet-preview-reviewed:enabled').waitFor();
+  await page.locator('#packet-letter-date').fill('2026-10-14');await page.locator('#packet-save').click();await page.locator('#packet-preview-reviewed:enabled').waitFor();
   check.equal((await req('GET',route+'/packet')).json.view.packet.letter_date,'2026-10-14','the consumer can set the letter date before approval');
   const sourcePage=page.locator('[data-packet-page]').filter({has:page.locator('.packet-position-add')}).first();
   await sourcePage.locator('summary').click();await sourcePage.locator('.packet-position-add').click();

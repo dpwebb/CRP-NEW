@@ -34,7 +34,7 @@ function harness(responder, { autoRead = true } = {}) {
   const packetReviewBody = node('packet-review-body');
   block.querySelector = selector => selector === '.packet-review' ? packetReviewBody : null;
   node('packet-pdf-review').querySelector = selector => selector === '.packet-review-choices' ? node('packet-review-choices') : null;
-  const renderedNode = id => ['packet-pdf-review', 'packet-all-pages', 'packet-date'].includes(id)
+  const renderedNode = id => ['packet-pdf-review', 'packet-all-pages', 'packet-letter-date'].includes(id)
     && !block.innerHTML.includes('id="' + id + '"') ? null : node(id);
   let renderedPacket = null;
   panel.querySelectorAll = selector => {
@@ -103,9 +103,17 @@ function harness(responder, { autoRead = true } = {}) {
     node('packet-name').value = 'Fictional Consumer'; node('packet-contact').value = '10 Fictional Street';
     return evaluate('wirePacket(document.getElementById("panel"))');
   };
-  const jurisdiction = () => {
+  const jurisdiction = ({ savedReports = false } = {}) => {
+    if (savedReports) {
+      context.savedCases = caseButtons.map(button => ({ case_id: button.dataset.open, country: 'CA', region: 'CA-NS', selected_bureau: 'TRANSUNION' }));
+      evaluate('state.cases = savedCases; state.savedReportsStatus = "ready";');
+    }
     node('country').value = 'CA'; node('region').value = 'CA-NS'; node('bureau').value = 'TRANSUNION';
     evaluate(`surface = { countries: [{ value: 'CA', label: 'Canada' }], regions: [{ value: 'CA-NS', country: 'CA', label: 'Nova Scotia' }], bureau_choices: { CA: [{ id: 'TRANSUNION', label: 'TransUnion' }] } }; state.step = 1; renderJurisdiction(document.getElementById('panel'));`);
+    if (savedReports) for (const button of caseButtons) {
+      assert.ok(node('saved-report-list').innerHTML.includes(`data-open="${button.dataset.open}"`), 'a mocked Continue button must represent a rendered owned saved report');
+      assert.equal(typeof button.onclick, 'function', 'the component paint binds that rendered saved-report choice');
+    }
     node('file').files = [{ name: 'fictional-report.pdf', size: 48, type: 'application/pdf' }];
   };
   return { context, node, calls, navigations, readers, panel, issues, reportChecks, pageInputs, caseButtons, evaluate, account, openPacket, jurisdiction };
@@ -156,7 +164,7 @@ async function packetContextRace() {
     return { view: packetView(false), requirements, missing: [] };
   });
   h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
-  h.node('packet-wording').value = 'Visible wording on case A';
+  h.node('packet-wording').value = 'Visible wording on case A'; h.node('packet-wording').oninput();
   const action = h.node('packet-save').onclick();
   await until(() => h.calls.some(row => row.url === '/api/cases/caseA/packet/select'), 'A packet select');
   await h.openPacket('caseB'); h.node('packet-wording').value = 'Visible wording on case B';
@@ -353,7 +361,7 @@ async function createCaseViewNavigationRace() {
 }
 async function existingCaseAccountRace() {
   const late = deferred(), h = harness(request => request.url === '/api/cases/existingA' ? late.promise : { ok: true });
-  h.account('A', 'Fictional A'); h.jurisdiction(); const action = h.caseButtons[0].onclick();
+  h.account('A', 'Fictional A'); h.jurisdiction({ savedReports: true }); const action = h.caseButtons[0].onclick();
   await until(() => h.calls.some(row => row.url === '/api/cases/existingA'), 'existing case view');
   await h.node('signout').onclick(); h.account('B', 'Fictional B');
   late.resolve({ view: { case: { case_id: 'existingA' }, private_fixture: 'A-only' } }); await action;
@@ -380,12 +388,12 @@ async function createCaseNormalCompletion() {
 }
 async function existingCaseNormalCompletion() {
   const h = harness(() => ({ view: { case: { case_id: 'existingA' } } }));
-  h.account('A', 'Fictional A'); h.jurisdiction(); await h.caseButtons[0].onclick();
+  h.account('A', 'Fictional A'); h.jurisdiction({ savedReports: true }); await h.caseButtons[0].onclick();
   assert.equal(h.evaluate('state.step'), 2); assert.equal(h.evaluate('state.caseId'), 'existingA');
 }
 async function latestCaseChoiceWins() {
   const first = deferred(), second = deferred(), h = harness(request => request.url === '/api/cases/existingA' ? first.promise : second.promise);
-  h.account('A', 'Fictional A'); h.jurisdiction();
+  h.account('A', 'Fictional A'); h.jurisdiction({ savedReports: true });
   const openA = h.caseButtons[0].onclick(); await until(() => h.calls.some(row => row.url === '/api/cases/existingA'), 'first case choice');
   const openB = h.caseButtons[1].onclick(); await until(() => h.calls.some(row => row.url === '/api/cases/existingB'), 'latest case choice');
   first.resolve({ view: { case: { case_id: 'existingA' } } }); await openA;
@@ -457,13 +465,13 @@ async function evaluateAccountRace() {
 }
 async function completedCaseNormalCompletion() {
   const h = harness(() => ({ view: { case: { case_id: 'existingA' }, assessment_summary: { distinct_total: 1 } } }));
-  h.account('A', 'Fictional A'); h.jurisdiction(); await h.caseButtons[0].onclick();
+  h.account('A', 'Fictional A'); h.jurisdiction({ savedReports: true }); await h.caseButtons[0].onclick();
   assert.equal(h.evaluate('state.step'), 3, 'completed report opens existing results');
 }
 async function savedReportErrorNavigationRace() {
   for (const button of ['refresh', 'continue']) {
     const late = deferred(), h = harness(() => late.promise);
-    h.account('A', 'Fictional A'); h.jurisdiction();
+    h.account('A', 'Fictional A'); h.jurisdiction({ savedReports: button === 'continue' });
     const action = button === 'refresh' ? h.node('refresh').onclick() : h.caseButtons[0].onclick();
     await until(() => h.calls.length, 'saved report request');
     h.evaluate('state.step = 0; renderSequence++;');
@@ -625,6 +633,7 @@ async function explicitReportSelectionAndReview() {
   h.reportChecks.push(reportCheckbox('earlier-copy', true), reportCheckbox('current-copy', true));
   h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
   assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'opening the review never changes report custody');
+  h.node('packet-wording').value = 'Please verify the included report pages.'; h.node('packet-wording').oninput();
   await h.node('packet-save').onclick();
   const reportWrite = h.calls.find(row => row.url.endsWith('/packet/reports'));
   assert.deepEqual(reportWrite.body, { file_ids: ['earlier-copy', 'current-copy'], page_choices: {} }, 'Save preserves the automatically included relevant reports');
@@ -656,6 +665,7 @@ async function changedReportChoiceStopsPendingSave() {
   const h = harness(request => request.url.endsWith('/packet/select') ? selected.promise : request.url.endsWith('/packet') ? { view } : { ok: true });
   const pages = { value: '2', getAttribute: key => key === 'data-packet-pages' ? 'current-copy' : null };
   h.pageInputs.push(pages); h.reportChecks.push(reportCheckbox('current-copy', true)); h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
+  pages.oninput();
   const save = h.node('packet-save').onclick(); await until(() => h.calls.some(row => row.url.endsWith('/select')), 'report choice save');
   pages.value = '3'; pages.oninput(); selected.resolve({ view }); await save;
   assert.equal(h.calls.filter(row => row.url.endsWith('/packet/reports')).length, 0, 'a changed page-number choice stops the old pending attachment save');

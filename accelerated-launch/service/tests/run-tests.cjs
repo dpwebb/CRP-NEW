@@ -24,6 +24,7 @@ const SECTION_FILES = [
   'gi-audit-consumer-flow.cjs',
   'gj-audit-maintenance.cjs',
   'gk-audit-api-correctness.cjs',
+  'gl-remaining-consumer-flow.cjs',
   'gf-email-password-reset.cjs',
   'ge-email-reset-browser.cjs',
   'gb-admin-access.cjs',

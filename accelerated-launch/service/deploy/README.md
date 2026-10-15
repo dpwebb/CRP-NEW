@@ -2,9 +2,9 @@
 
 ## Standing build and release process — October 14 adoption
 
-Use [CHANGE_AWARE_RELEASE.md](CHANGE_AWARE_RELEASE.md) as the mandatory release entry: `release-workflow.cjs prepare` → `check` → `record` → `package`, with `continuity`, `assemble` and evidence-specific `attest` as needed. Run from the reconciled operational candidate at `C:/Users/webbd/.codex/worktrees/synthetic-corpus-fixes/CRP-NEW`, retaining completed source `196da86` and its original local full proof while locally integrating the reviewed upgrades. The preserved older primary checkpoint and its 161-file policy manifest are not the release candidate.
+Use [CHANGE_AWARE_RELEASE.md](CHANGE_AWARE_RELEASE.md) as the mandatory release entry: `release-workflow.cjs prepare` → `check` → `record` → `package`, with `continuity`, `assemble` and evidence-specific `attest` as needed. Select the coordinator-assigned checkout, committed source and exact passing baseline from the current owner work order, single work register and `CRP_CURRENT_STATE_2026_10_14.md`. Older checkout paths, commits and manifests below retain their historical scope and do not select today's release candidate.
 
-The plan selects affected checks; do not repeat product full, browser or provider journeys merely to assemble receipts. Exact inputs/output hashes govern local reuse, and product reuse requires a complete reviewed dynamic/external input profile. Package one committed archive and promote that same identity, preserving all 30 gates / 123 criteria, actual current host/source evidence and fresh environment/provider verification. Documentation/tooling-only work does not replace an unchanged production runtime. Admin and all other enhancements remain on hold. No deployment, restart, provider action or external communication is authorized by this local adoption.
+The plan selects affected checks; do not repeat product full, browser or provider journeys merely to assemble receipts. Exact inputs/output hashes govern local reuse, and product reuse requires a complete reviewed dynamic/external input profile. Package one committed archive and promote that same identity, preserving all 30 gates / 123 criteria, actual current host/source evidence and fresh environment/provider verification. Documentation/tooling-only work does not replace an unchanged production runtime. This standing workflow does not itself authorize deployment, restart, provider actions or external communication. Apply the latest explicit owner authority and bounded work order to each action; historical holds below do not cancel later recorded authorization.
 
 Historical preparation and runtime prose below retains its recorded scope; it does not override this standing workflow or supply permission for a new release.
 
@@ -14,7 +14,7 @@ Use [CHANGE_AWARE_RELEASE.md](CHANGE_AWARE_RELEASE.md) and `release-workflow.cjs
 
 ## Current operating authority
 
-Use the root `CRP_OPERATIONAL_REVIEW_2026_10_13.md` for current source/runtime provenance and remaining release gates. Each staging or production activation requires explicit owner authorization for that deployment. The historical authorization below is not standing permission for a new release. Current configured billing and native-currency prices are verified through the accepted runtime/configuration evidence; older CAD examples below retain their original scope.
+Use the root `CRP_CURRENT_STATE_2026_10_14.md`, latest dated release/correction report and `CRP_VERSION_1_SEVEN_DAY_WORK_REGISTER_001.md` for current source/runtime provenance, accepted evidence and remaining gates. Each staging or production activation requires its corresponding explicit owner authorization. Historical release instructions and configured-price examples remain evidence of their own build/date/environment only.
 
 ## Historical October 9 deployment authorization and preparation
 
@@ -84,6 +84,4 @@ graphical reader journey there. Local passing tests do not verify a deployed hos
 
 ## Rolling back
 
-The service writes only inside `CRP_LOCAL_SERVICE_DATA`: `state.json`, `state.json.bak`, `store.lock` and
-`blobs/`. Rolling back means stopping the process and pointing it at the previous directory. Nothing outside it
-is written — not the repository, not a system directory, and no external service.
+Use the guarded rollback tooling to select a prior compatible immutable executable release while retaining the current private store, credentials and signed administration authority. Do not restore an older data directory merely to roll back code. Verify environment compatibility, current records/blobs and public routing after the controlled restart. A paired rollback-and-return rehearsal needs its own reviewed return path; see [production-recovery.md](production-recovery.md).

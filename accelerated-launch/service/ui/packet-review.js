@@ -34,6 +34,7 @@ window.CRP_PACKET_REVIEW = (() => {
         const paper = sheet.querySelector('.packet-sheet');
         for (const field of (data.editable_fields || []).filter(f => f.page === meta.page && f.section === 'letter')) {
           const editor = document.createElement('textarea'); editor.className = 'packet-page-editor'; editor.dataset.packetLetterPage = meta.page;
+          editor.disabled = Boolean(options.letterDisabled?.());
           editor.id = editors.length ? 'packet-letter-' + meta.page : 'packet-letter'; editor.maxLength = 24000; editor.spellcheck = true;
           editor.setAttribute('aria-label', 'Edit your dispute letter, packet page ' + meta.page);
           editor.value = field.text; editor.style.left = 100 * field.x / meta.page_width + '%'; editor.style.top = 100 * field.y / meta.page_height + '%';

@@ -180,12 +180,15 @@ function itemsFor(row, selected) {
     });
   });
 }
+function letterDateFor(packet, row) {
+  return String(packet?.letter_date || packet?.created_at || row?.recorded_at || '').slice(0, 10);
+}
 function payloadFor(packet, row, selected) {
   const snapshot = packet.support_snapshot || {};
   return { version: VERSION, profile: snapshot.profile || {},
     settings: { ...(snapshot.settings || {}), document_kinds: (snapshot.documents || []).map(doc => doc.document_kind) },
     correspondence: packet.correspondence || {}, items: itemsFor(row, selected),
-    letter_date: String(packet.letter_date || packet.created_at || row?.recorded_at || '').slice(0, 10) };
+    letter_date: letterDateFor(packet, row) };
 }
 function lines(packet, row, selected) {
   const data = payloadFor(packet, row, selected), c = data.correspondence, p = data.profile;
@@ -226,4 +229,4 @@ function lines(packet, row, selected) {
   return out;
 }
 
-module.exports = { VERSION, dateLabel, requestFor, ruleReferences, ruleRequest, itemsFor, payloadFor, lines };
+module.exports = { VERSION, dateLabel, letterDateFor, requestFor, ruleReferences, ruleRequest, itemsFor, payloadFor, lines };
