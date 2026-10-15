@@ -44,10 +44,11 @@ async function setupHistoryAccount(service, email) {
     const caseRow = (await service.request('POST', '/api/cases', { token: actor.token, body: { country: 'US', region: 'US-CA' } })).json.case;
     await service.request('POST', `/api/cases/${caseRow.case_id}/files`, { token: actor.token, body: { originalFilename: name, declaredBytes: pdf.length, mimeType: 'application/pdf', contentBase64: pdf.toString('base64') } });
     await service.request('POST', `/api/cases/${caseRow.case_id}/evaluate`, { token: actor.token });
+    return caseRow.case_id;
   };
-  await assessOne('Equifax', 'June 1, 2025', '01/01/2020', '01/01/2019', 'earlier.pdf');
-  await assessOne('Equifax', 'June 1, 2026', '01/01/2021', '01/01/2020', 'later.pdf');
-  return { email, password };
+  const earlierCaseId = await assessOne('Equifax', 'June 1, 2025', '01/01/2020', '01/01/2019', 'earlier.pdf');
+  const latestCaseId = await assessOne('Equifax', 'June 1, 2026', '01/01/2021', '01/01/2020', 'later.pdf');
+  return { email, password, earlierCaseId, latestCaseId };
 }
 
 async function run(service, check) {
@@ -62,6 +63,30 @@ async function run(service, check) {
   }
 
   try {
+  const caseContexts = new WeakMap();
+  async function uploadNewReport(page, existingCaseId, lines, extraPages = [], beforeChecked = null) {
+    // The visible Upload screen creates a new report. Keep its actual identity for every later protected request.
+    const existing = (await (await page.request.get(service.base + '/api/cases/' + existingCaseId)).json()).view.case;
+    const bureau = /TransUnion/i.test(lines.join('\n')) ? 'TRANSUNION' : /Experian/i.test(lines.join('\n')) ? 'EXPERIAN' : 'EQUIFAX';
+    await page.locator('#steps button[data-step="1"]').click();
+    await page.waitForSelector('#file');
+    await page.locator('#country').selectOption(existing.country);
+    await page.locator('#region').selectOption(existing.region);
+    await page.locator('#bureau').selectOption(bureau);
+    const reportBytes = buildPdf({ pages: [{ lines }, ...extraPages] });
+    await page.locator('#file').setInputFiles({ name: 'fictional-report.pdf', mimeType: 'application/pdf', buffer: reportBytes });
+    const created = page.waitForResponse(response => response.url().endsWith('/api/cases') && response.request().method() === 'POST');
+    await page.locator('#open').click();
+    const createdResponse = await created;
+    check.equal(createdResponse.status(), 201, 'the visible Upload action creates its own report');
+    const caseId = (await createdResponse.json()).case.case_id;
+    if (beforeChecked) await beforeChecked(caseId);
+    await page.locator('#evaluate').filter({ hasText: 'Check this report again' }).waitFor();
+    await page.waitForSelector('#current-report-identity');
+    check.ok(/fictional-report\.pdf/.test(await page.locator('#current-report-identity').innerText()), 'automatic checking lands on Results labelled with this uploaded report');
+    caseContexts.set(page, { caseId, country: existing.country, region: existing.region, bureau });
+    return { caseId, reportBytes };
+  }
   async function openCasePage(email, password, caseId, lines, extraPages = []) {
     const context = await browser.newContext();
     const page = await context.newPage();
@@ -71,23 +96,9 @@ async function run(service, check) {
     await page.locator('#password').fill(password);
     await page.locator('#signin').click();
     await page.waitForSelector('#open');
-    await page.locator('#refresh').click();
-    await page.waitForSelector(`[data-open="${caseId}"]`);
-    await page.locator(`[data-open="${caseId}"]`).click();
-    await page.locator('#steps button[data-step="2"]').click();
-    await page.waitForSelector('#file');
-    const reportBytes = buildPdf({ pages: [{ lines }, ...extraPages] });
-    await page.locator('#file').setInputFiles({ name: 'fictional-report.pdf', mimeType: 'application/pdf', buffer: reportBytes });
-    await page.locator('#upload').click();
-    await page.waitForFunction(() => document.body.innerText.includes('1 file uploaded.'), null, { timeout: 15000 });
-    await page.locator('#steps button[data-step="3"]').click();
-    await page.waitForSelector('#evaluate');
-    await page.locator('#evaluate').click();
-    await page.waitForFunction(() => document.body.innerText.includes('Your results are ready.'), null, { timeout: 15000 });
-    await page.locator('#steps button[data-step="4"]').click();
-    await page.waitForSelector('#packet-block');
-    await page.waitForTimeout(600);
-    return { page, context, reportBytes };
+    const uploaded = await uploadNewReport(page, caseId, lines, extraPages);
+    if (await page.locator('#create-packet').count()) await page.locator('#create-packet:enabled').waitFor();
+    return { page, context, ...uploaded };
   }
 
   /** OWNER dual-date retention (Batch 33): open the same case in the browser with the ASSESSMENT clock pinned, so
@@ -119,13 +130,45 @@ async function run(service, check) {
     const previewResponse = page.waitForResponse(response => response.url().endsWith('/packet') && response.request().method() === 'GET');
     await page.locator('#packet-save').click(); await (await previewResponse).finished();
     await page.waitForSelector('#packet-preview-reviewed:not([disabled])');
+    await page.waitForFunction(() => {
+      const images = [...document.querySelectorAll('#packet-all-pages .packet-page-image')];
+      return images.length > 0 && images.every(image => image.complete && image.naturalWidth > 0);
+    });
     await page.locator('#packet-preview-reviewed').check();
     await page.locator('#packet-approve').click();
+    await page.locator('#packet-approved-status:visible').waitFor();
+    await page.locator('#packet-download:enabled').waitFor();
+  }
+  async function readLetter(page) {
+    await page.locator('[data-packet-letter-page]:visible, #packet-letter:visible').first().waitFor();
+    const editors = page.locator('[data-packet-letter-page]');
+    if (await editors.count()) return (await editors.evaluateAll(nodes => nodes.map(node => node.value))).join('\n');
+    return page.locator('#packet-letter').inputValue();
+  }
+  async function editLetter(page, transform) {
+    const original = await readLetter(page);
+    check.ok(original.trim().length > 0, 'the actual current letter has loaded before the consumer edits it');
+    const value = transform(original), editors = page.locator('[data-packet-letter-page]');
+    if (await editors.count()) {
+      await editors.first().fill(value);
+      for (let index = 1; index < await editors.count(); index++) await editors.nth(index).fill('');
+    } else await page.locator('#packet-letter').fill(value);
+    return readLetter(page);
+  }
+  async function createSelectedPacket(page) {
+    await page.locator('#steps button[data-step="3"]').click();
+    await page.waitForSelector('[data-check-issue]');
+    await page.locator('#create-packet:enabled').waitFor();
+    if (!await page.locator('[data-check-issue]:checked').count()) await page.locator('[data-check-issue]').first().check();
+    await page.locator('#create-packet').click();
+    await page.waitForFunction(() => {
+      const prepare = document.getElementById('packet-prepare-next'), reviewed = document.getElementById('packet-preview-reviewed');
+      return Boolean(prepare?.getClientRects().length || (reviewed?.getClientRects().length && !reviewed.disabled));
+    });
   }
   async function accountContact(page, name, email, withDocuments = true) {
-    await page.locator('#steps button[data-step="5"]').click();
-    await page.waitForSelector('#packet-bureau');
-    const usEquifax = await page.locator('#packet-us-identity').isVisible() && await page.locator('#packet-bureau').inputValue() === 'EQUIFAX';
+    const report = caseContexts.get(page);
+    const usEquifax = report.country === 'US' && report.bureau === 'EQUIFAX';
     await page.locator('#steps button[data-step="0"]').click();
     await page.waitForSelector('#account-save');
     check.equal(await page.locator('#signin, #create, #password').count(), 0, 'returning to Step1 while signed in shows account details, never authentication prompts');
@@ -143,81 +186,86 @@ async function run(service, check) {
       await page.waitForSelector('a[href^="/api/account/documents/"]', { state: 'attached' });
       await page.waitForFunction(expected => document.querySelectorAll('a[href^="/api/account/documents/"]').length === expected, expectedCount);
     }
-    if (await page.locator('#account-continue').innerText() === 'Return to my packet') await page.locator('#account-continue').click();
-    else await page.locator('#steps button[data-step="6"]').click();
-    await page.locator('#steps button[data-step="4"]').click();
-    await page.waitForSelector('[data-check-issue]');
-    if (!await page.locator('[data-check-issue]:checked').count()) await page.locator('[data-check-issue]').first().check();
-    await page.locator('#steps button[data-step="5"]').click();
-    await page.waitForSelector('#packet-bureau');
+    await createSelectedPacket(page);
     check.equal(await page.locator('#packet-channel').count(), 0, 'the consumer packet has a mail-only path with no submission-method selector');
+    check.equal(await page.locator('#packet-verification-requested, #packet-copies-confirmed, #review').count(), 0, 'the revised flow has no repeated identity, copy-quality or assessment acknowledgement');
     if (withDocuments) {
-      for (const checkbox of await page.locator('[data-packet-document]').all()) await checkbox.check();
-      for (const date of await page.locator('[id^="packet-document-date-"]').all()) await date.fill(new Date().toISOString().slice(0, 10));
-      await page.locator('#packet-copies-confirmed').check();
+      for (const date of await page.locator('[id^="packet-document-date-"]:visible').all()) await date.fill(new Date().toISOString().slice(0, 10));
     }
-    if (await page.locator('#packet-us-identity').isVisible()) await page.locator('#packet-identity-reference').fill('000000000');
+    if (await page.locator('#packet-identity-reference:visible').count()) await page.locator('#packet-identity-reference').fill('000000000');
+    if (await page.locator('#packet-prepare-next:visible').count()) await page.locator('#packet-prepare-next').click();
+    await page.locator('#packet-save:visible').waitFor();
+    await page.waitForSelector('[data-packet-letter-page]:visible, #packet-letter:visible');
   }
 
   /* ---- 1. Common potential issue + change wording after approval, then download matches the approved content. ---- */
   const pot = await setupPaidCase(service, 'bw-pot@example.test', 'US', 'US-CA');
   let opened = await openCasePage(pot.email, pot.password, pot.caseId, ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2020  Closed 01/01/2019']);
+  pot.caseId = opened.caseId;
   let page = opened.page;
+  check.deepEqual(await page.locator('#steps button[data-step]').evaluateAll(nodes => nodes.map(node => Number(node.dataset.step)).filter(step => step < 7)), [0, 1, 3, 5, 6], 'the consumer sees exactly the five agreed Wizard steps');
   const reviewText = await page.locator('#panel').innerText();
   check.ok(!/response draft|recorded output permission|review the observations|nothing will be sent|demonstration file/i.test(reviewText),
     'the actual browser packet review has no obsolete draft, observation-only or demonstration claims');
   check.equal(await page.locator('#draft, #download').count(), 0, 'the actual browser review has no legacy draft or demonstration control');
   check.equal(await page.locator('[data-check-issue]').count(), 1, 'the common potential issue renders as one selectable card');
-  const potBlock = await page.locator('#packet-block').innerText();
+  const potBlock = await page.locator('[data-issue-group]').innerText();
   check.ok(/opened date later than its closed date/.test(potBlock), 'with readable evidence and the affirmative concern');
   check.ok(/which date needs correction/.test(potBlock), 'with specific uncertainty about the correction');
   check.ok(/01\/01\/2020/.test(potBlock), 'with the printed raw readings');
-  check.ok(await page.locator('#packet-preparation-content').isHidden(), 'issue choice does not repeat preparation information');
-  check.ok(await page.locator('#packet-review-controls').isHidden(), 'issue choice does not expose review actions before preparation');
-  check.ok(/Choose disputes/.test(reviewText), 'the first step clearly asks the consumer to choose disputes');
-  await page.locator('#steps button[data-step="4"]').click();
-  await page.waitForSelector('#packet-choose-next:visible');
+  check.equal(await page.locator('#packet-preparation-content, #packet-review-controls, #review').count(), 0, 'Results combines findings and issue selection without packet preparation or repeated acknowledgement');
+  check.ok(/Review results/.test(reviewText) && !/Choose disputes/.test(await page.locator('#steps').innerText()), 'issues are selected directly on Review results');
+  await page.locator('#steps button[data-step="1"]').click();
+  await page.waitForSelector(`[data-open="${pot.caseId}"]`);
+  check.equal(await page.locator('#saved-report-list [data-open]').first().getAttribute('data-open'), pot.caseId, 'the newly uploaded report is the top saved report');
+  await page.locator('#resume-latest').click();
+  await page.waitForSelector('#current-report-identity');
+  check.ok(/fictional-report\.pdf/.test(await page.locator('#current-report-identity').innerText()), 'Resume my latest report returns to the labelled Results for the new upload');
+  await page.locator('#create-packet:enabled').waitFor();
   await page.locator('[data-check-issue]').first().check();
-  await page.locator('#packet-choose-next').click();
+  const selectionRequest = page.waitForRequest(request => request.url().endsWith('/packet/select') && request.method() === 'POST');
+  await page.locator('#create-packet').click();
+  check.ok(typeof (await selectionRequest).postDataJSON().expected_result_id === 'string', 'Create packet binds the consumer selection to the current assessed result');
   await page.waitForSelector('#packet-prepare-next:visible');
   check.ok(/Prepare your documents/.test(await page.locator('#panel').innerText()), 'the selected issue leads to document preparation before packet review');
+  await page.locator('#packet-bureau-checklist').locator('..').locator('summary').click();
   check.ok(/Official instructions/.test(await page.locator('#packet-bureau-checklist').innerText()), 'document preparation shows the selected bureau instructions');
   await page.locator('#packet-account-details').click();
   await page.waitForSelector('#account-document-upload');
   check.ok(/Documents for disputes/.test(await page.locator('#panel').innerText()), 'the preparation step offers the existing private document uploader');
   await page.locator('#account-continue').click();
   await page.waitForSelector('#packet-prepare-next:visible');
-  check.equal(await page.locator('[data-check-issue]:checked').count(), 1, 'returning from document upload preserves the dispute choice');
-  await page.locator('#packet-prepare-next').click();
-  await page.waitForSelector('#packet-save:visible');
+  const chosenBeforeDetails = (await (await page.request.get(service.base + '/api/cases/' + pot.caseId + '/packet')).json()).view.packet.selected_issue_ids;
+  check.equal(chosenBeforeDetails.length, 1, 'returning from document upload preserves the dispute choice');
   await accountContact(page, 'Dana Whitfield', 'dana.whitfield@example.test');
-  await page.locator('[data-check-issue]').first().check();
-  await page.locator('#packet-wording').fill('Please verify these two dates.');
-  check.equal(await page.locator('#packet-approve').isDisabled(), true, 'an edited packet cannot be approved before its new preview is saved and read');
+  check.equal(await page.locator('#packet-edit-account:visible, #packet-edit-documents:visible, #packet-account-details:visible, .packet-highlight-tools:visible, .packet-add-highlight:visible, .packet-position-add:visible').count(), 0, 'ready Review has no contact, upload or manual-highlight tools');
+  check.equal(await page.locator('#packet-approve').isDisabled(), true, 'a packet cannot be approved before its preview is read');
   await saveReadApprove(page);
   await page.waitForTimeout(500);
   check.equal(await page.locator('#packet-download').isEnabled(), true, 'download is enabled right after approval');
   await page.locator('#packet-download:enabled').waitFor();
   const fullReview = page.locator('#packet-all-pages');
   check.equal(await fullReview.count(), 1, 'real browser presents one complete packet with every physical page');
+  await page.waitForFunction(() => {
+    const images = [...document.querySelectorAll('#packet-all-pages .packet-page-image')];
+    return images.length > 0 && images.every(image => image.complete && image.naturalWidth > 0);
+  });
+  check.equal(await page.locator('#packet-all-pages [data-packet-page]').count(), await page.locator('#packet-page-jump option').count(), 'every physical page listed by the complete packet control is rendered inline');
   const approvedPreview = await page.locator('#packet-pdf-review a[href*="/packet/preview?"]').getAttribute('href');
-  await page.locator('#steps button[data-step="4"]').click();
-  await page.waitForSelector('#packet-choose-next:visible');
-  await page.locator('#packet-choose-next').click();
-  await page.waitForSelector('#packet-prepare-next:visible');
-  await page.locator('#packet-prepare-next').click();
+  await createSelectedPacket(page);
   await page.waitForSelector('#packet-approved-status:visible');
   await page.locator('#packet-download:enabled').waitFor();
-  check.equal(await page.locator('#packet-download').isEnabled(), true, 'unchanged seven-step continuation preserves approved download access');
-  check.equal(await page.locator('#packet-pdf-review a[href*="/packet/preview?"]').getAttribute('href'), approvedPreview, 'unchanged seven-step continuation preserves the exact approved version');
+  check.equal(await page.locator('#packet-download').isEnabled(), true, 'unchanged Results-to-packet continuation skips Prepare and preserves approved download access');
+  check.equal(await page.locator('#packet-pdf-review a[href*="/packet/preview?"]').getAttribute('href'), approvedPreview, 'unchanged Results-to-packet continuation preserves the exact approved version');
   const reviewedForm = await page.context().request.get(service.base + approvedPreview);
   check.equal(reviewedForm.status(), 200, 'browser session cookie opens the owned complete packet PDF');
   const initialPacketText = require('../packet-pdf-assertions.cjs').pdfText(await reviewedForm.body());
   check.ok(initialPacketText.includes('Whitfield') && !initialPacketText.includes('DISPUTE REQUEST FORM'), 'actual complete PDF review keeps the consumer name without retired bureau artwork');
   check.ok(/Your packet is approved/.test(await page.locator('#packet-block').innerText()) && await page.locator('#packet-ready-status').isVisible(), 'approved and ready messages describe the current approved preview');
-  await page.locator('#steps button[data-step="5"]').click();
-  await page.waitForSelector('#packet-wording');
-  await page.locator('#packet-wording').fill('CHANGED WORDS AFTER APPROVAL');
+  await accountContact(page, 'Dana Whitfield', 'changed-reply@example.test');
+  check.equal(await page.locator('#packet-download').isDisabled(), true, 'editing a correspondence detail after approval disables download');
+  await saveReadApprove(page);
+  await editLetter(page, value => value + '\nCHANGED WORDS AFTER APPROVAL\nMy bureau file or account number: BUREAU-FILE-2468');
   await page.waitForTimeout(300);
   check.equal(await page.locator('#packet-download').isDisabled(), true, 'editing wording after approval disables download');
   check.ok(!/Your packet is approved|Your packet is ready|Packet approved\. Download it/.test(await page.locator('#panel').innerText()), 'an unsaved edit removes every stale approval and ready message');
@@ -225,16 +273,11 @@ async function run(service, check) {
   const changedPreviewShot = `${process.env.TEMP || '.'}/crp-packet-changed-preview.png`;
   await page.screenshot({ path: changedPreviewShot, fullPage: true });
   evidence.changed_preview_screenshot = changedPreviewShot;
-  await accountContact(page, 'Dana Whitfield', 'changed-reply@example.test');
-  await page.waitForTimeout(300);
-  check.equal(await page.locator('#packet-download').isDisabled(), true, 'editing a correspondence detail after approval disables download');
-  await page.locator('#packet-bureau-reference').fill('BUREAU-FILE-2468');
   await saveReadApprove(page);
   await page.waitForTimeout(500);
   check.equal(await page.locator('#packet-all-pages').count(), 1, 'one complete all-page packet appears inline after saving');
   check.equal(await page.locator('#packet-preview').isVisible(), false, 'the old text-only packet preview is hidden');
-  const preparedLetter = await page.locator('#packet-letter').inputValue();
-  await page.locator('#packet-letter').fill(preparedLetter.replace('Thank you for your help.', 'Thank you. Please send your reply to me.'));
+  await editLetter(page, value => value.replace('Thank you for your help.', 'Thank you. Please send your reply to me.'));
   check.equal(await page.locator('#packet-download').isDisabled(), true, 'editing the entire letter invalidates the approved download');
   check.equal(await page.locator('#packet-approve').isDisabled(), true, 'an edited full letter cannot approve unseen PDF changes');
   check.equal(await page.locator('#packet-pdf-review').isVisible(), true, 'inline editing keeps the whole packet visible while approval is disabled');
@@ -251,7 +294,7 @@ async function run(service, check) {
   check.ok(/Re: Credit report dispute/.test(comparableText(dl1.text)) && /Please see report page 1/.test(comparableText(dl1.text)), 'the letter integrates a brief source-page reference');
   check.ok(dl1.text.includes('Thank you. Please send your reply to me.'), 'the consumer full-letter edit survives the reviewed download');
   check.ok(dl1.text.includes('My bureau file or account number: BUREAU-FILE-2468'), 'the letter includes the optional bureau file number');
-  check.ok(!/EVIDENCE REFERENCES|Sign and date the letter|Mail the packet to the bureau address/i.test(await page.locator('#packet-letter').inputValue()), 'consumer print and mail instructions stay outside the letter');
+  check.ok(!/EVIDENCE REFERENCES|Sign and date the letter|Mail the packet to the bureau address/i.test(await readLetter(page)), 'consumer print and mail instructions stay outside the letter');
   check.ok(dl1.text.includes('Dana Whitfield') && dl1.text.includes('changed-reply@example.test'), 'carrying the correspondence details the consumer approved');
   check.ok(!dl1.text.includes('dana.whitfield@example.test'), 'and not the detail that was replaced before approval');
   check.ok(!/not legal advi/i.test(dl1.text), 'with no legal-advice disclaimer');
@@ -269,18 +312,18 @@ async function run(service, check) {
   await printPage.close();
   await page.route('**/packet-download',async route=>{await new Promise(resolve=>setTimeout(resolve,1600));await route.continue();});
   const pendingFile=page.waitForEvent('download');await page.locator('#packet-download').click();await page.locator('#operation-progress').waitFor({state:'visible'});
-  const pendingLetter=(await page.locator('#packet-letter').inputValue())+'\nFictional edit made while download is pending.';await page.locator('#packet-letter').fill(pendingLetter);
+  const pendingLetter=await editLetter(page,value=>value+'\nFictional edit made while download is pending.');
   await(await pendingFile).path();await page.locator('#operation-progress').waitFor({state:'hidden'});
-  check.equal(await page.locator('#packet-letter').inputValue(),pendingLetter,'a delayed download preserves unsaved consumer letter edits');
+  check.equal(await readLetter(page),pendingLetter,'a delayed download preserves unsaved consumer letter edits');
   check.ok(await page.locator('#packet-download').isDisabled()&&await page.locator('#packet-approve').isDisabled(),'download completion cannot re-enable approval or download after an edit');
   await page.unroute('**/packet-download');
   await page.locator('#packet-save').click();await page.locator('#packet-preview-reviewed:enabled').waitFor();
   const originalLink=page.locator('#packet-pdf-review a').first(),originalUrl=new URL(await originalLink.getAttribute('href'),page.url()).href;
   await page.route(originalUrl,async route=>{await new Promise(resolve=>setTimeout(resolve,1600));await route.fulfill({status:409,contentType:'application/json',body:JSON.stringify({error:{message:'This fictional source is temporarily unavailable.'}})});});
   await originalLink.click();await page.locator('#operation-progress').waitFor({state:'visible'});
-  const failedOpenLetter=(await page.locator('#packet-letter').inputValue())+'\nFictional edit while the PDF opens.';await page.locator('#packet-letter').fill(failedOpenLetter);
+  const failedOpenLetter=await editLetter(page,value=>value+'\nFictional edit while the PDF opens.');
   await page.locator('#operation-error').waitFor();
-  check.equal(await page.locator('#packet-letter').inputValue(),failedOpenLetter,'a failed document opening preserves edits made while the PDF was opening');
+  check.equal(await readLetter(page),failedOpenLetter,'a failed document opening preserves edits made while the PDF was opening');
   await page.unroute(originalUrl);
 
 
@@ -302,10 +345,10 @@ async function run(service, check) {
   const prob = await setupPaidCase(service, 'bw-prob@example.test', 'US', 'US-NY');
   opened = await openCasePage(prob.email, prob.password, prob.caseId, ['Experian Consumer Credit Report - FICTIONAL TEST FIXTURE', 'Report Date: June 12, 2026', 'Account 30 days past due as of Jun 2015']);
   page = opened.page;
-  const probBlock = await page.locator('#packet-block').innerText();
-  check.equal(await page.locator('#packet-block [data-check-issue]').count(), 1,
+  const probBlock = await page.locator('[data-issue-group]').innerText();
+  check.equal(await page.locator('[data-issue-group] [data-check-issue]').count(), 1,
     'the qualified reporting-period issue is one coherent selectable concern');
-  check.deepEqual(await page.locator('#packet-block .pill').allTextContents(), ['VIOLATION'],
+  check.deepEqual(await page.locator('[data-issue-group] .pill').allTextContents(), ['VIOLATION'],
     'the supported issue uses the sole consumer breach term required by the latest owner amendment');
   check.ok(/entry older than the ordinary reporting period|not shown to be absent/.test(probBlock), 'with the affirmative concern and the exception uncertainty');
   check.ok(!/ESTABLISHED REPORTING ISSUE/.test(probBlock), 'never an established issue');
@@ -316,18 +359,19 @@ async function run(service, check) {
   opened = await openCasePage(multi.email, multi.password, multi.caseId, ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2020  Closed 01/01/2019', 'Creditor B  Balance $200  Opened 01/01/2021  Closed 01/01/2020']);
   page = opened.page;
   check.equal(await page.locator('[data-check-issue]').count(), 2, 'two issues render for the two contradictory accounts');
-  const labels = await page.locator('#packet-block .issue-select strong').allInnerTexts();
+  const labels = await page.locator('[data-issue-group] > h3').allInnerTexts();
   check.equal(labels.length, 2, 'each is a distinct selectable card');
   await page.locator('[data-check-issue]').first().check();
   /* A missing necessary correspondence detail refuses approval: no packet that cannot be sent can be downloaded. */
-  await page.locator('#packet-choose-next').click();await page.locator('#packet-prepare-next').waitFor();
-  check.ok(/Add your name/.test(await page.locator('#packet-block').innerText()), 'the review names the necessary detail that is still missing');
-  await page.locator('#packet-prepare-next').click();await page.locator('#packet-save').waitFor();
-  const incompleteSave = page.waitForResponse(response => response.url().endsWith('/packet') && response.request().method() === 'GET');
-  await page.locator('#packet-save').click(); await (await incompleteSave).finished();
-  check.equal(await page.locator('#packet-preview-reviewed').isDisabled(), true, 'a packet with missing correspondence details cannot be acknowledged as complete');
-  check.equal(await page.locator('#packet-approve').isDisabled(), true, 'a packet with missing correspondence details cannot be approved');
-  check.equal(await page.locator('#packet-download').isDisabled(), true, 'a packet with missing correspondence details cannot download');
+  multi.caseId = opened.caseId;
+  await page.locator('#create-packet').click();await page.locator('#packet-prepare-next').waitFor();
+  check.ok(/Add your full name/.test(await page.locator('#packet-block').innerText()), 'the review names the necessary detail that is still missing');
+  await page.locator('#steps button[data-step="6"]').click();
+  await page.waitForSelector('#packet-prepare-missing');
+  check.ok(/Add your name|name|reply|contact/i.test(await page.locator('#packet-block').innerText()), 'incomplete Review explains the missing preparation recovery');
+  check.equal(await page.locator('#packet-preview-reviewed:enabled').count(), 0, 'a packet with missing correspondence details cannot be acknowledged as complete');
+  check.equal(await page.locator('#packet-approve:enabled').count(), 0, 'a packet with missing correspondence details cannot be approved');
+  check.equal(await page.locator('#packet-download:enabled').count(), 0, 'a packet with missing correspondence details cannot download');
   const missingDetailsApproval = await page.request.post(service.base + `/api/cases/${multi.caseId}/packet/approve`, { data: {}, headers: { Origin: service.base } });
   check.equal(missingDetailsApproval.status(), 409, 'the protected approval endpoint independently refuses the incomplete packet');
   await accountContact(page, 'Dana Whitfield', 'dana.whitfield@example.test');
@@ -335,7 +379,7 @@ async function run(service, check) {
   await page.waitForTimeout(500);
   const dlMulti = await downloadText(page);
   check.equal(dlMulti.status, 200, 'the packet downloads with the partial selection');
-  const multiCorrespondence = await page.locator('#packet-letter').inputValue();
+  const multiCorrespondence = await readLetter(page);
   check.ok(/Creditor A/i.test(multiCorrespondence), 'the letter names the selected tradeline');
   check.equal(/Creditor B/i.test(multiCorrespondence), false, 'the correspondence covers only the selected issue while the original shared page retains all printed data');
   check.ok(dlMulti.text.includes('Dana Whitfield'), 'and carries the consumer-supplied details');
@@ -345,8 +389,8 @@ async function run(service, check) {
   const benign = await setupPaidCase(service, 'bw-benign@example.test', 'US', 'US-CA');
   opened = await openCasePage(benign.email, benign.password, benign.caseId, ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2018  Closed 01/01/2020']);
   page = opened.page;
-  const benignBlock = await page.locator('#packet-block').innerText();
-  check.ok(/No issue on this case is eligible/.test(benignBlock), 'a benign report produces no selectable issue');
+  const benignBlock = await page.locator('#panel').innerText();
+  check.equal(await page.locator('[data-check-issue], #create-packet').count(), 0, 'a benign report produces no selectable issue or packet action');
   check.ok(!/found no problems|all clear|no issues detected|you are fine|compliant/.test(benignBlock), 'without misleading reassurance');
   await page.close();
 
@@ -374,6 +418,16 @@ async function run(service, check) {
   check.ok(/CHANGED/.test(comparisonText), 'the comparison shows the changed issue');
   check.ok(/First report:/.test(comparisonText) && /Second report:/.test(comparisonText), 'and both report identities');
   check.ok(/never proves/.test(comparisonText), 'with the absence note');
+  await page.locator('#steps button[data-step="1"]').click();
+  await page.waitForSelector(`[data-open="${hist.earlierCaseId}"]`);
+  await page.locator(`[data-open="${hist.earlierCaseId}"]`).click();
+  await page.waitForSelector('#current-report-identity');
+  check.ok(/earlier\.pdf/.test(await page.locator('#current-report-identity').innerText()) && /2025-06-01/.test(await page.locator('#current-report-identity').innerText()), 'choosing a previous report opens Results labelled with that exact report');
+  await page.locator('#steps button[data-step="1"]').click();
+  await page.waitForSelector('#resume-latest');
+  await page.locator('#resume-latest').click();
+  await page.waitForSelector('#current-report-identity');
+  check.ok(/later\.pdf/.test(await page.locator('#current-report-identity').innerText()) && /2026-06-01/.test(await page.locator('#current-report-identity').innerText()), 'Resume my latest report opens Results labelled with the latest saved report');
   await page.close();
 
   /* OWNER-PURCHASE-FLOW-001: the unpaid real-browser journey — upload, assess, free summary, teaser and the
@@ -388,36 +442,34 @@ async function run(service, check) {
   await freePage.locator('#password').fill('a-long-enough-password');
   await freePage.locator('#signin').click();
   await freePage.waitForSelector('#open');
-  await freePage.locator('#refresh').click();
-  await freePage.waitForSelector(`[data-open="${freeCase.case_id}"]`);
-  await freePage.locator(`[data-open="${freeCase.case_id}"]`).click();
-  await freePage.locator('#steps button[data-step="2"]').click();
-  await freePage.waitForSelector('#file');
-  await freePage.locator('#file').setInputFiles({
-    name: 'fictional-report.pdf',
-    mimeType: 'application/pdf',
-    buffer: buildPdf({ pages: [{ lines: ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026',
+  const evaluateRoute = '**/api/cases/*/evaluate';
+  let releaseAutomaticFailure, signalAutomaticStarted;
+  const automaticStarted = new Promise(resolve => { signalAutomaticStarted = resolve; });
+  const automaticFailureGate = new Promise(resolve => { releaseAutomaticFailure = resolve; });
+  const failAutomaticCheck = async route => {
+    signalAutomaticStarted();
+    await automaticFailureGate;
+    await route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: { message: 'Fictional temporary assessment interruption. Try again.' } }) });
+  };
+  await freePage.route(evaluateRoute, failAutomaticCheck);
+  const freeUpload = await uploadNewReport(freePage, freeCase.case_id, ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026',
       'Fictional Creditor Opened 01/01/2020 Closed 01/01/2021 Balance $100', 'Account Number ****1234',
       'Fictional Creditor Opened 01/01/2020 Closed 01/01/2021 Balance $100', 'Account Number ****1234',
-      'Fictional Other Creditor Opened 01/01/2020 Closed 01/01/2021 Status Open Balance $200.00'] }] })
-  });
-  await freePage.locator('#upload').click();
-  await freePage.waitForFunction(() => /Your report is uploaded/.test(document.getElementById('panel').innerText), null, { timeout: 20000 });
-  const reportText = await freePage.locator('#panel').innerText();
-  check.ok(/Your report is uploaded/.test(reportText) && /Check my report/.test(reportText), 'the browser offers the check action with no purchase recorded');
-  /* OWNER-PURCHASE-FLOW-001: with no completed assessment there is nothing to unlock, so the browser guides the
-     consumer to run the checks instead of starting a payment. */
-  await freePage.locator('#steps button[data-step="3"]').click();
-  await freePage.waitForTimeout(800);
-  const bareResults = await freePage.locator('#panel').innerText();
-  check.ok(/Your report has not been checked yet\. Select Check my report\./.test(bareResults), 'an unassessed report guides the consumer to check the report');
-  check.ok(!/buy-report_once/.test(await freePage.content()), 'and offers no purchase for a report with no completed assessment');
-  await freePage.locator('#steps button[data-step="2"]').click();
-  await freePage.waitForTimeout(600);
-  await freePage.locator('#check-report').click();
-  await freePage.waitForTimeout(3000);
-  await freePage.locator('#steps button[data-step="3"]').click();
-  await freePage.waitForTimeout(1200);
+      'Fictional Other Creditor Opened 01/01/2020 Closed 01/01/2021 Status Open Balance $200.00'], [], async () => {
+        await automaticStarted;
+        try {
+          await freePage.waitForSelector('#refresh-report');
+          check.ok(/We are checking your report/.test(await freePage.locator('#panel').innerText()), 'automatic checking stays on the Results recovery screen while pending');
+          check.equal(await freePage.locator('#buy-report_once, #checkout-report_once, #create-packet, #download-assessment').count(), 0, 'a pending automatic check offers no purchase or paid output before an assessment exists');
+        } finally { releaseAutomaticFailure(); }
+        await freePage.locator('#check-report').filter({ hasText: 'Try again to check my report' }).waitFor();
+        check.ok(/Fictional temporary assessment interruption/.test(await freePage.locator('#panel').innerText()), 'failed automatic checking explains the failure and offers a retry in Results');
+        check.equal(await freePage.locator('#buy-report_once, #checkout-report_once, #create-packet, #download-assessment').count(), 0, 'a failed automatic check cannot sell an unassessed report or expose paid output');
+        await freePage.unroute(evaluateRoute, failAutomaticCheck);
+        await freePage.locator('#check-report').click();
+      });
+  freeCase.case_id = freeUpload.caseId;
+  check.equal(await freePage.locator('#steps button[data-step="2"], #steps button[data-step="4"]').count(), 0, 'free consumers also reach automatically checked Results without retired Wizard steps');
   const summaryText = await freePage.locator('#panel').innerText();
   check.ok(/SUMMARY — FREE/.test(summaryText) && /Reporting issues found: 2/.test(summaryText), 'the browser shows the two distinct issues to a free account');
   check.ok(!/violations:|potential issues:/.test(summaryText), 'without confidence tier counts');
@@ -510,18 +562,7 @@ async function run(service, check) {
   await limPage.locator('#password').fill('a-long-enough-password');
   await limPage.locator('#signin').click();
   await limPage.waitForSelector('#open');
-  await limPage.locator('#refresh').click();
-  await limPage.waitForSelector(`[data-open="${limCase.case_id}"]`);
-  await limPage.locator(`[data-open="${limCase.case_id}"]`).click();
-  await limPage.locator('#steps button[data-step="2"]').click();
-  await limPage.waitForSelector('#file');
-  await limPage.locator('#file').setInputFiles({ name: 'fictional-report.pdf', mimeType: 'application/pdf', buffer: buildPdf({ pages: [{ lines: limLines }] }) });
-  await limPage.locator('#upload').click();
-  await limPage.waitForFunction(() => /Your report is uploaded/.test(document.getElementById('panel').innerText), null, { timeout: 20000 });
-  await limPage.locator('#check-report').click();
-  await limPage.waitForTimeout(3000);
-  await limPage.locator('#steps button[data-step="3"]').click();
-  await limPage.waitForTimeout(1200);
+  await uploadNewReport(limPage, limCase.case_id, limLines);
   const limSummary = await limPage.locator('#panel').innerText();
   check.equal((limSummary.match(/Reporting issues found:\s*(\d+)/) || [])[1] || '0', '0',
     'the free summary excludes court information from reporting issue counts');
@@ -541,8 +582,6 @@ async function run(service, check) {
   await genPage.waitForTimeout(700);
   const genPanelText = await genPage.locator('#panel').innerText();
   check.ok(/Assessed on \d{4}-\d{2}-\d{2}/.test(genPanelText), 'the complete assessment states the date it was assessed');
-  await genPage.locator('#steps button[data-step="6"]').click();
-  await genPage.waitForTimeout(600);
   check.ok(/Information about court time limits/.test(genPanelText), 'paid results separate court information from reporting issues');
   check.ok(/INFORMATION/.test(genPanelText), 'court cards show INFORMATION');
   check.ok(!/ask the bureau|please verify.*court|Please verify.*payment/.test(genPanelText), 'court information makes no bureau inquiry');
@@ -572,18 +611,7 @@ async function run(service, check) {
     await dualPage.locator('#password').fill('a-long-enough-password');
     await dualPage.locator('#signin').click();
     await dualPage.waitForSelector('#open');
-    await dualPage.locator('#refresh').click();
-    await dualPage.waitForSelector(`[data-open="${dualCase.case_id}"]`);
-    await dualPage.locator(`[data-open="${dualCase.case_id}"]`).click();
-    await dualPage.locator('#steps button[data-step="2"]').click();
-    await dualPage.waitForSelector('#file');
-    await dualPage.locator('#file').setInputFiles({ name: 'fictional-report.pdf', mimeType: 'application/pdf', buffer: buildPdf({ pages: [{ lines: dualLines }] }) });
-    await dualPage.locator('#upload').click();
-    await dualPage.waitForFunction(() => /Your report is uploaded/.test(document.getElementById('panel').innerText), null, { timeout: 20000 });
-    await dualPage.locator('#check-report').click();
-    await dualPage.waitForTimeout(3000);
-    await dualPage.locator('#steps button[data-step="3"]').click();
-    await dualPage.waitForTimeout(1200);
+    await uploadNewReport(dualPage, dualCase.case_id, dualLines);
     const dualSummary = await dualPage.locator('#panel').innerText();
     check.ok(!/too old to report|most serious violation|\bVIOLATION\b/.test(dualSummary),
       'later-expiry review alone does not become a free VIOLATION example');
@@ -606,13 +634,9 @@ async function run(service, check) {
   check.ok(/the reporting period appears to end 2026-11-28/.test(dualPanel), 'and the date the period appears to end');
   check.ok(/arose through the passage of time/.test(dualPanel), 'and that the concern arose through the passage of time');
   check.ok(/Date of first delinquency on the collection entry/.test(dualPanel), 'and names the printed field the way the report does');
-  await dualOpened.page.locator('#steps button[data-step="4"]').click();
-  await dualOpened.page.waitForSelector('#packet-block');
-  await dualOpened.page.waitForTimeout(600);
-  const dualBlock = await dualOpened.page.locator('#packet-block').innerText();
+  const dualBlock = await dualOpened.page.locator('[data-issue-group]').innerText();
   check.ok(/too old to report/.test(dualBlock), 'the subscriber packet offers the current-review concern to select');
   await accountContact(dualOpened.page, 'Robin Alvarez', 'robin.alvarez@example.test');
-  await dualOpened.page.locator('[data-check-issue]').first().check();
   await saveReadApprove(dualOpened.page);
   await dualOpened.page.waitForTimeout(700);
   const dualDownload = await downloadText(dualOpened.page);
@@ -633,37 +657,44 @@ async function run(service, check) {
   check.equal((await service.request('POST', `/api/cases/${earlierCase.case_id}/evaluate`, { token: copyActor.token })).status, 201, 'the earlier report is assessed for the owned comparison');
   const currentCase = (await service.request('POST', '/api/cases', { token: copyActor.token, body: { country: 'US', region: 'US-CA' } })).json.case;
   const copies = await openCasePage('bw-report-copies@example.test', 'a-long-enough-password', currentCase.case_id, copyLines('2026', '2020'), [extraCopyPage]);
+  currentCase.case_id = copies.caseId;
   const copyPage = copies.page;
-  check.ok(await copyPage.locator('#packet-preparation-content').isHidden(), 'initial issue choice keeps previous preparation content out of view');
+  check.equal(await copyPage.locator('#packet-preparation-content').count(), 0, 'Results keeps preparation content out of issue selection');
   await accountContact(copyPage, 'Fictional Copy Consumer', 'copy-consumer@example.test');
-  await copyPage.locator('[data-check-issue]').first().check();
-  await copyPage.locator('#steps button[data-step="6"]').click();
   await copyPage.waitForSelector('#packet-save');
   const firstCopyPreview = copyPage.waitForResponse(response => response.url().endsWith('/packet') && response.request().method() === 'GET');
   await copyPage.locator('#packet-save').click(); await (await firstCopyPreview).finished();
-  await copyPage.waitForSelector('[data-packet-report]', { state: 'attached' });
+  await copyPage.waitForSelector('#packet-all-pages .packet-page');
   const copyPacketUrl = new URL(`/api/cases/${currentCase.case_id}/packet`, copyPage.url()).href;
   const copyView = (await (await copyPage.request.get(copyPacketUrl)).json()).view;
   const originals = copyView.packet.report_exhibits;
   check.equal(originals.length, 2, 'a saved re-aging dispute offers both original earlier and current reports');
   check.ok(originals.every(report => report.selected === true), 'the relevant earlier and current pages are included automatically');
   check.equal(copyView.packet.approved, false, 'the user reviews all included pages before acknowledging and approving the first saved preview');
+  check.ok(originals.some(report => report.roles.includes('EARLIER')) && originals.some(report => report.roles.includes('CURRENT')), 'the assembled packet distinguishes its earlier and current original report');
+  check.ok(originals.every(report => report.relevant_pages.length === 1 && report.relevant_pages[0] === 1), 'the relevant page of each source report is included without another consumer choice');
+  await copyPage.waitForFunction(() => {
+    const images = [...document.querySelectorAll('#packet-all-pages .packet-page-image')];
+    return images.length > 0 && images.every(image => image.complete && image.naturalWidth > 0);
+  });
+  const copyMetadata = await (await copyPage.request.get(service.base + '/api/cases/' + currentCase.case_id + '/packet/preview/pages?version=' + encodeURIComponent(copyView.packet.preview_version))).json();
+  check.equal(await copyPage.locator('#packet-all-pages .packet-page').count(), copyMetadata.page_count, 'the complete inline review shows every physical packet page');
   await copyPage.locator('#steps button[data-step="5"]').click();
   await copyPage.waitForSelector('#packet-reports');
-  const copyText = await copyPage.locator('#packet-reports').innerText();
-  check.ok(/Earlier report — June 12, 2025/.test(copyText) && /Current report — June 12, 2026/.test(copyText), 'the real report choices show familiar earlier/current labels and dates');
-  check.equal((copyText.match(/Included: report page 1/g) || []).length, 2, 'the review lists the relevant page from each source report');
-  check.ok(!/download includes the whole report|ENTIRE_REPORT|source_result_id|stored_sha256/.test(copyText), 'the consumer need not assemble or select pages from whole downloaded files');
   for (const original of originals) {
-    const originalFetch=copyPage.waitForResponse(r=>r.url()===new URL(original.review_url,copyPage.url()).href);
-    const [originalPage] = await Promise.all([copyPage.context().waitForEvent('page'), copyPage.locator(`#packet-reports a[href="${original.review_url}"]`).click()]);
-    await originalPage.waitForURL('blob:**');await originalPage.waitForLoadState();
+    const originalFetch = copyPage.waitForResponse(response => response.url() === new URL(original.review_url, copyPage.url()).href);
+    const [originalPage] = await Promise.all([
+      copyPage.context().waitForEvent('page'),
+      copyPage.locator(`#packet-reports a[href="${original.review_url}"]`).click()
+    ]);
+    await originalPage.waitForURL('blob:**');
+    await originalPage.waitForLoadState();
     const originalResponse = await originalFetch;
-    check.equal(originalResponse.status(), 200, 'Check the original report uses the authorized original-copy endpoint');
+    check.equal(originalResponse.status(), 200, 'the actual original-report link opens the authorized original-copy endpoint');
     check.ok((await originalResponse.body()).equals(original.roles.includes('EARLIER') ? earlierBytes : copies.reportBytes), 'the opened whole report has the exact original uploaded bytes');
     await originalPage.close();
-    check.equal(await copyPage.locator(`[data-packet-report="${original.file_id}"]`).isChecked(), true, 'opening an original copy retains its already included relevant page');
-    check.equal(await copyPage.locator(`[data-packet-report="${original.file_id}"]`).isVisible(), false, 'mandatory source pages have no confusing include checkbox');
+    check.equal(await copyPage.locator(`[data-packet-report="${original.file_id}"]`).isChecked(), true, 'opening the original retains its automatically included relevant page');
+    check.equal(await copyPage.locator(`[data-packet-report="${original.file_id}"]`).isVisible(), false, 'mandatory source pages have no repeated include choice');
   }
   await copyPage.locator('#steps button[data-step="6"]').click();
   await copyPage.waitForSelector('#packet-preview-reviewed');
@@ -688,8 +719,7 @@ async function run(service, check) {
   check.equal(returnedView.packet.approved, true, 'approval survives unchanged navigation');
   check.equal(returnedView.packet.preview_version, includedView.packet.preview_version, 'unchanged navigation retains reviewed version');
   check.ok((await downloadText(copyPage)).bytes.equals(withCopies.bytes), 'returning retains exact approved PDF bytes');
-  await copyPage.locator('#steps button[data-step="5"]').click();await copyPage.locator('#packet-wording').waitFor();
-  await copyPage.locator('#packet-wording').fill('Please verify these entries against the enclosed report copies.');
+  await editLetter(copyPage, value => value + '\nPlease verify these entries against the enclosed report copies.');
   await copyPage.locator('#steps button[data-step="3"]').click();
   await copyPage.waitForSelector('#result-select');
   const editedView = (await (await copyPage.request.get(copyPacketUrl)).json()).view;

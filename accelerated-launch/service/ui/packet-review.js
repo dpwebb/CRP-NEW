@@ -1,6 +1,6 @@
 'use strict';
-// All sheets are rasterized from the same complete PDF. Letter fields and report
-// annotations are saved through the existing owned packet, never into source files.
+// All sheets are rasterized from the same complete PDF. Only letter fields are
+// editable here; existing report annotations remain part of the owned packet.
 window.CRP_PACKET_REVIEW = (() => {
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const pageLabel = page => ({instructions:'Instructions for you',letter:'Your dispute letter',IDENTITY:'Identification copy',IDENTIFICATION:'Identification copy',ADDRESS:'Address verification copy',SUPPORTING:'Supporting evidence'}[page.label] || {instructions:'Instructions for you',letter:'Your dispute letter'}[page.kind] || page.label || 'Packet page');
@@ -29,7 +29,7 @@ window.CRP_PACKET_REVIEW = (() => {
       for (const meta of data.review_pages) {
         const sheet = document.createElement('section'); sheet.className = 'packet-page'; sheet.id = 'packet-sheet-' + meta.page;
         sheet.dataset.packetPage = meta.page; sheet.setAttribute('aria-label', `Page ${meta.page} of ${data.page_count}: ${pageLabel(meta)}`);
-        sheet.innerHTML = `<h4>Page ${meta.page} of ${data.page_count} - ${escape(pageLabel(meta))}${meta.source_page ? ` (${meta.kind.startsWith('report')?'report':'document'} page ${meta.source_page})` : ''}</h4>${meta.kind === 'instructions' ? '<p class="note">For you only. Remove this page before sending.</p>' : ''}<div class="packet-sheet-scroll"><div class="packet-sheet" style="aspect-ratio:${meta.page_width}/${meta.page_height}"><img alt="${escape(pageLabel(meta))} - page ${meta.page}" class="packet-page-image"><div class="packet-annotation-draft" hidden></div></div></div>`;
+        sheet.innerHTML = `<h4>Page ${meta.page} of ${data.page_count} - ${escape(pageLabel(meta))}${meta.source_page ? ` (${meta.kind.startsWith('report')?'report':'document'} page ${meta.source_page})` : ''}</h4>${meta.kind === 'instructions' ? '<p class="note">For you only. Remove this page before sending.</p>' : ''}<div class="packet-sheet-scroll"><div class="packet-sheet" style="aspect-ratio:${meta.page_width}/${meta.page_height}"><img alt="${escape(pageLabel(meta))} - page ${meta.page}" class="packet-page-image"></div></div>`;
         list.append(sheet);
         const paper = sheet.querySelector('.packet-sheet');
         for (const field of (data.editable_fields || []).filter(f => f.page === meta.page && f.section === 'letter')) {
@@ -42,38 +42,6 @@ window.CRP_PACKET_REVIEW = (() => {
           editor.style.setProperty('--letter-font', String(field.font_size)); editor.style.setProperty('--page-width', String(meta.page_width));
           editor.oninput = () => { live(); letterChanged = true; changed('letter'); sheet.classList.add('is-edited'); };
           editors.push(editor); paper.append(editor);
-        }
-        if (meta.kind === 'report' && meta.annotation_available !== false && meta.file_id && meta.source_width && meta.source_height) {
-          const tools = document.createElement('div'); tools.className = 'packet-highlight-tools';
-          tools.innerHTML = `<button type="button" class="secondary packet-add-highlight" aria-pressed="false">Add a highlight on this page</button><p class="evidence">Choose Add a highlight, then drag around the information to check.</p><details><summary>Add a highlight using page positions</summary><div class="packet-position-inputs">${[['x','From left',10],['y','From top',10],['width','Width',40],['height','Height',5]].map(([key,label,value]) => `<label>${label} (%)<input type="number" data-position="${key}" min="0" max="100" step="1" value="${value}"></label>`).join('')}</div><button type="button" class="secondary packet-position-add">Add this highlight</button></details><div class="packet-highlight-list"></div>`;
-          sheet.append(tools);
-          const drawList = () => {
-            const area = tools.querySelector('.packet-highlight-list'); area.replaceChildren();
-            for (const [index, item] of annotations.entries()) if (item.file_id === meta.file_id && item.page === meta.source_page) {
-              const row = document.createElement('div'); row.className = 'packet-highlight-row';
-              row.innerHTML = `<label>Explain this highlight<textarea maxlength="200" rows="2">${escape(item.note || '')}</textarea></label><button type="button" class="secondary">Remove highlight</button>`;
-              row.querySelector('textarea').oninput = event => { live(); annotations[index].note = event.target.value; changed('annotations'); };
-              row.querySelector('button').onclick = () => { live(); annotations.splice(index, 1); changed('annotations'); drawList(); };
-              area.append(row);
-            }
-          };
-          const add = rect => {
-            live();
-            if (annotations.length >= 128 || annotations.filter(a=>a.file_id===meta.file_id&&a.page===meta.source_page).length>=4 || rect.width < .002 || rect.height < .002 || [rect.x,rect.y,rect.width,rect.height].some(n => !Number.isFinite(n) || n < 0 || n > 1) || rect.x + rect.width > 1.000001 || rect.y + rect.height > 1.000001) return;
-            annotations.push({file_id:meta.file_id,page:meta.source_page,...rect,note:'Please check this information.'});
-            changed('annotations'); drawList();
-            const draft = paper.querySelector('.packet-annotation-draft'); draft.hidden = false;
-            draft.style.left = rect.x * meta.source_width / meta.page_width * 100 + '%'; draft.style.top = rect.y * meta.source_height / meta.page_height * 100 + '%';
-            draft.style.width = rect.width * meta.source_width / meta.page_width * 100 + '%'; draft.style.height = rect.height * meta.source_height / meta.page_height * 100 + '%';
-          };
-          tools.querySelector('.packet-position-add').onclick = () => add(Object.fromEntries([...tools.querySelectorAll('[data-position]')].map(n => [n.dataset.position, Number(n.value) / 100])));
-          let armed = false, start = null;
-          const toggle = tools.querySelector('.packet-add-highlight');
-          toggle.onclick = () => { live(); armed = !armed; toggle.setAttribute('aria-pressed', String(armed)); paper.classList.toggle('highlighting', armed); };
-          const point = event => { const box = paper.getBoundingClientRect(); return {x:Math.min(1,Math.max(0,(event.clientX-box.left)/box.width*meta.page_width/meta.source_width)),y:Math.min(1,Math.max(0,(event.clientY-box.top)/box.height*meta.page_height/meta.source_height))}; };
-          paper.onpointerdown = event => { if (!armed) return; event.preventDefault(); start = point(event); paper.setPointerCapture(event.pointerId); };
-          paper.onpointerup = event => { if (!armed || !start) return; const end = point(event); add({x:Math.min(start.x,end.x),y:Math.min(start.y,end.y),width:Math.abs(end.x-start.x),height:Math.abs(end.y-start.y)}); start=null; armed=false; toggle.setAttribute('aria-pressed','false'); paper.classList.remove('highlighting'); };
-          paper.onpointercancel = () => {start=null;}; drawList();
         }
       }
       root.querySelector('#packet-page-jump').onchange = event => root.querySelector('#packet-sheet-' + event.target.value)?.scrollIntoView({block:'start',behavior:'instant'});

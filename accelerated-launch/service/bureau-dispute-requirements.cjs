@@ -152,7 +152,6 @@ function missing(req, profile, documents, settings) {
     if (!declaration && (scored.reduce((n, row) => n + row[0], 0) < 100 || !scored.some(row => row[1] === 'A') || (req.bureau === 'EXPERIAN' && !scored.some(row => ['B', 'C'].includes(row[1]))))) result.push('Select the required 100 points and document groups.');
     for (const kind of ['BANK_STATEMENT', 'UTILITY_BILL']) if (req.bureau === 'EQUIFAX' && counts[kind] > 2) result.push('Select at most two ' + (kind === 'BANK_STATEMENT' ? 'bank statements from different accounts.' : 'paid utility bills from different providers.'));
   }
-  if ((req.identity_count || req.address_count || req.points_required || req.support_count) && !settings.copies_confirmed) result.push('Confirm that your selected copies meet the bureau’s instructions, including any required document groups, dates, different accounts/providers and paid bills.');
   return result;
 }
 module.exports = { SOURCES, catalog, normalizeBureau, requirements, missing };

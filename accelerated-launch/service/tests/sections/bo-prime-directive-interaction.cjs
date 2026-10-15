@@ -165,7 +165,6 @@ async function run(service, check) {
   const originalQueries = panelEl.querySelectorAll;
   panelEl.querySelectorAll = selector => selector === '[data-packet-document]:checked' ? documentChecks : originalQueries(selector);
   for (const id of supportIds) dom.elementById('packet-document-date-' + id).value = new Date().toISOString().slice(0, 10);
-  dom.elementById('packet-copies-confirmed').checked = true;
   dom.elementById('packet-identity-reference').value = '000000000';
   dom.elementById('packet-wording').value = 'First wording.';
   // Assigning a VM node value does not dispatch the input event a consumer edit does.
@@ -283,9 +282,9 @@ async function run(service, check) {
   await waitFor(() => vm.runInContext('state.step', postCtx) === 3);
   await waitFor(() => vm.runInContext('Boolean(state.view && state.view.result)', postCtx));
   check.equal(vm.runInContext('state.error', postCtx), null, 'the check completes with no UI error');
-  check.ok(/Results/.test(post.elementById('panel').innerHTML), 'and the completed screen is the results step');
+  check.ok(/Review results/.test(post.elementById('panel').innerHTML), 'and the completed screen is Review results');
   vm.runInContext('state.step = 2; render();', postCtx);
-  check.ok(/id="view-results"/.test(postPanel()) && !/id="check-report"/.test(postPanel()), 'the post-upload screen then offers exactly one action: the results');
+  check.ok(/Review results/.test(postPanel()) && /id="current-report-identity"/.test(postPanel()) && !/id="view-results"|id="check-report"/.test(postPanel()), 'a completed report opens its identified Results without another check or continue screen');
 
   /* A second case, uploaded while access is still held, to measure the uploaded-but-no-access screen. */
   const postCaseB = (await service.request('POST', '/api/cases', { token: postOwner.token, body: { country: 'CA', region: 'CA-NS' } })).json.case;

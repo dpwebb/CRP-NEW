@@ -11,7 +11,9 @@ function normalize(input, country) {
   const bureau = bureaus.normalizeBureau(input.bureau, country);
   if (input.channel === 'POSTAL' && bureaus.requirements(country, bureau, input)?.postal === null) throw new ServiceError('PACKET_SUBMISSION_METHOD_REQUIRED');
   if (!bureaus.requirements(country, bureau, input) || !Array.isArray(input.document_ids) || input.document_ids.length > 8 || new Set(input.document_ids).size !== input.document_ids.length || input.document_ids.some(id => typeof id !== 'string' || !/^[a-f0-9]{32}$/.test(id))) throw new ServiceError('INVALID_REQUEST');
-  for (const key of ['use_account_profile', 'no_ssn_issued', 'identity_shows_address', 'verification_requested', 'copies_confirmed']) if (typeof input[key] !== 'boolean') throw new ServiceError('INVALID_REQUEST');
+  for (const key of ['use_account_profile', 'no_ssn_issued', 'identity_shows_address']) if (typeof input[key] !== 'boolean') throw new ServiceError('INVALID_REQUEST');
+  // Older saved packets retain their recorded context; the simplified Wizard no longer asks these questions.
+  for (const key of ['verification_requested', 'copies_confirmed']) if (input[key] !== undefined && typeof input[key] !== 'boolean') throw new ServiceError('INVALID_REQUEST');
   for (const key of ['identity_reference', 'other_identity_details']) if (input[key] != null && (typeof input[key] !== 'string' || input[key].length > 500 || /[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(input[key]))) throw new ServiceError('INVALID_REQUEST');
   const dates = input.document_dates || {};
   if (typeof dates !== 'object' || Array.isArray(dates) || Object.keys(dates).some(id => !input.document_ids.includes(id) || typeof dates[id] !== 'string' || (dates[id] && (!/^\d{4}-\d{2}-\d{2}$/.test(dates[id]) || !Number.isFinite(Date.parse(dates[id])) || new Date(dates[id]).toISOString().slice(0, 10) !== dates[id])))) throw new ServiceError('INVALID_REQUEST');

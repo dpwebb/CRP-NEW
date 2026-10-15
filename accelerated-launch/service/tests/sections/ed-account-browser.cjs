@@ -54,7 +54,7 @@ async function run(service, check) {
     await page.locator('#email').fill(actor.email); await page.locator('#password').fill('a-long-enough-password'); await page.locator('#signin').click();
     await page.waitForSelector('#open');
     check.ok(await page.locator('.sidebar').isVisible(), 'the guided workspace appears after sign-in');
-    check.equal(await page.locator('#stepcount').innerText(), 'Step 2 of 7', 'sign-in opens Step2 of the seven-step main journey');
+    check.equal(await page.locator('#stepcount').innerText(), 'Step 2 of 5', 'sign-in opens Upload in the five-step main journey');
     check.equal(await page.locator('#open').innerText(), 'Upload your report', 'the primary action clearly names report upload');
     check.ok(!/Open a case|this build can read|any of the 82/.test(await page.locator('#panel').innerText()), 'Step2 removes case/build/region-count jargon');
     const report = buildPdf({ pages: [{ lines: ['TransUnion Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2020  Closed 01/01/2019'] }] });
@@ -68,11 +68,26 @@ async function run(service, check) {
     const createResponse = page.waitForResponse(response => response.url().endsWith('/api/cases') && response.request().method() === 'POST');
     await page.locator('#open').click(); const created = await (await createResponse).json();
     check.equal(created.case.selected_bureau, 'TRANSUNION', 'bureau choice reaches the real case');
-    await page.waitForFunction(() => document.getElementById('stepcount').textContent === 'Step 4 of 7');
+    await page.waitForFunction(() => document.getElementById('stepcount').textContent === 'Step 3 of 5');
+    await page.locator('#panel').getByText(/Reporting issues found:\s*1/).first().waitFor();
     check.ok(/Reporting issues found: 1/.test(await page.locator('#panel').innerText()), 'unpaid Step2 upload automatically reaches the existing results and issue count');
     check.ok(/VIOLATION/.test(await page.locator('#panel').innerText()), 'the consumer sees the supported dispute concern');
+    check.ok((await page.locator('#current-report-identity').innerText()).includes('fictional-credit-report.pdf')
+      && (await page.locator('#current-report-identity').innerText()).includes('TransUnion'), 'Results labels the exact uploaded bureau report');
+    check.deepEqual(await page.locator('#steps button[data-step] .num').evaluateAll(nodes => nodes.map(node => node.parentElement.dataset.step)),
+      ['0', '1', '3', '5', '6'], 'the consumer navigation contains exactly the five agreed main steps');
     const storedCase = await service.request('GET', '/api/cases/' + created.case.case_id, { token: actor.token });
     check.equal(storedCase.json.view.files.length, 1, 'one new report is stored on the selected case');
+    await page.locator('#steps button[data-step="1"]').click();
+    await page.locator('[data-open="' + created.case.case_id + '"]').waitFor();
+    check.equal(await page.locator('#saved-report-list [data-open]').first().getAttribute('data-open'), created.case.case_id,
+      'the newly uploaded report is the first saved-report choice');
+    await page.locator('[data-open="' + created.case.case_id + '"]').click(); await page.locator('#current-report-identity').waitFor();
+    check.equal(await page.locator('#stepcount').innerText(), 'Step 3 of 5', 'opening a saved report leads directly to Results');
+    check.ok((await page.locator('#current-report-identity').innerText()).includes('fictional-credit-report.pdf'), 'the saved-report choice keeps the selected report identity');
+    await page.locator('#steps button[data-step="1"]').click(); await page.locator('#resume-latest').waitFor();
+    await page.locator('#resume-latest').click(); await page.locator('#current-report-identity').waitFor();
+    check.ok((await page.locator('#current-report-identity').innerText()).includes('fictional-credit-report.pdf'), 'Resume my latest report leads to the latest report Results');
     await page.locator('#steps button[data-step="0"]').click(); await page.waitForSelector('#account-save');
     check.equal(await page.locator('#signin, #create, #password').count(), 0, 'signed-in back navigation shows no authentication controls');
     check.ok(!/Stripe is connected|Nothing is charged|No email is sent|Another account cannot/.test(await page.locator('#panel').innerText()), 'Step1 omits confusing internal copy');
@@ -125,7 +140,7 @@ async function run(service, check) {
     check.equal((await service.request('GET', '/api/session', { token: actor.token })).status, 401, 'password recovery revokes the prior session');
     await page.locator('#saved-recovery-key').click(); await page.locator('#recovery-back').click();
     await page.locator('#email').fill(actor.email); await page.locator('#password').fill('a-new-long-enough-password'); await page.locator('#signin').click(); await page.locator('#create-recovery-key').waitFor(); await page.locator('#security-password').fill('a-new-long-enough-password'); await page.locator('#create-recovery-key').click(); await page.locator('#saved-recovery-key').click(); await page.getByText('Recovery key saved',{exact:true}).waitFor(); await page.locator('#finish-signup').click(); await page.waitForSelector('#open');
-    check.equal(await page.locator('#stepcount').innerText(), 'Step 2 of 7', 'the consumer signs in normally with the recovered password');
+    check.equal(await page.locator('#stepcount').innerText(), 'Step 2 of 5', 'the consumer signs in normally with the recovered password');
     const removed = await page.request.delete(service.base + '/api/account', { headers: { Origin: service.base } });
     check.equal(removed.status(), 200, 'fictional browser account and contact details cleaned up with the new owned session');
     return { real_browser: true, unpaid_account_contact_and_documents: true, sign_in_back_and_reload: true, jurisdiction_bureau_choice: true, recovery_key_download_and_password_reset: true, screenshot };

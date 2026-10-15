@@ -24,6 +24,9 @@ const STEP_VIEWS = Object.freeze({
 const STEP_KEYS = Object.keys(STEP_VIEWS);
 const STEPS = STEP_KEYS.map(key => STEP_VIEWS[key].label);
 const STEP = Object.freeze(Object.fromEntries(STEP_KEYS.map((key, index) => [key, index])));
+// Keep saved/internal destinations stable while showing only the five consumer steps.
+const JOURNEY_STEPS = [STEP.ACCOUNT, STEP.JURISDICTION, STEP.RESULTS, STEP.PREPARE, STEP.REVIEW];
+const visibleStep = step => [STEP.REPORT, STEP.CHOOSE].includes(step) ? STEP.RESULTS : step;
 const state = {
   step: 0,
   surfaceError: null,
@@ -59,6 +62,8 @@ const state = {
   twoFactorSetup: null,
   contactLocation: null,
   packetReturn: null,
+  packetChoices: null,
+  packetRepair: null,
   checkoutReturn: null,
   savedReportFilter: '',
   savedReportsStatus: 'idle',
@@ -239,8 +244,8 @@ function readFileBase64(file) {
 /* ------------------------------------------------------------------ shell */
 
 function renderSteps() {
-  const main = STEPS.slice(0, STEP.REVIEW + 1).map((label, index) =>
-    `<button data-step="${index}" aria-current="${index === state.step}"><span class="num">${index + 1}</span><span class="step-name">${esc(label)}</span></button>`).join('');
+  const main = JOURNEY_STEPS.map((step, index) =>
+    `<button data-step="${step}" aria-current="${step === state.step}"><span class="num">${index + 1}</span><span class="step-name">${esc(STEPS[step])}</span></button>`).join('');
   const tools = STEPS.slice(STEP.HISTORY).map((label, offset) =>
     `<button data-step="${STEP.HISTORY + offset}" aria-current="${STEP.HISTORY + offset === state.step}"><span class="step-name">${esc(label)}</span></button>`).join('');
   el('steps').innerHTML = `${main}<div class="tools-label">Your tools</div>${tools}`;
@@ -248,16 +253,18 @@ function renderSteps() {
     button.onclick = () => navigateStep(Number(button.dataset.step));
   }
   el('breadcrumb').textContent = STEPS[state.step];
-  const inJourney = state.step <= STEP.REVIEW;
-  el('stepcount').textContent = inJourney ? `Step ${state.step + 1} of ${STEP.REVIEW + 1}` : 'Your tools';
+  const position = JOURNEY_STEPS.indexOf(visibleStep(state.step));
+  const inJourney = position >= 0;
+  el('stepcount').textContent = inJourney ? `Step ${position + 1} of ${JOURNEY_STEPS.length}` : 'Your tools';
   el('step-label').textContent = STEPS[state.step];
-  el('bar').style.width = `${Math.min(state.step + 1, STEP.REVIEW + 1) / (STEP.REVIEW + 1) * 100}%`;
+  el('bar').style.width = `${(position + 1) / JOURNEY_STEPS.length * 100}%`;
   const progress = el('journey-progress');
-  if (progress.setAttribute) { progress.setAttribute('aria-valuemax', String(STEP.REVIEW + 1)); progress.setAttribute('aria-valuenow', String(Math.min(state.step + 1, STEP.REVIEW + 1))); }
+  if (progress.setAttribute) { progress.setAttribute('aria-valuemax', String(JOURNEY_STEPS.length)); progress.setAttribute('aria-valuenow', String(position + 1)); }
   progress.hidden = !inJourney;
 }
 
 function navigateStep(step) {
+  step = visibleStep(step);
   if (el('steps')?.matches?.(':popover-open')) el('steps').hidePopover?.();
   if ([STEP.CHOOSE, STEP.PREPARE, STEP.REVIEW].includes(state.step) && packetLeave) {
     const accountId = state.account?.account_id, epoch = accountEpoch, caseId = state.caseId;
@@ -383,6 +390,7 @@ function notices(accessible = false) {
 }
 
 function render() {
+  state.step = visibleStep(state.step);
   packetReviewController?.dispose(); packetReviewController = null;
   renderSequence++;
   if(state.account&&state.accountSecurity?.signup_complete===false)state.step=STEP.ACCOUNT;
@@ -878,6 +886,18 @@ function savedReportLabel(row) {
   const date = row.report_date || String(row.created_at || '').slice(0, 10);
   return [bureau, date, files.filter(Boolean).join(', '), regionLabel(row.country, row.region)].filter(Boolean).join(' · ');
 }
+function newestReports() {
+  return state.cases.slice().sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
+}
+function currentReportIdentity(view) {
+  const saved = state.cases.find(row => row.case_id === view.case.case_id) || {};
+  const identity = (view.result?.issues || []).find(issue => issue.report_identity)?.report_identity || {};
+  const row = { ...saved, ...view.case, files: view.files || saved.files || [] };
+  const bureau = row.bureau_label || identity.bureau || row.bureau || (surface?.bureau_choices?.[row.country] || []).find(item => item.id === row.selected_bureau)?.label || 'Credit report';
+  const filenames = view.files?.length ? view.files.map(file => file.original_filename) : row.original_filenames || row.files.map(file => file.original_filename);
+  const date = row.report_date || identity.reference_date;
+  return `<p class="lede" id="current-report-identity"><strong>${esc(bureau)}</strong>${date ? ` · Report dated ${esc(date)}` : row.created_at ? ` · Uploaded ${esc(String(row.created_at).slice(0, 10))}` : ''}${filenames.filter(Boolean).length ? ` · ${esc(filenames.filter(Boolean).join(', '))}` : ''} · ${esc(regionLabel(row.country, row.region))}</p>`;
+}
 
 function savedReportsMarkup() {
   const loading = state.savedReportsStatus === 'loading', failed = state.savedReportsStatus === 'error';
@@ -992,7 +1012,7 @@ function renderJurisdiction(panel) {
       const uploaded = await uploadReportBatch(items, caseId, ensureSelection); ensureSelection();
       const cases = await api('GET', '/api/cases'); ensureSelection();
       state.caseId = caseId; state.cases = cases.cases; state.view = uploaded.view; state.checkoutReturn = null;
-      state.step = STEP.REPORT; state.notice = uploaded.notice;
+      state.step = STEP.RESULTS; state.notice = uploaded.notice;
       state.assessment_error = null; state.purchase_needed = null;
       if (items.every(item => item.status === 'saved')) await checkReport();
     } catch (err) {
@@ -1010,12 +1030,13 @@ function renderJurisdiction(panel) {
       state.caseId = caseId;
       if (state.checkoutReturn?.caseId !== caseId) state.checkoutReturn = null;
       state.view = data.view;
-      state.step = data.view.assessment_summary || data.view.result ? STEP.RESULTS : STEP.REPORT;
+      state.step = STEP.RESULTS;
+      state.assessment_error = null; state.purchase_needed = null;
     });
   const filterSavedReports = () => {
     const list = el('saved-report-list'); if (!list) return;
     const query = state.savedReportFilter.trim().toLocaleLowerCase();
-    const matching = state.cases.slice().sort((a, b) => String(b.updated_at || b.created_at || '').localeCompare(String(a.updated_at || a.created_at || '')))
+    const matching = newestReports()
       .filter(row => savedReportLabel(row).toLocaleLowerCase().includes(query));
     list.innerHTML = matching.length ? `<ul class="plain">${matching.map(row => `<li>${esc(savedReportLabel(row))} <button class="secondary" data-open="${esc(row.case_id)}">Continue</button></li>`).join('')}</ul>` : '<p>No saved report matches your search.</p>';
     for (const button of panel.querySelectorAll('[data-open]')) button.onclick = () => openSavedReport(button.dataset.open);
@@ -1028,7 +1049,7 @@ function renderJurisdiction(panel) {
     if (state.cases.length) {
       filterSavedReports();
       el('saved-report-filter').oninput = () => { state.savedReportFilter = el('saved-report-filter').value; filterSavedReports(); };
-      el('resume-latest').onclick = () => openSavedReport(state.cases.slice().sort((a, b) => String(b.updated_at || b.created_at || '').localeCompare(String(a.updated_at || a.created_at || '')))[0].case_id);
+      el('resume-latest').onclick = () => openSavedReport(newestReports()[0].case_id);
     }
   };
   paintSavedReports();
@@ -1151,7 +1172,7 @@ async function checkReport() {
   }
 }
 
-function renderReport(panel) {
+function renderReport(panel, resultsScreen = false, filesOnly = false) {
   if (!state.view) {
     panel.innerHTML = `${notices()}<h1>Upload your credit report</h1><p class="lede">Start with your current location and credit bureau.</p><button class="primary" id="upload-start">Upload your report</button>`;
     el('upload-start').onclick = () => { state.step = STEP.JURISDICTION; render(); };
@@ -1164,14 +1185,15 @@ function renderReport(panel) {
   const uploaded = files.length > 0;
   const where = esc(regionLabel(view.case.country, view.case.region));
   panel.innerHTML = `
-    <h1>Your report</h1>
+    ${filesOnly ? '' : `<h1>${resultsScreen ? 'Review results' : 'Your report'}</h1>
+    ${resultsScreen ? currentReportIdentity(view) : ''}
     ${notices()}
     ${uploaded
       ? reportStatus(view)
       : `<p class="lede">Case for ${where}. The file you upload is stored privately and securely for this case.</p>
          ${coverage(regionRow)}`}
     ${access()}
-    ${uploaded ? `<h2>Reviewing your report for ${where}</h2>` : ''}
+    ${uploaded ? `<h2>Reviewing your report for ${where}</h2>` : ''}`}
     <label for="file">${uploaded ? 'Choose another file for this case, or a replacement for one already here' : 'Choose a PDF report or report images in page order'}</label>
     <input id="file" type="file" multiple accept="application/pdf,image/png,image/jpeg,image/tiff,.pdf,.png,.jpg,.jpeg,.tif,.tiff">
     <button class="primary" id="upload">Upload selected files</button>
@@ -1187,7 +1209,7 @@ function renderReport(panel) {
     ${files.length ? files.map(fileCard).join('') : '<p class="lede">No file has been uploaded for this case yet.</p>'}`;
 
   const caseId = state.caseId, ensureAccount = accountContext(), sequence = renderSequence;
-  const ensureReport = () => { ensureAccount(); if (state.caseId !== caseId || state.step !== STEP.REPORT || sequence !== renderSequence) throw cancelledAction(); };
+  const ensureReport = () => { ensureAccount(); if (state.caseId !== caseId || visibleStep(state.step) !== STEP.RESULTS || sequence !== renderSequence) throw cancelledAction(); };
   const uploadBatch = async items => {
     const uploaded = await uploadReportBatch(items, caseId, ensureReport); ensureReport();
     state.view = uploaded.view; state.notice = uploaded.notice;
@@ -1647,21 +1669,27 @@ function renderResults(panel) {
   const result = view.result;
   const summary = view.assessment_summary || null;
   const demo = result && result.support === 'DEMONSTRATION_ONLY_NOT_REPORT_SUPPORT';
+  if (!summary && !result) {
+    renderReport(panel, true);
+    return;
+  }
   panel.innerHTML = `
-    <h1>Results</h1>
+    <h1>Review results</h1>
     ${access.complete_assessment && result ? '<label for="result-select">Result</label><select id="result-select"><option value="">Latest result</option></select>' : ''}
-    <p class="lede">Your report for ${esc(regionLabel(view.case.country, view.case.region))}.</p>
+    ${currentReportIdentity(view)}
     ${notices()}
+    <details><summary>Report files and upload help</summary><div id="report-file-tools"></div></details>
     ${pendingPaymentBlock(true)}
     ${failedPaymentBlock()}${renewalAttentionBlock(true)}
     <button class="${summary ? 'secondary' : 'primary'}" id="evaluate">${summary ? 'Check this report again' : 'Check my report'}</button>
     ${summary
-      ? (access.complete_assessment && result ? resultBlock(result, demo) : freeSummaryBlock(view))
+      ? (access.complete_assessment && result ? resultBlock(result, demo, access.dispute_packet && !demo) : freeSummaryBlock(view))
       : '<div class="note">Your report has not been checked yet. Select Check my report.</div>'}
     ${summary && access.complete_assessment && result && !demo
       ? (access.dispute_packet ? `${clarificationBlock(view)}${(result.issues || []).some(issue => issue.eligible) ? '<button class="primary" id="create-packet">Create my dispute packet</button>' : ''}<button class="secondary" id="download-assessment">Download my report (PDF)</button>${subscriptionBenefits('Included with your subscription')}` : oneTimeNextStepsBlock())
       : ''}`;
 
+  renderReport(el('report-file-tools'), false, true);
   el('evaluate').onclick = () => checkReport();
   for (const code of ['report_once', 'monthly', 'annual']) {
     const button = el('buy-' + code);
@@ -1675,7 +1703,7 @@ function renderResults(panel) {
   const subscribe = el('go-subscribe');
   if (subscribe) subscribe.onclick = () => run(async () => { state.step = STEP.BILLING; });
   const packet = el('create-packet');
-  if (packet) packet.onclick = () => navigateStep(STEP.CHOOSE);
+  if (packet) wireResultsPacket(panel, view);
   const renewalPlans = el('renewal-plans');
   if (renewalPlans) renewalPlans.onclick = () => navigateStep(STEP.BILLING);
 
@@ -1684,9 +1712,9 @@ function renderResults(panel) {
   wirePendingPayment();
 }
 
-function resultBlock(result, demo) {
+function resultBlock(result, demo, selectable = false) {
   if (!demo) {
-    return `${assessmentDateLine(result)}${issuesSection(result)}`;
+    return `${assessmentDateLine(result)}${issuesSection(result, selectable)}`;
   }
   const observations = result.observations.filter(o => o.assessment_completed !== false).map((o) => `
     <div class="obs">
@@ -1740,28 +1768,108 @@ function assessmentDateLine(holder) {
 
 /* OWNER-POTENTIAL-ISSUE-001: supported potential reporting issues, rendered as review cards (never NOT_DETECTED,
    never failed-check diagnostics). Each states what the report says, why it merits attention and its uncertainty. */
-function issuesSection(result) {
+function issuesSection(result, selectable = false) {
   const issues = result.issues || [];
   const informational = i => i.limitation_concern || i.basis_type === 'LIMITATION_ASSESSMENT';
   const cards = items => items.map((i) => `
     <div class="obs issue">
+      ${selectable && i.eligible ? `<label class="issue-select"><input type="checkbox" data-check-issue="${esc(i.issue_id)}">Dispute this issue</label>` : ''}
       <span class="pill potential">${issueLabel(i)}</span>
+      ${informational(i) ? '<p class="evidence">Information about court time limits is for you. It is not included in a dispute packet.</p>' : ''}
       ${i.account_identity && i.account_identity.name ? `<p class="evidence">Account: <b>${esc(i.account_identity.name)}</b></p>` : ''}
       <h3>${esc(i.explanation)}</h3>
       <p class="evidence">${informational(i) ? '' : 'Why it merits attention: '}${esc(i.uncertainty)}</p>
       ${i.limitation && i.limitation.assessed_on ? `<p class="evidence">Assessed on <b>${esc(i.limitation.assessed_on)}</b>${i.limitation.assessment_clock_basis ? ` (${esc(i.limitation.assessment_clock_basis)})` : ''}${i.limitation.report_date ? ` · the report itself is dated <b>${esc(i.limitation.report_date)}</b>` : ''}.</p>` : ''}
       ${i.retention_review ? `<p class="evidence">${i.retention_review.report_issued ? `Report issued: <b>${esc(i.retention_review.report_issued)}</b> · ` : 'Report issued: <b>not stated</b> · '}Assessed on: <b>${esc(i.retention_review.assessed_on || '')}</b> · the reporting period appears to end ${i.retention_review.period_appears_to_end_from ? `somewhere between <b>${esc(i.retention_review.period_appears_to_end_from)}</b> and <b>${esc(i.retention_review.period_appears_to_end_on)}</b>` : `<b>${esc(i.retention_review.period_appears_to_end_on || '')}</b>`}${i.retention_review.arose_through_later_passage_of_time ? ' · this arose through the passage of time since your report was issued' : ''}.</p>` : ''}
       ${i.source_location ? `<p class="evidence">Your report, ${i.source_location.section ? esc(i.source_location.section) + ', ' : ''}page <b>${esc(i.source_location.page)}</b>${i.source_location.line != null ? `, line <b>${esc(i.source_location.line)}</b>` : ''}${i.account_number_in_report != null ? `, account <b>${esc(i.account_number_in_report)}</b>` : ''}.</p>` : ''}
+      ${comparisonFactList(i)}
       ${i.rule_assessment ? `<p class="evidence">${esc(i.rule_assessment.requirement)}${i.citation ? ` Supporting statute: ${esc(i.citation)}.` : ''}</p>` : i.retention_review || i.limitation_concern ? '' : i.report_concern ? '<p class="evidence">You can ask the bureau to check this report detail.</p>' : '<p class="evidence">A factual discrepancy like this supports a verification request.</p>'}
     </div>`).join('');
-  const reporting = issues.filter(i => !informational(i)), information = issues.filter(informational);
-  const concerns = reporting.filter(i => i.consumer_label === 'NON-VIOLATION CONCERN');
-  const findings = reporting.filter(i => i.consumer_label === 'VIOLATION');
-  const otherReviews = reporting.filter(i => i.consumer_label !== 'VIOLATION' && i.consumer_label !== 'NON-VIOLATION CONCERN');
-  const reportingCards = concerns.length
-    ? `${findings.length ? `<h2>Violations</h2>${cards(findings)}` : ''}<h2>Non-violation concerns</h2>${cards(concerns)}${otherReviews.length ? `<h2>Other details to review</h2>${cards(otherReviews)}` : ''}`
-    : reporting.length ? `<h2>Reporting issues for your review</h2>${cards(reporting)}` : '<p class="lede">We did not find a reporting issue in the information we could review.</p>';
-  return `${reportingCards}${information.length ? `<h2>Information about court time limits</h2><p>This information is for you. It is not included in a dispute packet.</p>${cards(information)}` : ''}`;
+  const reporting = issues.filter(i => !informational(i));
+  const groups = new Map();
+  for (const issue of issues) {
+    const inquiry = /inquir|enquir|search|credit report hit/i.test(issue.record_kind || '');
+    const entry = issue.account_number_in_report ?? issue.account_identity?.record_index;
+    const key = inquiry ? 'inquiries' : entry != null ? `entry:${issue.report_identity?.file_id ? issue.report_identity.file_id + ':' : ''}${entry}` : `issue:${issue.issue_id}`;
+    if (!groups.has(key)) {
+      const kind = /collection/i.test(issue.record_kind || '') ? 'Collection' : /account|tradeline|liability/i.test(issue.record_kind || '') ? 'Account' : 'Report entry';
+      groups.set(key, { title: inquiry ? 'Credit report hits' : issue.account_identity?.name ? `${kind}: ${issue.account_identity.name}` : `${kind}${entry != null ? ' ' + entry : ''}`, issues: [] });
+    }
+    groups.get(key).issues.push(issue);
+  }
+  return `${reporting.length ? '<h2>Reporting issues for your review</h2>' : '<p class="lede">We did not find a reporting issue in the information we could review.</p>'}${[...groups].map(([key, group]) => `<section data-issue-group="${esc(key)}"><h3>${esc(group.title)}</h3>${cards(group.issues)}</section>`).join('')}`;
+}
+
+function packetSupportDefaults(pv) {
+  const saved = pv.support?.settings;
+  if (saved) {
+    const settings = { ...saved, use_account_profile: true };
+    const selected = (pv.eligible_issues || []).filter(issue => (pv.packet?.selected_issue_ids || []).includes(issue.issue_id));
+    const source = selected.find(issue => issue.report_identity?.bureau)?.report_identity.bureau;
+    const normalized = String(source || '').toUpperCase().replace(/[^A-Z]/g, '');
+    const route = (pv.support?.catalog || []).find(row => normalized.includes(row.id) || (pv.support?.requirements?.country === 'AU' && normalized.includes('ILLION') && row.id === 'EXPERIAN'));
+    if (route) settings.bureau = route.id;
+    if (pv.support?.requirements?.country === 'CA' && settings.bureau === 'EQUIFAX' && pv.support.suggested_purpose) {
+      settings.purpose = pv.support.suggested_purpose;
+      if (selected.some(issue => /credit account/i.test(issue.record_kind || '')) && selected.some(issue => /collection|judgment|bankruptcy|public record|tax lien/i.test(issue.record_kind || ''))) settings.identity_shows_address = false;
+    }
+    if (Array.isArray(pv.support?.documents)) {
+      const available = new Set(pv.support.documents.map(doc => doc.file_id));
+      settings.document_ids = settings.document_ids.filter(id => available.has(id));
+      settings.document_dates = Object.fromEntries(Object.entries(settings.document_dates || {}).filter(([id]) => settings.document_ids.includes(id)));
+    }
+    return settings;
+  }
+  return { bureau: pv.support?.requirements?.bureau || state.view?.case?.selected_bureau || '', channel: 'POSTAL',
+    purpose: pv.support?.suggested_purpose || 'ACCOUNT', use_account_profile: true,
+    document_ids: (pv.support?.documents || []).filter(doc => ['IDENTITY', 'ADDRESS'].includes(doc.document_type)).slice(0, 8).map(doc => doc.file_id),
+    identity_shows_address: false, no_ssn_issued: false, identity_reference: '', other_identity_details: '', document_dates: {} };
+}
+function wireResultsPacket(panel, view) {
+  const caseId = state.caseId, resultId = view.result_id, ensure = viewContext();
+  const key = `${accountEpoch}:${state.account.account_id}:${caseId}:${resultId}`;
+  const checks = [...panel.querySelectorAll('[data-check-issue]')];
+  const selected = () => checks.filter(node => node.checked).map(node => node.getAttribute('data-check-issue'));
+  const remember = () => { state.packetChoices = { key, ids: selected() }; };
+  const button = el('create-packet');
+  button.disabled = true;
+  let changed = false;
+  for (const node of checks) node.onchange = () => { try { ensure(); } catch { return; } changed = true; remember(); };
+  currentRequest(ensure, 'GET', `/api/cases/${caseId}/packet`).then(answer => {
+    const ids = new Set(state.packetChoices?.key === key ? state.packetChoices.ids : answer.view.packet?.selected_issue_ids || []);
+    if (!changed) for (const node of checks) node.checked = ids.has(node.getAttribute('data-check-issue'));
+    remember(); button.disabled = false;
+  }).catch(error => { if (!error.cancelled) { button.disabled = false; state.error = error.message; showOperationError(error.message); } });
+  button.onclick = () => run(async () => {
+    ensure();
+    if (view.latest_result_id && view.latest_result_id !== resultId) {
+      state.view = (await currentRequest(ensure, 'GET', `/api/cases/${caseId}`)).view;
+      state.step = STEP.RESULTS;
+      state.notice = 'Packets use your latest assessment. Review these issues before choosing disputes.';
+      return;
+    }
+    const ids = selected();
+    if (!ids.length) throw new Error('Choose at least one issue to dispute.');
+    const captured = JSON.stringify(ids);
+    const ensureChoice = () => { ensure(); if (JSON.stringify(selected()) !== captured) throw cancelledAction(); };
+    let pv = (await currentRequest(ensureChoice, 'GET', `/api/cases/${caseId}/packet`)).view;
+    if (pv.packet?.current_result_id !== resultId) {
+      state.view = (await currentRequest(ensureChoice, 'GET', `/api/cases/${caseId}`)).view;
+      state.step = STEP.RESULTS;
+      state.notice = 'Packets use your latest assessment. Review these issues before choosing disputes.';
+      return;
+    }
+    if (pv.packet?.assessment_current === false || JSON.stringify([...(pv.packet?.selected_issue_ids || [])].sort()) !== JSON.stringify([...ids].sort())) {
+      pv = (await currentRequest(ensureChoice, 'POST', `/api/cases/${caseId}/packet/select`, { issue_ids: ids, expected_result_id: resultId })).view;
+    }
+    const settings = packetSupportDefaults(pv);
+    if (!pv.support?.settings || JSON.stringify(settings) !== JSON.stringify(pv.support.settings)) {
+      pv = (await currentRequest(ensureChoice, 'POST', `/api/cases/${caseId}/packet/support`, { support: settings })).view;
+    }
+    state.view = (await currentRequest(ensureChoice, 'GET', `/api/cases/${caseId}`)).view;
+    state.step = pv.packet?.preview_ready ? STEP.REVIEW : STEP.PREPARE;
+    state.notice = pv.packet?.preview_ready ? 'Read every page. You can edit your letter before approving.' : 'Your saved details and copies are included. Add only the missing items.';
+  });
 }
 
 /* ------------------------------------------------------------------ optional clarification (BLOCKER-CLARIFY-001) */
@@ -1944,24 +2052,14 @@ function renderReview(panel) {
     return;
   }
   const result = view.result;
-  const choosing = state.step === STEP.CHOOSE;
   const preparing = state.step === STEP.PREPARE;
   panel.innerHTML = `
-    <h1>${choosing ? 'Choose disputes' : preparing ? 'Prepare your documents' : 'Review and approve packet'}</h1>
-    <p class="lede">${choosing ? 'Select the issues you want the bureau to check or correct.' : preparing ? 'Choose the supporting copies to include. Upload your identification and proof of address as needed, then choose the copies for your packet.' : 'Check your chosen issues and every page. Approve this version before downloading or printing it.'}</p>
+    <h1>${preparing ? 'Prepare your documents' : 'Review and approve packet'}</h1>
+    <p class="lede">${preparing ? 'Your saved contact details and copies are included. Add only what is missing.' : 'Read every page. You can edit your letter, then approve and download or print.'}</p>
     ${notices()}
     ${result ? `<div class="obs">
-      <span class="pill ${view.reviewed ? '' : 'stop'}">${view.reviewed ? 'REVIEWED BY YOU' : 'NOT YET REVIEWED'}</span>
-      <button class="primary" id="review" ${view.reviewed ? 'disabled' : ''}>I have reviewed my assessment</button>
       <div id="packet-block"></div>
     </div>` : '<div class="note">Run the checks on the previous step first.</div>'}`;
-
-  if (el('review')) el('review').onclick = () => run(async () => {
-    const ensure = viewContext(), caseId = state.caseId, resultId = view.result_id;
-    await currentRequest(ensure, 'POST', `/api/cases/${caseId}/results/${resultId}/review`, {});
-    state.view = (await currentRequest(ensure, 'GET', `/api/cases/${caseId}`)).view;
-    state.notice = 'Your review is saved.';
-  });
 
   wirePacket(panel);
 }
@@ -1991,21 +2089,28 @@ function bureauChecklist(requirements, missing = []) {
 function packetSupportingDocuments(pv) {
   const view = pv.support || {}, settings = view.settings || {}, req = view.requirements;
   const bureau = settings.bureau || req?.bureau || '';
-  return `<h3>Prepare for the bureau</h3>
-    <div class="row"><div><label for="packet-bureau">Bureau</label><select id="packet-bureau"><option value="">Choose bureau</option>${(view.catalog || []).map(row => `<option value="${row.id}" ${row.id === bureau ? 'selected' : ''}>${esc(row.label)}</option>`).join('')}</select></div>
+  const missing = view.missing || [], documents = view.documents || [];
+  const selected = new Set(view.selected_document_ids || []);
+  const repair = state.packetRepair?.caseId === state.caseId ? state.packetRepair : null;
+  const needsCopies = Boolean(repair) || missing.some(item => /Select|selected document|unavailable|unreadable|changed or removed/i.test(item));
+  const needsContact = missing.some(item => /account details|saved account details/i.test(item));
+  const needsDate = missing.some(item => /date of|dates|100 points/i.test(item));
+  const dateRequired = doc => Boolean((req?.address_age_days && doc.document_type === 'ADDRESS') || (req?.points_required && ['BANK_STATEMENT', 'UTILITY_BILL'].includes(doc.document_kind)));
+  return `<h3>Missing items</h3>
+    <div class="row" ${bureau && req ? 'hidden' : ''}><div><label for="packet-bureau">Bureau</label><select id="packet-bureau"><option value="">Choose bureau</option>${(view.catalog || []).map(row => `<option value="${row.id}" ${row.id === bureau ? 'selected' : ''}>${esc(row.label)}</option>`).join('')}</select></div>
     <div><label for="packet-purpose">What you are correcting</label><select id="packet-purpose">${[['ACCOUNT', 'Account information'], ['PUBLIC_RECORD', 'Collections or public records'], ['PERSONAL', 'Personal information'], ['NEW_ADDRESS', 'Add a new address']].map(([value, label]) => `<option value="${value}" ${(settings.purpose || view.suggested_purpose || 'ACCOUNT') === value ? 'selected' : ''}>${label}</option>`).join('')}</select></div></div>
-    <p class="evidence">Your saved contact details are included. <button class="secondary" id="packet-account-details">Add contact details or documents</button></p>
-    <div id="packet-bureau-checklist">${bureauChecklist(req, view.missing || [])}</div>
-    <h4>Choose documents to include</h4>
-    ${(view.documents || []).map(doc => `<div><label><input type="checkbox" data-packet-document="${esc(doc.file_id)}" ${(view.selected_document_ids || []).includes(doc.file_id) ? 'checked' : ''}>${esc(doc.original_filename)} — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)}</label>
-    <label for="packet-document-date-${doc.file_id}">Document date, if required</label><input id="packet-document-date-${doc.file_id}" type="date" value="${esc(settings.document_dates?.[doc.file_id] || '')}"></div>`).join('') || '<p class="evidence">No account documents uploaded yet.</p>'}
-    <label><input id="packet-id-address" type="checkbox" ${settings.identity_shows_address ? 'checked' : ''}>My selected identification shows my current address</label>
-    <label><input id="packet-verification-requested" type="checkbox" ${settings.verification_requested ? 'checked' : ''}>The bureau has asked me for identity verification</label>
-    <label><input id="packet-copies-confirmed" type="checkbox" ${settings.copies_confirmed ? 'checked' : ''}>I checked that these copies are clear, current and meet the bureau’s instructions</label>
-    <div id="packet-us-identity" ${req?.country === 'US' ? '' : 'hidden'}><label for="packet-identity-reference">Social Security number for bureau correspondence${req?.ssn_required ? '' : ' (optional)'}</label>
+    <p class="evidence">Your saved contact details and ${selected.size} document ${selected.size === 1 ? 'copy are' : 'copies are'} included.</p>
+    ${needsContact || needsCopies ? '<button class="secondary" id="packet-account-details">Add missing contact details or copies</button>' : ''}
+    ${missing.length || repair ? `<ul class="note" id="packet-missing-items">${[...missing, ...(repair ? [repair.message, 'Choose a readable replacement for the affected copy.'] : [])].map(item => `<li>${esc(item)}</li>`).join('')}</ul>` : '<p>Your details and copies are ready.</p>'}
+    <details><summary>Bureau instructions</summary><div id="packet-bureau-checklist">${bureauChecklist(req)}</div></details>
+    <h4 ${needsCopies ? '' : 'hidden'}>Choose the missing copies</h4>
+    ${documents.map(doc => `<div ${needsCopies || (needsDate && selected.has(doc.file_id) && dateRequired(doc)) ? '' : 'hidden'}><label ${needsCopies ? '' : 'hidden'}><input type="checkbox" data-packet-document="${esc(doc.file_id)}" ${selected.has(doc.file_id) ? 'checked' : ''}>${esc(doc.original_filename)} — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)}</label>
+    <div ${needsDate && dateRequired(doc) ? '' : 'hidden'}><label for="packet-document-date-${doc.file_id}">Date on ${esc(doc.original_filename)}</label><input id="packet-document-date-${doc.file_id}" type="date" value="${esc(settings.document_dates?.[doc.file_id] || '')}"></div></div>`).join('') || '<p class="evidence">No account documents uploaded yet.</p>'}
+    <label ${needsCopies && req?.country === 'CA' && req?.bureau === 'EQUIFAX' && !settings.identity_shows_address ? '' : 'hidden'}><input id="packet-id-address" type="checkbox" ${settings.identity_shows_address ? 'checked' : ''}>My selected identification shows my current address</label>
+    <div id="packet-us-identity" ${missing.some(item => /SSN/.test(item)) ? '' : 'hidden'}><label for="packet-identity-reference">Social Security number for bureau correspondence</label>
     <input id="packet-identity-reference" type="password" autocomplete="off" maxlength="20" value="${esc(settings.identity_reference || '')}">
     <label><input id="packet-no-ssn" type="checkbox" ${settings.no_ssn_issued ? 'checked' : ''}>I have never been issued an SSN</label></div>
-    <label for="packet-other-identity">Other identification details requested by the bureau (optional)</label><textarea id="packet-other-identity" maxlength="500">${esc(settings.other_identity_details || '')}</textarea>`;
+    <textarea id="packet-other-identity" hidden maxlength="500">${esc(settings.other_identity_details || '')}</textarea>`;
 }
 function packetReportCopies(packet) {
   if (!Array.isArray(packet.report_exhibits)) return '';
@@ -2063,14 +2168,13 @@ function renderPacketBlock(pv) {
     <h2>Your dispute packet</h2>
     <p class="evidence">Choose the issues you want the bureau to check or correct.</p>
     ${rows}
-    <button class="primary" id="packet-choose-next">Continue to document preparation</button>
     </div><div id="packet-details">
     <div id="packet-preparation-content"><p class="evidence">We put your letter, report pages and document copies in one PDF, with a first-page instruction sheet for you to remove before mailing.</p>
     ${packetReportCopies(packet)}${packetSupportingDocuments(pv)}
     <button class="primary" id="packet-prepare-next">Continue to packet review</button>
     </div>
     <div id="packet-review-controls">
-    <div id="packet-earlier-details">
+    <div id="packet-earlier-details" hidden>
     <div class="row">
       <label for="packet-name">Your name (as the sender)</label>
       <input id="packet-name" readonly value="${esc(correspondence.consumer_name || '')}">
@@ -2091,10 +2195,10 @@ function renderPacketBlock(pv) {
       <h3>Review and edit</h3>
       <div id="packet-letter-date-box"><label for="packet-letter-date" id="packet-letter-date-label">${packet.letter_text ? 'Date for the prepared letter' : 'Letter date'}</label><input type="date" id="packet-letter-date" value="${esc(packet.letter_date || localLetterDate())}" aria-describedby="packet-letter-date-help" required><p class="evidence" id="packet-letter-date-help">${packet.letter_text ? 'You edited this letter. Check its date below. Changing this box will ask to replace your edits.' : 'Use the date you plan to sign and send this letter.'}</p></div>
       <p class="evidence" id="packet-preview-status">${packet.preview_ready === false && packet.correspondence_preview ? 'Your full packet is not ready to review yet. Complete the items below to see every page.' : packet.selected_count && packet.correspondence_preview ? 'Read your letter. You can change the words below, then save your changes.' : 'Choose your disputes, then select Save and review packet.'}</p>
-      ${packet.preview_ready === false ? `<section class="note stop" id="packet-preparation-required" aria-labelledby="packet-preparation-required-title"><h4 id="packet-preparation-required-title">Finish preparing your packet</h4>${packet.assessment_current === false ? '<p>Your report has a newer assessment. Check its issues before preparing your packet again.</p><button class="secondary" id="packet-review-latest-issues">Review the latest issues</button>' : ''}${preparationMissing.length ? `<ul>${preparationMissing.map(item => `<li>${esc(item)}</li>`).join('')}</ul>` : '<p>Check your dispute and document choices before reviewing the complete packet.</p>'}<div class="packet-review-choices"><button class="secondary" id="packet-edit-documents">Change report pages or document copies</button><button class="secondary" id="packet-edit-account">Update contact details or upload copies</button></div></section>` : ''}
+      ${packet.preview_ready === false ? `<section class="note stop" id="packet-preparation-required" aria-labelledby="packet-preparation-required-title"><h4 id="packet-preparation-required-title">Finish preparing your packet</h4>${packet.assessment_current === false ? '<p>Your report has a newer assessment. Check its issues before preparing your packet again.</p><button class="secondary" id="packet-review-latest-issues">Review the latest issues</button>' : ''}${preparationMissing.length ? `<ul>${preparationMissing.map(item => `<li>${esc(item)}</li>`).join('')}</ul>` : '<p>Check your dispute and document choices before reviewing the complete packet.</p>'}<div class="packet-review-choices"><button class="secondary" id="packet-prepare-missing">Complete missing items</button></div></section>` : ''}
       ${packet.correspondence_preview ? `${packet.preview_ready ? '' : `<label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000" ${packet.assessment_current === false ? 'readonly' : ''}>${esc(packet.correspondence_preview)}</textarea>`}<button class="secondary" id="packet-reset-letter">Use the prepared letter</button>` : ''}
       <pre id="packet-preview" hidden>${esc(packet.correspondence_preview || '')}</pre>
-      ${packet.preview_ready && packet.letter_preview_url ? `<div id="packet-pdf-review"><div class="packet-review-choices"><button class="secondary" id="packet-edit-documents">Change report pages or document copies</button><button class="secondary" id="packet-edit-account">Update contact details or upload copies</button></div><div id="packet-all-pages" aria-label="Complete editable dispute packet"><p role="status">Preparing all packet pages...</p></div></div>` : ''}
+      ${packet.preview_ready && packet.letter_preview_url ? `<div id="packet-pdf-review"><div class="packet-review-choices"></div><div id="packet-all-pages" aria-label="Complete editable dispute packet"><p role="status">Preparing all packet pages...</p></div></div>` : ''}
       <div id="packet-action-bar">${packet.approval_stale ? '<p class="note stop">The packet changed since approval; review and approve it again.</p>' : ''}<p class="evidence" id="${packet.approved ? 'packet-approved-status' : 'packet-action-help'}">${packet.approved ? 'Your packet is approved. You can print or download it.' : packet.preview_ready ? 'Check every page, tick the box below, then approve this version to enable printing and downloading.' : 'Complete your issue and document choices in the previous steps, then save and review your packet before approving.'}</p>
       <label><input id="packet-preview-reviewed" type="checkbox" ${packet.approved ? 'checked' : ''} ${(packet.preview_ready ?? Boolean(packet.selected_count && packet.correspondence_preview)) ? '' : 'disabled'}>I have checked every page of my packet</label>
       <button class="primary" id="packet-approve" disabled ${packet.approved ? 'hidden' : ''}>Approve this version</button>
@@ -2140,20 +2244,30 @@ async function wirePacket(panel) {
     return;
   }
   try { ensureOrigin(); } catch { return; }
+  const preparing = state.step === STEP.PREPARE;
+  if (preparing && !pv.packet?.preview_ready && pv.packet?.selected_count && pv.packet.assessment_current !== false) {
+    const settings = packetSupportDefaults(pv);
+    if ((pv.support?.missing || []).some(item => /Select.*(?:identification|proof-of-address)|selected document.*changed or removed/i.test(item))) {
+      const available = (pv.support?.documents || []).filter(doc => ['IDENTITY', 'ADDRESS'].includes(doc.document_type)).map(doc => doc.file_id);
+      settings.document_ids = [...new Set([...settings.document_ids, ...available])].slice(0, 8);
+    }
+    if (!pv.support?.settings || JSON.stringify(settings) !== JSON.stringify(pv.support.settings)) {
+      try { pv = (await currentRequest(ensureOrigin, 'POST', `/api/cases/${caseId}/packet/support`, { support: settings })).view; }
+      catch (error) { if (!error.cancelled) block.textContent = error.message; return; }
+    }
+  }
   block.innerHTML = renderPacketBlock(pv);
   if (!(pv.eligible_issues || []).some(issue => issue.eligible)) return;
-  const choosing = state.step === STEP.CHOOSE, preparing = state.step === STEP.PREPARE;
+  const choosing = false;
   const assessmentStale = pv.packet?.assessment_current === false;
   if (assessmentStale && preparing) {
-    state.step = STEP.CHOOSE;
+    state.step = STEP.RESULTS;
     state.notice = 'Your report has a newer assessment. Check its issues and choose your disputes again.';
     render(); return;
   }
   el('packet-selection').hidden = !choosing;
   el('packet-preparation-content').hidden = !preparing;
   el('packet-preparation-content').append(el('packet-earlier-details'));
-  const assessmentReview = el('review');
-  if (assessmentReview) { assessmentReview.hidden = !choosing; if (assessmentReview.previousElementSibling) assessmentReview.previousElementSibling.hidden = !choosing; }
   // Keep saved inputs available to version-bound saving without repeating earlier steps.
   const reviewBody = block.querySelector('.packet-review'), pdfReview = el('packet-pdf-review');
   if (pdfReview) { reviewBody.prepend(pdfReview); pdfReview.after(el('packet-action-bar')); }
@@ -2168,7 +2282,6 @@ async function wirePacket(panel) {
   if (pdfReview) pdfReview.querySelector('.packet-review-choices').append(saveButton, ...(resetButton ? [resetButton] : []));
   else if (resetButton) resetButton.after(saveButton);
   else reviewBody.append(saveButton);
-  el('packet-choose-next').hidden = !choosing;
   el('packet-details').hidden = choosing;
   el('packet-prepare-next').hidden = !preparing;
   el('packet-review-controls').hidden = preparing;
@@ -2204,7 +2317,7 @@ async function wirePacket(panel) {
     }
     return { bureau: el('packet-bureau').value, channel: 'POSTAL', purpose: el('packet-purpose').value,
       use_account_profile: true, document_ids, identity_shows_address: el('packet-id-address').checked,
-      verification_requested: el('packet-verification-requested').checked, copies_confirmed: el('packet-copies-confirmed').checked,
+      ...Object.fromEntries(['verification_requested', 'copies_confirmed'].filter(key => typeof pv.support?.settings?.[key] === 'boolean').map(key => [key, pv.support.settings[key]])),
       identity_reference: el('packet-identity-reference').value, no_ssn_issued: el('packet-no-ssn').checked,
       other_identity_details: el('packet-other-identity').value,
       document_dates: Object.fromEntries(document_ids.map(id => [id, el('packet-document-date-' + id).value])) };
@@ -2253,25 +2366,11 @@ async function wirePacket(panel) {
   };
 
   const save = el('packet-save');
-  const continueToReview = el('packet-choose-next');
-  if (continueToReview) continueToReview.onclick = () => run(async () => {
-    if (!currentSelection().length) throw new Error('Choose at least one issue to continue.');
-    let ensureCurrent = ensureOrigin;
-    if (assessmentStale) {
-      const selected = currentSelection(), captured = edits;
-      await api('POST', `/api/cases/${caseId}/packet/select`, { issue_ids: selected, expected_result_id: pv.packet.current_result_id });
-      ensureOrigin();
-      if (edits !== captured) throw cancelledAction();
-    } else if (edits) ensureCurrent = await persistSelection();
-    ensureCurrent();
-    const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
-    state.step = STEP.PREPARE;
-    state.notice = 'Your choices are saved. Check the bureau requirements and add your documents.';
-  });
   el('packet-prepare-next').onclick = () => run(async () => {
     if (!currentSelection().length) throw new Error('Choose at least one issue to continue.');
     const ensureCurrent = edits ? await persistSelection() : ensureOrigin; ensureCurrent();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
+    state.packetRepair = null;
     state.step = STEP.REVIEW;
     state.notice = 'Your document choices are saved. Review every page before approving.';
   });
@@ -2389,7 +2488,7 @@ async function wirePacket(panel) {
   packetLeave = step => run(async () => {
     ensureOrigin();
     if (assessmentStale && [STEP.CHOOSE, STEP.PREPARE, STEP.REVIEW].includes(step)) {
-      step = STEP.CHOOSE;
+      step = STEP.RESULTS;
       state.notice = 'Your report has a newer assessment. Check its issues and choose your disputes again.';
     }
     if (edits && !assessmentStale) { const ensureCurrent = await persistSelection(); ensureCurrent(); }
@@ -2401,9 +2500,12 @@ async function wirePacket(panel) {
     render();
   }, {redraw:false});
   if (accountDetails) accountDetails.onclick = () => packetLeave(STEP.ACCOUNT);
-  if (el('packet-review-latest-issues')) el('packet-review-latest-issues').onclick = () => packetLeave(STEP.CHOOSE);
-  if (el('packet-edit-documents')) el('packet-edit-documents').onclick = () => packetLeave(STEP.PREPARE);
-  if (el('packet-edit-account')) el('packet-edit-account').onclick = () => packetLeave(STEP.ACCOUNT);
+  if (el('packet-review-latest-issues')) el('packet-review-latest-issues').onclick = () => run(async () => {
+    state.view = (await currentRequest(ensureOrigin, 'GET', `/api/cases/${caseId}`)).view;
+    state.step = STEP.RESULTS;
+    state.notice = 'Review the latest issues and choose what you want to dispute.';
+  });
+  if (el('packet-prepare-missing')) el('packet-prepare-missing').onclick = () => packetLeave(STEP.PREPARE);
   let checklistSequence = 0;
   const refreshChecklist = async () => {
     markChanged(); const sequence = ++checklistSequence;
@@ -2413,10 +2515,10 @@ async function wirePacket(panel) {
       ensureOrigin();
       if (sequence !== checklistSequence || !el('packet-bureau-checklist')) return;
       el('packet-bureau-checklist').innerHTML = bureauChecklist(answer.requirements, answer.missing);
-      el('packet-us-identity').hidden = answer.requirements.country !== 'US';
+      el('packet-us-identity').hidden = !answer.missing.some(item => /SSN/.test(item));
     } catch (error) { if (!error.cancelled && sequence === checklistSequence && state.caseId === caseId && renderSequence === rendered && el('packet-bureau-checklist')) el('packet-bureau-checklist').textContent = error.message; }
   };
-  for (const id of ['packet-bureau', 'packet-purpose', 'packet-id-address', 'packet-verification-requested', 'packet-copies-confirmed', 'packet-no-ssn', 'packet-identity-reference', 'packet-other-identity']) if (el(id)) el(id).onchange = () => {
+  for (const id of ['packet-bureau', 'packet-purpose', 'packet-id-address', 'packet-no-ssn', 'packet-identity-reference', 'packet-other-identity']) if (el(id)) el(id).onchange = () => {
     if (id === 'packet-no-ssn' && el(id).checked) el('packet-identity-reference').value = '';
     if (id === 'packet-identity-reference' && el(id).value.trim()) el('packet-no-ssn').checked = false;
     return refreshChecklist();
@@ -2444,6 +2546,7 @@ async function wirePacket(panel) {
       if (error.cancelled) return;
       try { ensureOrigin(); } catch { return; }
       previewCurrent = false;
+      state.packetRepair = { caseId, message: error.message || 'A packet page could not be shown.' };
       // Keep consumer drafts recoverable even when PDF composition or a later page
       // image fails. The failed controller must not override this fallback on Save.
       const draftLetter = letterEdited
@@ -2453,7 +2556,8 @@ async function wirePacket(panel) {
       packetReviewController?.dispose();
       packetReviewController = null;
       const pages = el('packet-all-pages');
-      pages.innerHTML = '<p class="note stop">We could not show every page. Edit your letter below or change the document copies, then save and review again. Printing stays unavailable until every page loads.</p><label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000"></textarea>';
+      pages.innerHTML = '<p class="note stop">We could not show every page. Edit your letter below or complete the missing items, then save and review again. Printing stays unavailable until every page loads.</p><button class="secondary" id="packet-prepare-missing">Complete missing items</button><label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000"></textarea>';
+      el('packet-prepare-missing').onclick = () => packetLeave(STEP.PREPARE);
       const fallback = el('packet-letter');
       fallback.value = draftLetter || '';
       fallback.oninput = () => { letterEdited = true; resetLetter = false; markChanged(); updateDateCopy(); };

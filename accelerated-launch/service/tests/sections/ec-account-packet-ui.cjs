@@ -121,7 +121,7 @@ function harness(responder, { autoRead = true } = {}) {
 const requirements = { country: 'CA', bureau: 'TRANSUNION', label: 'TransUnion Canada', postal: 'Fictional test destination', items: [], sources: [] };
 function packetView(approved = false) {
   return { eligible_issues: [{ eligible: true, issue_id: 'issue-A', consumer_label: 'VIOLATION' }],
-    packet: { approved, download_available: approved, preview_ready: true, letter_preview_url: '/api/cases/caseA/packet/preview?version=current-A', selected_issue_ids: ['issue-A'], selected_count: 1, wording: 'Saved wording', correspondence_preview: 'Full saved letter\nSaved wording', preview_version: 'current-A', result_id: 'result-A', letter_date: '2026-10-14' },
+    packet: { approved, download_available: approved, preview_ready: true, letter_preview_url: '/api/cases/caseA/packet/preview?version=current-A', selected_issue_ids: ['issue-A'], selected_count: 1, wording: 'Saved wording', correspondence_preview: 'Full saved letter\nSaved wording', preview_version: 'current-A', result_id: 'result-A', current_result_id: 'result-A', letter_date: '2026-10-14' },
     support: { requirements, catalog: [], account_profile: { full_name: 'Fictional Consumer' } } };
 }
 async function saveAccountRace() {
@@ -199,6 +199,9 @@ async function issueSelectionInvalidation() {
 async function currentPreviewApproval() {
   const h = harness(request => ({ view: request.url.endsWith('/packet') ? packetView() : { case: { case_id: 'caseA' }, result_id: 'result-A' }, requirements, missing: [] }));
   h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
+  const html = h.panel.querySelector('#packet-block').innerHTML;
+  assert.ok(!html.includes('id="packet-edit-account"') && !html.includes('Update contact details or upload copies'),
+    'complete Review omits the contact and upload shortcut while ordinary account navigation remains available');
   h.node('packet-wording').value = 'Added words not read in preview'; h.node('packet-wording').oninput();
   h.node('packet-preview-reviewed').checked = true; await h.node('packet-approve').onclick();
   assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'an unsaved edit must neither save nor approve through the approval button');
@@ -259,41 +262,46 @@ async function incompletePacketCannotApprove() {
   assert.match(html, /Your full packet is not ready to review yet/);
   assert.match(html, /id="packet-preparation-required"[\s\S]*Add the date of an address document less than 90 days old/,
     'Review explains the actual missing address date beside the letter');
-  assert.equal((html.match(/id="packet-edit-documents"/g) || []).length, 1, 'incomplete Review offers one direct document recovery control');
-  assert.equal((html.match(/id="packet-edit-account"/g) || []).length, 1, 'incomplete Review offers one direct account recovery control');
+  assert.equal((html.match(/id="packet-prepare-missing"/g) || []).length, 1, 'incomplete Review offers one missing-items recovery control');
+  assert.ok(!html.includes('id="packet-edit-documents"'), 'Review does not offer a general document-copy editing button');
+  assert.ok(!html.includes('id="packet-edit-account"') && !html.includes('Update contact details or upload copies'),
+    'incomplete Review omits the contact and upload shortcut without hiding its document preparation recovery');
   h.node('packet-preview-reviewed').checked = true; await h.node('packet-preview-reviewed').onchange();
   assert.equal(h.node('packet-approve').disabled, true); await h.node('packet-approve').onclick();
   assert.equal(h.calls.filter(row => row.url.endsWith('/approve')).length, 0, 'letter text alone never permits approval of missing attachments');
   assert.equal(h.node('packet-download').disabled, true);
   assert.match(html, /id="packet-print" disabled/, 'the incomplete packet renders printing disabled');
-  await h.node('packet-edit-documents').onclick();
+  await h.node('packet-prepare-missing').onclick();
   assert.equal(h.evaluate('state.step'), 5, 'the missing-date recovery opens ordinary document preparation');
   assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'opening preparation never guesses a document date or writes the packet');
-  await h.openPacket('caseA'); await h.node('packet-edit-account').onclick();
-  assert.equal(h.evaluate('state.step'), 0, 'missing contact or upload recovery opens the existing account view');
-  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'account recovery leaves original packet and document choices untouched');
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'missing-date recovery leaves original packet and document choices untouched');
 }
 async function staleAssessmentRequiresReviewedSelection() {
   const view = packetView(true);
   Object.assign(view.packet, { preview_ready: false, assessment_current: false, current_result_id: 'result-new', approved: false });
-  const h = harness(request => ({ view, requirements, missing: [] }));
-  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
+  view.support.settings = { use_account_profile: true, document_ids: [], document_dates: {}, channel: 'POSTAL', bureau: 'TRANSUNION' };
+  const latest = { case: { case_id: 'caseA', country: 'CA', region: 'CA-NS' }, files: [], result_id: 'result-new', latest_result_id: 'result-new',
+    result: { support: 'REPORT_SUPPORT', issues: view.eligible_issues }, assessment_summary: { distinct_total: 1 },
+    assessment_access: { complete_assessment: true, dispute_packet: true } };
+  const h = harness(request => ({ view: request.url === '/api/cases/caseA' ? latest : view, requirements, missing: [] }));
+  h.account('A', 'Fictional Consumer'); h.context.latestView = latest; h.evaluate('state.view = latestView'); await h.openPacket('caseA');
   const html = h.panel.querySelector('#packet-block').innerHTML;
   assert.match(html, /Your report has a newer assessment/);
   assert.match(html, /id="packet-letter"[^>]*readonly/, 'stale wording stays visible without accepting edits that navigation could discard');
   assert.ok(!html.includes('id="packet-all-pages"'), 'stale assessment never advertises a complete current preview');
   assert.equal(h.node('packet-save').disabled, true); assert.equal(h.node('packet-letter-date').disabled, true);
   await h.node('packet-review-latest-issues').onclick();
-  assert.equal(h.evaluate('state.step'), 4);
+  assert.equal(h.evaluate('state.step'), 3);
   assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'reviewing newer issues never saves or rebinds unseen assessment content');
-  await h.node('packet-choose-next').onclick();
+  h.evaluate('renderResults(document.getElementById("panel"))');
+  await h.node('create-packet').onclick();
   assert.deepEqual(h.calls.find(row => row.url.endsWith('/packet/select')).body,
     { issue_ids: ['issue-A'], expected_result_id: 'result-new' }, 'explicit Continue binds the selection to the assessment the consumer reviewed');
   assert.equal(h.calls.filter(row => row.method === 'POST').length, 1, 'stale recovery only reselects issues; it does not rewrite saved correspondence, document dates or support');
-  assert.equal(h.evaluate('state.step'), 5);
+  assert.ok([5, 6].includes(h.evaluate('state.step')), 'explicit current selection continues to only missing preparation or complete Review');
   await h.openPacket('caseA');
   const writesBeforeNavigation = h.calls.filter(row => row.method === 'POST').length;
-  await h.node('packet-edit-account').onclick();
+  await h.evaluate('packetLeave(STEP.ACCOUNT)');
   assert.equal(h.evaluate('state.step'), 0, 'a stale packet does not trap contact-details navigation in issue selection');
   assert.equal(h.calls.filter(row => row.method === 'POST').length, writesBeforeNavigation, 'leaving a stale packet never silently saves or rebinds it');
   await h.openPacket('caseA'); await h.evaluate('packetLeave(STEP.HISTORY)');
@@ -312,6 +320,79 @@ async function printedMaskedReference() {
   assert.ok(!/MASK-1234|MASK-5678/.test(text), 'the comparison keeps printed account references without an internal masked token');
   assert.match(text, /01\/01\/2018.*read as.*2018-01-01/, 'date normalization stays available beside the printed date');
 }
+async function resultsReuseOnlyMissingItems() {
+  const identity = 'a'.repeat(32), address = 'b'.repeat(32), unrelated = 'c'.repeat(32), deleted = 'd'.repeat(32);
+  for (const mode of ['ready', 'new', 'deleted-copy', 'changed-bureau']) {
+    const view = packetView(mode === 'ready');
+    view.eligible_issues[0].record_kind = 'credit account';
+    view.eligible_issues[0].report_identity = { bureau: 'Equifax', reference_date: '2026-10-14' };
+    view.support.catalog = [{ id: 'EQUIFAX', label: 'Equifax' }, { id: 'TRANSUNION', label: 'TransUnion' }];
+    view.support.requirements = { ...requirements, bureau: 'EQUIFAX' };
+    view.support.documents = [
+      { file_id: identity, document_type: 'IDENTITY', document_kind: 'PASSPORT' },
+      { file_id: address, document_type: 'ADDRESS', document_kind: 'UTILITY_BILL' },
+      { file_id: unrelated, document_type: 'SUPPORTING', document_kind: 'OTHER_EVIDENCE' }
+    ];
+    view.support.settings = { bureau: 'EQUIFAX', channel: 'POSTAL', purpose: 'ACCOUNT', use_account_profile: true,
+      document_ids: [identity, address], identity_shows_address: false, no_ssn_issued: false, identity_reference: '', other_identity_details: '',
+      document_dates: { [address]: '2026-10-08' } };
+    if (mode === 'new') { view.support.settings = null; view.packet.selected_issue_ids = []; view.packet.selected_count = 0; }
+    if (mode === 'deleted-copy') {
+      view.support.settings.document_ids = [identity, deleted];
+      view.support.settings.document_dates = { [deleted]: '2026-10-08' };
+    }
+    if (mode === 'changed-bureau') {
+      Object.assign(view.support.settings, { bureau: 'TRANSUNION', purpose: 'PUBLIC_RECORD', verification_requested: true, copies_confirmed: false });
+      view.support.suggested_purpose = 'ACCOUNT';
+    }
+    if (mode !== 'ready') view.packet.preview_ready = false;
+    const latest = { case: { case_id: 'caseA', country: 'CA', region: 'CA-NS', selected_bureau: 'EQUIFAX' }, files: [],
+      result_id: 'result-A', latest_result_id: 'result-A', result: { support: 'REPORT_SUPPORT', issues: view.eligible_issues },
+      assessment_summary: { distinct_total: 1 }, assessment_access: { complete_assessment: true, dispute_packet: true } };
+    const h = harness(request => {
+      if (request.url === '/api/cases/caseA') return { view: latest };
+      if (request.url.endsWith('/packet/select')) { view.packet.selected_issue_ids = request.body.issue_ids; view.packet.selected_count = request.body.issue_ids.length; }
+      if (request.url.endsWith('/packet/support')) {
+        view.support.settings = request.body.support;
+        view.packet.preview_ready = mode !== 'deleted-copy';
+      }
+      return { view };
+    });
+    h.account('A', 'Fictional Consumer'); h.context.latestView = latest;
+    h.evaluate('state.caseId="caseA"; state.view=latestView; state.step=STEP.RESULTS; renderResults(document.getElementById("panel"));');
+    await until(() => !h.node('create-packet').disabled, mode + ' saved packet choices');
+    h.issues[0].checked = true; h.issues[0].onchange();
+    const original = JSON.stringify(view);
+    await h.node('create-packet').onclick();
+    const writes = h.calls.filter(row => row.method === 'POST');
+    if (mode === 'ready') {
+      assert.equal(writes.length, 0, 'an unchanged ready packet needs no selection or support writes');
+      assert.equal(JSON.stringify(view), original, 'opening an unchanged ready packet preserves its approval and every saved setting');
+      assert.equal(h.evaluate('state.step'), 6, 'complete saved details lead directly to Review');
+    } else {
+      const support = writes.find(row => row.url.endsWith('/packet/support')).body.support;
+      assert.equal(support.use_account_profile, true, 'explicit packet creation reuses the saved contact profile');
+      if (mode === 'new') {
+        assert.deepEqual(support.document_ids, [identity, address], 'new packets reuse saved ID/address copies without adding unrelated supporting evidence');
+        assert.equal(support.copies_confirmed, undefined, 'automatic reuse never invents a consumer quality confirmation');
+        assert.equal(support.verification_requested, undefined, 'automatic reuse never invents a bureau verification request');
+        assert.deepEqual(writes.find(row => row.url.endsWith('/packet/select')).body, { issue_ids: ['issue-A'], expected_result_id: 'result-A' }, 'new selection binds the explicit choices to their current result');
+      }
+      if (mode === 'deleted-copy') {
+        assert.deepEqual(support.document_ids, [identity], 'a removed copy is not silently reattached from stale packet settings');
+        assert.deepEqual(support.document_dates, {}, 'a removed copy cannot retain an orphaned document date');
+        assert.equal(h.evaluate('state.step'), 5, 'a genuinely missing replacement returns only to Prepare');
+      }
+      if (mode === 'changed-bureau') {
+        assert.equal(support.bureau, 'EQUIFAX', 'the selected report supplies the actual destination bureau');
+        assert.equal(support.purpose, 'ACCOUNT', 'current account disputes cannot keep an obsolete collection-only document checklist');
+        assert.equal(support.verification_requested, true, 'recorded bureau verification context survives the retired checkbox');
+        assert.equal(support.copies_confirmed, false, 'recorded legacy confirmation is retained without inventing a different answer');
+        assert.deepEqual(support.document_dates, { [address]: '2026-10-08' }, 'bureau reconciliation preserves actual saved document dates');
+      }
+    }
+  }
+}
 async function packetDraftDocumentReturn() {
   const h = harness(request => {
     if (request.url === '/api/account/profile' || request.method === 'PUT') return { profile: { full_name: request.body?.profile?.full_name || 'Fictional Consumer' } };
@@ -321,13 +402,13 @@ async function packetDraftDocumentReturn() {
   });
   h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
   h.node('packet-wording').value = 'Keep these draft words'; h.node('packet-wording').oninput();
-  await h.node('packet-account-details').onclick();
+  await h.evaluate('packetLeave(STEP.ACCOUNT)');
   assert.equal(h.evaluate('state.step'), 0);
   const wording = h.calls.find(row => row.url.endsWith('/wording'));
   assert.equal(wording.body.wording, 'Keep these draft words', 'leaving for documents saves the visible draft first');
   h.evaluate('renderAccountDetails(document.getElementById("panel"))'); await until(() => h.evaluate('state.accountProfile !== null'), 'loaded account return details');
   h.evaluate('state.accountProfile.full_name = "Updated Consumer";'); await h.node('account-continue').onclick();
-  assert.equal(h.evaluate('state.step'), 6, 'document detour returns to the same packet rather than report upload');
+  assert.equal(h.evaluate('state.step'), 6, 'ordinary Account navigation returns to the same packet rather than report upload');
   assert.equal(h.evaluate('state.caseId'), 'caseA'); assert.equal(h.evaluate('state.packetReturn'), null);
   assert.equal(h.calls.find(row => row.method === 'PUT').body.profile.full_name, 'Updated Consumer', 'return saves the current contact details before refreshing the packet');
 }
@@ -337,15 +418,18 @@ async function firstPacketContactDetour() {
   const h = harness(request => request.url.endsWith('/packet/reports')
     ? { status: 409, body: { ok: false, error: { code: 'PACKET_NO_SELECTION', message: 'No chosen issue' } } }
     : { view, requirements, missing: [] });
+  view.support.missing = ['Add your full name in your account details.'];
   h.issues[0].checked = false; h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
+  h.evaluate('state.step = STEP.PREPARE'); await h.evaluate('wirePacket(document.getElementById("panel"))');
   await h.node('packet-account-details').onclick();
   assert.equal(h.evaluate('state.step'), 0, 'a first-time user can add contact details before choosing a dispute');
   assert.equal(h.calls.filter(row => row.url.endsWith('/packet/reports')).length, 0, 'empty initial selection never attempts a required report-page attachment save');
   assert.equal(h.evaluate('state.caseId'), 'caseA', 'the contact detour retains the owned case context');
 }
 async function packetReturnAccountIsolation() {
-  const h = harness(request => ({ view: packetView(), requirements, missing: [] }));
-  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA'); await h.node('packet-account-details').onclick();
+  const view = packetView(); view.support.missing = ['Add your full name in your account details.'];
+  const h = harness(request => ({ view, requirements, missing: [] }));
+  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA'); h.evaluate('state.step = STEP.PREPARE'); await h.evaluate('wirePacket(document.getElementById("panel"))'); await h.node('packet-account-details').onclick();
   h.evaluate('state.accountProfile = { full_name: "A" }; renderAccountDetails(document.getElementById("panel")); state.recoveryKey = "private-key-A";');
   await h.node('signout').onclick(); h.account('B', 'Fictional B');
   assert.equal(h.evaluate('state.packetReturn'), null, 'sign-out drops the packet return binding');
@@ -431,7 +515,7 @@ async function createCaseNormalCompletion() {
 async function existingCaseNormalCompletion() {
   const h = harness(() => ({ view: { case: { case_id: 'existingA' } } }));
   h.account('A', 'Fictional A'); h.jurisdiction({ savedReports: true }); await h.caseButtons[0].onclick();
-  assert.equal(h.evaluate('state.step'), 2); assert.equal(h.evaluate('state.caseId'), 'existingA');
+  assert.equal(h.evaluate('state.step'), 3); assert.equal(h.evaluate('state.caseId'), 'existingA');
 }
 async function latestCaseChoiceWins() {
   const first = deferred(), second = deferred(), h = harness(request => request.url === '/api/cases/existingA' ? first.promise : second.promise);
@@ -441,7 +525,7 @@ async function latestCaseChoiceWins() {
   first.resolve({ view: { case: { case_id: 'existingA' } } }); await openA;
   assert.equal(h.evaluate('state.caseId'), null, 'older response must wait for the latest selected case');
   second.resolve({ view: { case: { case_id: 'existingB' } } }); await openB;
-  assert.equal(h.evaluate('state.caseId'), 'existingB'); assert.equal(h.evaluate('state.step'), 2);
+  assert.equal(h.evaluate('state.caseId'), 'existingB'); assert.equal(h.evaluate('state.step'), 3);
 }
 async function invalidIntakeNoCase() {
   for (const input of ['missing-country', 'missing-region', 'missing-bureau', 'missing-file', 'bad-type', 'oversized', 'too-many']) {
@@ -487,7 +571,7 @@ async function partialRetryOnlyPending() {
   });
   h.account('A', 'Fictional A'); h.jurisdiction(); h.node('file').files.push({ name: 'second.pdf', size: 48, type: 'application/pdf' });
   await h.node('open').onclick();
-  assert.equal(h.evaluate('state.step'), 2, 'partial upload offers recovery on the report screen');
+  assert.equal(h.evaluate('state.step'), 3, 'partial upload offers recovery directly on Results');
   assert.ok(/1 still pending/.test(h.evaluate('state.notice')));
   assert.equal(h.calls.filter(row => row.url.endsWith('/evaluate')).length, 0, 'partial batch is not described as a completed review');
   h.evaluate('renderReport(document.getElementById("panel"));'); await h.node('retry-upload').onclick();
@@ -728,7 +812,7 @@ async function changedStoredReportRecovery() {
   assert.equal(h.evaluate('state.step'), 0, 'a previous account handler cannot navigate a different account to upload');
 }
 const tests = { saveAccountRace, uploadListRace, uploadReadRace, packetContextRace, wirePacketRace, issueSelectionInvalidation,
-  currentPreviewApproval, dirtyPreviewStatus, completeLetterEditAndReset, fullLetterSaveContextRace, incompletePacketCannotApprove, staleAssessmentRequiresReviewedSelection, printedMaskedReference, packetDraftDocumentReturn, firstPacketContactDetour, packetReturnAccountIsolation, recoveryKeyAccountRace,
+  currentPreviewApproval, dirtyPreviewStatus, completeLetterEditAndReset, fullLetterSaveContextRace, incompletePacketCannotApprove, staleAssessmentRequiresReviewedSelection, printedMaskedReference, resultsReuseOnlyMissingItems, packetDraftDocumentReturn, firstPacketContactDetour, packetReturnAccountIsolation, recoveryKeyAccountRace,
   createCaseAccountRace, createCaseListNavigationRace, createCaseViewNavigationRace, existingCaseAccountRace, caseRefreshAccountRace,
   createCaseNormalCompletion, existingCaseNormalCompletion, latestCaseChoiceWins, invalidIntakeNoCase, selectionKeepsFile,
   reportReadAccountRace, reportReadSelectionRace, partialRetryOnlyPending, evaluateAccountRace, completedCaseNormalCompletion,
@@ -746,6 +830,11 @@ async function run(service, check) {
   h.context.legacy = { eligible_issues: [{ eligible: true, issue_id: 'legacy' }], packet: { correspondence: { consumer_name: 'Previously Saved Consumer', contact: 'previous@example.test' } }, support: { account_profile: {} } };
   const legacy = h.evaluate('renderPacketBlock(legacy)');
   check.ok(legacy.includes('Previously Saved Consumer') && legacy.includes('previous@example.test'), 'legacy packet details remain visible when account contact is unset');
+  h.context.invalidSsn = { ...packetView(), support: { ...packetView().support,
+    requirements: { ...requirements, country: 'US', bureau: 'EQUIFAX', ssn_required: true },
+    settings: { identity_reference: '123', no_ssn_issued: true }, missing: ['Add the SSN required by this bureau’s mail instructions.'] } };
+  check.ok(/id="packet-us-identity"\s*>/.test(h.evaluate('renderPacketBlock(invalidSsn)')),
+    'an invalid saved SSN or inapplicable exemption never hides the actual missing-SSN field');
   return { deferred_account_and_file_reads: true, deferred_packet_navigation: true, deferred_case_navigation: true, selection_invalidates_download: true, signed_in_account_view: true };
 }
 module.exports = { run, id: 'ec-account-packet-ui', title: 'Account and packet actions preserve their original account, case and reviewed selection' };

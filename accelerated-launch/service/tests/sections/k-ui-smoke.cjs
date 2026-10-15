@@ -238,6 +238,12 @@ function makeResponder() {
     if (method === 'GET' && url === '/api/privacy') return { status: 200, body: { ok: true, cases: [{country:'CA',region:'CA-NS',documents:[{name:'private-owned.pdf',stored_bytes:123}],result_count:1}],retention:{plain:'Kept until you delete it.'},deletion:{backups:'Backup erasure timing has not been verified.',external_billing:'Payment provider records are separate.'} } };
     if (method === 'POST' && url === '/api/cases') return { status: 201, body: { ok: true, case: { case_id: 'case_stub', country: 'CA', region: 'CA-NS' } } };
     if (method === 'GET' && url === '/api/cases/case_stub') return { status: 200, body: { ok: true, view: { ...CASE_VIEW, reviewed: state.reviewed } } };
+    if (method === 'GET' && url === '/api/cases/case_stub/packet') return { status: 200, body: { ok: true, view: {
+      eligible_issues: CASE_VIEW.result.issues,
+      packet: { packet_id: 'packet_stub', result_id: 'res_stub', current_result_id: 'res_stub', selected_issue_ids: [], selected_count: 0,
+        approved: false, preview_ready: false, download_available: false },
+      support: { settings: null, documents: [], requirements: { country: 'CA', bureau: 'EQUIFAX', items: [], sources: [] }, catalog: [] }
+    } } };
     if (method === 'POST' && url === '/api/cases/case_stub/files') return { status: 201, body: { ok: true, receipt: { file_id: 'f_uploaded', format_detection: { supported: true, refusal_reason: null } } } };
     if (method === 'POST' && url === '/api/cases/case_stub/evaluate') return { status: 201, body: { ok: true, result: CASE_VIEW.result } };
     if (method === 'GET' && (url === '/api/billing/plans' || url === '/api/pricing')) {
@@ -292,7 +298,8 @@ async function run(t, check) {
   ctx.signupCountry = 'England';
   check.ok(!vm.runInContext('state.accountProfile = { country: signupCountry }; documentKindsForAccount().map(([kind]) => kind)', ctx).includes('SOCIAL_SECURITY'), 'an England address also omits US identifier documents');
   vm.runInContext('state.accountProfile = null', ctx);
-  check.ok(/Step 1 of 7/.test(dom.elementById('stepcount').textContent), 'the main journey has seven steps');
+  check.ok(/Step 1 of 5/.test(dom.elementById('stepcount').textContent), 'the main journey has five visible steps');
+  check.ok(!/data-step="(?:2|4)"/.test(dom.elementById('steps').innerHTML), 'Check report and Choose disputes are absent from visible navigation');
   check.ok(/Your tools/.test(dom.elementById('steps').innerHTML), 'utilities are shown separately from the numbered main journey');
   check.ok(/Forgot your password/.test(panel.innerHTML), 'account recovery is visible before sign-in');
 
@@ -321,7 +328,7 @@ async function run(t, check) {
   await tick();
   check.ok(dom.calls.includes('POST /api/cases'), 'opening a case posts the explicit selection');
   check.ok(dom.calls.includes('POST /api/cases/case_stub/evaluate'), 'Step2 upload starts the existing assessment');
-  vm.runInContext('state.step = 2; render();', ctx);
+  vm.runInContext('state.view = { ...state.view, result: null, assessment_summary: null }; state.step = STEP.RESULTS; render();', ctx);
 
   /* Step 2b: the upload experience accepts multiple PDF/image files and uploads each individually. */
   check.ok(/multiple/.test(source) && /image\/png/.test(source), 'the upload input advertises multi-select images, not only PDF');
@@ -335,7 +342,7 @@ async function run(t, check) {
   await tick();
   const filePosts = dom.calls.filter((c) => c === 'POST /api/cases/case_stub/files');
   check.equal(filePosts.length, 3, 'Step2 report plus two additional files each produce their own upload');
-  vm.runInContext('state.step = 2; render();', ctx);
+  vm.runInContext('state.step = STEP.RESULTS; render();', ctx);
 
   /* Step 3: view the actual uploaded report result; sample invitations and their action are retired. */
   check.ok(!/Try a sample report|Try the sample|id="demo"|id="scenario"/.test(panel.innerHTML), 'the report step no longer invites sample use');
@@ -349,6 +356,31 @@ async function run(t, check) {
   check.ok(!/NOT_REPORT_SUPPORT/.test(panel.innerHTML), 'the raw support token is never rendered');
   check.ok(!/A quick clarification/.test(panel.innerHTML), 'the uploaded result asks no unneeded questions');
 
+  /* Multiple findings for one printed entry stay together; matching names alone
+     must never combine two different accounts. Credit-report hits stay separate. */
+  ctx.GROUPED_VIEW = { ...CASE_VIEW, result: { ...CASE_VIEW.result, issues: [
+    { ...CASE_VIEW.result.issues[0], issue_id: 'same-account-first', account_number_in_report: 1, record_kind: 'credit account' },
+    { ...CASE_VIEW.result.issues[0], issue_id: 'same-account-second', account_number_in_report: 1, record_kind: 'credit account' },
+    { ...CASE_VIEW.result.issues[0], issue_id: 'court-time-information', account_number_in_report: 1, record_kind: 'credit account',
+      consumer_label: 'INFORMATION', eligible: false, limitation_concern: true, explanation: 'Court time-limit information for this same account.' },
+    { ...CASE_VIEW.result.issues[0], issue_id: 'different-account-same-name', account_number_in_report: 2, record_kind: 'credit account' },
+    { ...CASE_VIEW.result.issues[0], issue_id: 'report-hit', account_number_in_report: 3, record_kind: 'credit inquiry' }
+  ] } };
+  vm.runInContext('state.view = GROUPED_VIEW; state.step = STEP.RESULTS; render();', ctx);
+  const grouped = [...panel.innerHTML.matchAll(/<section data-issue-group="[^"]+">([\s\S]*?)<\/section>/g)].map(match => match[1]);
+  check.equal(grouped.length, 3, 'two distinct same-name accounts and the report hits have three separate groups');
+  check.ok(grouped.some(group => group.includes('same-account-first') && group.includes('same-account-second') && !group.includes('different-account-same-name')),
+    'multiple findings for one actual account share their group without absorbing a same-name account');
+  check.ok(grouped.some(group => group.includes('different-account-same-name') && !group.includes('same-account-first')),
+    'the second same-name account remains independently selectable');
+  check.ok(grouped.some(group => group.includes('same-account-first') && group.includes('Court time-limit information for this same account.'))
+    && !panel.innerHTML.includes('data-check-issue="court-time-information"'),
+    'information stays with its own account while remaining outside dispute selection');
+  check.ok(grouped.some(group => group.includes('Credit report hits') && group.includes('report-hit') && !group.includes('same-account-first')),
+    'credit report hits are presented apart from account findings');
+  ctx.ORIGINAL_CASE_VIEW = CASE_VIEW;
+  vm.runInContext('state.view = ORIGINAL_CASE_VIEW; state.step = STEP.RESULTS; render();', ctx);
+
   /* The optional clarification block appears only for a real report result, with benefit, I-don't-know and Skip. */
   ctx.REPORT_VIEW = REPORT_VIEW;
   vm.runInContext('state._savedView = state.view; state.view = REPORT_VIEW; state.step = 3; render();', ctx);
@@ -357,26 +389,23 @@ async function run(t, check) {
   check.ok(/I don't know/.test(panel.innerHTML) && /Skip/.test(panel.innerHTML), 'and offers "I don\'t know" and "Skip"');
   vm.runInContext('state.view = state._savedView; state.step = 3; render();', ctx);
 
-  /* Step 5: choose disputes before document preparation and packet review. */
+  /* Report review and explicit issue selection share one visible step. */
   vm.runInContext('state.step = 4; render();', ctx);
-  check.ok(/Choose disputes/.test(panel.innerHTML) && /Step 5 of 7/.test(dom.elementById('stepcount').textContent), 'issue selection has its own visible step');
+  check.ok(/Review results/.test(panel.innerHTML) && /Step 3 of 5/.test(dom.elementById('stepcount').textContent), 'the retired Choose step resolves to Review results');
+  check.ok(/id="current-report-identity"/.test(panel.innerHTML) && /fictional-report.pdf/.test(panel.innerHTML), 'Results identifies the particular report being reviewed');
+  check.ok(/data-check-issue="i1"/.test(panel.innerHTML), 'Results offers the supported issue for an explicit consumer choice');
   check.ok(!/response draft|recorded output permission|review the observations|nothing will be sent|demonstration file/i.test(panel.innerHTML),
     'the packet review does not repeat obsolete draft, observation-only or demonstration claims');
   check.ok(!/id="draft"|id="download"/.test(panel.innerHTML), 'and does not offer legacy draft or demonstration controls');
-  check.ok(/id="packet-block"/.test(panel.innerHTML), 'the correction-packet mount remains in the review');
-  check.ok(/NOT YET REVIEWED/.test(panel.innerHTML) && /id="review"/.test(panel.innerHTML), 'the assessment acknowledgement is available before review');
-  await dom.elementById('review').onclick();
-  await tick();
-  check.ok(dom.calls.includes('POST /api/cases/case_stub/results/res_stub/review'), 'acknowledgement records the review through the owned selected-result service action');
-  check.ok(!dom.calls.some(call => call.includes('/results/undefined/')), 'review never uses a missing assessment identity');
-  check.ok(/REVIEWED BY YOU/.test(panel.innerHTML) && /id="review" disabled/.test(panel.innerHTML), 'the returned review disables repeated acknowledgement');
-  check.ok(/Your review is saved\./.test(panel.innerHTML), 'the saved review has a simple confirmation');
+  check.ok(!/id="review"|I have reviewed my assessment|NOT YET REVIEWED/.test(panel.innerHTML), 'Results has no repeated assessment acknowledgement');
+  check.ok(!dom.calls.some(call => /\/results\/[^/]+\/review$/.test(call)), 'opening Results does not invent a consumer assessment acknowledgement');
   check.ok(!dom.calls.some((c) => /response-draft|demonstration-download/.test(c)), 'reviewing the packet requests neither obsolete endpoint');
 
   vm.runInContext('state.step = 5; render();', ctx);
-  check.ok(/Prepare your documents/.test(panel.innerHTML) && /Step 6 of 7/.test(dom.elementById('stepcount').textContent), 'document preparation follows issue selection');
+  check.ok(/Prepare your documents/.test(panel.innerHTML) && /Step 4 of 5/.test(dom.elementById('stepcount').textContent), 'missing document preparation is the fourth visible step');
+  check.ok(!/packet-verification-requested|packet-copies-confirmed/.test(panel.innerHTML), 'preparation omits repeated verification and copy-quality confirmations');
   vm.runInContext('state.step = 6; render();', ctx);
-  check.ok(/Review and approve packet/.test(panel.innerHTML) && /Step 7 of 7/.test(dom.elementById('stepcount').textContent), 'review and approval follow issue selection');
+  check.ok(/Review and approve packet/.test(panel.innerHTML) && /Step 5 of 5/.test(dom.elementById('stepcount').textContent), 'complete packet review is the fifth visible step');
   /* Privacy and deletion remain outside the numbered journey. */
   vm.runInContext('state.step = 8; render();', ctx);
   await tick();
@@ -450,15 +479,15 @@ async function run(t, check) {
   check.ok(/id="check-report"/.test(panel.innerHTML) && /Try again to check my report</.test(panel.innerHTML), 'and offers the retry action');
 
   vm.runInContext('state.assessment_error = null; state.view = ASSESSED_VIEW; render();', ctx);
-  check.ok(/Your results are ready/.test(panel.innerHTML), 'a completed assessment says the results are ready');
-  check.ok(/Review the issues we found and choose any you want to dispute\./.test(panel.innerHTML), 'and tells the consumer what to do with them');
-  check.ok(/id="view-results"/.test(panel.innerHTML) && !/Your report is ready to review/.test(panel.innerHTML), 'offering the results action and never the pre-check wording');
+  check.ok(/<h1>Review results<\/h1>/.test(panel.innerHTML), 'a completed assessment opens Results directly');
+  check.ok(/data-check-issue="i1"/.test(panel.innerHTML) && /Create my dispute packet/.test(panel.innerHTML), 'the consumer can select the assessed issue and create a packet on Results');
+  check.ok(!/id="view-results"|Your report is ready to review/.test(panel.innerHTML), 'completed results require no extra View results action or pre-check wording');
   check.ok(!/We are checking your report|Choose a plan to check my report/.test(panel.innerHTML), 'with no contradictory status and no second action');
   check.ok(!/We could not check your report/.test(panel.innerHTML), 'and no stale failure');
 
   vm.runInContext('state.view = QUIET_VIEW; render();', ctx);
-  check.ok(/Your results are ready/.test(panel.innerHTML) && /We did not find a reporting issue in the information we could review\./.test(panel.innerHTML), 'a completed assessment with nothing surfaced says exactly what the performed checks found');
-  check.ok(/id="view-results"/.test(panel.innerHTML) && !/correct|compliant/i.test(panel.innerHTML), 'still offering the results action, and never implying the report is correct');
+  check.ok(/<h1>Review results<\/h1>/.test(panel.innerHTML) && /We did not find a reporting issue in the information we could review\./.test(panel.innerHTML), 'a completed assessment with nothing surfaced states the bounded outcome directly on Results');
+  check.ok(!/id="view-results"|id="create-packet"|correct|compliant/i.test(panel.innerHTML), 'quiet results offer no extra result action or empty packet and never imply the report is correct');
   vm.runInContext('state.view = ASSESSED_VIEW; render();', ctx);
 
   /* The FREE completed state: counts, one teaser and the purchase choices on the results step. */
@@ -466,8 +495,8 @@ async function run(t, check) {
   ctx.ONE_TIME_VIEW = ONE_TIME_VIEW;
   ctx.CASE_VIEW = CASE_VIEW;
   vm.runInContext('state.view = FREE_VIEW; state.step = 2; render();', ctx);
-  check.ok(/Your results are ready/.test(panel.innerHTML) && /We found 1 reporting issue/.test(panel.innerHTML), 'an unpaid completed case announces the count it found');
-  check.ok(/id="view-results"/.test(panel.innerHTML) && !/Your report is ready to review/.test(panel.innerHTML), 'and offers the results without the pre-check wording');
+  check.ok(/<h1>Review results<\/h1>/.test(panel.innerHTML) && /Reporting issues found: <b>1<\/b>/.test(panel.innerHTML), 'an unpaid completed case shows the actual count directly on Results');
+  check.ok(!/id="view-results"|Your report is ready to review/.test(panel.innerHTML), 'the free summary requires no extra result action or pre-check wording');
   vm.runInContext('state.step = 3; render();', ctx);
   check.ok(/Reporting issues found: <b>1<\/b>/.test(panel.innerHTML), 'the results step shows the distinct total');
   check.ok(!/violations:|potential issues:/.test(panel.innerHTML), 'without confidence tier counts');
@@ -486,7 +515,8 @@ async function run(t, check) {
   check.ok(/SUBSCRIPTION BENEFITS/.test(panel.innerHTML) && /Print and mail your disputes/.test(panel.innerHTML) && /Compare your next report/.test(panel.innerHTML), 'the report explains subscriber packet and comparison benefits');
   check.ok(!/id="packet-block"/.test(panel.innerHTML), 'with no packet block for a one-time unlock');
   vm.runInContext('state.step = 4; render();', ctx);
-  check.ok(/Dispute packets are part of a subscription\./.test(panel.innerHTML) && /id="go-billing"/.test(panel.innerHTML), 'the review step points a one-time unlock at the plans instead of the packet');
+  check.ok(/<h1>Review results<\/h1>/.test(panel.innerHTML) && /id="download-assessment"/.test(panel.innerHTML)
+    && /SUBSCRIPTION BENEFITS/.test(panel.innerHTML) && !/id="create-packet"/.test(panel.innerHTML), 'the retired Choose alias keeps the unlocked assessment download and subscription offer without granting a packet');
   vm.runInContext('state.view = CASE_VIEW; state.step = 3; render();', ctx);
 
   /* An accepted upload is never described as refused. */

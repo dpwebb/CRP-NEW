@@ -56,6 +56,24 @@ async function run(t, check) {
   check.equal((await t.request('POST', base + '/packet/approve', auth({}))).json.error.code, 'PACKET_SUPPORT_REQUIRED', 'HTTP consumer packet cannot approve without a verified mail checklist');
   check.equal((await t.request('GET', base + '/packet', { token: actor.token })).json.view.packet.approved, false, 'refused mail approval records no approval');
   const support = { ...options([identity, address, passport]), document_dates: { [address]: new Date().toISOString().slice(0, 10) } };
+  const withoutRepeatedConfirmations = { ...support };
+  delete withoutRepeatedConfirmations.verification_requested;
+  delete withoutRepeatedConfirmations.copies_confirmed;
+  check.equal((await t.request('POST', base + '/packet/support', auth({ support: withoutRepeatedConfirmations }))).status, 200,
+    'saved contact details and qualifying copies can prepare a packet without repeating identity or quality confirmations');
+  const reused = (await t.request('GET', base + '/packet', { token: actor.token })).json.view;
+  check.equal(reused.packet.preview_ready, true, 'the complete packet is ready without the retired confirmation fields');
+  check.deepEqual(reused.support.selected_document_ids, [...support.document_ids].sort(), 'omitting repeated confirmations retains the exact existing selected copies');
+  check.equal(reused.support.settings.verification_requested, undefined, 'new preparation does not invent a bureau verification request');
+  check.equal(reused.support.settings.copies_confirmed, undefined, 'new preparation does not invent a consumer quality attestation');
+  for (const field of ['verification_requested', 'copies_confirmed']) {
+    check.equal((await t.request('POST', base + '/packet/support', auth({ support: { ...withoutRepeatedConfirmations, [field]: 'yes' } }))).status, 400,
+      'a supplied legacy ' + field + ' still requires a boolean');
+  }
+  check.equal((await t.request('POST', base + '/packet/support', auth({ support: { ...support, copies_confirmed: false } }))).status, 200,
+    'a recorded false quality confirmation remains valid legacy input');
+  check.equal((await t.request('GET', base + '/packet', { token: actor.token })).json.view.packet.preview_ready, true,
+    'the retired copy-quality confirmation no longer blocks otherwise complete documents');
   check.equal((await t.request('POST', base + '/packet/support', auth({ support }))).status, 200, 'bureau-specific supporting selection saved');
   const ready = (await t.request('GET', base + '/packet', { token: actor.token })).json.view;
   check.deepEqual(ready.packet.form_previews, [], 'no retired form preview is generated');

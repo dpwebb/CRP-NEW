@@ -1,4 +1,16 @@
+## October 15 agreed Wizard changes authorized locally; no deployment
+
+The owner explicitly instructed: "Proceed with the agreed Wizard changes locally. Keep everything else unchanged, test the revised flow, and do not deploy to staging or production yet." This resumes only local implementation and local verification of the screen-by-screen directive in the single work register. It supersedes the preceding implementation stop only for that bounded work. Staging/production work, existing hosted fixtures/checkouts/payments/cleanup and host/provider actions remain stopped; do not replay old once-only operations.
+
+Root is the sole product-source and documentation writer in packet-footer-local, preserving the four unfinished UI/test edits and every earlier receipt. Read-only helpers wizard_local_governance, wizard_prepare_review and wizard_tests_review own no product files. Local verification uses isolated fictional test stores and owned disposable local processes, retaining existing local consumer data and services. Shared UI/runtime/test changes require one fresh governed full after focused checks. Preserve the footer and every unmentioned behavior. Record any additional isolated writer assignment before it starts. Main remains canonical; integrate only reviewed locally verified changes.
+
 # Owner imperatives
+
+## October 15 owner Wizard simplification directive; implementation and release STOPPED
+
+The owner stopped to reevaluate "Keeping the Wizard Simple", then supplied overriding consumer-visible changes. Read the latest "October 15 owner Wizard simplification directive" in CRP_VERSION_1_SEVEN_DAY_WORK_REGISTER_001.md. Account and every unmentioned item are accepted. Retire the visible Check report and Choose disputes steps; identify the report and select issues on Review results. Upload/saved/latest routing and account grouping follow that directive. Prepare Documents must reuse the contact details and ID copies already provided, ask only for anything missing, and remove the repeated identity-verification and copy-quality confirmation checkboxes. Review and approve packet must show every page of the complete packet, allow letter editing, then approval and download or print. Remove highlight tools and contact-details/upload buttons from that screen. The screen-by-screen owner direction is now recorded; implementation and release remain stopped.
+
+This records requirements only. Implementation, tests, browser/fixture writes, payments, cleanup, staging, deployment and host/provider work remain STOPPED until explicitly resumed. Earlier release authority and receipts remain historical and conditional. Preserve the four unfinished packet-review UI/test edits in packet-footer-local; this documentation does not implement, test, accept or deploy them. Root is the sole documentation integration owner; the helper review was read-only. Do not resume an older work order or replay once-only actions.
 
 ## October15 Cancel recovered; long-letter/fallback observed; next Confirm controller blocked
 
