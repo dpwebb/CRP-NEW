@@ -48,7 +48,7 @@ function makeContext(baseUrl, token) {
       try { json = JSON.parse(text); } catch { json = {}; }
       return { ok: res.status < 400, status: res.status, json: async () => json, text: async () => text,headers:res.headers,blob:async()=>new Blob([bytes],{type:res.headers.get('content-type')||'application/octet-stream'}) };
     },
-    document: { getElementById: id=>id==='packet-date'&&!elementById('panel').querySelector('#packet-block').innerHTML.includes('id="packet-date"')?null:elementById(id), createElement: tag=>{const node=makeElement(tag);node.click=()=>{downloads.push({filename:node.download,blob:objects.get(node.href)});calls.push('BLOB_DOWNLOAD '+node.download);};return node;} },
+    document: { getElementById: id=>id==='packet-letter-date'&&!elementById('panel').querySelector('#packet-block').innerHTML.includes('id="packet-letter-date"')?null:elementById(id), createElement: tag=>{const node=makeElement(tag);node.click=()=>{downloads.push({filename:node.download,blob:objects.get(node.href)});calls.push('BLOB_DOWNLOAD '+node.download);};return node;} },
     URL: { createObjectURL: blob=>{const url='blob:fixture-'+objects.size;objects.set(url,blob);return url;}, revokeObjectURL: () => {} },
     Blob: globalThis.Blob,
     FileReader: class FileReader { readAsDataURL() { this.result = 'data:application/pdf;base64,x'; this.onload(); } }
@@ -168,8 +168,20 @@ async function run(service, check) {
   dom.elementById('packet-copies-confirmed').checked = true;
   dom.elementById('packet-identity-reference').value = '000000000';
   dom.elementById('packet-wording').value = 'First wording.';
+  // Assigning a VM node value does not dispatch the input event a consumer edit does.
+  dom.elementById('packet-wording').oninput();
   await dom.elementById('packet-save').onclick();
   await waitFor(() => block.innerHTML.includes('First wording.'));
+  const initiallySaved = (await service.request('GET', `/api/cases/${c.case_id}/packet`, { token: owner.token })).json.view;
+  check.deepEqual(initiallySaved.packet.selected_issue_ids, [issueId], 'the initial UI edit saves exactly the chosen issue');
+  check.equal(initiallySaved.packet.wording, 'First wording.', 'the input event persists the visible first wording');
+  const savedCorrespondence = service.service.store.state().packets.find(packet => packet.case_id === c.case_id).correspondence;
+  check.deepEqual(Object.fromEntries(['consumer_name', 'contact', 'account_reference', 'bureau_reference'].map(key => [key, savedCorrespondence[key]])), {
+    consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test', account_reference: 'CRP-REF-1', bureau_reference: 'BUREAU-4321'
+  }, 'the same initial save persists the visible correspondence fields');
+  check.equal(initiallySaved.packet.correspondence.contact, '10 Fictional Street, Example City, CA, 90001\ndana.whitfield@example.test', 'the account-profile packet view integrates the saved mailing address and contact email');
+  check.deepEqual([...initiallySaved.support.selected_document_ids].sort(), [...supportIds].sort(), 'the same initial save retains the selected identity and address copies');
+  check.equal(initiallySaved.packet.preview_ready, true, 'the initial edited save produces a complete reviewable packet');
 
   /* --- an unsaved edit cannot be approved; save and read the current complete preview first. --- */
   dom.elementById('packet-wording').value = 'Changed wording (unsaved before approve).';
@@ -210,6 +222,17 @@ async function run(service, check) {
   const pvAfter = (await service.request('GET', `/api/cases/${c.case_id}/packet`, { token: owner.token })).json.view;
   check.equal(pvAfter.packet.approved, true, 'the packet is approved after the UI approve action');
   check.equal(pvAfter.packet.selected_count, 1, 'with one issue selected');
+
+  await waitFor(() => !dom.elementById('packet-preview-reviewed').disabled);
+  const beforeCleanSave = JSON.stringify(service.service.store.state().packets.find(packet => packet.case_id === c.case_id));
+  const postsBeforeCleanSave = dom.calls.filter(call => /^POST .*\/packet\//.test(call)).length;
+  const cleanSave = dom.elementById('packet-save').onclick;
+  await cleanSave();
+  await waitFor(() => dom.elementById('packet-save').onclick !== cleanSave);
+  await waitFor(() => !dom.elementById('packet-preview-reviewed').disabled);
+  check.equal(dom.calls.filter(call => /^POST .*\/packet\//.test(call)).length, postsBeforeCleanSave, 'Save without an input event emits no packet mutation');
+  check.equal(JSON.stringify(service.service.store.state().packets.find(packet => packet.case_id === c.case_id)), beforeCleanSave, 'a settled clean Save preserves the complete approved packet row, version and PDF hash');
+  check.equal(dom.elementById('packet-download').disabled, false, 'a clean Save keeps the same current approved download available');
 
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the matching packet downloads');
