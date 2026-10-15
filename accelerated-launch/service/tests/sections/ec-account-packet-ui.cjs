@@ -252,11 +252,53 @@ async function fullLetterSaveContextRace() {
 }
 async function incompletePacketCannotApprove() {
   const view = packetView(); view.packet.preview_ready = false;
+  view.support.missing = ['Add the date of an address document less than 90 days old.'];
   const h = harness(() => ({ view })); h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
   assert.ok(!/id="packet-all-pages"|iframe title=/.test(h.panel.querySelector('#packet-block').innerHTML), 'an incomplete packet has no stale complete PDF preview');
+  const html = h.panel.querySelector('#packet-block').innerHTML;
+  assert.match(html, /Your full packet is not ready to review yet/);
+  assert.match(html, /id="packet-preparation-required"[\s\S]*Add the date of an address document less than 90 days old/,
+    'Review explains the actual missing address date beside the letter');
+  assert.equal((html.match(/id="packet-edit-documents"/g) || []).length, 1, 'incomplete Review offers one direct document recovery control');
+  assert.equal((html.match(/id="packet-edit-account"/g) || []).length, 1, 'incomplete Review offers one direct account recovery control');
   h.node('packet-preview-reviewed').checked = true; await h.node('packet-preview-reviewed').onchange();
   assert.equal(h.node('packet-approve').disabled, true); await h.node('packet-approve').onclick();
   assert.equal(h.calls.filter(row => row.url.endsWith('/approve')).length, 0, 'letter text alone never permits approval of missing attachments');
+  assert.equal(h.node('packet-download').disabled, true);
+  assert.match(html, /id="packet-print" disabled/, 'the incomplete packet renders printing disabled');
+  await h.node('packet-edit-documents').onclick();
+  assert.equal(h.evaluate('state.step'), 5, 'the missing-date recovery opens ordinary document preparation');
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'opening preparation never guesses a document date or writes the packet');
+  await h.openPacket('caseA'); await h.node('packet-edit-account').onclick();
+  assert.equal(h.evaluate('state.step'), 0, 'missing contact or upload recovery opens the existing account view');
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'account recovery leaves original packet and document choices untouched');
+}
+async function staleAssessmentRequiresReviewedSelection() {
+  const view = packetView(true);
+  Object.assign(view.packet, { preview_ready: false, assessment_current: false, current_result_id: 'result-new', approved: false });
+  const h = harness(request => ({ view, requirements, missing: [] }));
+  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
+  const html = h.panel.querySelector('#packet-block').innerHTML;
+  assert.match(html, /Your report has a newer assessment/);
+  assert.match(html, /id="packet-letter"[^>]*readonly/, 'stale wording stays visible without accepting edits that navigation could discard');
+  assert.ok(!html.includes('id="packet-all-pages"'), 'stale assessment never advertises a complete current preview');
+  assert.equal(h.node('packet-save').disabled, true); assert.equal(h.node('packet-letter-date').disabled, true);
+  await h.node('packet-review-latest-issues').onclick();
+  assert.equal(h.evaluate('state.step'), 4);
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'reviewing newer issues never saves or rebinds unseen assessment content');
+  await h.node('packet-choose-next').onclick();
+  assert.deepEqual(h.calls.find(row => row.url.endsWith('/packet/select')).body,
+    { issue_ids: ['issue-A'], expected_result_id: 'result-new' }, 'explicit Continue binds the selection to the assessment the consumer reviewed');
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, 1, 'stale recovery only reselects issues; it does not rewrite saved correspondence, document dates or support');
+  assert.equal(h.evaluate('state.step'), 5);
+  await h.openPacket('caseA');
+  const writesBeforeNavigation = h.calls.filter(row => row.method === 'POST').length;
+  await h.node('packet-edit-account').onclick();
+  assert.equal(h.evaluate('state.step'), 0, 'a stale packet does not trap contact-details navigation in issue selection');
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, writesBeforeNavigation, 'leaving a stale packet never silently saves or rebinds it');
+  await h.openPacket('caseA'); await h.evaluate('packetLeave(STEP.HISTORY)');
+  assert.equal(h.evaluate('state.step'), 7, 'a stale packet does not trap saved-report navigation');
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, writesBeforeNavigation);
 }
 async function printedMaskedReference() {
   const h = harness(() => ({ ok: true }));
@@ -686,7 +728,7 @@ async function changedStoredReportRecovery() {
   assert.equal(h.evaluate('state.step'), 0, 'a previous account handler cannot navigate a different account to upload');
 }
 const tests = { saveAccountRace, uploadListRace, uploadReadRace, packetContextRace, wirePacketRace, issueSelectionInvalidation,
-  currentPreviewApproval, dirtyPreviewStatus, completeLetterEditAndReset, fullLetterSaveContextRace, incompletePacketCannotApprove, printedMaskedReference, packetDraftDocumentReturn, firstPacketContactDetour, packetReturnAccountIsolation, recoveryKeyAccountRace,
+  currentPreviewApproval, dirtyPreviewStatus, completeLetterEditAndReset, fullLetterSaveContextRace, incompletePacketCannotApprove, staleAssessmentRequiresReviewedSelection, printedMaskedReference, packetDraftDocumentReturn, firstPacketContactDetour, packetReturnAccountIsolation, recoveryKeyAccountRace,
   createCaseAccountRace, createCaseListNavigationRace, createCaseViewNavigationRace, existingCaseAccountRace, caseRefreshAccountRace,
   createCaseNormalCompletion, existingCaseNormalCompletion, latestCaseChoiceWins, invalidIntakeNoCase, selectionKeepsFile,
   reportReadAccountRace, reportReadSelectionRace, partialRetryOnlyPending, evaluateAccountRace, completedCaseNormalCompletion,

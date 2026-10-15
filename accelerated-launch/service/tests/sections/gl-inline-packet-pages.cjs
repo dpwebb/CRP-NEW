@@ -184,6 +184,35 @@ async function run(t, check) {
   check.equal((await request('GET', imageUrl(annotatedVersion, reportPage.page))).json.error.code, 'PACKET_APPROVAL_STALE',
     'letter reflow invalidates prior physical-page image coordinates');
   check.equal((await request('GET', base + '/packet-print')).json.error.code, 'PACKET_NOT_APPROVED', 'letter reflow requires approval before printing');
+  const savedBeforeReassessment = t.service.store.state().packets.find(row => row.case_id === caseId);
+  const selectedBeforeReassessment = savedBeforeReassessment.selected_issue_ids.slice();
+  check.equal((await request('POST', base + '/evaluate', {})).status, 201, 'ordinary reassessment appends a new result for the saved packet case');
+  const stale = (await request('GET', base + '/packet')).json.view;
+  check.equal(stale.packet.assessment_current, false, 'saved packet explicitly identifies a newer assessment');
+  check.equal(stale.packet.preview_ready, false, 'a stale saved packet does not advertise full-page readiness');
+  check.deepEqual(stale.packet.selected_issue_ids, selectedBeforeReassessment, 'the legitimate reassessment keeps the same surviving issue identifiers');
+  check.equal((await request('GET', metadataUrl(stale.packet.preview_version))).json.error.code, 'PACKET_APPROVAL_STALE', 'stale physical-page metadata remains refused');
+  const packetBeforeRejectedSelection = hash(Buffer.from(JSON.stringify(t.service.store.state().packets.find(row => row.case_id === caseId))));
+  check.equal((await request('POST', base + '/packet/select', { issue_ids: selectedBeforeReassessment, expected_result_id: savedBeforeReassessment.result_id })).json.error.code,
+    'PACKET_APPROVAL_STALE', 'a selection for an older viewed assessment cannot bind newer unseen facts');
+  check.equal(hash(Buffer.from(JSON.stringify(t.service.store.state().packets.find(row => row.case_id === caseId)))), packetBeforeRejectedSelection,
+    'a rejected stale selection leaves every saved packet field unchanged');
+  const rebound = await request('POST', base + '/packet/select', { issue_ids: selectedBeforeReassessment, expected_result_id: stale.packet.current_result_id });
+  check.equal(rebound.status, 200, 'explicit selection of the reviewed current issues rebinds the saved packet');
+  view = rebound.json.view;
+  check.equal(view.packet.assessment_current, true, 'the selected packet is bound to the reviewed current result');
+  check.equal(view.packet.letter_text, longLetter, 'same-issue reassessment recovery preserves all custom letter wording');
+  check.deepEqual(view.support.settings.document_ids, savedBeforeReassessment.support.document_ids, 'same-issue recovery preserves document selections');
+  check.equal(view.packet.approved, false, 'rebound packet still requires fresh complete-page review and approval');
+  const recoveredPages = await request('GET', metadataUrl(view.packet.preview_version));
+  check.equal(recoveredPages.status, 200, 'rebound existing packet serves every physical-page metadata entry');
+  const recoveredPdf = await request('GET', pdfUrl(view.packet.preview_version));
+  check.equal(recoveredPages.json.page_count, (await PDFDocument.load(recoveredPdf.bytes)).getPageCount(), 'recovered page metadata accounts for the complete PDF');
+  check.equal((await request('POST', base + '/packet/approve', { reviewed_version: view.packet.preview_version })).status, 200, 'the newly reviewed current packet can be approved');
+  check.ok((await request('GET', base + '/packet-download')).bytes.equals(recoveredPdf.bytes)
+    && (await request('GET', base + '/packet-print')).bytes.equals(recoveredPdf.bytes), 'recovered review, download and print retain identical complete PDF bytes');
+  for (const [fileId, before] of originals) check.equal(hash(t.service.store.readBlob(fileId)), before, 'saved-case recovery preserves original report and document bytes: ' + fileId);
+  check.equal(hash(Buffer.from(JSON.stringify(t.service.store.state().results.find(row => row.case_id === caseId)))), factsBefore, 'saved-case recovery preserves the historical assessment exactly');
   const unpaid = await t.unpaidAccount('all-packet-pages-unpaid@example.test'), unpaidId = await t.assessedCase(unpaid);
   for (const [method, suffix, body] of [['GET', '/preview/pages?version=' + version], ['GET', '/preview/pages/1?version=' + version],
     ['POST', '/annotations', { annotations: [] }]]) {

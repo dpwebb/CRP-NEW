@@ -246,6 +246,8 @@ function packetView(store, actor, caseId) {
     packet: {
       packet_id: packet ? packet.packet_id : null,
       result_id: packet ? packet.result_id : null,
+      current_result_id: row ? row.result_id : null,
+      assessment_current: !packet || Boolean(row && packet.result_id === row.result_id),
       selected_issue_ids: packet ? (packet.selected_issue_ids || []).slice() : [],
       selected_count: packet ? (packet.selected_issue_ids || []).length : 0,
       wording: packet ? packet.wording : null,
@@ -265,7 +267,7 @@ function packetView(store, actor, caseId) {
       correspondence_ready: correspondenceMissing.length === 0,
       correspondence_preview: correspondencePreview,
       preview_version: packet && row && selectedIssues.length && selectionCurrent ? canonicalVersion(packet, row, selectedIssues) : null,
-      preview_ready: Boolean(packet && selectedIssues.length && selectionCurrent && !correspondenceMissing.length && packet.support_snapshot && !packet.support_snapshot.missing.length),
+      preview_ready: Boolean(packet && row && packet.result_id === row.result_id && selectedIssues.length && selectionCurrent && !correspondenceMissing.length && packet.support_snapshot && !packet.support_snapshot.missing.length),
       attachment_manifest: attachmentManifest(packet),
       report_exhibits: packet?.report_snapshot?.view || [],
       report_attachment_manifest: reportAttachmentManifest(packet),
@@ -290,8 +292,9 @@ function requireResultAndEligible(store, actor, caseId) {
 }
 
 /** Record the consumer's selection. A change of selection invalidates any prior approval. */
-function selectIssues(store, actor, caseId, issueIds) {
+function selectIssues(store, actor, caseId, issueIds, expectedResultId) {
   const { row, eligible } = requireResultAndEligible(store, actor, caseId);
+  if (expectedResultId !== undefined && expectedResultId !== row.result_id) throw new ServiceError('PACKET_APPROVAL_STALE');
   const previous = currentPacket(store, caseId);
   if (previous?.report_file_ids?.length) {
     const previousResult = accountDisplay.resultRow(store, store.state().results.find(result => result.result_id === previous.result_id && result.case_id === caseId));

@@ -683,7 +683,7 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency) {
     packetSelect: ({ params, body, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
       entitlement.requireSubscriberFeature(store, actor);
-      packets.selectIssues(store, actor, params.caseId, body && body.issue_ids);
+      packets.selectIssues(store, actor, params.caseId, body && body.issue_ids, body?.expected_result_id);
       logger.log({ event: 'PACKET_SELECTED', outcome: 'OK' });
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
     },

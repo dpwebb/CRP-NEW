@@ -2043,6 +2043,11 @@ function renderPacketBlock(pv) {
   ].filter(Boolean).join('\n') } : (packet.correspondence || {});
   const recipient = packet.recipient || {};
   const missing = packet.correspondence_missing || [];
+  const preparationMissing = [...new Set([
+    ...missing.map(field => 'Add ' + correspondenceFieldLabel(field) + ' in your account details.'),
+    ...(pv.support?.missing || []),
+    ...(!pv.support?.settings ? ['Complete the document checklist for this packet.'] : [])
+  ])];
   const rows = issues.map((i) => `
     <label class="issue-select">
       <input type="checkbox" data-check-issue="${esc(i.issue_id)}" ${(packet.selected_issue_ids || []).includes(i.issue_id) ? 'checked' : ''}>
@@ -2085,8 +2090,9 @@ function renderPacketBlock(pv) {
     </div><div class="packet-review">
       <h3>Review and edit</h3>
       <div id="packet-letter-date-box"><label for="packet-letter-date" id="packet-letter-date-label">${packet.letter_text ? 'Date for the prepared letter' : 'Letter date'}</label><input type="date" id="packet-letter-date" value="${esc(packet.letter_date || localLetterDate())}" aria-describedby="packet-letter-date-help" required><p class="evidence" id="packet-letter-date-help">${packet.letter_text ? 'You edited this letter. Check its date below. Changing this box will ask to replace your edits.' : 'Use the date you plan to sign and send this letter.'}</p></div>
-      <p class="evidence" id="packet-preview-status">${packet.selected_count && packet.correspondence_preview ? 'Read your letter. You can change the words below, then save your changes.' : 'Choose your disputes, then select Save and review packet.'}</p>
-      ${packet.correspondence_preview ? `${packet.preview_ready ? '' : `<label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000">${esc(packet.correspondence_preview)}</textarea>`}<button class="secondary" id="packet-reset-letter">Use the prepared letter</button>` : ''}
+      <p class="evidence" id="packet-preview-status">${packet.preview_ready === false && packet.correspondence_preview ? 'Your full packet is not ready to review yet. Complete the items below to see every page.' : packet.selected_count && packet.correspondence_preview ? 'Read your letter. You can change the words below, then save your changes.' : 'Choose your disputes, then select Save and review packet.'}</p>
+      ${packet.preview_ready === false ? `<section class="note stop" id="packet-preparation-required" aria-labelledby="packet-preparation-required-title"><h4 id="packet-preparation-required-title">Finish preparing your packet</h4>${packet.assessment_current === false ? '<p>Your report has a newer assessment. Check its issues before preparing your packet again.</p><button class="secondary" id="packet-review-latest-issues">Review the latest issues</button>' : ''}${preparationMissing.length ? `<ul>${preparationMissing.map(item => `<li>${esc(item)}</li>`).join('')}</ul>` : '<p>Check your dispute and document choices before reviewing the complete packet.</p>'}<div class="packet-review-choices"><button class="secondary" id="packet-edit-documents">Change report pages or document copies</button><button class="secondary" id="packet-edit-account">Update contact details or upload copies</button></div></section>` : ''}
+      ${packet.correspondence_preview ? `${packet.preview_ready ? '' : `<label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000" ${packet.assessment_current === false ? 'readonly' : ''}>${esc(packet.correspondence_preview)}</textarea>`}<button class="secondary" id="packet-reset-letter">Use the prepared letter</button>` : ''}
       <pre id="packet-preview" hidden>${esc(packet.correspondence_preview || '')}</pre>
       ${packet.preview_ready && packet.letter_preview_url ? `<div id="packet-pdf-review"><div class="packet-review-choices"><button class="secondary" id="packet-edit-documents">Change report pages or document copies</button><button class="secondary" id="packet-edit-account">Update contact details or upload copies</button></div><div id="packet-all-pages" aria-label="Complete editable dispute packet"><p role="status">Preparing all packet pages...</p></div></div>` : ''}
       <div id="packet-action-bar">${packet.approval_stale ? '<p class="note stop">The packet changed since approval; review and approve it again.</p>' : ''}<p class="evidence" id="${packet.approved ? 'packet-approved-status' : 'packet-action-help'}">${packet.approved ? 'Your packet is approved. You can print or download it.' : packet.preview_ready ? 'Check every page, tick the box below, then approve this version to enable printing and downloading.' : 'Complete your issue and document choices in the previous steps, then save and review your packet before approving.'}</p>
@@ -2137,6 +2143,12 @@ async function wirePacket(panel) {
   block.innerHTML = renderPacketBlock(pv);
   if (!(pv.eligible_issues || []).some(issue => issue.eligible)) return;
   const choosing = state.step === STEP.CHOOSE, preparing = state.step === STEP.PREPARE;
+  const assessmentStale = pv.packet?.assessment_current === false;
+  if (assessmentStale && preparing) {
+    state.step = STEP.CHOOSE;
+    state.notice = 'Your report has a newer assessment. Check its issues and choose your disputes again.';
+    render(); return;
+  }
   el('packet-selection').hidden = !choosing;
   el('packet-preparation-content').hidden = !preparing;
   el('packet-preparation-content').append(el('packet-earlier-details'));
@@ -2148,6 +2160,11 @@ async function wirePacket(panel) {
   const dateBox = el('packet-letter-date-box');
   if (dateBox) reviewBody.prepend(dateBox);
   const saveButton = el('packet-save'), resetButton = el('packet-reset-letter');
+  if (assessmentStale) {
+    if (saveButton) saveButton.disabled = true;
+    if (resetButton) resetButton.disabled = true;
+    if (dateBox) el('packet-letter-date').disabled = true;
+  }
   if (pdfReview) pdfReview.querySelector('.packet-review-choices').append(saveButton, ...(resetButton ? [resetButton] : []));
   else if (resetButton) resetButton.after(saveButton);
   else reviewBody.append(saveButton);
@@ -2199,6 +2216,7 @@ async function wirePacket(panel) {
   let previewCurrent = !pdfReview && (pv.packet?.preview_ready ?? Boolean(pv.packet?.selected_count && pv.packet?.correspondence_preview));
   const persistSelection = async () => {
     ensureOrigin();
+    if (assessmentStale) throw new Error('Review the latest issues and choose your disputes again before saving.');
     const captured = edits;
     const ensureCurrent = () => { ensureOrigin(); if (edits !== captured) throw cancelledAction(); };
     if (!captured) return ensureCurrent;
@@ -2213,7 +2231,7 @@ async function wirePacket(panel) {
       capturedAnnotations = packetReviewController?.annotations() || pv.packet.annotations || [],
       pageChoices = Object.fromEntries([...panel.querySelectorAll('[data-packet-pages]')].map(node => [node.getAttribute('data-packet-pages'),
         node.value.trim() ? node.value.split(',').map(value => Number(value.trim())) : []])), payloads = [
-      ['select', { issue_ids: chosenIssues }], ['correspondence', { correspondence }],
+      ['select', { issue_ids: chosenIssues, ...(pv.packet.current_result_id ? { expected_result_id: pv.packet.current_result_id } : {}) }], ['correspondence', { correspondence }],
       ['wording', { wording: currentWording() }], ...(pv.support?.catalog?.length ? [['support', { support: currentSupport() }]] : [])
     ];
     if (letterEdited && !resetLetter && !dateResetConfirmed && String(letterText || '').length > 24000) throw new Error('Your letter is too long. Shorten it to 24,000 characters, then save again.');
@@ -2238,7 +2256,14 @@ async function wirePacket(panel) {
   const continueToReview = el('packet-choose-next');
   if (continueToReview) continueToReview.onclick = () => run(async () => {
     if (!currentSelection().length) throw new Error('Choose at least one issue to continue.');
-    const ensureCurrent = edits ? await persistSelection() : ensureOrigin; ensureCurrent();
+    let ensureCurrent = ensureOrigin;
+    if (assessmentStale) {
+      const selected = currentSelection(), captured = edits;
+      await api('POST', `/api/cases/${caseId}/packet/select`, { issue_ids: selected, expected_result_id: pv.packet.current_result_id });
+      ensureOrigin();
+      if (edits !== captured) throw cancelledAction();
+    } else if (edits) ensureCurrent = await persistSelection();
+    ensureCurrent();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
     state.step = STEP.PREPARE;
     state.notice = 'Your choices are saved. Check the bureau requirements and add your documents.';
@@ -2363,7 +2388,11 @@ async function wirePacket(panel) {
   const accountDetails = el('packet-account-details');
   packetLeave = step => run(async () => {
     ensureOrigin();
-    if (edits) { const ensureCurrent = await persistSelection(); ensureCurrent(); }
+    if (assessmentStale && [STEP.CHOOSE, STEP.PREPARE, STEP.REVIEW].includes(step)) {
+      step = STEP.CHOOSE;
+      state.notice = 'Your report has a newer assessment. Check its issues and choose your disputes again.';
+    }
+    if (edits && !assessmentStale) { const ensureCurrent = await persistSelection(); ensureCurrent(); }
     if (step === STEP.ACCOUNT) {
       state.packetReturn = { accountId: state.account.account_id, epoch: accountEpoch, caseId, resultId: pv.packet.result_id || state.view.result_id, step: state.step };
       state.accountProfile = null;
@@ -2372,6 +2401,7 @@ async function wirePacket(panel) {
     render();
   }, {redraw:false});
   if (accountDetails) accountDetails.onclick = () => packetLeave(STEP.ACCOUNT);
+  if (el('packet-review-latest-issues')) el('packet-review-latest-issues').onclick = () => packetLeave(STEP.CHOOSE);
   if (el('packet-edit-documents')) el('packet-edit-documents').onclick = () => packetLeave(STEP.PREPARE);
   if (el('packet-edit-account')) el('packet-edit-account').onclick = () => packetLeave(STEP.ACCOUNT);
   let checklistSequence = 0;
