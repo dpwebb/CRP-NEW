@@ -30,6 +30,12 @@ The fresh read-only baseline at2026-10-16T13:09:55Z verified stagingca463/b22e/1
 
 Chrome's documented upload troubleshooting requires enabling Allow access to file URLs under the ChatGPT extension's Details in the David profile. Root requested that setting through the user-input control. No permission was changed or bypassed, no hidden browser/API upload substituted, and no dependent upload was retried without confirmation. The QA tab was returned to Upload report and marked for handoff; all older tabs/drafts remain untouched.
 
+### File-access confirmation and unsuccessful documented retry
+
+The owner subsequently replied "Enabled file access". Root refreshed the current Upload DOM, selected Canada/Nova Scotia/Equifax Canada and retried the documented chooser once. Chrome still returned the same Allow access to file URLs refusal. A fresh DOM inspection again showed input#file.files empty; no Upload click, new case or deletion occurred. This is an unresolved browser permission/controller prerequisite, not a demonstrated application upload failure. Evidence: browser/upload-permission-retry.json and browser/upload-permission-retry.png. Root asked the owner to select only fictional-wizard-delete-A-20261016.pdf manually in the preserved QA tab, without clicking Upload. That selection remains pending; do not retry or bypass the chooser guard, or infer an upload from the permission answer.
+
+Fresh resume-before.json at2026-10-16T14:57:38Z passed stable read-only custody. Production's entire site observation is exact to partial-after.json. Staging's non-session row hash tables, root values, all148 blobs, runtime/configuration, signed/private/volatile authority and observed session count remain exact to that partial checkpoint. Only staging's raw state SHA differs; this observation does not claim exact session contents or explain that byte difference. No host/service/provider action was performed. The full hosted upload/edit/approve/download/delete checklist remains pending.
+
 ## Findings
 
 ### 1. Deletion screen does not clearly identify the report being deleted
