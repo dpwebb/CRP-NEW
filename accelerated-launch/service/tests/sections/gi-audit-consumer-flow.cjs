@@ -178,8 +178,8 @@ async function browserChecks(t, check) {
         let status = 200, data = { ok: true };
         if (p === '/api/jurisdictions') data.surface = surface;
         else if (p === '/api/pricing') data.plan_catalog = planCatalog;
-        else if (p === '/api/session') { if (signedIn) data.account = { account_id: 'accountA', email: 'fictional@example.test' }; else { status = 401; data = { ok: false, error: { message: 'Sign in to continue.' } }; } }
-        else if (p === '/api/sessions' && request.method() === 'POST') { signedIn = true; Object.assign(data, { account: { account_id: 'accountA', email: 'fictional@example.test' }, signup_complete: true }); }
+        else if (p === '/api/session') { if (signedIn) Object.assign(data, { account: { account_id: 'accountA', email: 'fictional@example.test' }, signup_complete: true, two_factor_enabled: false }); else { status = 401; data = { ok: false, error: { message: 'Sign in to continue.' } }; } }
+        else if (p === '/api/sessions' && request.method() === 'POST') { signedIn = true; Object.assign(data, { account: { account_id: 'accountA', email: 'fictional@example.test' }, signup_complete: true, two_factor_enabled: false }); }
         else if (p === '/api/account/security') data.signup_complete = true;
         else if (p === '/api/account/profile') data.profile = {};
         else if (p === '/api/account/documents') data.documents = [];
@@ -215,7 +215,7 @@ async function browserChecks(t, check) {
       await page.locator('.signup-details > summary').click(); await page.locator('#signup-full_name').fill('Fictional Consumer');
       check.equal(await page.locator('#signup-full_name').inputValue(), 'Fictional Consumer', 'optional fields remain editable when expanded');
       check.ok((await page.locator('.support-contact a').getAttribute('href')).startsWith('mailto:admin@'), 'anonymous signup provides an actionable established support contact');
-      await page.goto(t.base + '/index.html#signin'); await page.locator('#email').fill('fictional@example.test'); await page.locator('#password').fill('fictional-password'); await page.locator('#signin').click(); await page.locator('#resume-latest').waitFor();
+      await page.goto(t.base + '/index.html#signin'); await page.locator('#email').fill('fictional@example.test'); await page.locator('#password').fill('fictional-password'); await page.locator('#signin').click(); await page.locator('#signin-skip-two-factor').click(); await page.locator('#resume-latest').waitFor();
       check.ok((await page.locator('#saved-report-list').innerText()).includes('TransUnion'), `${width}px fresh sign-in shows owned reports without a Refresh click`);
       await page.locator('#storage-help').getByText(/38.0 MB left/).waitFor();
       check.ok((await page.locator('#storage-help').innerText()).includes('Reports and ID copies share'), 'initial upload explains shared account quota');

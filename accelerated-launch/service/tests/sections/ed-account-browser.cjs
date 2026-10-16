@@ -52,6 +52,7 @@ async function run(service, check) {
     check.equal(await page.locator('.first-visit-plans').count(), 0, 'plan cards do not precede account creation');
     check.ok(await page.locator('.sidebar').isHidden(), 'wizard navigation waits until after sign-in');
     await page.locator('#email').fill(actor.email); await page.locator('#password').fill('a-long-enough-password'); await page.locator('#signin').click();
+    await page.locator('#signin-skip-two-factor').click();
     await page.waitForSelector('#open');
     check.ok(await page.locator('.sidebar').isVisible(), 'the guided workspace appears after sign-in');
     check.equal(await page.locator('#stepcount').innerText(), 'Step 2 of 5', 'sign-in opens Upload in the five-step main journey');

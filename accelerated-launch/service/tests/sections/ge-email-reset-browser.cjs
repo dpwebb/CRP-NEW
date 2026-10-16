@@ -112,9 +112,9 @@ async function run(t, check) {
     await page.goto(t.base + link.pathname + link.hash); await page.locator('#reset-password').waitFor();
     const coldHashes = await page.evaluate(() => window.__resetFetchHashes);
     check.ok(coldHashes.length > 0 && coldHashes.every(hash => hash === '#reset-password'), 'fresh document scrubs secret before initial bootstrap API calls');
-    const coldNews = await page.evaluate(() => window.__resetFetchRequests.filter(request => new URL(request.url, location.href).pathname === '/api/credit-news'));
-    check.equal(coldNews.length, 1, 'fresh recovery document still initializes the public footer exactly once');
-    check.ok(coldNews.every(request => request.hash === '#reset-password'), 'public footer request starts only after recovery secret is scrubbed');
+    const coldHomepage = await page.evaluate(() => window.__resetFetchRequests.filter(request => new URL(request.url, location.href).pathname === '/api/homepage'));
+    check.equal(coldHomepage.length, 1, 'fresh recovery document initializes the shared public homepage/footer model exactly once');
+    check.ok(coldHomepage.every(request => request.hash === '#reset-password'), 'shared public homepage/footer request starts only after recovery secret is scrubbed');
     const mobile = path.join(out, 'email-reset-password-mobile.png'); await page.screenshot({ path: mobile, fullPage: true }); screenshots.push(mobile);
     check.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'new-password form has no mobile horizontal overflow');
     await page.reload(); await page.locator('#new-email-reset').waitFor();
@@ -142,10 +142,11 @@ async function run(t, check) {
     check.equal((await t.request('GET', '/api/session', { token: actor.token })).status, 401, 'successful email reset revokes the previous account session');
     await page.unroute('**/api/account/password-reset/complete');
     await page.locator('#email').fill(email); await page.locator('#password').fill(newPassword); await page.locator('#signin').click();
-    await page.getByRole('alert').waitFor();
+    await page.locator('#signin-code').waitFor();
     check.equal(await page.locator('#open').count(), 0, 'new password alone cannot sign in when MFA is enabled');
-    check.ok(/authenticator|two.factor/i.test(await page.getByRole('alert').innerText()), 'sign-in explains the remaining authenticator requirement');
-    await page.locator('#email').fill(email); await page.locator('#password').fill(newPassword); await page.locator('#signin-code').fill(security.totp(setup.secret)); await page.locator('#signin').click();
+    check.ok(/authenticator|two.factor/i.test(await page.locator('#panel').innerText()), 'second sign-in step explains the remaining authenticator requirement');
+    check.equal(await page.locator('#email, #password, #signin-skip-two-factor').count(), 0, 'required MFA has its own step and cannot be skipped');
+    await page.locator('#signin-code').fill(security.totp(setup.secret)); await page.locator('#signin').click();
     await page.locator('#open').waitFor();
     check.equal((await (await page.request.get(t.base + '/api/session')).json()).account.account_id, actor.account_id, 'new password plus the unchanged authenticator signs in to the original account');
     await page.locator('#steps button[data-step="0"]').click(); await page.locator('#account-security-settings').click();

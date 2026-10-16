@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-16T15:34:50.418Z",
+  "generated_at": "2026-10-16T17:13:45.753Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -61,8 +61,8 @@
     },
     {
       "id": "RUNTIME",
-      "file_count": 107,
-      "digest": "CD9FA43BC5A8D159719992332ACD32D732410E1F5E93936BCA596318E606887D",
+      "file_count": 108,
+      "digest": "2B5F070F2207D5A95607053E7E68C60B2BC2303296F8BE6534885C72DC5D7FA7",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -102,7 +102,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "03F80AF6A8DB2FBDA8F85F7DFACA3AC411F2B988FC6346B2806074BE621EA715"
+          "sha256": "FF536184AD3E51A0142ACC2ED69AB1C4DB55DE7A3B07D9486C1AADCE23D37DDC"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -210,7 +210,7 @@
         },
         {
           "file": "accelerated-launch/service/credit-news.cjs",
-          "sha256": "0F4B361363875C103F05964DC2A7B723C83313DAD006C6040D107DB1F7F3CB84"
+          "sha256": "D4EAB4B143F75DA0A20175249359329AC16C765F936F371CBE32585645647BBD"
         },
         {
           "file": "accelerated-launch/service/demo.cjs",
@@ -287,6 +287,10 @@
         {
           "file": "accelerated-launch/service/general-intake.cjs",
           "sha256": "B4180820867B5945172CDE94177600CC451599A9119CAC034C5C31F671FF50D3"
+        },
+        {
+          "file": "accelerated-launch/service/homepage-content.cjs",
+          "sha256": "01E98C1259A361258C316C49E542F9A63070112DD7A09AD23AE2F81DE9AB9000"
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
@@ -613,8 +617,8 @@
     },
     {
       "id": "SERVED_ASSETS",
-      "file_count": 29,
-      "digest": "7FEAB743E958E9D6D2679B027DBB5FE48262734893050552EC7A7B7C5EF7319F",
+      "file_count": 31,
+      "digest": "D435F002654B0C9ECFE7DC923D3BC7A1A5522218371F02F719965E257F4F8BC5",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -630,11 +634,11 @@
         },
         {
           "file": "accelerated-launch/service/ui/admin.css",
-          "sha256": "CBDDC40943EF5A7DCB72128437E71D69E3977E332901CA1F10E6B09582A6910B"
+          "sha256": "AB589FF0D2D8CE2FA165E2CF5D86A2C6D5DEF69CDF8C3EF60658A9D5A80069BC"
         },
         {
           "file": "accelerated-launch/service/ui/admin.html",
-          "sha256": "85BECF0B5062BCE08B3777DB1D1E6F8EB5729781BC012551B1088C0AAF48B437"
+          "sha256": "D771483FEA993499E54D52AE3F9E45B50C4B1829C11F1C549D72F6156CC07ED1"
         },
         {
           "file": "accelerated-launch/service/ui/admin.js",
@@ -642,39 +646,43 @@
         },
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "52171B04CFAAA6BF953E8C9D3A68FD48471A3DCBE3D5857544AD2F4D2D47F233"
+          "sha256": "0273FD2E47312C0161DD1BCA957DCDBFCD2D7FD9B841C6E862E645D98DDDDAC0"
         },
         {
           "file": "accelerated-launch/service/ui/credit-news.css",
-          "sha256": "D3A5079ECC32F361A8B2247670EAF347D589CC6D7069BB9EA6FFA908B5581699"
+          "sha256": "1E00924EBDDAD9C7C13125C58F050DB1B0B6A080EC35916B057ACD48E802ABD3"
         },
         {
           "file": "accelerated-launch/service/ui/credit-news.js",
-          "sha256": "80446EE5FFFDE3639739B37DA696CBB4574C060E2FC940749F82367AF6FE1948"
+          "sha256": "AD7FAD8A09499C8E502EAD43553F4B6E70BDD234E0D44E74A5DABD4761D78AE8"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
-          "sha256": "E43D24442CA5D9B2094B291F8ECCD349D23AE77F4CFF0F2746909D63AE772A05"
+          "sha256": "220E7AD4154B883C0527725890E58D178F82CB73345537E81C8CAF4F2C8B59B9"
+        },
+        {
+          "file": "accelerated-launch/service/ui/homepage.js",
+          "sha256": "B1EEF797D81A2E87F589ABED826D42AB5A8894DED23A967C97262C997E858F73"
         },
         {
           "file": "accelerated-launch/service/ui/index.html",
-          "sha256": "545440164B22C2943F6F3B047B67071674B9CB139585B02380E243122AE4612F"
+          "sha256": "F7C448F3E2789B550CDA00F5D5BF21EEB7191FB9620EEE8E43928410E654CE10"
         },
         {
           "file": "accelerated-launch/service/ui/landing.css",
-          "sha256": "EA788DBEDA00CC0DD5D895EACB69680703FE063F4C22D5E5C4082E2138E1800A"
+          "sha256": "E8467493255CC0B76AFF2E6D3D8D113AF43830A5C13E347D6B767785E60D7C41"
         },
         {
           "file": "accelerated-launch/service/ui/landing.html",
-          "sha256": "D0CEB60E8CED90C73C12BC93CFD1D4776DE454DA4FCC5C55D872815F98B46203"
+          "sha256": "B79467C1405FD73C2C3E14E6664F9F92A23C1A5C3AF7DD2151D0DE233E9DB594"
         },
         {
           "file": "accelerated-launch/service/ui/mailing-preview.css",
-          "sha256": "8B58BD4D187FE3B24A870E697B3613264E545D6AB5993C7695115B574247735D"
+          "sha256": "7F63584BEC41A9705C62C2CBB7B558F77C1E615427BE4D303F17A5DE0221E017"
         },
         {
           "file": "accelerated-launch/service/ui/mailing-preview.html",
-          "sha256": "F0067C74F0A93BB40AB08934A48F50880C86F9D653CC7C82E8EDAA423C06FAA1"
+          "sha256": "001B8CD9BCA51CA2F2E5B76B66769C9FF390A1BAD50B29923679E29F38E41C51"
         },
         {
           "file": "accelerated-launch/service/ui/mailing-preview.js",
@@ -686,11 +694,11 @@
         },
         {
           "file": "accelerated-launch/service/ui/partner-access.css",
-          "sha256": "84D68DDB268FE4FF58E4D9AD6C6D56038EA77C92979E6A9AF441C12A6AB83EBF"
+          "sha256": "207C76045A537ADB44276E1799D510DC1DE6001E0F593B33409F5BAFAEFD863F"
         },
         {
           "file": "accelerated-launch/service/ui/partner-access.html",
-          "sha256": "BF82DD796A96DF26DDA2A21DD892B1CB0068EE56F0FEC578CEC690C0A77F0376"
+          "sha256": "E71E9F269973FBF0F2997AFF69B0B79353AD38524AAD1DE027701CB40E60A657"
         },
         {
           "file": "accelerated-launch/service/ui/partner-access.js",
@@ -698,11 +706,11 @@
         },
         {
           "file": "accelerated-launch/service/ui/referrals.css",
-          "sha256": "828D9E03EB324830AD421FE400A2394F9611B56A9BC1D0AFA7C9C972898AB9CE"
+          "sha256": "2C96F1191FF7ACDA3CBFDBFF637E2FFD72CE77F08EA12243F10E963D2E325602"
         },
         {
           "file": "accelerated-launch/service/ui/referrals.html",
-          "sha256": "5F4824A6516116491A7F8972E334F8618FD40E5DB77F6A0AB0A82624510F3490"
+          "sha256": "ED91384E1E2EA2B2E631D1BB101F570EB59C8CA8FE56DBDBBF8E5C1A489B8FBD"
         },
         {
           "file": "accelerated-launch/service/ui/referrals.js",
@@ -710,11 +718,11 @@
         },
         {
           "file": "accelerated-launch/service/ui/score-simulator.css",
-          "sha256": "A007DF50C37C89B7D47ED9FECFF994D141F0B78B300B4E7B30703B3096D89174"
+          "sha256": "ABC245C477B71E228AABFFD747F4A088352364F74F030A51E2640BB3F254B335"
         },
         {
           "file": "accelerated-launch/service/ui/score-simulator.html",
-          "sha256": "349A27EF8799ABF2AA5DF76E0C9A5147780D8E25435F9E2DF4C372FF97CEE1A1"
+          "sha256": "795DFCABD6EAB4CE082707302BA52499B393D1E0D84DF16323E9AF6E6C198FF6"
         },
         {
           "file": "accelerated-launch/service/ui/score-simulator.js",
@@ -726,15 +734,19 @@
         },
         {
           "file": "accelerated-launch/service/ui/story.css",
-          "sha256": "615B35D9C1A2F4BDAC21188EC6E1156C30ED7485CBBFD85370FC5C25BDA0929A"
+          "sha256": "134911310348E31280A2F022EE870C55AC671A17A2651F73E7CF336E1FD54BAE"
         },
         {
           "file": "accelerated-launch/service/ui/style.css",
-          "sha256": "F3A6ADA51529A9C73451E1E297AC0BC382F29A3290C97A279C97655C517920C6"
+          "sha256": "02CF884FBD494D89605534F9DEC6B94F73DB8B28FF79A2D82FA2413447C6734D"
+        },
+        {
+          "file": "accelerated-launch/service/ui/theme.css",
+          "sha256": "78767713358920C82D571C4A557AB68D7639CE648C7A5AD49855F8662C2BE305"
         }
       ]
     }
   ],
-  "manifest_digest": "7D3FC6245E99BDBEB028F60950C9FA2FA1659984319A84FE2EB8A10ABA137395",
-  "total_file_count": 172
+  "manifest_digest": "B8FF088D7E7D4174E01BED19A4E7CD050DFFA38C9DFF08C0F2237A7B00C39293",
+  "total_file_count": 175
 }

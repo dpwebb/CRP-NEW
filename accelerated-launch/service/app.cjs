@@ -85,7 +85,7 @@ const STATIC_TYPES = Object.freeze({
   '.ttf': 'font/ttf',
   '.txt': 'text/plain; charset=utf-8'
 });
-const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/packet-review.js', '/style.css', '/favicon.svg', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/story-font-license.txt']);
+const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/packet-review.js', '/style.css', '/theme.css', '/homepage.js', '/favicon.svg', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/story-font-license.txt']);
 const STAGING_SCORE_SIMULATOR_ASSETS = Object.freeze(['/score-simulator.html', '/score-simulator.css', '/score-simulator.js']);
 const STAGING_MAILING_ASSETS = Object.freeze(['/mailing-preview.html', '/mailing-preview.css', '/mailing-preview.js']);
 const STAGING_REFERRAL_ASSETS = Object.freeze(['/referrals.html', '/referrals.css', '/referrals.js']);
@@ -180,6 +180,7 @@ const ROUTES = Object.freeze([
   ['GET', '/api/formats', false, 'supportedFormats'],
   ['GET', '/api/pricing', false, 'publicPricing'],
   ['GET', '/api/credit-news', false, 'publicCreditNews'],
+  ['GET', '/api/homepage', false, 'publicHomepage'],
   /* B4. `auth: false` on the two public reads and on the PROVIDER callback: the provider has no session, and
      the event it sends is trusted only after its signature verifies. The billing routes are authenticated but
      deliberately NOT entitlement-gated — they are how an account becomes entitled. */
@@ -886,6 +887,12 @@ function createService(options) {
     {requestPasswordReset: ({body}) => ({status:200,json:{ok:true,...passwordReset.request(body)}}),
       completePasswordReset: ({body}) => ({status:200,json:{ok:true,...passwordReset.complete(body)},headers:{'Set-Cookie':[sessionCookie('',0),`${ADMIN_COOKIE}=; HttpOnly; SameSite=Strict; Path=/api/admin/; Max-Age=0${process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : ''}`]}}),
       contactLocation: async ({req}) => {const geo=require('./pricing-location.cjs');let value=null;try{value=await(opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}const country=typeof value==='string'?value:value?.country;const rawRegion=typeof value==='object'?value?.region:null;const region=surface.regions.find(r=>r.country===country&&(r.value===rawRegion||r.value===country+'-'+rawRegion));return {status:200,json:{ok:true,country:surface.countries.some(c=>c.value===country)?country:null,region:region?.value||null,source:'IP_SUGGESTION'}};},
+      publicHomepage: async ({req}) => {
+        const geo=require('./pricing-location.cjs');let location=null;
+        try{location=await(opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}
+        const model=require('./homepage-content.cjs').model(location,surface.regions);
+        return {status:200,json:{...model,news:require('./credit-news.cjs').select(model.country)}};
+      },
       publicCreditNews: async ({ req }) => {
         const requested = new URL(req.url, 'http://127.0.0.1').searchParams.get('country');
         const news = require('./credit-news.cjs');

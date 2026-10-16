@@ -1,0 +1,5 @@
+/* Shared brand tokens. Report images and PDF evidence retain their original bytes. */
+:root{--crp-white:#fff;--crp-navy:#16324f;--crp-blue:#245b91;--crp-slate:#52616f;--crp-grey:#cbd5df;--crp-pale:#f3f6fa;--ink:var(--crp-navy);--paper:var(--crp-white);--card:var(--crp-white);--line:var(--crp-grey);--accent:var(--crp-navy);--lime:#dce8f5;--muted:var(--crp-slate)}
+body{background:var(--crp-white);color:var(--crp-navy)}
+input:not([type=checkbox]):not([type=radio]),select,textarea{border-color:#64748b}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--crp-blue);outline-offset:3px}

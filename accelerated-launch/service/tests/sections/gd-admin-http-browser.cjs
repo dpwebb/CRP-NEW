@@ -92,6 +92,9 @@ async function run(disabled, check) {
       const routingPage = await routingContext.newPage(); routingPage.setDefaultTimeout(20000);
       await routingPage.goto(t.base + '/index.html#signin');
       await routingPage.locator('#email').fill(routingOwner.email); await routingPage.locator('#password').fill(password);
+      check.equal(await routingPage.locator('#signin-code').count(), 0, 'first owner sign-in step asks only for credentials');
+      await routingPage.locator('#signin').click(); await routingPage.locator('#signin-code').waitFor();
+      check.equal(new URL(routingPage.url()).pathname, '/index.html', 'owner routing waits for the required consumer factor');
       const signInCode = security.totp(routingOwner.secret);
       await routingPage.locator('#signin-code').fill(signInCode);
       await routingPage.locator('#signin').click();

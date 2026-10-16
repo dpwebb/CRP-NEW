@@ -60,6 +60,7 @@ const state = {
   securityMode: false,
   wantTwoFactor: false,
   twoFactorSetup: null,
+  signInInvitation: null,
   contactLocation: null,
   packetReturn: null,
   packetChoices: null,
@@ -266,6 +267,8 @@ function renderSteps() {
 
 function navigateStep(step) {
   step = visibleStep(step);
+  if(state.signInInvitation){state.step=STEP.ACCOUNT;render();el('auth-title')?.focus();return;}
+  if(signInChallenge){cancelSignInAttempt();}
   if (el('steps')?.matches?.(':popover-open')) el('steps').hidePopover?.();
   if ([STEP.CHOOSE, STEP.PREPARE, STEP.REVIEW].includes(state.step) && packetLeave) {
     const accountId = state.account?.account_id, epoch = accountEpoch, caseId = state.caseId;
@@ -394,13 +397,13 @@ function render() {
   state.step = visibleStep(state.step);
   packetReviewController?.dispose(); packetReviewController = null;
   renderSequence++;
-  if(state.account&&state.accountSecurity?.signup_complete===false)state.step=STEP.ACCOUNT;
+  if(state.account&&(state.accountSecurity?.signup_complete===false||state.signInInvitation))state.step=STEP.ACCOUNT;
   const recovering = state.recoveryMode || state.emailRecoveryMode || state.emailResetMode;
-  const authEntry = (!state.account || state.emailResetMode || state.emailRecoveryMode) && state.step === STEP.ACCOUNT;
+  const authEntry = (!state.account || state.emailResetMode || state.emailRecoveryMode || state.signInInvitation) && state.step === STEP.ACCOUNT;
   document.body?.classList?.toggle('auth-entry', authEntry);
-  document.body?.classList?.toggle('auth-create', authEntry && !recovering && (typeof location === 'undefined' || location.hash !== '#signin'));
+  document.body?.classList?.toggle('auth-create', authEntry && !recovering && !state.signInInvitation && !signInChallenge && (typeof location === 'undefined' || location.hash !== '#signin'));
   document.body?.classList?.toggle('auth-recovery', authEntry && recovering);
-  document.title = authEntry ? `${recovering ? 'Reset password' : (typeof location !== 'undefined' && location.hash === '#signin') ? 'Log in' : 'Create account'} — Credit Regulator Pro` : 'Credit Regulator Pro — Check your credit report';
+  document.title = authEntry ? `${recovering ? 'Reset password' : state.signInInvitation || signInChallenge || (typeof location !== 'undefined' && location.hash === '#signin') ? 'Log in' : 'Create account'} — Credit Regulator Pro` : 'Credit Regulator Pro — Check your credit report';
   packetLeave = null;
   el('who').textContent = state.account ? `Signed in as ${state.account.email}` : 'Not signed in';
   banner();
@@ -433,6 +436,75 @@ const SIGNUP_PROFILE_FIELDS = [
 ];
 
 let authPending = false;
+let signInChallenge = null, signInAttemptSequence = 0, signInRestorePending = false;
+function forgetSignInChallenge() {
+  if(signInChallenge){signInChallenge.email='';signInChallenge.password='';}
+  signInChallenge=null;
+}
+function cancelSignInAttempt(){signInAttemptSequence++;forgetSignInChallenge();}
+async function continueSignedIn(session,ensure) {
+  ensure();
+  if(session.signup_complete===false){state.accountSecurity={...state.accountSecurity,...session};state.step=STEP.ACCOUNT;return;}
+  if(routeOwnerAfterSignIn(session))return;
+  await refreshAccess();ensure();
+  state.savedReportsAutoLoad=true;state.step=STEP.JURISDICTION;state.notice='Signed in.';
+  const returning=checkoutReturnContext();if(returning)await restoreCheckoutReport(returning);
+}
+async function acceptSignIn(data,ensure) {
+  ensure();forgetSignInChallenge();
+  state.account=data.account;state.accountProfile=null;state.accountDocuments=[];
+  state.cases=[];state.savedReportFilter='';state.savedReportsStatus='idle';state.savedReportsAutoLoad=false;
+  state.accountSecurity=data;state.recoveryKey=null;state.twoFactorSetup=null;state.packetReturn=null;state.checkoutReturn=null;state.signInInvitation=null;
+  if(data.signup_complete===false){state.step=STEP.ACCOUNT;return;}
+  if(routeOwnerAfterSignIn(data))return;
+  if(data.two_factor_enabled===false){state.signInInvitation={accountId:data.account.account_id,epoch:accountEpoch,setup:false};state.step=STEP.ACCOUNT;return;}
+  await continueSignedIn(data,ensure);
+}
+function renderSignInChallenge(panel) {
+  const challenge=signInChallenge;
+  if(Date.now()>challenge.expires){cancelSignInAttempt();state.error='This sign-in attempt expired. Enter your email and password again.';renderAccount(panel);return;}
+  const rendered=renderSequence;
+  const ensure=()=>{if(signInChallenge!==challenge||challenge.epoch!==accountEpoch||challenge.attempt!==signInAttemptSequence||rendered!==renderSequence||state.account||state.recoveryMode||state.emailRecoveryMode||state.emailResetMode||(typeof location!=='undefined'&&location.hash!=='#signin'))throw cancelledAction();};
+  panel.innerHTML=`<div class="auth-intro"><p class="story-eyebrow">Sign in · Step 2</p><h1 id="auth-title" tabindex="-1">Enter your authenticator code.</h1><p class="lede">Use the six-digit code from your authenticator app to finish signing in.</p></div><div class="auth-form-card">${notices(true)}<form id="auth-factor-form"><label for="signin-code">Authenticator code</label><input id="signin-code" required inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}"><div class="auth-actions"><button type="submit" class="primary" id="signin">Finish signing in</button><button type="button" class="secondary" id="signin-back">Back</button></div><p class="auth-forgot"><button type="button" class="text-button" id="signin-recovery">Lost access to your authenticator?</button></p><p id="auth-status" class="auth-status" role="status" aria-live="polite"></p></form>${supportContactBlock()}</div>`;
+  el('signin').onclick=event=>{event?.preventDefault?.();return submitAuth(async()=>{
+    ensure();if(Date.now()>challenge.expires){cancelSignInAttempt();state.error='This sign-in attempt expired. Enter your email and password again.';render();throw cancelledAction();}const code=el('signin-code').value;let data;
+    try{data=await api('POST','/api/sessions',{email:challenge.email,password:challenge.password,code});}
+    catch(error){ensure();if(error.code!=='TWO_FACTOR_INVALID')forgetSignInChallenge();throw error;}
+    ensure();
+    const epoch=accountEpoch;const current=()=>{if(epoch!==accountEpoch||rendered!==renderSequence||challenge.attempt!==signInAttemptSequence)throw cancelledAction();};
+    await acceptSignIn(data,current);
+  },'auth-factor-form','Checking your authenticator code…');};
+  el('auth-factor-form').onsubmit=event=>{event.preventDefault();return el('signin').onclick();};
+  el('signin-back').onclick=()=>{if(authPending)return;cancelSignInAttempt();state.error=null;state.notice=null;render();el('email')?.focus();};
+  el('signin-recovery').onclick=()=>{if(authPending)return;cancelSignInAttempt();state.recoveryMode=true;state.emailRecoveryMode=false;state.error=null;state.notice=null;render();el('auth-title')?.focus();};
+  el('signin-code').focus?.();
+}
+function expiredSignInInvitation(){
+  clearClientAccountForRecovery();state.step=STEP.ACCOUNT;state.notice=null;state.error='Your session changed or expired. Sign in again.';
+  if(typeof location!=='undefined')location.hash='#signin';render();throw cancelledAction();
+}
+async function invitationSession(invitation,ensure){
+  let session;
+  try{session=await api('GET','/api/session');}catch(error){ensure();if(error.code==='AUTHENTICATION_REQUIRED')expiredSignInInvitation();throw error;}
+  ensure();if(session.account?.account_id!==invitation.accountId)expiredSignInInvitation();
+  state.accountSecurity={...state.accountSecurity,...session};
+  if(session.signup_complete===false){state.signInInvitation=null;state.twoFactorSetup=null;state.step=STEP.ACCOUNT;render();throw cancelledAction();}
+  return session;
+}
+function renderSignInInvitation(panel){
+  const invitation=state.signInInvitation,rendered=renderSequence;
+  const ensure=()=>{if(state.signInInvitation!==invitation||state.account?.account_id!==invitation.accountId||accountEpoch!==invitation.epoch||rendered!==renderSequence||state.step!==STEP.ACCOUNT)throw cancelledAction();};
+  const enabled=state.accountSecurity?.two_factor_enabled===true;
+  panel.innerHTML=`<div class="auth-intro"><p class="story-eyebrow">Sign in · Extra protection</p><h1 id="auth-title" tabindex="-1">${enabled?'Your authenticator is enabled.':'Add extra sign-in protection?'}</h1><p class="lede">${enabled?'Use your authenticator app the next time you sign in.':'An authenticator app adds a second check when you sign in. You can enable it now or continue without it.'}</p></div><div class="auth-form-card">${notices(true)}<form id="signin-protection-form">${invitation.setup&&!enabled?twoFactorFields():''}<div class="auth-actions">${enabled?'<button type="button" class="primary" id="signin-continue">Continue</button>':`${invitation.setup?'':'<button type="button" class="primary" id="signin-enable-two-factor">Enable protection</button>'}<button type="button" class="secondary" id="signin-skip-two-factor">Not now</button>`}</div><p id="auth-status" class="auth-status" role="status" aria-live="polite"></p></form>${supportContactBlock()}</div>`;
+  const action=(fn,message)=>submitAuth(async()=>{ensure();try{await fn();}catch(error){if(error.cancelled)throw error;ensure();if(error.code==='AUTHENTICATION_REQUIRED')expiredSignInInvitation();if(error.code==='TWO_FACTOR_SETUP_EXPIRED')state.twoFactorSetup=null;throw error;}},'signin-protection-form',message);
+  const finish=()=>action(async()=>{const session=await invitationSession(invitation,ensure);ensure();state.signInInvitation=null;state.twoFactorSetup=null;await continueSignedIn(session,()=>{if(state.account?.account_id!==invitation.accountId||accountEpoch!==invitation.epoch||rendered!==renderSequence)throw cancelledAction();});},'Finishing sign-in…');
+  if(el('signin-enable-two-factor'))el('signin-enable-two-factor').onclick=()=>{if(authPending)return;ensure();invitation.setup=true;state.error=null;render();el('two-factor-password')?.focus();};
+  if(el('signin-skip-two-factor'))el('signin-skip-two-factor').onclick=finish;
+  if(el('signin-continue'))el('signin-continue').onclick=finish;
+  if(el('two-factor-start'))el('two-factor-start').onclick=event=>{event?.preventDefault?.();return action(async()=>{await invitationSession(invitation,ensure);const password=el('two-factor-password').value,setup=await api('POST','/api/account/2fa/setup',{password});ensure();await invitationSession(invitation,ensure);state.twoFactorSetup=setup;},'Setting up your authenticator…');};
+  if(el('two-factor-confirm'))el('two-factor-confirm').onclick=event=>{event?.preventDefault?.();return action(async()=>{await invitationSession(invitation,ensure);const code=el('two-factor-code').value,security=await api('POST','/api/account/2fa/confirm',{code});ensure();await invitationSession(invitation,ensure);state.accountSecurity={...state.accountSecurity,...security};state.twoFactorSetup=null;state.notice='Authenticator confirmed.';},'Confirming your authenticator…');};
+  el('signin-protection-form').onsubmit=event=>event.preventDefault();
+}
 function submitAuth(fn, formId, message) {
   if (authPending) return Promise.resolve();
   const form = el(formId);
@@ -447,8 +519,9 @@ function submitAuth(fn, formId, message) {
 function renderAccount(panel) {
   if (state.emailResetMode) { renderEmailPasswordReset(panel); return; }
   if (state.emailRecoveryMode) { renderEmailRecoveryRequest(panel); return; }
-  if (state.account) { if(state.accountSecurity?.signup_complete===false){renderSignupSecurity(panel);return;}if(state.securityMode){renderSecuritySettings(panel);return;}renderAccountDetails(panel); return; }
+  if (state.account) { if(state.accountSecurity?.signup_complete===false){renderSignupSecurity(panel);return;}if(state.signInInvitation){renderSignInInvitation(panel);return;}if(state.securityMode){renderSecuritySettings(panel);return;}renderAccountDetails(panel); return; }
   if (state.recoveryMode) { renderRecovery(panel); return; }
+  if (signInChallenge) { renderSignInChallenge(panel); return; }
   const signInEntry = (typeof location !== 'undefined' && location.hash === '#signin');
   panel.innerHTML = `
     <div class="auth-intro"><p class="story-eyebrow">Your account</p>
@@ -469,7 +542,7 @@ function renderAccount(panel) {
         ${signInEntry ? '' : '<p class="auth-helper" id="auth-password-help">At least 12 characters</p>'}
       </div>
     </div>
-    ${signInEntry ? '<label for="signin-code">Six-digit code from your authenticator app (if you turned it on)</label><input id="signin-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}">' : '<label class="signup-2fa-choice"><input id="signup-two-factor" type="checkbox"> Add extra sign-in protection with an authenticator app (optional)</label><p class="auth-helper">You will enter a six-digit code from the app when you log in.</p>'}
+    ${signInEntry ? '' : '<label class="signup-2fa-choice"><input id="signup-two-factor" type="checkbox"> Add extra sign-in protection with an authenticator app (optional)</label><p class="auth-helper">You will enter a six-digit code from the app when you log in.</p>'}
     ${signInEntry ? '' : `<details class="signup-details"><summary id="signup-details-title">Add personal details now (optional)</summary><div class="signup-details-inner"><h2>Your personal details <span class="auth-optional">Optional at signup</span></h2>
       <p class="signup-explanation">Add these now for a future subscriber packet, or finish them later in your account. Your sign-in email will be used for replies unless you change it there.</p>
       <div class="signup-fields">${SIGNUP_PROFILE_FIELDS.map(([field, label, type, autocomplete]) => `<div${field === 'full_name' ? ' class="signup-wide"' : ''}><label for="signup-${field}">${label}</label><input id="signup-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}"></div>`).join('')}</div></div></details>`}
@@ -509,30 +582,18 @@ function renderAccount(panel) {
     if (!signInEntry) { location.hash = '#signin'; render(); return; }
     return submitAuth(async () => {
     if ((typeof location !== 'undefined' && location.protocol === 'file:')) throw new Error('Open the running staging site to log in.');
-    const epoch = ++accountEpoch, rendered = renderSequence;
-    const ensure = () => { if (epoch !== accountEpoch || rendered !== renderSequence || state.emailResetMode) throw cancelledAction(); };
+    cancelSignInAttempt();const input=credentials(),attempt=signInAttemptSequence;
+    const epoch=++accountEpoch,rendered=renderSequence;
+    const ensure=()=>{if(epoch!==accountEpoch||rendered!==renderSequence||attempt!==signInAttemptSequence||state.emailResetMode||(typeof location!=='undefined'&&location.hash!=='#signin'))throw cancelledAction();};
     let data;
-    try { data = await api('POST', '/api/sessions', credentials()); }
-    catch (error) { ensure(); throw error; }
-    ensure();
-    state.account = data.account;
-    state.accountProfile = null; state.accountDocuments = [];
-    state.cases = []; state.savedReportFilter = ''; state.savedReportsStatus = 'idle'; state.savedReportsAutoLoad = false;
-    state.accountSecurity = data; state.recoveryKey = null; state.twoFactorSetup=null; state.packetReturn = null;
-    state.checkoutReturn = null;
-    if(data.signup_complete===false){state.step=STEP.ACCOUNT;return;}
-    if(routeOwnerAfterSignIn(data))return;
-    await refreshAccess();
-    ensure();
-    state.savedReportsAutoLoad = true;
-    state.step = 1;
-    state.notice = 'Signed in.';
-    const returning = checkoutReturnContext();
-    if (returning) await restoreCheckoutReport(returning);
+    try{data=await api('POST','/api/sessions',input);}
+    catch(error){ensure();if(error.code==='TWO_FACTOR_REQUIRED'){signInChallenge={email:input.email,password:input.password,attempt,epoch,expires:Date.now()+5*60000};state.step=STEP.ACCOUNT;return;}throw error;}
+    finally{input.password='';}
+    input.password='';ensure();await acceptSignIn(data,ensure);
   }, 'auth-form', 'Logging in…');
   };
   el('auth-form').onsubmit = (event) => { event.preventDefault(); return el(signInEntry ? 'signin' : 'create').onclick(); };
-  el('forgot-password').onclick = () => { if (authPending) return; state.recoveryMode = true; state.emailRecoveryMode = false; state.error = null; state.notice = null; render(); el('auth-title')?.focus?.(); };
+  el('forgot-password').onclick = () => { if (authPending) return; cancelSignInAttempt();state.recoveryMode = true; state.emailRecoveryMode = false; state.error = null; state.notice = null; render(); el('auth-title')?.focus?.(); };
 }
 
 
@@ -654,6 +715,7 @@ function renderEmailRecoveryRequest(panel) {
   el('recovery-back').onclick = recoverySignIn;
 }
 function clearClientAccountForRecovery() {
+  cancelSignInAttempt();state.signInInvitation=null;
   accountEpoch++; accountOperationSequence++; assessmentOperationSequence++; checkoutReturnSequence++;
   state.account = null; state.accountProfile = null; state.accountDocuments = []; state.cases = []; state.caseId = null;
   state.savedReportsStatus = 'idle'; state.savedReportsAutoLoad = false;
@@ -3113,6 +3175,8 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
     state.emailRecoveryMode = false; state.recoveryMode = false; state.error = null; state.notice = null; state.step = STEP.ACCOUNT;
     render(); el('auth-title')?.focus?.(); return;
   }
+  if(location.hash!=='#signin')cancelSignInAttempt();
+  if(state.signInInvitation){state.step=STEP.ACCOUNT;render();return;}
   if (authPending || !['#signin', '#create'].includes(location.hash)) return;
   if (state.account) {
     if (location.hash === '#signin') {
@@ -3129,3 +3193,17 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   render();
   el('auth-title')?.focus?.();
 });
+if(typeof window!=='undefined'&&window.addEventListener){
+  window.addEventListener('pagehide',()=>{
+    signInRestorePending=Boolean(signInChallenge||state.signInInvitation||(state.step===STEP.ACCOUNT&&state.twoFactorSetup&&el('two-factor-secret'))||(!state.account&&state.step===STEP.ACCOUNT&&typeof location!=='undefined'&&location.hash==='#signin'));
+    state.twoFactorSetup=null;
+    if(!signInRestorePending)return;
+    cancelSignInAttempt();state.twoFactorSetup=null;state.signInInvitation=null;
+    for(const id of ['password','signin-code','two-factor-password','two-factor-secret','two-factor-code']){const node=el(id);if(node){node.value='';node.removeAttribute?.('value');}}
+  });
+  window.addEventListener('pageshow',event=>{
+    if(!event.persisted||!signInRestorePending)return;signInRestorePending=false;
+    if(!state.account){state.step=STEP.ACCOUNT;render();return;}
+    const ensure=accountContext();api('GET','/api/session').then(session=>{ensure();if(session.account?.account_id!==state.account.account_id)expiredSignInInvitation();state.accountSecurity={...state.accountSecurity,...session};state.step=STEP.ACCOUNT;render();}).catch(error=>{if(error.cancelled)return;clearClientAccountForRecovery();state.error='Sign in again to continue.';render();});
+  });
+}

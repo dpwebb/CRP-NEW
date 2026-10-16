@@ -202,6 +202,7 @@ async function run(t, check) {
       const page = await browser.newPage(); page.setDefaultTimeout(20000); await page.goto(t.base + '/index.html#signin');
       await page.locator('#email').fill('dr-evidence-owner@example.test');
       await page.locator('#password').fill('a-long-enough-password'); await page.locator('#signin').click();
+      await page.locator('#signin-skip-two-factor').click();
       await page.waitForSelector('#open'); await page.locator('#refresh').click();
       await page.locator('[data-open="' + caseId + '"]').click();
       await page.waitForSelector('#current-report-identity');

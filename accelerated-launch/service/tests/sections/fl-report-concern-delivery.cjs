@@ -94,6 +94,7 @@ async function run(t, check) {
     await page.locator('#email').fill('concern-delivery-owner@example.test');
     await page.locator('#password').fill('a-long-enough-password');
     await page.locator('#signin').click();
+    await page.locator('#signin-skip-two-factor').click();
     await page.waitForSelector('#open');
     await page.locator('#refresh').click();
     await page.waitForSelector(`[data-open="${caseId}"]`);

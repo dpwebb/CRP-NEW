@@ -95,6 +95,7 @@ async function run(service, check) {
     await page.locator('#email').fill(email);
     await page.locator('#password').fill(password);
     await page.locator('#signin').click();
+    await page.locator('#signin-skip-two-factor').click();
     await page.waitForSelector('#open');
     const uploaded = await uploadNewReport(page, caseId, lines, extraPages);
     if (await page.locator('#create-packet').count()) await page.locator('#create-packet:enabled').waitFor();
@@ -402,6 +403,7 @@ async function run(service, check) {
   await page.locator('#email').fill(hist.email);
   await page.locator('#password').fill(hist.password);
   await page.locator('#signin').click();
+  await page.locator('#signin-skip-two-factor').click();
   await page.waitForSelector('#open');
   await page.locator('#steps button').filter({ hasText: 'Saved reports' }).click();
   await page.waitForSelector('#history-body');
@@ -441,6 +443,7 @@ async function run(service, check) {
   await freePage.locator('#email').fill('bw-free@example.test');
   await freePage.locator('#password').fill('a-long-enough-password');
   await freePage.locator('#signin').click();
+  await freePage.locator('#signin-skip-two-factor').click();
   await freePage.waitForSelector('#open');
   const evaluateRoute = '**/api/cases/*/evaluate';
   let releaseAutomaticFailure, signalAutomaticStarted;
@@ -561,6 +564,7 @@ async function run(service, check) {
   await limPage.locator('#email').fill('bw-ns-limitation-free@example.test');
   await limPage.locator('#password').fill('a-long-enough-password');
   await limPage.locator('#signin').click();
+  await limPage.locator('#signin-skip-two-factor').click();
   await limPage.waitForSelector('#open');
   await uploadNewReport(limPage, limCase.case_id, limLines);
   const limSummary = await limPage.locator('#panel').innerText();
@@ -610,6 +614,7 @@ async function run(service, check) {
     await dualPage.locator('#email').fill('bw-dual-date-free@example.test');
     await dualPage.locator('#password').fill('a-long-enough-password');
     await dualPage.locator('#signin').click();
+    await dualPage.locator('#signin-skip-two-factor').click();
     await dualPage.waitForSelector('#open');
     await uploadNewReport(dualPage, dualCase.case_id, dualLines);
     const dualSummary = await dualPage.locator('#panel').innerText();

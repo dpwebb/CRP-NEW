@@ -11,7 +11,10 @@ async function run(t,check){
  check.equal(new Set(news.ITEMS.map(item=>item.id)).size,news.ITEMS.length,'unique story identifiers');
  for(const item of news.ITEMS){check.ok(new URL(item.url).protocol==='https:','HTTPS source '+item.id);check.ok(item.date>='2021-10-14'&&item.date<='2026-10-14','eligible verified date '+item.id);}
  check.ok(!news.ITEMS.some(item=>item.id==='au-7news-2024'),'unrelated bank-error story removed');
- check.ok(news.ITEMS.every(item=>item.bureau&&item.status&&item.reviewed_at===news.REVIEWED_AT),'each story identifies bureau, outcome and source-review date');
+ check.ok(news.ITEMS.every(item=>item.bureau&&item.status&&/^\d{4}-\d{2}-\d{2}$/.test(item.reviewed_at)&&Number.isFinite(Date.parse(item.reviewed_at+'T00:00:00Z'))&&new Date(item.reviewed_at+'T00:00:00Z').toISOString().slice(0,10)===item.reviewed_at&&item.reviewed_at<=news.REVIEWED_AT),'each story identifies bureau, outcome and its valid source-review date no later than the catalogue review');
+ const retained=['us-equifax-settlement-2026','us-propublica-2026','ca-cbc-2026','us-equifax-2025','au-savings-2024','us-transunion-2023','us-sessa-2023','gb-guardian-2022'];
+ for(const id of retained)check.equal(news.ITEMS.find(item=>item.id===id)?.reviewed_at,'2026-10-14','retained story keeps its actual earlier source review: '+id);
+ for(const id of ['au-choice-2024','au-oaic-review-2022'])check.equal(news.ITEMS.find(item=>item.id===id)?.reviewed_at,'2026-10-16','new Australian reference story binds its new source review: '+id);
  check.ok(news.ITEMS.some(item=>item.country==='US'&&item.type==='Media report'&&item.date.startsWith('2026')),'recent original US media reporting included');
  const mixed=news.select('ALL',now);check.ok(mixed.items.every((item,i)=>i===0||mixed.items[i-1].date>=item.date),'all-country stories ordered newest first');
  check.equal(mixed.coverage.length,4,'coverage honestly names all four countries');
@@ -32,7 +35,8 @@ async function run(t,check){
   }finally{await new Promise(resolve=>server.close(resolve));fs.rmSync(directory,{recursive:true,force:true});}
  }
  for(const file of ['/credit-news.js','/credit-news.css'])check.equal((await t.request('GET',file)).status,200,'new public asset served '+file);
- const landing=await t.request('GET','/landing.html');check.ok(landing.text.includes('data-news-pause')&&landing.text.includes('data-news-window')&&landing.text.includes('data-news-country')&&landing.text.includes('aria-roledescription="carousel"'),'landing has whole-story carousel and country controls');
+ const landing=await t.request('GET','/landing.html');check.ok(landing.text.includes('data-news-window')&&landing.text.includes('aria-roledescription="carousel"'),'landing retains accessible whole-story carousel');
+ check.ok(!landing.text.includes('data-news-pause')&&!landing.text.includes('data-news-country'),'public carousel uses manual navigation and IP localization without visible overrides');
  const auth=(await t.request('GET','/index.html')).text;check.ok(auth.includes('id="credit-news"')&&auth.includes('data-news-auth-only'),'public auth entries include banner with workspace visibility guard');
  check.ok(auth.indexOf('src="packet-review.js"')<auth.indexOf('src="app.js"'),'packet renderer loads before application');
  return{countries:4,unknown_location:'MIXED',rolling_five_years:true,source_items:news.ITEMS.length};

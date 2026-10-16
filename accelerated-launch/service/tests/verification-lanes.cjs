@@ -15,5 +15,8 @@ LANE_IDS.consumer.unshift('gi-audit-consumer-flow', 'gk-audit-api-correctness', 
 LANE_IDS.security.unshift('gl-inline-packet-pages');
 LANE_IDS.consumer.unshift('gl-inline-packet-pages');
 LANE_IDS.security.unshift('gn-wizard-deletion-corrections');
+LANE_IDS.security.unshift('go-homepage-signin-localization');
+LANE_IDS.browser.unshift('go-homepage-signin-localization');
+LANE_IDS.consumer.unshift('go-homepage-signin-localization');
 LANE_IDS.consumer.unshift('gn-wizard-deletion-corrections');
 module.exports = { SOURCE_AUDIT_FILES, LANE_IDS };

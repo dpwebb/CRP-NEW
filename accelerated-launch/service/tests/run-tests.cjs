@@ -20,6 +20,7 @@ const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
 
 const OUT_DIR = path.join(__dirname, '..', 'out');
 const SECTION_FILES = [
+  'go-homepage-signin-localization.cjs',
   'gn-wizard-deletion-corrections.cjs',
   'gh-audit-billing-lifecycle.cjs',
   'gi-audit-consumer-flow.cjs',

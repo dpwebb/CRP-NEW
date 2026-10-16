@@ -37,6 +37,7 @@ async function recoveryChecks(t,browser,actor,source,check,out){
   const context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage();page.setDefaultTimeout(20000);
   if(configure)await configure(page);
   await page.goto(t.base+'/index.html#signin');await page.locator('#email').fill(actor.email);await page.locator('#password').fill('a-long-enough-password');await page.locator('#signin').click();
+  await page.locator('#signin-skip-two-factor').click();
   await page.locator('#open').waitFor();await page.locator('#refresh').click();await page.locator('[data-open="'+c.case_id+'"]').click();await page.locator('#create-packet').waitFor();
   await page.locator('[data-step="6"]').click();await page.locator('#packet-preview-status').waitFor();return{context,page};
  }
@@ -182,7 +183,7 @@ async function run(t,check){
  try{
    const page=await browser.newPage({viewport:{width:1440,height:1000}});page.setDefaultTimeout(20000);
    let annotationPosts=0;page.on('request',request=>{if(request.method()==='POST'&&new URL(request.url()).pathname===route+'/packet/annotations')annotationPosts++;});
-   await page.goto(t.base+'/index.html#signin');await page.locator('#email').fill(a.email);await page.locator('#password').fill('a-long-enough-password');await page.locator('#signin').click();await page.locator('#open').waitFor();await page.locator('#refresh').click();await page.locator('[data-open="'+c.case_id+'"]').click();await page.locator('#create-packet').waitFor();await page.locator('[data-step="6"]').click();await page.locator('#packet-pdf-review').waitFor();
+   await page.goto(t.base+'/index.html#signin');await page.locator('#email').fill(a.email);await page.locator('#password').fill('a-long-enough-password');await page.locator('#signin').click();await page.locator('#signin-skip-two-factor').click();await page.locator('#open').waitFor();await page.locator('#refresh').click();await page.locator('[data-open="'+c.case_id+'"]').click();await page.locator('#create-packet').waitFor();await page.locator('[data-step="6"]').click();await page.locator('#packet-pdf-review').waitFor();
   check.ok(await page.locator('#packet-selection').isHidden(),'review hides the previous issue choices');check.ok(await page.locator('#packet-preparation-content').isHidden(),'review hides previous document preparation');check.ok(!(await page.locator('#panel').innerText()).includes('Choose the issues you want the bureau'),'review does not repeat the issue-choice instruction');
   await page.locator('#packet-letter').waitFor(); await page.locator('#packet-preview-reviewed:enabled').waitFor();
   const currentView=(await req('GET',route+'/packet')).json.view,metadata=(await req('GET',route+'/packet/preview/pages?version='+currentView.packet.preview_version)).json;

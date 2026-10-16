@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="story.css">
 <link rel="stylesheet" href="credit-news.css">
+  <link rel="stylesheet" href="theme.css">
+  <script src="homepage.js" defer></script>
 <script src="credit-news.js" defer></script>
 </head>
 <body class="auth-entry">
@@ -35,12 +37,11 @@
 </main>
 <footer>
   <section id="credit-news" class="credit-news" data-news-auth-only aria-labelledby="credit-news-title" hidden>
-    <div class="credit-news-heading"><h2 id="credit-news-title">When credit records get it wrong</h2><div class="credit-news-filter"><label for="credit-news-country">Read stories from</label><select id="credit-news-country" data-news-country><option value="ALL">All countries</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="CA">Canada</option><option value="AU">Australia</option></select></div></div>
+    <div class="credit-news-heading"><h2 id="credit-news-title">When credit records get it wrong</h2><p class="credit-news-position" data-news-position aria-live="polite" aria-atomic="true"></p></div>
     <p class="credit-news-scope" data-news-scope role="status">Loading recent reports and decisions…</p>
     <div class="credit-news-window" data-news-window tabindex="0" role="region" aria-roledescription="carousel" aria-label="Recent credit-report stories; use left and right arrow keys to change story"><ul class="credit-news-list"></ul></div>
-    <div class="credit-news-controls"><button type="button" data-news-direction="-1" aria-label="Previous story">← Previous</button><button type="button" data-news-pause aria-pressed="false">Pause stories</button><button type="button" data-news-direction="1" aria-label="Next story">Next →</button><p class="credit-news-position" data-news-position aria-live="off" aria-atomic="true"></p></div>
     <p class="credit-news-coverage" data-news-coverage></p>
-    <p class="credit-news-note">Each story links to its source. Reported losses, allegations, settlements and court findings are identified separately. You can pause the stories.</p>
+    <p class="credit-news-note">Each story links to its source. Reported losses, allegations, settlements and court findings are identified separately.</p>
   </section>
   <span>Credit Regulator Pro</span><span>Clear facts. Informed decisions. Consumer control.</span><a href="mailto:admin@creditregulatorpro.com">Need help? Contact support</a><span class="footer-disclaimer" id="footer-disclaimer" hidden></span>
 </footer>
