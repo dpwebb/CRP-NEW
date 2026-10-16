@@ -1,4 +1,8 @@
-## October 16 Wizard audit fixes accepted locally; not deployed
+## October 16 three Wizard fixes deployed to staging for owner testing
+
+Latest hosted milestone: DEPLOYED_ON_STAGING_FOR_OWNER_TESTING. Read CRP_WIZARD_FIXES_STAGING_2026_10_16.md. Unchanged7d3fc624/3a4ff761/172-file candidate activated2026-10-16T16:39:56.605Z (13:39 Halifax), expectedca463, fresh operation89e02aff..., whole stopped snapshot213 entries/209 files. StagingPID1204153/test/admin enabled and public32 passed. Independent comparison9AEE1264... and snapshot metadata collection84878780... passed. All43 current account rows/718 non-session rows/148 blobs,37 stable private files/34 signed-prefix files and volatile administration/configuration except build remain exact. Sessions1 to0 are separate; no full raw-state/session equality is claimed. Production's entire31b/PID3514245/169-file/5-account/338-row/109-blob observation, raw state/session/configuration/authority/activation metadata and boot/unit definitions is unchanged. No production service action, consumer mutation, fixture/account/login/payment/cleanup, provider/grant, offsite backup dispatch, source push, mailing or older operation occurred. Original17744/0/0 full/package remain exact. Full hosted owner flow and strict30/123/46 acceptance remain pending; production stays held. Earlier entries retain their dated scope.
+
+## October 16 Wizard audit fixes accepted locally; preceding local-only checkpoint
 
 Accepted source3a4ff761 /crp-v1-7d3fc6245e99bdbe /172 files passed guarded17744/0/0 across184 completed sections/381 exact tested sources, no drift/unrun,14 syntax and ten tooling suites. All55 original prerequisites and445 input bindings remain exact. Immutable package8A7788FE... and source-proof assembly8DE780FF... passed. Read CRP_WIZARD_DELETION_FIXES_LOCAL_2026_10_16.md for exact receipts in the preserved managed wizard-deletion-verification checkout.
 
