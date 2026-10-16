@@ -215,6 +215,10 @@ async function run(service, check) {
   check.equal(vm.runInContext('state.error', ctx), null, 'no UI error during the approve');
 
   /* --- download: the UI retrieves the exact binary response from the protected real service. --- */
+  // Approval redraws the complete packet and awaits its version-bound page metadata.
+  // A consumer can click Download only after that new preview enables the control.
+  await waitFor(() => !dom.elementById('packet-preview-reviewed').disabled && !dom.elementById('packet-download').disabled);
+  check.equal(dom.elementById('packet-download').disabled, false, 'the current all-page preview enables its approved download before the single click');
   await dom.elementById('packet-download').onclick();
   check.ok(dom.calls.some((x) => /GET .*packet-download/.test(x)), 'the UI fetches the protected packet download');
 
