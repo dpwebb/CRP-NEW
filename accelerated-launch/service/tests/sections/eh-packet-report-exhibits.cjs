@@ -296,17 +296,21 @@ async function run(t, check) {
   t.service.store.update(state => { state.results.find(result => result.result_id === earlier.resultId).extraction.records[0].facts['liability.openedDate'] = '2011-01-01'; });
   await refusedCopies(t, check, actor, current, 'changed earlier source record');
   t.service.store.update(state => { state.results.find(result => result.result_id === earlier.resultId).extraction.records[0] = priorRecord; });
-  await t.request('DELETE', earlier.base, auth(actor));
-  await refusedCopies(t, check, actor, current, 'deleted earlier source case');
-  check.equal((await choose(t, actor, current, [])).json.error?.code, 'PACKET_APPROVAL_STALE',
-    'deleting an earlier source cannot be hidden by clearing obsolete opt-in choices');
+  check.equal((await t.request('DELETE', earlier.base, auth(actor))).status, 200, 'deleting an earlier source repairs its saved comparison');
+  const repaired = (await t.request('GET', current.base + '/packet', auth(actor))).json.view;
+  check.equal(repaired.packet.comparison_source_removed, true, 'packet recovery explains the removed comparison');
+  check.equal(repaired.packet.selected_issue_ids.includes(reaging.issue_id), false, 'the unsupported comparison is no longer selected');
+  check.equal(repaired.eligible_issues.some(item => item.issue_id === dateIssue.issue_id), true, 'the independent current-report issue remains available');
+  check.equal((await t.request('GET', current.base + '/packet-download', auth(actor))).status, 409, 'the changed packet needs fresh review and approval');
+  check.equal((await select(t, actor, current, [dateIssue.issue_id])).status, 200, 'the consumer can choose the remaining independent issue');
+  check.equal((await choose(t, actor, current, [])).status, 200, 'the intact current report does not require reupload after source deletion');
 
   await multipageAndImage(t, check, actor);
   await continuationAndReset(t, check, actor, unrelated);
   archiveBounds(check);
   check.equal(t.logText().includes('Account Number ****1234'), false, 'source report content never enters service logs');
   return { original_report_pages_preserved: true, both_reaging_sources: true, automatically_included_relevant_pages: true,
-    selected_issue_sources_only: true, review_and_approval_binding: true, mutation_and_deletion_refused: true,
+    selected_issue_sources_only: true, review_and_approval_binding: true, mutation_refused_and_deletion_repaired: true,
     multipage_and_image_originals: true, editable_complete_pdf: true, legacy_unstored_fixture_compatible: true };
 }
 

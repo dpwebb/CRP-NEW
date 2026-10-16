@@ -322,21 +322,23 @@ async function printedMaskedReference() {
 }
 async function resultsReuseOnlyMissingItems() {
   const identity = 'a'.repeat(32), address = 'b'.repeat(32), unrelated = 'c'.repeat(32), deleted = 'd'.repeat(32);
-  for (const mode of ['ready', 'new', 'deleted-copy', 'changed-bureau']) {
-    const view = packetView(mode === 'ready');
+  for (const mode of ['ready', 'ready-new-date', 'new', 'deleted-copy', 'changed-bureau']) {
+    const ready = mode.startsWith('ready');
+    const view = packetView(ready);
     view.eligible_issues[0].record_kind = 'credit account';
     view.eligible_issues[0].report_identity = { bureau: 'Equifax', reference_date: '2026-10-14' };
     view.support.catalog = [{ id: 'EQUIFAX', label: 'Equifax' }, { id: 'TRANSUNION', label: 'TransUnion' }];
     view.support.requirements = { ...requirements, bureau: 'EQUIFAX' };
     view.support.documents = [
       { file_id: identity, document_type: 'IDENTITY', document_kind: 'PASSPORT' },
-      { file_id: address, document_type: 'ADDRESS', document_kind: 'UTILITY_BILL' },
+      { file_id: address, document_type: 'ADDRESS', document_kind: 'UTILITY_BILL', document_date: '2026-10-09' },
       { file_id: unrelated, document_type: 'SUPPORTING', document_kind: 'OTHER_EVIDENCE' }
     ];
     view.support.settings = { bureau: 'EQUIFAX', channel: 'POSTAL', purpose: 'ACCOUNT', use_account_profile: true,
       document_ids: [identity, address], identity_shows_address: false, no_ssn_issued: false, identity_reference: '', other_identity_details: '',
       document_dates: { [address]: '2026-10-08' } };
     if (mode === 'new') { view.support.settings = null; view.packet.selected_issue_ids = []; view.packet.selected_count = 0; }
+    if (mode === 'ready-new-date') view.support.settings.document_dates = {};
     if (mode === 'deleted-copy') {
       view.support.settings.document_ids = [identity, deleted];
       view.support.settings.document_dates = { [deleted]: '2026-10-08' };
@@ -345,7 +347,7 @@ async function resultsReuseOnlyMissingItems() {
       Object.assign(view.support.settings, { bureau: 'TRANSUNION', purpose: 'PUBLIC_RECORD', verification_requested: true, copies_confirmed: false });
       view.support.suggested_purpose = 'ACCOUNT';
     }
-    if (mode !== 'ready') view.packet.preview_ready = false;
+    if (!ready) view.packet.preview_ready = false;
     const latest = { case: { case_id: 'caseA', country: 'CA', region: 'CA-NS', selected_bureau: 'EQUIFAX' }, files: [],
       result_id: 'result-A', latest_result_id: 'result-A', result: { support: 'REPORT_SUPPORT', issues: view.eligible_issues },
       assessment_summary: { distinct_total: 1 }, assessment_access: { complete_assessment: true, dispute_packet: true } };
@@ -365,7 +367,7 @@ async function resultsReuseOnlyMissingItems() {
     const original = JSON.stringify(view);
     await h.node('create-packet').onclick();
     const writes = h.calls.filter(row => row.method === 'POST');
-    if (mode === 'ready') {
+    if (ready) {
       assert.equal(writes.length, 0, 'an unchanged ready packet needs no selection or support writes');
       assert.equal(JSON.stringify(view), original, 'opening an unchanged ready packet preserves its approval and every saved setting');
       assert.equal(h.evaluate('state.step'), 6, 'complete saved details lead directly to Review');
@@ -376,6 +378,7 @@ async function resultsReuseOnlyMissingItems() {
         assert.deepEqual(support.document_ids, [identity, address], 'new packets reuse saved ID/address copies without adding unrelated supporting evidence');
         assert.equal(support.copies_confirmed, undefined, 'automatic reuse never invents a consumer quality confirmation');
         assert.equal(support.verification_requested, undefined, 'automatic reuse never invents a bureau verification request');
+        assert.deepEqual(support.document_dates, { [address]: '2026-10-09' }, 'a new packet reuses its exact saved address copy date');
         assert.deepEqual(writes.find(row => row.url.endsWith('/packet/select')).body, { issue_ids: ['issue-A'], expected_result_id: 'result-A' }, 'new selection binds the explicit choices to their current result');
       }
       if (mode === 'deleted-copy') {

@@ -116,6 +116,8 @@ function deleteCase(store, actor, caseId, options = {}) {
     if (options.case_payment_binding && (!state.accounts.some(a => a.account_id === actor.account_id) ||
         require('./entitlement.cjs').casePaymentBinding(state, actor.account_id, caseId) !== options.case_payment_binding)) throw new ServiceError('CASE_DELETION_STALE');
     const files = state.files.filter((f) => f.case_id === owned.case_id);
+    require('./report-deletion.cjs').repair(state, actor, caseId, options.replace_dependent_letters);
+    require('./account-documents.cjs').preserveLegacyDates(state, actor, caseId);
     state.cases = state.cases.filter((c) => c.case_id !== owned.case_id);
     state.files = state.files.filter((f) => f.case_id !== owned.case_id);
     state.results = state.results.filter((r) => r.case_id !== owned.case_id);
@@ -130,8 +132,9 @@ function deleteCase(store, actor, caseId, options = {}) {
 }
 
 async function deleteCaseSafely(store, actor, caseId, env, options = {}) {
+  require('./report-deletion.cjs').prepare(store.state(), actor, caseId, options.replace_dependent_letters);
   const case_payment_binding = await require('./entitlement.cjs').stopCasePayments(store, actor, caseId, env, options);
-  return deleteCase(store, actor, caseId, { case_payment_binding });
+  return deleteCase(store, actor, caseId, { case_payment_binding, replace_dependent_letters: options.replace_dependent_letters });
 }
 
 /** Delete the account and every case, file, result, draft and PURCHASE that hangs off it. */

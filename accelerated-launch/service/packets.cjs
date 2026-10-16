@@ -248,6 +248,7 @@ function packetView(store, actor, caseId) {
       result_id: packet ? packet.result_id : null,
       current_result_id: row ? row.result_id : null,
       assessment_current: !packet || Boolean(row && packet.result_id === row.result_id),
+      comparison_source_removed: packet ? packet.comparison_source_removed === true : row?.comparison_source_removed === true,
       selected_issue_ids: packet ? (packet.selected_issue_ids || []).slice() : [],
       selected_count: packet ? (packet.selected_issue_ids || []).length : 0,
       wording: packet ? packet.wording : null,
@@ -444,9 +445,10 @@ function setSupport(store, actor, caseId, input) {
   const selected = eligibleIssues(row).filter(issue => packet.selected_issue_ids.includes(issue.issue_id));
   requireBureau(owned.country, row, selected, settings);
   requirePurpose(owned.country, selected, settings);
-  accountDocuments.materialDocuments(store, actor, settings.document_ids);
+  const material = accountDocuments.materialDocuments(store, actor, settings.document_ids);
   store.update(state => {
     const live = state.packets.find(item => item.packet_id === packet.packet_id);
+    accountDocuments.rememberDates(state, actor, settings.document_dates, material);
     live.support = settings; live.approved_version = null; live.approved_at = null; live.updated_at = nowIso();
   });
 }

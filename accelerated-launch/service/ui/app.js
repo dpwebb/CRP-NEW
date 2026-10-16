@@ -146,6 +146,7 @@ async function api(method, path, body) {
     /* The caller needs the actual refusal class — a missing purchase is not a failure of the check. */
     error.status = res.status;
     error.code = data.error && data.error.code ? data.error.code : null;
+    error.detail = data.error?.detail || null;
     throw error;
   }
   return data;
@@ -889,14 +890,22 @@ function savedReportLabel(row) {
 function newestReports() {
   return state.cases.slice().sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
 }
-function currentReportIdentity(view) {
+function reportIdentityDetails(view) {
   const saved = state.cases.find(row => row.case_id === view.case.case_id) || {};
   const identity = (view.result?.issues || []).find(issue => issue.report_identity)?.report_identity || {};
   const row = { ...saved, ...view.case, files: view.files || saved.files || [] };
   const bureau = row.bureau_label || identity.bureau || row.bureau || (surface?.bureau_choices?.[row.country] || []).find(item => item.id === row.selected_bureau)?.label || 'Credit report';
   const filenames = view.files?.length ? view.files.map(file => file.original_filename) : row.original_filenames || row.files.map(file => file.original_filename);
   const date = row.report_date || identity.reference_date;
-  return `<p class="lede" id="current-report-identity"><strong>${esc(bureau)}</strong>${date ? ` · Report dated ${esc(date)}` : row.created_at ? ` · Uploaded ${esc(String(row.created_at).slice(0, 10))}` : ''}${filenames.filter(Boolean).length ? ` · ${esc(filenames.filter(Boolean).join(', '))}` : ''} · ${esc(regionLabel(row.country, row.region))}</p>`;
+  return { bureau, date: date ? `Report dated ${date}` : row.created_at ? `Uploaded ${String(row.created_at).slice(0, 10)}` : '',
+    filenames: filenames.filter(Boolean).join(', '), region: regionLabel(row.country, row.region) };
+}
+function reportIdentityText(view) {
+  return Object.values(reportIdentityDetails(view)).filter(Boolean).join(' · ');
+}
+function currentReportIdentity(view) {
+  const identity = reportIdentityDetails(view);
+  return `<p class="lede" id="current-report-identity"><strong>${esc(identity.bureau)}</strong>${[identity.date, identity.filenames, identity.region].filter(Boolean).map(text => ' · ' + esc(text)).join('')}</p>`;
 }
 
 function savedReportsMarkup() {
@@ -1677,6 +1686,7 @@ function renderResults(panel) {
     <h1>Review results</h1>
     ${access.complete_assessment && result ? '<label for="result-select">Result</label><select id="result-select"><option value="">Latest result</option></select>' : ''}
     ${currentReportIdentity(view)}
+    ${view.comparison_source_removed ? '<p class="note">A comparison with a deleted report was removed. Your own report and its other findings are kept.</p>' : ''}
     ${notices()}
     <details><summary>Report files and upload help</summary><div id="report-file-tools"></div></details>
     ${pendingPaymentBlock(true)}
@@ -1800,6 +1810,13 @@ function issuesSection(result, selectable = false) {
   return `${reporting.length ? '<h2>Reporting issues for your review</h2>' : '<p class="lede">We did not find a reporting issue in the information we could review.</p>'}${[...groups].map(([key, group]) => `<section data-issue-group="${esc(key)}"><h3>${esc(group.title)}</h3>${cards(group.issues)}</section>`).join('')}`;
 }
 
+function packetDocumentDates(settings, pv) {
+  const dates = { ...settings.document_dates };
+  for (const doc of pv.support?.documents || []) {
+    if (settings.document_ids.includes(doc.file_id) && !dates[doc.file_id] && doc.document_date) dates[doc.file_id] = doc.document_date;
+  }
+  return { ...settings, document_dates: dates };
+}
 function packetSupportDefaults(pv) {
   const saved = pv.support?.settings;
   if (saved) {
@@ -1818,12 +1835,12 @@ function packetSupportDefaults(pv) {
       settings.document_ids = settings.document_ids.filter(id => available.has(id));
       settings.document_dates = Object.fromEntries(Object.entries(settings.document_dates || {}).filter(([id]) => settings.document_ids.includes(id)));
     }
-    return settings;
+    return pv.packet?.preview_ready ? settings : packetDocumentDates(settings, pv);
   }
-  return { bureau: pv.support?.requirements?.bureau || state.view?.case?.selected_bureau || '', channel: 'POSTAL',
+  return packetDocumentDates({ bureau: pv.support?.requirements?.bureau || state.view?.case?.selected_bureau || '', channel: 'POSTAL',
     purpose: pv.support?.suggested_purpose || 'ACCOUNT', use_account_profile: true,
     document_ids: (pv.support?.documents || []).filter(doc => ['IDENTITY', 'ADDRESS'].includes(doc.document_type)).slice(0, 8).map(doc => doc.file_id),
-    identity_shows_address: false, no_ssn_issued: false, identity_reference: '', other_identity_details: '', document_dates: {} };
+    identity_shows_address: false, no_ssn_issued: false, identity_reference: '', other_identity_details: '', document_dates: {} }, pv);
 }
 function wireResultsPacket(panel, view) {
   const caseId = state.caseId, resultId = view.result_id, ensure = viewContext();
@@ -2141,7 +2158,8 @@ function validLetterDate(value) {
 function renderPacketBlock(pv) {
   const issues = (pv.eligible_issues || []).filter((i) => i.eligible);
   const packet = pv.packet || {};
-  if (!issues.length) return '<p class="evidence">No issue on this case is eligible for a correction packet yet.</p>';
+  const comparisonNotice = packet.comparison_source_removed ? '<p class="note">A report used for comparison was deleted. That comparison was removed. Check your remaining issues and letter before approving again.</p><button class="secondary" id="packet-comparison-review">Review remaining issues</button>' : '';
+  if (!issues.length) return comparisonNotice + '<p class="evidence">No issue on this case is eligible for a correction packet yet.</p>';
   const profile = pv.support?.account_profile || {};
   const correspondence = Object.values(profile).some(value => String(value || '').trim()) || pv.support?.settings?.use_account_profile ? { ...(packet.correspondence || {}), consumer_name: profile.full_name || '', contact: [
     ['address_line1', 'address_line2', 'city', 'region', 'postal_code', 'country'].map(field => profile[field]).filter(Boolean).join(', '), profile.contact_email, profile.phone
@@ -2163,7 +2181,7 @@ function renderPacketBlock(pv) {
       ${i.report_identity ? `<span class="evidence">Report: <b>${esc(i.report_identity.bureau || 'a report')}</b>${i.report_identity.reference_date ? ` · reference date <b>${esc(i.report_identity.reference_date)}</b>` : ''}</span>` : ''}
       ${comparisonFactList(i)}
     </label>`).join('');
-  return `
+  return `${comparisonNotice}
     <div id="packet-selection">
     <h2>Your dispute packet</h2>
     <p class="evidence">Choose the issues you want the bureau to check or correct.</p>
@@ -2250,6 +2268,7 @@ async function wirePacket(panel) {
     if ((pv.support?.missing || []).some(item => /Select.*(?:identification|proof-of-address)|selected document.*changed or removed/i.test(item))) {
       const available = (pv.support?.documents || []).filter(doc => ['IDENTITY', 'ADDRESS'].includes(doc.document_type)).map(doc => doc.file_id);
       settings.document_ids = [...new Set([...settings.document_ids, ...available])].slice(0, 8);
+      settings.document_dates = packetDocumentDates(settings, pv).document_dates;
     }
     if (!pv.support?.settings || JSON.stringify(settings) !== JSON.stringify(pv.support.settings)) {
       try { pv = (await currentRequest(ensureOrigin, 'POST', `/api/cases/${caseId}/packet/support`, { support: settings })).view; }
@@ -2257,6 +2276,8 @@ async function wirePacket(panel) {
     }
   }
   block.innerHTML = renderPacketBlock(pv);
+  const comparisonReview = el('packet-comparison-review');
+  if (comparisonReview) comparisonReview.onclick = () => { ensureOrigin(); navigateStep(STEP.RESULTS); };
   if (!(pv.eligible_issues || []).some(issue => issue.eligible)) return;
   const choosing = false;
   const assessmentStale = pv.packet?.assessment_current === false;
@@ -2716,6 +2737,7 @@ function renderCase(panel) {
   if (!state.account) { panel.innerHTML = `${notices()}<h1>Sign in to manage your reports</h1>${supportContactBlock()}`; return; }
   if (!state.view) { panel.innerHTML = `${notices()}<h1>Open a case first</h1>`; return; }
   const view = state.view;
+  const deletionLabel = reportIdentityText(view);
   panel.innerHTML = `
     <h1>Privacy, cases and deletion</h1>
     <p class="lede">Use these labels to keep track of your report. Changing a label does not send anything to the bureau.</p>
@@ -2723,6 +2745,7 @@ function renderCase(panel) {
     <div class="obs">
       <span class="pill">${esc(({ OPEN: 'Open', REVIEWED: 'Reviewed', RESPONSE_RECORDED: 'Reply received', CLOSED: 'Closed' })[view.case.status] || 'Open')}</span>
       <h3>${esc(regionLabel(view.case.country, view.case.region))}</h3>
+      ${currentReportIdentity(view)}
       <p class="evidence">${esc(view.status_label || '')}</p>
       ${[['OPEN', 'Open'], ['REVIEWED', 'Reviewed'], ['RESPONSE_RECORDED', 'Reply received'], ['CLOSED', 'Closed']].map(([s, label]) =>
         `<button class="secondary" data-status="${s}" ${s === view.case.status ? 'disabled' : ''}>Mark ${label}</button>`).join('')}
@@ -2730,9 +2753,11 @@ function renderCase(panel) {
     <div class="obs" id="privacyInventory">Loading your stored documents and retention information…</div>
     <div class="obs">
       <h3>Deleting</h3>
+      <p class="evidence"><strong>Report to delete:</strong> ${esc(deletionLabel)}</p>
       <p class="evidence">Deleting a report removes its uploaded files, saved results and packets from your account. Save any copies you need first.</p>
       <p class="evidence">Account deletion must stop any subscription renewal before your account can be removed. If this cannot be confirmed, your account stays available.</p>
       <button class="danger" id="delete">Delete this report and its files</button>
+      <div id="dependent-letter-choice" aria-live="polite"></div>
       <button class="danger" id="deleteAccount">Delete my whole account</button>
     </div>`;
 
@@ -2761,17 +2786,39 @@ function renderCase(panel) {
       state.notice = 'Your report status is saved.';
     });
   }
-  el('delete').onclick = () => run(async () => {
-    const ensure = viewContext(), caseId = state.caseId;
-    if (!window.confirm?.('Delete this report? Its files, saved results and packets will be removed. Save any copies you need first. Choose Cancel to keep it.')) return;
-    await currentRequest(ensure, 'DELETE', `/api/cases/${caseId}`);
-    state.cases = (await currentRequest(ensure, 'GET', '/api/cases')).cases;
+  const deleteReport = async replacement => {
+    ensurePrivacy();
+    try { await currentRequest(ensurePrivacy, 'DELETE', `/api/cases/${privacyCase}`, replacement ? { replace_dependent_letters: replacement } : undefined); }
+    catch (error) {
+      if (error.code !== 'REPORT_USED_BY_EDITED_LETTER' || !error.detail?.replacement_binding) throw error;
+      const choice = el('dependent-letter-choice'), binding = error.detail.replacement_binding;
+      choice.innerHTML = `<p class="note stop">Your report and edited letters are kept. Deleting this report also needs a new prepared letter for:</p><ul>${(error.detail.reports || []).map(report => `<li>${esc(report.label)}</li>`).join('')}</ul><p>Replacing these letters removes their custom edits. Their reports, documents and other settings stay saved.</p><button class="secondary" id="keep-dependent-letters">Keep my reports and edited letters</button><button class="danger" id="replace-dependent-letters">Replace affected letters and delete this report</button>`;
+      el('keep-dependent-letters').onclick = () => { ensurePrivacy(); choice.textContent = 'Nothing was deleted. Your reports and edited letters are kept.'; };
+      el('replace-dependent-letters').onclick = () => run(() => deleteReport(binding), { redraw: false });
+      return;
+    }
+    // Clear the deleted selection before a fallible list refresh.
+    state.cases = state.cases.filter(row => row.case_id !== privacyCase);
     state.caseId = null;
     state.view = null;
-    state.step = 1;
+    state.step = STEP.JURISDICTION;
     state.storageSnapshot = null;
+    state.result_list = [];
+    state.packetChoices = null;
+    state.packetReturn = null;
+    state.packetRepair = null;
     state.notice = 'Report deleted. Its uploaded files, saved results and packets have been removed.';
-  });
+    const ensureAccount = accountContext();
+    try { state.cases = (await currentRequest(ensureAccount, 'GET', '/api/cases')).cases; }
+    catch (error) { if (error.cancelled) throw error; state.savedReportsStatus = 'error'; }
+    if (state.caseId === null) render();
+  };
+  el('delete').onclick = () => run(async () => {
+    ensurePrivacy();
+    if (!window.confirm?.(`Delete ${deletionLabel}? Its files, saved results, packets and copied comparisons will be removed. Save any copies you need first. Choose Cancel to keep it.`)) return;
+    ensurePrivacy();
+    await deleteReport();
+  }, { redraw: false });
   el('deleteAccount').onclick = () => run(async () => {
     if (!window.confirm?.('Delete your whole account? We must confirm that any subscription renewal is stopped first. Then your reports, ID copies, results and account details will be removed. Save any copies you need first. Choose Cancel to keep your account.')) return;
     accountEpoch++;

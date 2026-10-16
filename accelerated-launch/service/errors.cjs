@@ -89,6 +89,7 @@ const STATUS_BY_CODE = Object.freeze({
   ACCOUNT_DELETION_ADMIN_ACCESS_ACTIVE: 409,
   CASE_DELETION_PAYMENT_UNCONFIRMED: 502,
   CASE_DELETION_STALE: 409,
+  REPORT_USED_BY_EDITED_LETTER: 409,
   CHECKOUT_CANCELLATION_FAILED: 502,
   CHECKOUT_CANCELLATION_STALE: 409,
   ACCOUNT_STORAGE_QUOTA_EXCEEDED: 409,
@@ -118,6 +119,7 @@ const MESSAGE_BY_CODE = Object.freeze({
   ACCOUNT_DELETION_ADMIN_ACCESS_ACTIVE: 'Ask an owner to remove your administration access before deleting this account. The last owner must first add another active owner.',
   CASE_DELETION_PAYMENT_UNCONFIRMED: 'Your report was not deleted because we could not stop a payment in progress. Try again or contact support.',
   CASE_DELETION_STALE: 'Your report or its payment changed. Refresh the page before trying deletion again.',
+  REPORT_USED_BY_EDITED_LETTER: 'This report is used in an edited letter for another report. Your report and edits have been kept. Choose whether to replace the affected letter before deleting.',
   CHECKOUT_CANCELLATION_FAILED: 'We could not stop this unfinished payment. Your reports and current plan are unchanged. Try again or contact support.',
   CHECKOUT_CANCELLATION_STALE: 'Your payment changed. Refresh the page before trying again.',
 

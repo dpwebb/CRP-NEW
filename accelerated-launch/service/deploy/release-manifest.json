@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-15T16:57:05.376Z",
+  "generated_at": "2026-10-16T15:34:50.418Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -61,8 +61,8 @@
     },
     {
       "id": "RUNTIME",
-      "file_count": 106,
-      "digest": "6579C540B2D525EF1E32CFFD5D834A1D04203DCD5415D3537656F2229D3DF7DA",
+      "file_count": 107,
+      "digest": "CD9FA43BC5A8D159719992332ACD32D732410E1F5E93936BCA596318E606887D",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -70,7 +70,7 @@
         },
         {
           "file": "accelerated-launch/service/account-documents.cjs",
-          "sha256": "D3D7BE034C340B6099C91869DAD2CBCC4F237CB58E244A677B6D11833D8A8023"
+          "sha256": "CCA19A8018AAF641BE52ECB236B4809F2961BE15C1A278E5D0355CCC056D587E"
         },
         {
           "file": "accelerated-launch/service/account-identity.cjs",
@@ -102,7 +102,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "86D2EC55BD361C5E8B1411B944CF2C52BCEAD6C7D810CEECF0488B69F3A3F7BC"
+          "sha256": "03F80AF6A8DB2FBDA8F85F7DFACA3AC411F2B988FC6346B2806074BE621EA715"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -150,7 +150,7 @@
         },
         {
           "file": "accelerated-launch/service/cases.cjs",
-          "sha256": "D7187F93E808A2BAABEC1D2CD784E9DB6B3F2244B366555403477A1E5917B661"
+          "sha256": "EB69B2FBC4E6618DBE0C28FBDE66925DCD9CA6BE1B86F2858E71EA43B695FAB5"
         },
         {
           "file": "accelerated-launch/service/checkout-purchase.cjs",
@@ -230,7 +230,7 @@
         },
         {
           "file": "accelerated-launch/service/errors.cjs",
-          "sha256": "E31C7005BE107BB68A030C08971ABCDA29EBF4B60F39AB3AF5833C6DCBD351CC"
+          "sha256": "C8671C1D99C5A5D26342779E82A19263CBE18D11B1687B640333A34A5B4D61EC"
         },
         {
           "file": "accelerated-launch/service/evaluation.cjs",
@@ -294,7 +294,7 @@
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
-          "sha256": "E4A5733374F05A5B372B024608E7CA635C7F50BA372AE7897E38DE0C7BE2402E"
+          "sha256": "2EE7483F55CE879D48E679BDA2E96E31F45DBF477175D0A58A6D1B8F33912DFC"
         },
         {
           "file": "accelerated-launch/service/legacy-password.cjs",
@@ -354,7 +354,7 @@
         },
         {
           "file": "accelerated-launch/service/packets.cjs",
-          "sha256": "2EEA6A5DF2AFA558748E0C0CEEF55B4944E048126FDBF460D3B53F8FD992024A"
+          "sha256": "0714F2DF07257A2962491E372E88B3133C94DDE43A110DD82C2096621672867B"
         },
         {
           "file": "accelerated-launch/service/password-reset.cjs",
@@ -443,6 +443,10 @@
         {
           "file": "accelerated-launch/service/report-context-fields.cjs",
           "sha256": "2914574CA8F8668091A1864143D483D8FFDD206114E5F67B7C20DC316825BF8D"
+        },
+        {
+          "file": "accelerated-launch/service/report-deletion.cjs",
+          "sha256": "1D57A702591AB6C81E160C72E1408856232FD2E6ED69FA7F2BB3F443467B7892"
         },
         {
           "file": "accelerated-launch/service/report-fact-sources.cjs",
@@ -610,7 +614,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 29,
-      "digest": "3DF51E0BF754A4B8B8ECC18208C190571220E812AB62A352C2CE20A58FB605ED",
+      "digest": "7FEAB743E958E9D6D2679B027DBB5FE48262734893050552EC7A7B7C5EF7319F",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -638,7 +642,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "413E9D600A88CC8FA52215C53C111630AB16CE888615AE1C98F6364E1A8D36D2"
+          "sha256": "52171B04CFAAA6BF953E8C9D3A68FD48471A3DCBE3D5857544AD2F4D2D47F233"
         },
         {
           "file": "accelerated-launch/service/ui/credit-news.css",
@@ -731,6 +735,6 @@
       ]
     }
   ],
-  "manifest_digest": "CA463C8B2BA08AE78F6175FF338CC86047C27F1FF36991A04AC51BBFE450922A",
-  "total_file_count": 171
+  "manifest_digest": "7D3FC6245E99BDBEB028F60950C9FA2FA1659984319A84FE2EB8A10ABA137395",
+  "total_file_count": 172
 }

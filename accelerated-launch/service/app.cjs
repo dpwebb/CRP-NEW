@@ -538,8 +538,9 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency) {
       json: { ok: true, case: cases.setStatus(store, actor, params.caseId, body && body.status) }
     }),
 
-    deleteCase: async ({ params, actor }) => {
-      const removed = await cases.deleteCaseSafely(store, actor, params.caseId, process.env);
+    deleteCase: async ({ params, actor, body }) => {
+      if (Object.keys(body || {}).some(key => key !== 'replace_dependent_letters')) throw new ServiceError('INVALID_REQUEST');
+      const removed = await cases.deleteCaseSafely(store, actor, params.caseId, process.env, body || {});
       logger.log({ event: 'CASE_DELETED', outcome: 'OK', count: removed.blobs_removed });
       return { status: 200, json: { ok: true, ...removed } };
     },

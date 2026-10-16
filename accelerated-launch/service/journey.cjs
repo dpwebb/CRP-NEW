@@ -109,6 +109,7 @@ function viewForResult(store, actor, caseRow, resultRow) {
     result_id: access.complete_assessment && resultRow ? resultRow.result_id : null,
     latest_result_id: access.complete_assessment ? latestResultFor(store, caseRow.case_id)?.result_id || null : null,
     reviewed: Boolean(resultRow && resultRow.reviewed_at),
+    comparison_source_removed: resultRow?.comparison_source_removed === true,
     clarifications: resultRow && resultRow.clarifications ? clarification.render(resultRow.clarifications) : [],
     clarification_questions: resultRow && Array.isArray(resultRow.clarification_eligibility) ? clarification.activeQuestions(resultRow.clarification_eligibility) : [],
     download: {

@@ -20,7 +20,8 @@ const planCatalog = { currency: 'CAD', plans: [
   { plan_code: 'annual', amount_display: '$79.50 CAD', amount_cents: 7950, interval: 'year' }
 ] };
 function view(result = 'result-current') {
-  return { case: { case_id: 'caseA', country: 'CA', region: 'CA-NS', status: 'OPEN', selected_bureau: 'TRANSUNION' },
+  return { case: { case_id: 'caseA', country: 'CA', region: 'CA-NS', status: 'OPEN', selected_bureau: 'TRANSUNION', report_date: '2026-10-14' },
+    files: [{ original_filename: 'fictional-report-A & reviewed.pdf' }],
     result_id: result, latest_result_id: 'result-current', reviewed: true,
     assessment_access: { complete_assessment: true, dispute_packet: true },
     assessment_summary: { distinct_total: 1, violation_total: 1 },
@@ -37,7 +38,7 @@ function harness(responder) {
     document: { getElementById: node, createElement: node }, navigator: { clipboard: { writeText: async () => {} } },
     location: { hash: '', search: '', assign() {} }, crypto: require('node:crypto'),
     fetch: async (url, options = {}) => {
-      calls.push({ url, method: options.method || 'GET' });
+      calls.push({ url, method: options.method || 'GET', body: options.body });
       const body = await responder(url, options);
       return { ok: true, status: 200, json: async () => body || { ok: true } };
     } };
@@ -85,6 +86,31 @@ async function deferredChecks(check) {
   cancel.evaluate('state.step=STEP.CASE; renderCase(document.getElementById("panel"));');
   await cancel.node('delete').onclick(); await cancel.node('deleteAccount').onclick();
   check.equal(cancel.calls.filter(row => row.method === 'DELETE').length, 0, 'Cancel sends neither destructive request');
+  for (const moment of ['before-confirm', 'during-confirm']) {
+    const stale = harness(() => ({ ok: true, cases: [], account_documents: [] }));
+    stale.evaluate('state.step=STEP.CASE; renderCase(document.getElementById("panel"));');
+    let confirms = 0;
+    const changeCase = () => stale.evaluate('state.caseId="caseB"; state.view={result_id:"resultB"};');
+    stale.context.confirm = () => { confirms++; if (moment === 'during-confirm') changeCase(); return true; };
+    if (moment === 'before-confirm') changeCase();
+    await stale.node('delete').onclick();
+    check.equal(stale.calls.filter(row => row.method === 'DELETE').length, 0, `${moment}: a stale rendered deletion control cannot delete either report`);
+    check.equal(confirms, moment === 'before-confirm' ? 0 : 1, 'the captured report context is checked on both sides of confirmation');
+  }
+  const dates = harness(() => ({ ok: true }));
+  dates.context.datePacket = { support: { documents: [{ file_id: 'copyA', document_date: '2026-10-01', document_type: 'ADDRESS' }] } };
+  check.equal(dates.evaluate('packetSupportDefaults(datePacket).document_dates.copyA'), '2026-10-01', 'a new packet reuses the same saved copy date');
+  dates.context.datePacket.support.settings = { document_ids: ['copyA'], document_dates: { copyA: '2026-09-30' } };
+  const settingsBefore = JSON.stringify(dates.context.datePacket.support.settings);
+  check.equal(dates.evaluate('packetSupportDefaults(datePacket).document_dates.copyA'), '2026-09-30', 'a saved packet keeps its own chosen date');
+  check.equal(JSON.stringify(dates.context.datePacket.support.settings), settingsBefore, 'preparing defaults never mutates saved support settings');
+  dates.context.datePacket.support.settings.document_dates = {};
+  dates.context.datePacket.packet = { preview_ready: true };
+  check.equal(dates.evaluate('packetSupportDefaults(datePacket).document_dates.copyA'), undefined, 'a ready packet never silently merges a newly saved global copy date');
+  dates.context.datePacket.packet.preview_ready = false;
+  check.equal(dates.evaluate('packetSupportDefaults(datePacket).document_dates.copyA'), '2026-10-01', 'an incomplete packet can reuse its missing saved copy date');
+  dates.context.datePacket.support.settings = { document_ids: ['newCopy'], document_dates: {} };
+  check.equal(dates.evaluate('packetSupportDefaults(datePacket).document_dates.newCopy'), undefined, 'a different file ID does not borrow a date');
   const history = deferred(); const hist = harness(url => url === '/api/history' ? { assessments: [{ result_id: 'one' }, { result_id: 'two' }] } : history.promise);
   hist.evaluate('state.step=STEP.HISTORY; renderHistory(document.getElementById("panel"));'); await tick();
   hist.node('cmp-left').value = 'one'; hist.node('cmp-right').value = 'two'; const compare = hist.node('compare').onclick(); await tick();
@@ -141,7 +167,8 @@ async function browserChecks(t, check) {
       const requests = [], downloads = []; let signedIn = false;
       let billingEnt = { entitled: false, renewal_cancellation_available: true, renewing_subscription_recorded: true, renewal_status: 'CANCELLATION_UNCONFIRMED' };
       let pendingCheckout = null, failUnfinished = true;
-      let packetSelectWait = null, failPacketSelect = false;
+      let packetSelectWait = null, failPacketSelect = false, reportDeleted = false;
+      const replacementBinding = 'a'.repeat(64);
       const packetView = { eligible_issues: view().result.issues, packet: { packet_id: 'packetA', result_id: 'result-current', selected_issue_ids: ['issueA'], selected_count: 1, approved: true, approved_version: 'fictional-approved', preview_version: 'fictional-approved', letter_preview_url: '/api/cases/caseA/packet/preview?version=fictional-approved', preview_ready: true, download_available: true, wording: 'Saved fictional wording', letter_date: '2026-10-14', letter_text: 'Saved fictional approved letter\nOctober 15, 2026', correspondence_preview: 'Saved fictional approved letter\nOctober 15, 2026' }, support: { catalog: [], missing: [], requirements: { country: 'CA', bureau: 'TRANSUNION', label: 'Fictional bureau', items: [], sources: [] } } };
       // Guarded navigation/transport boundary. Actual complete PDF fields/images
       // and print/download custody run against the real service in ga/gl.
@@ -156,7 +183,10 @@ async function browserChecks(t, check) {
         else if (p === '/api/account/security') data.signup_complete = true;
         else if (p === '/api/account/profile') data.profile = {};
         else if (p === '/api/account/documents') data.documents = [];
-        else if (p === '/api/cases') data.cases = [{ case_id: 'caseA', bureau: 'TransUnion', report_date: '2026-10-14', country: 'CA', region: 'CA-NS', created_at: '2026-10-14T12:00:00Z' }, { case_id: 'caseB', bureau: 'Equifax', report_date: '2026-09-14', country: 'CA', region: 'CA-NS', created_at: '2026-09-14T12:00:00Z' }];
+        else if (p === '/api/cases') {
+          if (reportDeleted) { status = 502; data = { ok: false, error: { message: 'Fictional list refresh failed.' } }; }
+          else data.cases = [{ case_id: 'caseA', bureau: 'TransUnion', report_date: '2026-10-14', country: 'CA', region: 'CA-NS', created_at: '2026-10-14T12:00:00Z' }, { case_id: 'caseB', bureau: 'Equifax', report_date: '2026-09-14', country: 'CA', region: 'CA-NS', created_at: '2026-09-14T12:00:00Z' }];
+        }
         else if (p === '/api/privacy') Object.assign(data, { cases: [{ documents: [{ stored_bytes: 1048576 }] }], account_documents: [{ stored_bytes: 1048576 }] });
         else if (p === '/api/entitlement' || p === '/api/billing/plans') Object.assign(data, { entitlement: billingEnt, payment: { is_a_working_payment: false }, plan_catalog: planCatalog, pending_checkout: pendingCheckout });
         else if (p === '/api/entitlement/cancel') {
@@ -164,6 +194,10 @@ async function browserChecks(t, check) {
           else { pendingCheckout = null; data.cancellation = { cancelled: true, checkout_cancelled: true, entitlement: billingEnt }; }
         }
         else if (p === '/api/support') Object.assign(data, { reference: 'fictional-support-reference', build_id: 'fictional-build', category: 'RESULT_PRESENT', case_count: 2, file_count: 2, result_count: 2, jurisdiction: [{ country: 'CA', region: 'CA-NS' }], plain: 'Include this reference when you ask for help.' });
+        else if (p === '/api/cases/caseA' && request.method() === 'DELETE') {
+          if (JSON.parse(request.postData() || '{}').replace_dependent_letters === replacementBinding) reportDeleted = true;
+          else { status = 409; data = { ok: false, error: { code: 'REPORT_USED_BY_EDITED_LETTER', message: 'An edited letter needs your choice.', detail: { replacement_binding: replacementBinding, reports: [{ label: 'fictional-report-B <kept>.pdf' }] } } }; }
+        }
         else if (p === '/api/cases/caseA') data.view = view();
         else if (p === '/api/cases/caseA/results') data.results = [{ result_id: 'result-current', created_at: '2026-10-14' }, { result_id: 'result-old', created_at: '2026-09-14' }];
         else if (p === '/api/cases/caseA/results/result-old/view') data.view = view('result-old');
@@ -275,6 +309,19 @@ async function browserChecks(t, check) {
       check.ok(await page.locator('#supportSummary').isVisible(), 'clipboard denial opens the actual disclosure for manual copying');
       check.ok(await page.locator('#supportSummary').evaluate(node => document.activeElement === node && node.selectionEnd > node.selectionStart), 'manual-copy fallback focuses and selects the visible summary');
       check.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${width}px amended consumer surfaces have no horizontal overflow`);
+      await navigate(8); await page.locator('#delete').waitFor();
+      check.ok((await page.locator('#current-report-identity').innerText()).includes('fictional-report-A & reviewed.pdf'), `${width}px deletion screen identifies the exact report filename`);
+      const confirmReport = dialog => { check.ok(dialog.message().includes('fictional-report-A & reviewed.pdf') && dialog.message().includes('2026-10-14') && dialog.message().includes('TransUnion'), 'native deletion confirmation identifies the selected report'); return dialog.accept(); };
+      page.once('dialog', confirmReport); await page.locator('#delete').click(); await page.locator('#keep-dependent-letters').waitFor();
+      check.ok((await page.locator('#dependent-letter-choice').innerText()).includes('fictional-report-B <kept>.pdf'), 'the protected edited letter is identified as escaped text');
+      const refusedDeletes = requests.filter(row => row.method === 'DELETE' && row.p === '/api/cases/caseA').length;
+      await page.locator('#keep-dependent-letters').click(); await page.getByText('Nothing was deleted. Your reports and edited letters are kept.').waitFor();
+      check.equal(requests.filter(row => row.method === 'DELETE' && row.p === '/api/cases/caseA').length, refusedDeletes, 'keeping edits performs no replacement or deletion request');
+      page.once('dialog', confirmReport); await page.locator('#delete').click(); await page.locator('#replace-dependent-letters').waitFor();
+      await page.locator('#replace-dependent-letters').click(); await page.getByRole('heading', { name: 'Upload your credit report', exact: true }).waitFor();
+      check.equal(JSON.parse(requests.filter(row => row.method === 'DELETE' && row.p === '/api/cases/caseA').at(-1).body).replace_dependent_letters, replacementBinding, 'explicit replacement sends the exact current consent binding');
+      check.ok((await page.locator('#panel').innerText()).includes('Report deleted.'), 'successful deletion remains clear when refreshing the report list fails');
+      check.equal(await page.locator('#delete').count(), 0, 'a deleted report is no longer selected or offered for another deletion');
       await context.close();
     }
   } finally { await browser.close(); }

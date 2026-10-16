@@ -23,7 +23,20 @@ function isAccountDocument(row) {
   return row.purpose === PURPOSE && row.case_id === null;
 }
 
-function publicDocument(row) {
+function validDate(value) {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
+    && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
+}
+function savedDocumentDate(state, row) {
+  if (row.document_date_sha256 !== undefined) {
+    return row.document_date_sha256 === row.sha256 && validDate(row.document_date) ? row.document_date : null;
+  }
+  // Older packets already recorded a date for this immutable owned file. Conflicting dates need review.
+  const dates = [...new Set((state?.packets || []).filter(packet => packet.account_id === row.account_id
+    && packet.support?.document_ids?.includes(row.file_id)).map(packet => packet.support.document_dates?.[row.file_id]).filter(validDate))];
+  return dates.length === 1 ? dates[0] : null;
+}
+function publicDocument(row, state) {
   return {
     file_id: row.file_id,
     purpose: PURPOSE,
@@ -32,7 +45,8 @@ function publicDocument(row) {
     original_filename: row.original_filename,
     content_type: row.content_type,
     stored_bytes: row.stored_bytes,
-    created_at: row.created_at
+    created_at: row.created_at,
+    ...(savedDocumentDate(state, row) ? { document_date: savedDocumentDate(state, row) } : {})
   };
 }
 
@@ -102,7 +116,28 @@ function listDocuments(store, actor) {
   const state = store.state();
   requireAccount(state, actor);
   return state.files.filter((row) => row.account_id === actor.account_id && isAccountDocument(row))
-    .map(publicDocument).sort((a, b) => a.created_at.localeCompare(b.created_at) || a.file_id.localeCompare(b.file_id));
+    .map(row => publicDocument(row, state)).sort((a, b) => a.created_at.localeCompare(b.created_at) || a.file_id.localeCompare(b.file_id));
+}
+
+function rememberDates(state, actor, dates, material) {
+  for (const document of material) {
+    const date = dates[document.file_id];
+    if (!date) continue;
+    const row = state.files.find(file => file.file_id === document.file_id && file.account_id === actor.account_id && isAccountDocument(file));
+    if (!row || row.sha256 !== document.sha256 || !validDate(date)) throw new ServiceError('SERVICE_STATE_UNAVAILABLE');
+    row.document_date = date;
+    row.document_date_sha256 = row.sha256;
+  }
+}
+function preserveLegacyDates(state, actor, caseId) {
+  const referenced = new Set((state.packets || []).filter(packet => packet.account_id === actor.account_id && packet.case_id === caseId)
+    .flatMap(packet => packet.support?.document_ids || []));
+  for (const row of state.files) {
+    if (row.account_id !== actor.account_id || !isAccountDocument(row) || !referenced.has(row.file_id)
+      || row.document_date_sha256 !== undefined || !row.sha256) continue;
+    const date = savedDocumentDate(state, row);
+    if (date) { row.document_date = date; row.document_date_sha256 = row.sha256; }
+  }
 }
 
 function receiveDocument(store, actor, input) {
@@ -187,7 +222,7 @@ function materialDocuments(store, actor, fileIds) {
 }
 
 module.exports = {
-  listDocuments, receiveDocument, getDocument, deleteDocument, materialDocuments,
+  listDocuments, receiveDocument, getDocument, deleteDocument, materialDocuments, rememberDates, preserveLegacyDates,
   PURPOSE, DOCUMENT_TYPES, MAX_ACCOUNT_DOCUMENTS, MAX_DOCUMENT_KIND_LENGTH,
   MAX_FILE_BYTES: uploads.MAX_FILE_BYTES,
   MAX_ACCOUNT_STORED_BYTES: uploads.MAX_ACCOUNT_STORED_BYTES
