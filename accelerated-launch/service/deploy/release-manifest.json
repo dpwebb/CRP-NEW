@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-17T12:49:08.668Z",
+  "generated_at": "2026-10-17T13:06:31.649Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -626,7 +626,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 37,
-      "digest": "C84D6516C5325A96F45852A6FF30F66F0AC73710BC983235CBA93CE654FC0D5C",
+      "digest": "F05CD1A5F5B0D94790A99A615406FF80EC0EAD5F508107ACEE4CFA46CF60FF98",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -634,7 +634,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.woff2",
-          "sha256": "FAA950D662D4B5CB05CCA50597ECA7241111BDC5BDEB4A25F88CE31BD1B3A514"
+          "sha256": "50D63EC25A70C5B0B3D59785E1C433549CB6F50148D7A779E4059778487CA9B7"
         },
         {
           "file": "accelerated-launch/service/ui/OpenSans-Regular.ttf",
@@ -642,7 +642,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/OpenSans-Regular.woff2",
-          "sha256": "31DB0B0D96799E615EE18D0584630704B098AA85F7E8792228D73DB274E78C7D"
+          "sha256": "EB1EDA64AFBF5E1050D0F8789AD1DA278373AA1C2043A343969F6F201B4489B1"
         },
         {
           "file": "accelerated-launch/service/ui/Roboto-Bold.ttf",
@@ -650,7 +650,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/Roboto-Bold.woff2",
-          "sha256": "51E4DF4B9FEE3B6FA0EA8BA7E042AAD0F62A8F1CEAF5662751B535210BB014F0"
+          "sha256": "84C50ECADDFEB2D13BE3383CFD5BDD26BA9FEC910D7277F13C31DE2F13B9AEC3"
         },
         {
           "file": "accelerated-launch/service/ui/admin.css",
@@ -762,7 +762,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/story-font-license.txt",
-          "sha256": "86287BEB1FDA927DFCE2EAAE1FB431F96F1E4A9A4B145D723EB906FF51CD3C37"
+          "sha256": "926F40EA4D55B9EE1D3916BD084ECA43AE6F606A97CAA8257C2575A03EC239ED"
         },
         {
           "file": "accelerated-launch/service/ui/story.css",
@@ -779,6 +779,6 @@
       ]
     }
   ],
-  "manifest_digest": "FF2973AC2933F417AD5B7880ED273CFFE74596B63332D935A2CB4BCC3B2EF614",
+  "manifest_digest": "45BA28AD51922C09FBA02E5E9FDE57C22DB721B9BDA5555F4E1C050BB6D07873",
   "total_file_count": 183
 }
