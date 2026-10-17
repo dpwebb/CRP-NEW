@@ -1,5 +1,27 @@
 # Accessibility and performance — local only
 
+**Latest status: IMPLEMENTED_AND_TESTED_LOCALLY; FORMAL_RELEASE_CONTINUITY_BLOCKED. No deployment.**
+
+Final source4240a4122e3636ae1761c4eb81f5457f805dda91, buildcrp-v1-45ba28ad51922c09,183 shipped files. Australia, Canada, United Kingdom and United States all score100/100 for Lighthouse performance, accessibility, SEO and best practices on desktop and mobile, covering both regional and IP-selected root pages (16 audits, Lighthouse13.5.0). Final mobile FCP is at most1204ms, LCP1504ms and TBT0; no blocking stylesheet requests remain. These are measured local scores, not a promise of every future run or hosted acceptance.
+
+The shared-code full passed18877/0/0 across187 sections with390 source records, no drift/unrun,8 syntax checks and10 tooling suites. The subsequent static-font check passed5189/0/0 across all49 required consumer/security/browser/UI/auth/flow sections, with no drift and10 tooling suites. Their original identities remain separate. Relative to that full,389 source records remain exact; the only changed source record is the deliberately regenerated manifest for the three fonts and license notice. No runtime, JavaScript, HTML, CSS or test code changed in that final static batch.
+
+Public carousel semantics and accessible link names are corrected. Public styles are delivered with the initial HTML; public responses negotiate gzip. Fonts retain all mapped characters used in the inspected UI sources and exact retained outlines/spacing, reducing604416 original bytes to77752 bytes (87.1%). Original full fonts, approved design, IP detection, consent, MFA/recovery, ownership, packets and entitlement behavior are retained.
+
+Actual Chrome tested all four countries at1440/390, regional and IP-root URLs, without overflow or a visible location selector. Consent accept/decline/preferences/withdraw and manual carousel controls passed; localhost contacted Google0 times. All four final fictional preview stores retain exact initial bytes and0 accounts; their owned listeners were stopped, final viewport reset and final preview tab closed. The older local preview closure limitation remains recorded below.
+
+Fresh final hosted observationFE84B99775D99157E9D00560F6AEBF96EF18C141D3C8E14064A53AA690945DD3 matches the prior audit's whole staging/production site records, boot, unit definitions and activation snapshot exactly. Production remainse255/PID2393966/5accounts/338non-session rows/109blobs; staging remainse255/PID1787842/43accounts/718rows/148blobs. Zero remote mutations, provider calls or service actions. The preexisting dirty AGENTS.md diff is byte-identical (DA3FE73B...). Existing consumer data and local operational services were not used or changed.
+
+The local candidate was packaged once: archive5E13892A26ADF627DA95A40504321F29917C65BDB2B90AA6C6CF82ABA72B1664; source archive1FE1C403AC40E0EBA10EAF89298EA40A1B621B00BE764A895B70455B4184C490. It remains production_ready:false. **Formal continuity refused** with `RELEASE_CONTINUITY: planned sections differ from required policy`: its parser reads only42 literal lane sections and omits seven later `LANE_IDS.*.unshift` additions. The actual planner and executed check agree on all49 sections, with0 missing literal-policy sections. The failed continuity directory and frozen candidate are preserved. No validator, receipt, plan or source was rewritten to bypass this refusal; assembly is NOT_RUN. This is a release-evidence tooling block, not a failing product assertion. Repair/review of that separate tool and a successful formal continuity/assembly remain necessary before release readiness can be claimed.
+
+The initial shared-code plan also conservatively flags purchase presentation because landing.html contains the unchanged plan section. The later font-only billing_journey_required:false classification does not waive underlying provider/hosted release gates. Current hosted acceptance remains NOT_RUN; no staging/production activation, provider configuration/payment, source push, backup dispatch, mailing or old once-only intent is authorized.
+
+Final presentation evidence: C:/CRP-NEW/accelerated-launch/service/out/accessibility-performance-final-20261017. Full workflow evidence: C:/Users/webbd/.codex/worktrees/accessibility-performance-verification/CRP-NEW/accelerated-launch/service/out/accessibility-performance-release-20261017/release-r2. Static-font workflow/package/failed continuity: C:/Users/webbd/.codex/worktrees/public-font-verification/CRP-NEW/accelerated-launch/service/out/public-font-release-20261017/release.
+
+Full raw SHA256272C6EF392ED89238F431A0C951335AE608BE906830D8E9CDD032F28ADE7FA2C; focused raw SHA256689A26C373AF8D3B29BA5A83393F6BDCA5E1DEC00223942CE8A6E77C1CA402FD. Original accepted ad13/e255 and every intermediate or failed receipt remain unchanged.
+
+## Authority and earlier checkpoints
+
 Owner authority: “Proceed with the accessibility and performance fixes locally for all four countries. Preserve IP detection, consent controls and critical functions. Test desktop and mobile, and keep staging, production and consumer data unchanged.”
 
 Root alone implements and verifies in C:/CRP-NEW. Preserve the preexisting dirty AGENTS.md, untracked documents/output, accepted ad13c22/e255 source, original full/package receipts, local operational services and all consumer data. No deployment, hosted fixtures, provider configuration, source push or old once-only operation is authorized.
@@ -9,3 +31,48 @@ Bounded work: restore native news-list semantics and distinct accessible story l
 Baseline live audit: all countries accessibility96; current performance desktop100 throughout, mobile AU97 and others100. Earlier UK75 repeated100 with unchanged code. Scores depend on test conditions; record measured results without promising every future run100.
 
 Status: IMPLEMENTATION_IN_PROGRESS. No local acceptance or hosted readiness is claimed.
+
+## Frozen implementation and focused acceptance
+
+Executable source4d968e7; manifestFF2973AC2933F417AD5B7880ED273CFFE74596B63332D935A2CB4BCC3B2EF614;183 shipped files. Native news list items replace the conflicting group/slide roles in both SSR and hydration. Story links identify their destination title. Brand and free-report labels now include their visible text. Existing titles, summaries, country inventories, three-column desktop/one-card mobile layout, keyboard controls and approved illustration are preserved.
+
+Three lossless WOFF2 representations retain the exact original character maps, glyph order and font names, with no subsetting. Their combined payload is181996 bytes versus604416 bytes for the retained original TTFs, a69.9% reduction. FontTools4.67.0/Brotli1.2.0 tooling is isolated in ignored local evidence; it is not a runtime dependency. The original font license and sources remain. WOFF2 has an explicit allowlist entry, binary-safe transfer and font/woff2 MIME.
+
+Public SSR includes the same three complete stylesheets in their original order, avoiding external render-blocking stylesheet requests. Font references are root-relative. Existing CSS files remain available. Public HTML/discovery and static text assets negotiate gzip, with exact decoded bytes, Vary:Accept-Encoding, HEAD parity and explicit q=0 refusal. Private HTML and API responses keep their original path; no-store and existing CSP are unchanged. No critical authentication, ownership, packet, billing or geolocation behavior is replaced.
+
+Focused final receipt:1094 passed/0 failed/0 skipped, GP303/GO690/GQ101. This includes actual server/worker transport, native list/client parity, public compression and binary font delivery, IP root/fallback/security boundaries, consent/GPC/private-page restrictions, two-step MFA sign-in and enable/bypass/recovery flows in disposable local test stores. Earlier focused-r1 retained four failed binary-font checks; adding WOFF2 to binary decoding corrected the defect. All later focused receipts remain distinct. The initially prepared599034d workflow was not executed; the final source has its own release-r2 plan.
+
+## Four-country desktop/mobile presentation
+
+Lighthouse13.5.0, actual server.cjs plus sole worker, production-mode public rendering on owned loopback listeners. Sixteen audits cover regional and IP-selected root pages for all four countries at1440x1000 and390x844. An isolated Node preload supplies the fictional country; original viewer-IP resolution remains unchanged and no geolocation provider is called.
+
+|Country|Accessibility desktop/mobile|Performance desktop/mobile|SEO desktop/mobile|Best practices desktop/mobile|
+|---|---|---|---|---|
+|Australia|100/100|100/98|100/100|100/100|
+|Canada|100/100|100/98|100/100|100/100|
+|United Kingdom|100/100|100/98|100/100|100/100|
+|United States|100/100|100/98|100/100|100/100|
+
+The100/100 mobile performance target is not met. Final throttled mobile FCP is about1.8s and LCP about2.0s, with the heading and font request chain still contributing. TBT is0 and there is negligible layout shift. Retain complete font coverage, approved typefaces and privacy cache behavior; do not imply a future hosted score or weaken no-store to clear an unscored back-forward-cache diagnostic. Earlier incomplete matrices retain their original identities and are not final acceptance.
+
+Actual connected Chrome verified all16 country/device/route combinations, no horizontal overflow or visible jurisdiction selector, native list semantics and equal visible card sizes. Root visually inspected desktop and mobile hero/footer contact sheets. Eight consent/control sequences passed Decline, preferences, Accept and withdrawal with0 Google requests on localhost; US/AU keyboard navigation advances, while single-story CA/GB inventories remain unduplicated. This is local privacy proof; it does not send a live Analytics visit or replace hosted consent acceptance.
+
+Evidence: C:/CRP-NEW/accelerated-launch/service/out/accessibility-performance-local-20261017-r2. Final Lighthouse JSON/HTML, browser-matrix-final.json, controls-final.json, font-preservation.json and corrected presentation-verification-r2.json are retained. The first presentation summary's country self-comparison typo is explicitly corrected using screenshot country identity versus actual DOM country; the underlying browser measurements are unchanged. All four owned final loopback listeners were stopped; every fictional store retains its exact initial state and0 accounts. Temporary new-tab viewport override was cleared; explicit closure of an earlier local preview tab was controller-blocked and turn-scoped cleanup remains unclaimed.
+
+Thirteen named critical source files, including IP resolution, consent, account/MFA/recovery, packet/case/entitlement handlers and application UI, remain byte-identical toad13c22. Fresh read-only hosted observation593B3154... matches the prior audit's entire production/staging site records, boot, unit definitions and activation snapshot exactly: productione255/PID2393966/5accounts/338non-session rows/109blobs; staginge255/PID1787842/43accounts/718rows/148blobs. No hosted write, deployment, provider configuration or consumer-data change occurred.
+
+Fresh governed full is running in C:/Users/webbd/.codex/worktrees/accessibility-performance-verification/CRP-NEW, release-r2, with exact55 fixture prerequisites and58 declared inputs. Original accepted full/package and all old proofs remain unchanged. Status FULL_VERIFICATION_IN_PROGRESS; no deployment or hosted readiness is authorized.
+
+## Final static font refinement
+
+The preceding full-font98 mobile score is an intermediate checkpoint. A separate local preview with Latin/Latin Extended and common punctuation/currency/symbol subsets reached100 performance/accessibility on desktop and mobile. The final static-only source4240a41 / manifest45BA28AD51922C09FBA02E5E9FDE57C22DB721B9BDA5555F4E1C050BB6D07873 changes only three WOFF2 assets, their license notice and the manifest relative to4d968e7. It does not change JavaScript, HTML, CSS, runtime or tests. All original full TTFs remain.
+
+Final fonts total77752 bytes,87.1% below the604416-byte original payload. Root inspected30 UI source files plus public model/news/renderer sources: every mapped character currently used remains available. Every retained character has an identical decomposed outline and horizontal metrics; primary font names match. See font-coverage-and-outlines.json in C:/CRP-NEW/accelerated-launch/service/out/accessibility-performance-final-20261017. This is an English public-site font subset, not a claim to retain unused Greek/Cyrillic glyphs; ordinary existing fallback fonts remain available.
+
+The current full continues unchanged in its isolated4d968e7 checkout. Once it passes, follow the standing change-aware process for the final static-only delta: new prepare/check with consumer/security/browser and named UI/auth/flow sections, then hash-bound accepted-full continuity. Do not relabel the original full as a fresh full of4240a41. This follows CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md's served-presentation route; no full is repeated solely for unchanged shared code. Final local acceptance awaits both receipts and the final four-country desktop/mobile browser/Lighthouse matrix.
+
+The fresh shared-code full has now passed18877/0/0, all187 sections completed,390 tested sources,0 drift and0 unrun. Raw SHA256272C6EF392ED89238F431A0C951335AE608BE906830D8E9CDD032F28ADE7FA2C; verification-d9c8bd5b-2a52-428b-b4f7-27cbec6f0ea7.json;8 syntax checks and10 tooling suites. This full is4d968e7/ff2973, not a fresh full of the font-only successor. No product reuse was enabled;462 declared/discovered inputs were bound.
+
+Final actual-server4240a41 browser matrix and all16 Lighthouse13.5.0 reports now pass100 performance, accessibility, best practices and SEO for all four countries on desktop/mobile and regional/IP-root URLs. Mobile FCP is at most1204ms and LCP1504ms; TBT0 and no blocking stylesheet requests. Final browser country/width/no-overflow/no-selector/native-list checks pass, and card geometry is identical to the earlier full-font implementation. Root visually reviewed the final desktop/mobile hero/footer contact sheets. Final AU mobile consent controls again passed accept/decline/withdraw with0 Google requests; its additional screenshot timed out after the completed status/network JSON was saved. The complete16-page final screenshot matrix is retained separately. Final local preview viewport was reset, its tab closed and all four final owned listeners stopped with exact initial fictional state/0 accounts.
+
+The planner classified the five-file final font delta as PRESENTATION, billing_journey_required:false. A fresh49-section consumer/security/browser/UI/auth/flow check is running in C:/Users/webbd/.codex/worktrees/public-font-verification/CRP-NEW, out/public-font-release-20261017/release. Final local acceptance and package/continuity remain pending; no hosted journey or deployment is authorized.
