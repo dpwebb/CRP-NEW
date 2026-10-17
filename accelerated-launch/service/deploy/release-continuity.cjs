@@ -79,12 +79,23 @@ function focusedSections(root, baseline, plan, risk) {
   const named = presentation ? baseline.sections.filter(row => /ui|auth|sign|flow|plain-text|landing|branding|packet-review/i.test(row.id)).map(row => row.id) : [];
   if (!presentation) { assert(sameSet(plan.selected_sections || [], []), 'operations plan selected product sections'); return []; }
   const source = fs.readFileSync(inside(root, LANES), 'utf8'), required = new Set(named);
+  // Read the declarative roster without executing repository code. The planner
+  // also includes later literal additions; omitting them incorrectly rejects a
+  // correctly expanded (and freshly executed) selection.
+  const literalIds = text => {
+    const parts = text.trim().split(',').map(part => part.trim());
+    if (parts[parts.length - 1] === '') parts.pop();
+    assert(parts.length && parts.every(part => /^(['"])[a-z0-9-]+\1$/.test(part)), 'lane additions require literal section IDs');
+    return parts.map(part => part.slice(1, -1));
+  };
   for (const lane of lanes) {
     const block = new RegExp('(?:\\b' + lane + '|[\\\"\\\']' + lane + '[\\\"\\\'])\\s*:\\s*\\[([^\\]]*)\\]').exec(source)?.[1];
     assert(block, 'required lane unavailable: ' + lane);
-    const ids = [...block.matchAll(/['"]([a-z0-9-]+)['"]/g)].map(match => match[1]);
+    const ids = literalIds(block);
     assert(ids.length, 'required lane empty: ' + lane);
     ids.forEach(id => required.add(id));
+    const additions = new RegExp('\\bLANE_IDS\\s*(?:\\.\\s*' + lane + '|\\[\\s*[\\\"\\\']' + lane + '[\\\"\\\']\\s*\\])\\s*\\.\\s*(?:unshift|push)\\s*\\(([^)]*)\\)', 'g');
+    for (const match of source.matchAll(additions)) literalIds(match[1]).forEach(id => required.add(id));
   }
   const inventory = baseline.sections.map(row => row.id);
   assert([...required].every(id => inventory.includes(id)), 'required lane contains unknown product section');
