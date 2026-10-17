@@ -82,10 +82,11 @@ const STATIC_TYPES = Object.freeze({
   '.js': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.svg': 'image/svg+xml',
+  '.png': 'image/png',
   '.ttf': 'font/ttf',
   '.txt': 'text/plain; charset=utf-8'
 });
-const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/packet-review.js', '/style.css', '/theme.css', '/homepage.js', '/favicon.svg', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/story-font-license.txt']);
+const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/packet-review.js', '/style.css', '/theme.css', '/homepage.js', '/public-analytics.js', '/favicon.svg', '/brand-logo.svg', '/brand-logo.png', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/story-font-license.txt']);
 const STAGING_SCORE_SIMULATOR_ASSETS = Object.freeze(['/score-simulator.html', '/score-simulator.css', '/score-simulator.js']);
 const STAGING_MAILING_ASSETS = Object.freeze(['/mailing-preview.html', '/mailing-preview.css', '/mailing-preview.js']);
 const STAGING_REFERRAL_ASSETS = Object.freeze(['/referrals.html', '/referrals.css', '/referrals.js']);
@@ -848,17 +849,19 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency) {
  */
 function staticResponse(req, urlPath) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return null;
+  const regionalPage = require('./public-seo.cjs').countryForPath(urlPath);
   const adminAsset = process.env.CRP_ADMIN_ENABLED === '1' && ADMIN_ASSETS.includes(urlPath);
-  if (!adminAsset && !STATIC_ALLOWLIST.includes(urlPath) && !(process.env.CRP_DEPLOYMENT_ENV === 'staging' &&
+  if (!regionalPage && !adminAsset && !STATIC_ALLOWLIST.includes(urlPath) && !(process.env.CRP_DEPLOYMENT_ENV === 'staging' &&
     (STAGING_MAILING_ASSETS.includes(urlPath) || STAGING_REFERRAL_ASSETS.includes(urlPath) || STAGING_SCORE_SIMULATOR_ASSETS.includes(urlPath)))) return null;
   const checkoutReturn = new URL(req.url || '/', 'http://localhost').searchParams.get('checkout');
   const publicEntry = ['staging', 'production'].includes(process.env.CRP_DEPLOYMENT_ENV) && !['return', 'cancel'].includes(checkoutReturn);
-  const file = path.resolve(UI_DIR, ['/admin', '/partner-access'].includes(urlPath) ? urlPath.slice(1) + '.html' : urlPath === '/' ? (publicEntry ? 'landing.html' : 'index.html') : urlPath.slice(1));
+  const file = path.resolve(UI_DIR, regionalPage ? 'landing.html' : ['/admin', '/partner-access'].includes(urlPath) ? urlPath.slice(1) + '.html' : urlPath === '/' ? (publicEntry ? 'landing.html' : 'index.html') : urlPath.slice(1));
   if (!file.startsWith(UI_DIR + path.sep) || !fs.existsSync(file)) return null;
   return {
     status: 200,
-    text: fs.readFileSync(file, path.extname(file) === '.ttf' ? undefined : 'utf8'),
-    content_type: STATIC_TYPES[path.extname(file)] || 'application/octet-stream'
+    text: fs.readFileSync(file, ['.ttf', '.png'].includes(path.extname(file)) ? undefined : 'utf8'),
+    content_type: STATIC_TYPES[path.extname(file)] || 'application/octet-stream',
+    public_homepage: path.basename(file) === 'landing.html'
   };
 }
 
@@ -927,18 +930,38 @@ function createService(options) {
     const urlPath = new URL(req.url, 'http://127.0.0.1').pathname;
     try {
       requestPolicy(req);
+      const seo = require('./public-seo.cjs');
+      if (seo.noIndex(urlPath, process.env.CRP_DEPLOYMENT_ENV)) res.setHeader('X-Robots-Tag', 'noindex');
       if (!urlPath.startsWith('/api/')) {
+        const discovery = ['GET', 'HEAD'].includes(req.method) && seo.discovery(urlPath);
+        if (discovery) {
+          if (req.method === 'HEAD') { res.writeHead(discovery.status, Object.assign({ 'Content-Type': discovery.content_type, 'Cache-Control': 'no-store' }, SECURITY_HEADERS)); res.end(); }
+          else sendText(res, discovery.status, discovery.text, discovery.content_type);
+          return;
+        }
         const asset = staticResponse(req, urlPath);
         if (!asset) {
           sendJson(res, 404, { ok: false, error: { code: 'NOT_FOUND', message: 'That page does not exist.', detail: null } });
           return;
         }
+        const publicHeaders = asset.public_homepage ? {
+          'Content-Security-Policy': SECURITY_HEADERS['Content-Security-Policy']
+            .replace("script-src 'self'", "script-src 'self' https://www.googletagmanager.com")
+            .replace("img-src 'self'", "img-src 'self' https://*.google-analytics.com https://www.googletagmanager.com")
+            .replace("connect-src 'self'", "connect-src 'self' https://*.google-analytics.com https://www.googletagmanager.com")
+        } : {};
+        if (asset.public_homepage) {
+          const routeCountry = seo.countryForPath(urlPath);
+          const home = routeCountry ? seo.regionalModel(routeCountry) : (await handlers.publicHomepage({ req })).json;
+          asset.text = seo.render(asset.text, home, routeCountry);
+        }
+        if (!asset.public_homepage && asset.content_type.startsWith('text/html')) res.setHeader('X-Robots-Tag', 'noindex');
         if (req.method === 'HEAD') {
-          res.writeHead(asset.status, Object.assign({ 'Content-Type': asset.content_type }, SECURITY_HEADERS));
+          res.writeHead(asset.status, Object.assign({ 'Content-Type': asset.content_type, 'Cache-Control': 'no-store' }, SECURITY_HEADERS, publicHeaders));
           res.end();
           return;
         }
-        sendText(res, asset.status, asset.text, asset.content_type);
+        sendText(res, asset.status, asset.text, asset.content_type, publicHeaders);
         return;
       }
 

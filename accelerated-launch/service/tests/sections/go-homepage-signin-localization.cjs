@@ -293,7 +293,8 @@ async function homepageBrowser(check) {
     await page.waitForFunction(() => window.CRPHomepageData && document.querySelector('.credit-news-item'));
     const model = await page.evaluate(() => window.CRPHomepageData);
     check.equal(model.country, 'US', 'actual homepage and footer consume the same IP model');
-    check.equal(models, 1, 'homepage and footer share one public localization request');
+    check.equal(models, 0, 'homepage and footer reuse the server-rendered IP model without a second request');
+    check.equal(await page.locator('#public-homepage-model').count(), 1, 'one server model binds homepage and footer content');
     check.equal(await page.locator('select, [data-news-country], [data-news-pause]').count(), 0, 'homepage exposes no location selector or autoplay Pause control');
     check.ok(/John Doe/.test(await page.locator('.story-report').innerText()), 'existing report-paper graphic renders the fictional consumer');
     const links = await page.locator('a').evaluateAll(nodes => nodes.map(node => node.href));
@@ -329,7 +330,17 @@ async function homepageBrowser(check) {
     country = 'CA'; await page.reload(); await page.waitForFunction(() => window.CRPHomepageData && document.querySelector('.credit-news-item'));
     const canada = await page.evaluate(() => window.CRPHomepageData); check.equal(canada.country, 'CA', 'fresh document re-localizes all public sections together');
     check.equal(await page.locator('.credit-news-item').count(), canada.news.items.length, 'short jurisdiction inventory is never duplicated to fill desktop slots');
+    // Exercise the existing client-only fallback independently of the new SSR
+    // path. The ordinary pages above and GP still verify the actual SSR output.
+    async function clientOnlyFixture(target) {
+      await target.route('**/landing.html', async route => {
+        const response = await route.fetch();
+        const html = (await response.text()).replace(/<script id="public-homepage-model" type="application\/json">[\s\S]*?<\/script>/, '').replace(/(<ul class="credit-news-list"[^>]*>)[\s\S]*?<\/ul>/, '$1</ul>');
+        await route.fulfill({ response, body: html });
+      });
+    }
     const context = await browser.newContext({ reducedMotion: 'reduce' }); const empty = await context.newPage();
+    await clientOnlyFixture(empty);
     await empty.route('**/api/homepage', async route => { const data = structuredClone(canada); data.news.items = []; await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(data) }); });
     await empty.goto(local.base + '/landing.html');
     await empty.waitForFunction(() => window.CRPHomepageData && document.querySelector('[data-news-scope]')?.textContent.toLowerCase().includes('no '));
@@ -337,6 +348,7 @@ async function homepageBrowser(check) {
     check.ok(!/choose another country/i.test(await empty.locator('#credit-news').innerText()), 'empty localized news does not advertise a removed selector');
     await context.close();
     const excerptContext = await browser.newContext(); const bounded = await excerptContext.newPage();
+    await clientOnlyFixture(bounded);
     const sourceWords = Array.from({ length: 105 }, (_, index) => 'fictionalword' + index);
     await bounded.route('**/api/homepage', async route => {
       const data = structuredClone(canada), item = { ...data.news.items[0], id: 'fictional-excerpt-boundary', title: 'Fictional 100-word excerpt boundary', summary: sourceWords.join(' ') };
@@ -348,6 +360,7 @@ async function homepageBrowser(check) {
     check.ok((await bounded.locator('.credit-news-item [data-news-direction]').evaluateAll(nodes => nodes.every(node => node.disabled))), 'one-story carousel disables Previous/Next instead of duplicating the source');
     await excerptContext.close();
     const failureContext = await browser.newContext(); const unavailable = await failureContext.newPage();
+    await clientOnlyFixture(unavailable);
     await unavailable.route('**/api/homepage', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ ok: false }) }));
     await unavailable.goto(local.base + '/landing.html');
     await unavailable.waitForFunction(() => /could not|unavailable|try again|reload/i.test(document.querySelector('[data-news-scope]')?.textContent || ''));

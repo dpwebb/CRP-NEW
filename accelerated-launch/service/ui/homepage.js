@@ -5,9 +5,16 @@
   let start;
   const ready=new Promise(resolve=>{start=resolve;});
   window.CRPHomepagePromise=ready.then(async()=>{
-    const response=await fetch('/api/homepage',{credentials:'omit',cache:'no-store'});
-    if(!response.ok)throw Error('Homepage information could not be loaded.');
-    const data=await response.json();
+    // Server-rendered public pages carry the same public model used for their
+    // initial HTML. App/auth pages retain the original IP-only endpoint.
+    const initial=document.getElementById('public-homepage-model');
+    let data;
+    if(initial){data=JSON.parse(initial.textContent);}
+    else{
+      const response=await fetch('/api/homepage',{credentials:'omit',cache:'no-store'});
+      if(!response.ok)throw Error('Homepage information could not be loaded.');
+      data=await response.json();
+    }
     if(!data.ok||!data.example||!Array.isArray(data.free_reports)||!data.news)throw Error('Homepage information is unavailable.');
     window.CRPHomepageData=data;
     const art=document.querySelector('.story-art');

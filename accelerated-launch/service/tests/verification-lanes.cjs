@@ -19,4 +19,8 @@ LANE_IDS.security.unshift('go-homepage-signin-localization');
 LANE_IDS.browser.unshift('go-homepage-signin-localization');
 LANE_IDS.consumer.unshift('go-homepage-signin-localization');
 LANE_IDS.consumer.unshift('gn-wizard-deletion-corrections');
+LANE_IDS.consumer.unshift('gp-public-seo');
+LANE_IDS.security.unshift('gp-public-seo');
+LANE_IDS.consumer.unshift('gq-public-analytics');
+LANE_IDS.security.unshift('gq-public-analytics');
 module.exports = { SOURCE_AUDIT_FILES, LANE_IDS };
