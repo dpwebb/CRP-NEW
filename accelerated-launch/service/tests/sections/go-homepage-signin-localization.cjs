@@ -51,13 +51,16 @@ async function publicChecks(check) {
       check.ok(Array.isArray(data.example.fields) && data.example.fields.length > 1, country + ': sample retains structured report fields');
       check.ok(data.example.fields.every(field => typeof field.label === 'string' && typeof field.value === 'string'), country + ': report fields contain renderable text');
       check.ok(typeof data.example.headline === 'string' && typeof data.example.explanation === 'string', country + ': insight accompanies report facts');
-      check.ok(new URL(data.example.source.url).protocol === 'https:', country + ': reporting example links to a source');
+      check.equal(data.example.fictional, true, country + ': finding is explicitly a fictional illustration');
+      check.equal(data.example.badge, 'Violation found', country + ': approved illustration states its finding clearly');
+      check.equal(data.example.source, null, country + ': generic fictional scenario does not invent an applicable statute');
       check.ok(data.free_reports.length > 0 && data.free_reports.every(row => row.country === country), country + ': relevant direct free-report resources stay scoped');
       check.ok(data.free_reports.every(row => new URL(row.url).protocol === 'https:' && row.title && row.bureau), country + ': each resource has an identified bureau and HTTPS route');
       check.equal(data.news.country, country, country + ': news shares the authoritative public display country');
       check.ok(data.news.items.every(row => row.country === country), country + ': footer contains no foreign-country story');
     }
-    check.equal(snapshots.CA.example.qualified, true, 'country-only Canada does not invent a provincial reporting clock');
+    for (const country of ['GB', 'CA', 'AU']) check.deepEqual(snapshots[country].example, snapshots.US.example, country + ': shared fictional illustration is identical across countries');
+    check.equal(snapshots.CA.region, null, 'shared Canadian example does not invent the viewer province');
     check.ok(snapshots.AU.free_reports.some(row => /illion/i.test(JSON.stringify(row))), 'Australian resources identify former illion access');
     const regions = surface.regions.filter(row => ['US', 'GB', 'CA', 'AU'].includes(row.country));
     check.ok(regions.length >= 82, 'public localization is checked against the complete existing regional catalogue');
@@ -66,19 +69,21 @@ async function publicChecks(check) {
       const model = (await local.request('GET', '/api/homepage')).json;
       check.equal(model.country, region.country, 'all-jurisdiction country retained: ' + region.value);
       check.equal(model.region, region.value, 'recognized IP region normalized to the existing catalogue: ' + region.value);
+      check.deepEqual(model.example, snapshots.US.example, 'sample stays fictional and shared without relabelling the viewer: ' + region.value);
       check.ok(model.free_reports.every(row => row.country === region.country) && model.news.items.every(row => row.country === region.country), 'local region does not borrow a foreign resource/story: ' + region.value);
     }
     location = { country: 'CA', region: 'not-a-province' };
     const unrecognized = (await local.request('GET', '/api/homepage')).json;
     check.equal(unrecognized.region, null, 'unrecognized region is not treated as an applicable province');
-    check.equal(unrecognized.example.qualified, true, 'unrecognized Canadian region keeps the reporting example qualified');
+    check.deepEqual(unrecognized.example, snapshots.CA.example, 'unrecognized Canadian region retains the same explicitly fictional example');
     for (const unknown of [null, 'DE', 'THROW']) {
       location = unknown;
       const response = await local.request('GET', '/api/homepage?country=AU');
       check.equal(response.status, 200, String(unknown) + ': unknown/offline localization has a truthful response');
       check.equal(response.json.country, null, String(unknown) + ': requested country cannot invent location');
       check.equal(response.json.region, null, String(unknown) + ': unknown location has no invented region');
-      check.equal(response.json.example.qualified, true, String(unknown) + ': universal reporting violation is not asserted');
+      check.equal(response.json.example.fictional, true, String(unknown) + ': shared example stays fictional when viewer location is unknown');
+      check.equal(response.json.example.source, null, String(unknown) + ': unknown viewer is never assigned a statutory source');
     }
     check.equal(JSON.stringify(local.service.store.state()), before, 'public homepage requests preserve all account/report/billing/session state');
     check.ok(!local.logText().includes('198.51.100.7') && !local.logText().includes('203.0.113.10'), 'public localization activity omits visitor addresses');
@@ -279,6 +284,8 @@ async function homepageBrowser(check) {
   const browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
   try {
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } }); page.setDefaultTimeout(20000);
+    const beforeState = JSON.stringify(local.service.store.state()), errors = [];
+    page.on('pageerror', error => errors.push(error.message));
     await page.clock.install();
     let models = 0;
     page.on('request', request => { if (new URL(request.url()).pathname === '/api/homepage') models++; });
@@ -346,8 +353,36 @@ async function homepageBrowser(check) {
     await unavailable.waitForFunction(() => /could not|unavailable|try again|reload/i.test(document.querySelector('[data-news-scope]')?.textContent || ''));
     check.equal(await unavailable.locator('.credit-news-item').count(), 0, 'failed public model never invents a source story');
     check.equal(await unavailable.locator('select,[data-news-country]').count(), 0, 'failed geolocation/content request does not introduce a location override');
+    check.ok(await unavailable.locator('[data-home-caption]').isVisible(), 'fictional-example label remains visible if public localization fails');
+    check.equal(await unavailable.locator('[data-home-badge]').textContent(), 'Violation found', 'approved illustration remains available without a public model response');
     await failureContext.close();
-    return { actual_browser: true, responsive_cards: [3, 2, 1], shared_ip_model: true, summary_words: 100 };
+    for (const nextCountry of ['US', 'CA', 'GB', 'AU']) {
+      country = nextCountry;
+      for (const width of [1440, 1024, 800, 390, 320]) {
+        await page.setViewportSize({ width, height: 1000 });
+        await page.goto(local.base + '/landing.html');
+        await page.waitForFunction(expected => window.CRPHomepageData?.country === expected, country);
+        await page.evaluate(() => document.fonts.ready);
+        const label = country + ' at ' + width + ': ';
+        check.equal((await page.locator('[data-home-headline]').innerText()).replace(/\s+/g, ' '), model.example.headline, label + 'approved headline stays identical');
+        check.equal(await page.locator('[data-home-badge]').textContent(), 'Violation found', label + 'definite finding is visible');
+        check.ok(/fictional example/i.test(await page.locator('[data-home-caption]').innerText()), label + 'example label stays explicit');
+        check.equal(await page.locator('.story-report-timeline').count(), 1, label + 'timeline connects the expired limit with continued reporting');
+        const layout = await page.evaluate(() => {
+          const fields = document.querySelector('[data-home-fields]').getBoundingClientRect();
+          const finding = document.querySelector('.story-insight').getBoundingClientRect();
+          const caption = document.querySelector('[data-home-caption]').getBoundingClientRect();
+          const art = document.querySelector('.story-art').getBoundingClientRect();
+          return { overflow: document.documentElement.scrollWidth > innerWidth, factsClear: fields.bottom < finding.top, captionClear: finding.bottom < caption.top, contained: finding.left >= art.left && finding.right <= art.right + 1, findingBackground: getComputedStyle(document.querySelector('.story-insight')).backgroundImage };
+        });
+        check.equal(layout.overflow, false, label + 'homepage has no horizontal overflow');
+        check.ok(layout.factsClear && layout.captionClear && layout.contained, label + 'finding covers neither report facts nor example label');
+        check.ok(/gradient/.test(layout.findingBackground), label + 'approved navy finding card is rendered');
+      }
+    }
+    check.deepEqual(errors, [], 'localized illustration renders without browser exceptions');
+    check.equal(JSON.stringify(local.service.store.state()), beforeState, 'anonymous illustration and localization preserve every store field');
+    return { actual_browser: true, responsive_cards: [3, 2, 1], shared_ip_model: true, summary_words: 100, fictional_illustration: { countries: 4, widths: [1440, 1024, 800, 390, 320] } };
   } finally { await browser.close(); await local.close(); }
 }
 async function run(service, check) {

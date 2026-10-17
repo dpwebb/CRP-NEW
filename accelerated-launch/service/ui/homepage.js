@@ -12,16 +12,12 @@
     window.CRPHomepageData=data;
     const art=document.querySelector('.story-art');
     if(art){
-      const consumer=document.querySelector('[data-home-consumer]'),context=document.querySelector('[data-home-report-context]'),fields=document.querySelector('[data-home-fields]');
+      const consumer=document.querySelector('[data-home-consumer]'),fields=document.querySelector('[data-home-fields]');
       consumer.textContent=data.example.consumer;
-      context.textContent=(data.country?data.scope+' · ':'')+'Report issued 16 October 2026';
       fields.replaceChildren(...data.example.fields.map(field=>{const row=document.createElement('div'),label=document.createElement('dt'),value=document.createElement('dd');label.textContent=field.label;value.textContent=field.value;row.append(label,value);return row;}));
-      document.querySelector('[data-home-headline]').textContent=data.example.headline;
+      document.querySelector('[data-home-badge]').textContent=data.example.badge;
       document.querySelector('[data-home-explanation]').textContent=data.example.explanation;
       document.querySelector('[data-home-caption]').textContent=data.example.caption;
-      art.setAttribute('aria-label',data.example.consumer+' sample report. '+data.example.headline+' '+data.example.explanation);
-      const source=document.querySelector('[data-home-source]');source.replaceChildren();
-      if(data.example.source){const link=officialLink(data.example.source.url,data.example.source.title);source.append(link);}
       document.querySelector('[data-home-country]').textContent=data.country?'A clearer way forward · '+data.scope:'A clearer way forward';
       document.querySelector('[data-home-report-location]').textContent=data.country?'Your first step · '+data.scope:'Your first step';
       document.querySelector('[data-home-reports-note]').textContent=data.report_access_note;
