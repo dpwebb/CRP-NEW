@@ -27,7 +27,17 @@ async function run(t,check){
  for(const item of news.ITEMS){check.ok(new URL(item.url).protocol==='https:','HTTPS source '+item.id);check.ok(item.date>='2021-10-14'&&item.date<='2026-10-14','eligible verified date '+item.id);}
  check.ok(!news.ITEMS.some(item=>item.id==='au-7news-2024'),'unrelated bank-error story removed');
  check.ok(news.ITEMS.every(item=>item.bureau&&item.status&&/^\d{4}-\d{2}-\d{2}$/.test(item.reviewed_at)&&Number.isFinite(Date.parse(item.reviewed_at+'T00:00:00Z'))&&new Date(item.reviewed_at+'T00:00:00Z').toISOString().slice(0,10)===item.reviewed_at&&item.reviewed_at<=news.REVIEWED_AT),'each story identifies bureau, outcome and its valid source-review date no later than the catalogue review');
- const retained=['us-equifax-settlement-2026','us-propublica-2026','ca-cbc-2026','us-equifax-2025','au-savings-2024','us-transunion-2023','us-sessa-2023','gb-guardian-2022'];
+ const replacement=news.ITEMS.find(item=>item.id==='ca-cpbc-transunion-2026');
+ check.ok(!news.ITEMS.some(item=>item.id==='ca-cbc-2026'||item.url.includes('credit-ratings-fraud-9.7099030')),'inaccessible CBC card is replaced rather than duplicated');
+ check.equal(replacement?.url,'https://www.consumerprotectionbc.ca/news/news-release-consumer-protection-bc-enforcement-transunion-disputed-credit-information/','Canadian replacement links directly to the verified regulator source');
+ check.equal(replacement?.date,'2026-05-12','replacement uses the source publication date');
+ check.equal(replacement?.reviewed_at,'2026-10-17','replacement retains its actual source-review date');
+ check.equal(replacement?.type,'Regulatory action','regulator findings are not represented as a court award');
+ check.ok(replacement?.status.includes('not compensation'),'administrative penalties are not portrayed as consumer compensation');
+ check.ok(replacement?.summary.includes('all six cases were corrected only after it intervened')&&replacement.summary.includes('$16,500 in penalties'),'approved summary preserves the correction outcome and penalty attribution');
+ check.ok(replacement?.summary.split(/\s+/).length<=100,'replacement fits the existing one-hundred-word excerpt limit');
+ check.equal(news.select('CA',now).items[0]?.id,replacement?.id,'new Canadian regulator story is first under unchanged newest-first ordering');
+ const retained=['us-equifax-settlement-2026','us-propublica-2026','us-equifax-2025','au-savings-2024','us-transunion-2023','us-sessa-2023','gb-guardian-2022'];
  for(const id of retained)check.equal(news.ITEMS.find(item=>item.id===id)?.reviewed_at,'2026-10-14','retained story keeps its actual earlier source review: '+id);
  for(const id of ['au-choice-2024','au-oaic-review-2022'])check.equal(news.ITEMS.find(item=>item.id===id)?.reviewed_at,'2026-10-16','new Australian reference story binds its new source review: '+id);
  check.ok(news.ITEMS.some(item=>item.country==='US'&&item.type==='Media report'&&item.date.startsWith('2026')),'recent original US media reporting included');
