@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-17T12:45:28.590Z",
+  "generated_at": "2026-10-17T12:49:08.668Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 110,
-      "digest": "24B6CC69747B6CCB07556D012881E3A8CFD1F26B9C1647D77CFD6CDED11A17AE",
+      "digest": "4EEBAF6894BF16BA288739F5B0D2561344ADFA5F942BFB2FFF7EA4E051782E4E",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -406,7 +406,7 @@
         },
         {
           "file": "accelerated-launch/service/public-seo.cjs",
-          "sha256": "BC154D1D73A145EAEE200CC8CE899FDD778925901AA00D0843F3F54810653D75"
+          "sha256": "306886B91D41AFEFC44175ADD8B020E496155300ECFC2A84DD7D238722BD8F38"
         },
         {
           "file": "accelerated-launch/service/public-transfer.cjs",
@@ -626,7 +626,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 37,
-      "digest": "55458D4CBB5A0F477DCE6566242EBAE1CE6DE5080BD5432B413D5960FBC5D11D",
+      "digest": "C84D6516C5325A96F45852A6FF30F66F0AC73710BC983235CBA93CE654FC0D5C",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -690,7 +690,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/homepage.js",
-          "sha256": "DDB299B3C6F46219B58BE37029027278395B441B8011118985FD32D4CD653B97"
+          "sha256": "117FAA341E09C99492CCD132B66EBF28E70AF9829857B17528AFAC74CD9AD68F"
         },
         {
           "file": "accelerated-launch/service/ui/index.html",
@@ -702,7 +702,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/landing.html",
-          "sha256": "FBDBA5EA10A4A0B63DCCEFF48A49D555EF5C42E62D17AA789F1FAC3B6936D71D"
+          "sha256": "CF323E7769DAC25DDC5A0996F9C62AD5E76C585504B165DF494F5F624BBDF8FE"
         },
         {
           "file": "accelerated-launch/service/ui/mailing-preview.css",
@@ -779,6 +779,6 @@
       ]
     }
   ],
-  "manifest_digest": "9FBCF1BC04DA39348E1C38CAE6C14F25F07ABD15CF94AECB2BF74779D162BF15",
+  "manifest_digest": "FF2973AC2933F417AD5B7880ED273CFFE74596B63332D935A2CB4BCC3B2EF614",
   "total_file_count": 183
 }

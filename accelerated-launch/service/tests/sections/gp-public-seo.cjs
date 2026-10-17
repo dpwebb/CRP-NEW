@@ -31,6 +31,8 @@ async function run(unused, check) {
       check.ok(response.text.includes('hreflang="x-default" href="' + seo.ORIGIN + '/"'), country + ': root is x-default');
       const match = /<script id="public-homepage-model" type="application\/json">([\s\S]*?)<\/script>/.exec(response.text);
       const model = JSON.parse(match[1]);
+      check.ok(response.text.includes('<style data-public-styles>') && !/<link rel="stylesheet"/.test(response.text), country + ': public SSR has no blocking stylesheet requests');
+      check.ok(response.text.includes("url('/Roboto-Bold.woff2')") && response.text.includes("url('/OpenSans-Regular.woff2')"), country + ': inline fonts remain root-relative on regional routes');
       check.ok(!/<li[^>]*role="group"|<li[^>]*aria-roledescription="slide"/.test(response.text), country + ': SSR carousel retains native listitem semantics');
       for (const item of model.news.items) check.ok(response.text.includes('aria-label="Read more: ' + item.title.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) + ' (opens in a new tab)"'), country + ': SSR source link identifies its story');
       check.equal(model.country, country, country + ': hydration and initial HTML share one country');

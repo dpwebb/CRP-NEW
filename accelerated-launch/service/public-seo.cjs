@@ -2,6 +2,9 @@
 /** Public presentation only. A regional URL never changes account, report or billing location. */
 const content = require('./homepage-content.cjs');
 const news = require('./credit-news.cjs');
+// Keep the approved stylesheet order and all rules. Public SSR avoids three
+// render-blocking round trips; signed-in/application styles remain external.
+const publicStyles = ['story.css', 'credit-news.css', 'theme.css'].map(name => require('node:fs').readFileSync(require('node:path').join(__dirname, 'ui', name), 'utf8')).join('\n').replace(/url\('(Roboto-Bold|OpenSans-Regular|OpenSans-Bold)\.woff2'\)/g, "url('/$1.woff2')");
 const ORIGIN = 'https://creditregulatorpro.com';
 const LOCALES = Object.freeze({
   AU: { path: '/au/', lang: 'en-AU', reports: 'Equifax and Experian' },
@@ -24,7 +27,7 @@ function discovery(pathname) {
   return { status: 200, content_type: 'application/xml; charset=utf-8', text: '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">' + variants.map(row => `<url><loc>${ORIGIN}${row.path}</loc>${alternates}</url>`).join('') + '</urlset>\n' };
 }
 function reportLinks(home) {
-  return home.free_reports.map(report => `<a class="story-report-link" href="${escape(report.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escape(home.country ? report.bureau : report.country + ' · ' + report.bureau)} ${escape(report.title)} (opens in a new tab)"><span><strong>${escape(home.country ? report.bureau : report.country + ' · ' + report.bureau)}</strong><small>${escape(report.title)}</small></span><span aria-hidden="true">↗</span></a>`).join('');
+  return home.free_reports.map(report => `<a class="story-report-link" href="${escape(report.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escape(home.country ? report.bureau : report.country + ' · ' + report.bureau)} ${escape(report.title)} (opens in a new tab)"><span><strong>${escape(home.country ? report.bureau : report.country + ' · ' + report.bureau)}</strong> <small>${escape(report.title)}</small></span><span aria-hidden="true">↗</span></a>`).join('');
 }
 function newsCards(data) {
   return data.items.map((item, i, items) => {
@@ -52,6 +55,7 @@ function render(template, home, routeCountry) {
     { '@type': 'WebPage', '@id': meta.url + '#webpage', url: meta.url, name: meta.title, description: meta.description, inLanguage: meta.lang, isPartOf: { '@id': ORIGIN + '/#website' }, about: { '@id': ORIGIN + '/#organization' } }
   ] };
   let html = template.replace('<html lang="en">', `<html lang="${meta.lang}">`).replace(/<title>[\s\S]*?<\/title>/, `<title>${escape(meta.title)}</title>`).replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${escape(meta.description)}">`);
+  html = html.replace('<link rel="stylesheet" href="/story.css">', () => `<style data-public-styles>${publicStyles}</style>`).replace(/\s*<link rel="stylesheet" href="\/(?:credit-news|theme)\.css">/g, '');
   html = html.replace('</head>', `  <link rel="canonical" href="${meta.url}">\n  ${alternate}\n  <meta property="og:type" content="website">\n  <meta property="og:image" content="${ORIGIN}/brand-logo.png">\n  <meta property="og:image:width" content="256">\n  <meta property="og:image:height" content="256">\n  <meta property="og:image:alt" content="Credit Regulator Pro logo">\n  <meta property="og:site_name" content="Credit Regulator Pro">\n  <meta property="og:title" content="${escape(meta.title)}">\n  <meta property="og:description" content="${escape(meta.description)}">\n  <meta property="og:url" content="${meta.url}">\n  <meta name="twitter:card" content="summary">\n  <meta name="twitter:image" content="${ORIGIN}/brand-logo.png">\n  <meta name="twitter:title" content="${escape(meta.title)}">\n  <meta name="twitter:description" content="${escape(meta.description)}">\n  <script type="application/ld+json">${json(graph)}</script>\n  <script id="public-homepage-model" type="application/json">${json(home)}</script>\n</head>`);
   html = html.replace('data-home-country>A clearer way forward', `data-home-country>${escape(home.country ? 'A clearer way forward · ' + home.scope : 'A clearer way forward')}`);
   html = html.replace('data-home-report-location>Your first step', `data-home-report-location>${escape(home.country ? 'Your first step · ' + home.scope : 'Your first step')}`);

@@ -31,7 +31,7 @@
       const reports=document.querySelector('[data-home-reports]');reports.replaceChildren(...data.free_reports.map(report=>{
         const link=officialLink(report.url,'');link.className='story-report-link';
         const copy=document.createElement('span'),heading=document.createElement('strong'),note=document.createElement('small'),arrow=document.createElement('span');
-        heading.textContent=(data.country?'':report.country+' · ')+report.bureau;note.textContent=report.title;copy.append(heading,note);arrow.textContent='↗';arrow.setAttribute('aria-hidden','true');link.append(copy,arrow);link.setAttribute('aria-label',heading.textContent+' '+report.title+' (opens in a new tab)');return link;
+        heading.textContent=(data.country?'':report.country+' · ')+report.bureau;note.textContent=report.title;copy.append(heading,' ',note);arrow.textContent='↗';arrow.setAttribute('aria-hidden','true');link.append(copy,arrow);link.setAttribute('aria-label',heading.textContent+' '+report.title+' (opens in a new tab)');return link;
       }));
     }
     return data;
