@@ -185,6 +185,47 @@ body.auth-entry footer > span:first-child { display:none; }
   body.auth-entry .card h1, body.auth-entry.auth-create .card h1, body.auth-entry.auth-recovery .card h1 { font-size:34px; }
 }
 
+/* Account entrance: open editorial layout, with compact optional protection. */
+body.auth-entry main, body.auth-entry.auth-create main { max-width:1180px; padding:72px 32px 24px; }
+body.auth-entry #panel.card { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(40px,7vw,100px); align-items:start; padding:0; border:0; border-radius:0; background:transparent; }
+body.auth-entry .auth-intro { position:relative; padding:12px 0 0; }
+body.auth-entry .card h1, body.auth-entry.auth-create .card h1, body.auth-entry.auth-recovery .card h1 { font-size:clamp(38px,4.2vw,58px); line-height:1.1; letter-spacing:-1.6px; max-width:10ch; margin-bottom:22px; }
+body.auth-entry .card .auth-subtitle { color:#245b91; font-size:21px; margin-bottom:12px; }
+body.auth-entry .card .lede { font-size:17px; line-height:1.8; margin-bottom:24px; max-width:40ch; }
+body.auth-entry .auth-intro::after { content:'Clear facts.\A Informed decisions.\A Consumer control.'; white-space:pre-line; display:block; margin-top:38px; padding:26px 0 26px 24px; border-left:3px solid #245b91; color:#245b91; font:700 22px/1.75 'CRP Roboto',Arial,sans-serif; background:radial-gradient(ellipse at 100% 50%,#e7eef7 0,transparent 68%); }
+body.auth-entry .auth-form-card { min-width:0; padding:28px 0 0; border:0; border-radius:0; background:transparent; border-top:2px solid #16324f; }
+body.auth-entry.auth-create .auth-fields { grid-template-columns:1fr; }
+body.auth-entry .card input:not([type=checkbox]):not([type=radio]) { height:54px; border:1px solid #64748b; border-radius:6px; background:#fff; }
+body.auth-entry .card label { font-size:15px; }
+body.auth-entry .card .signup-2fa-choice { display:flex; align-items:flex-start; gap:12px; margin:26px 0 0; padding:0; font-size:14px; font-weight:400; line-height:1.65; cursor:pointer; }
+body.auth-entry .card input[type=checkbox], body.auth-entry .card input[type=radio] { flex:none; width:18px; height:18px; min-width:18px; padding:0; margin:3px 0 0; accent-color:#245b91; }
+body.auth-entry .signup-2fa-choice + .auth-helper { margin:5px 0 0 30px; font-size:13px; }
+body.auth-entry .signup-details { margin-top:26px; padding-top:18px; }
+body.auth-entry .auth-actions { gap:12px; margin-top:28px; }
+body.auth-entry .card .auth-actions button { min-height:52px; padding:12px 22px; font-size:15px; border-radius:6px; }
+body.auth-entry .card .auth-actions button.primary:hover { background:#245b91; }
+body.auth-entry .card .auth-actions button.secondary:hover { background:#f3f6fa; }
+body.auth-entry .card .auth-account-note { margin-top:22px; padding-top:18px; font-size:13px; }
+body.auth-entry.auth-create .auth-forgot, body.auth-entry.auth-create .auth-account-note { text-align:left; }
+body.auth-entry #signin-protection-form .auth-actions { grid-template-columns:minmax(0,1fr) auto; margin-top:0; align-items:center; }
+body.auth-entry #signin-protection-form #signin-skip-two-factor { width:auto; border-color:transparent; text-decoration:underline; text-underline-offset:4px; padding-inline:18px; }
+body.auth-entry #signin-protection-form:has(#two-factor-password) .auth-actions, body.auth-entry #signin-protection-form:has(#two-factor-code) .auth-actions { margin-top:24px; }
+body.auth-entry #signin-code { max-width:260px; font-size:24px; letter-spacing:.3em; }
+body.auth-entry footer { max-width:1180px; padding-top:64px; }
+@media(max-width:760px) {
+  body.auth-entry main, body.auth-entry.auth-create main { max-width:560px; padding:34px 24px 0; }
+  body.auth-entry #panel.card { grid-template-columns:minmax(0,1fr); gap:26px; }
+  body.auth-entry .auth-intro { padding:0; }
+  body.auth-entry .auth-intro::after { display:none; }
+  body.auth-entry .card h1, body.auth-entry.auth-create .card h1, body.auth-entry.auth-recovery .card h1 { font-size:42px; max-width:12ch; }
+  body.auth-entry .card .lede { margin-bottom:0; font-size:16px; }
+  body.auth-entry .auth-form-card { padding:24px 0 0; }
+  body.auth-entry .auth-actions { grid-template-columns:1fr; }
+  body.auth-entry #signin-protection-form .auth-actions { grid-template-columns:1fr; gap:4px; }
+  body.auth-entry #signin-protection-form #signin-skip-two-factor { justify-self:start; padding-left:0; }
+  body.auth-entry footer { padding-top:44px; }
+}
+
 /* Approved all-jurisdiction homepage: the Australian mockup is the shared design. */
 .story-container{width:calc(100% - 96px);max-width:1180px}
 .story-header{padding:29px 0 25px}.story-brand{font-size:25px}.story-desktop-nav{gap:25px;font-size:14px}
