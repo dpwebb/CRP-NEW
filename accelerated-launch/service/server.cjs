@@ -14,6 +14,8 @@ const server = http.createServer((req, res) => {
   let pathname;
   try { pathname = new URL(req.url, 'http://localhost').pathname; } catch { return refusal(res, 'INVALID_REQUEST', 400); }
   try{requestPolicy(req);}catch(error){return refusal(res,error.code,error.status || 400);}
+  const seo = require('./public-seo.cjs');
+  if (seo.noIndex(pathname, process.env.CRP_DEPLOYMENT_ENV)) res.setHeader('X-Robots-Tag', 'noindex');
   if ((req.method === 'GET' || req.method === 'HEAD') && pathname === '/api/health') {
     res.writeHead(identity().ok ? 200 : 503, { ...SECURITY_HEADERS, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
     return res.end(req.method === 'HEAD' ? '' : JSON.stringify(identity()));
@@ -24,8 +26,14 @@ const server = http.createServer((req, res) => {
     return res.end(req.method==='HEAD'?'':JSON.stringify({...identity(),ok:ready,storage_ready:ready,storage_recovered:dispatcher.storage?.recovered===true}));
   }
   if ((req.method === 'GET' || req.method === 'HEAD') && !pathname.startsWith('/api/')) {
+    // Public HTML/discovery use the same renderer and IP model as the existing
+    // homepage endpoint, in the sole store-owning worker. Other static assets
+    // and liveness/readiness keep their existing independent HTTP path.
+    if (seo.discovery(pathname)) return dispatcher.handle(req, res);
     const asset = staticResponse(req, pathname);
     if (!asset) return refusal(res, 'NOT_FOUND', 404);
+    if (asset.public_homepage) return dispatcher.handle(req, res);
+    if (asset.content_type.startsWith('text/html')) res.setHeader('X-Robots-Tag', 'noindex');
     res.writeHead(asset.status, { ...SECURITY_HEADERS, 'Content-Type': asset.content_type, 'Cache-Control': 'no-store' });
     return res.end(req.method === 'HEAD' ? '' : asset.text);
   }

@@ -14,7 +14,8 @@ parentPort.on('message', async ({ id, request }) => {
   let status = 200, headers = {}, finished = false;
   const res = {
     headersSent: false,
-    writeHead(code, values) { status = code; headers = values; this.headersSent = true; },
+    setHeader(name, value) { headers[name] = value; },
+    writeHead(code, values) { status = code; headers = { ...headers, ...values }; this.headersSent = true; },
     end(bytes) { if (finished) return; finished = true; parentPort.postMessage({ type: 'response', id, status, headers, bytes: Buffer.from(bytes || '') }); }
   };
   const handling = service.handle(req, res);

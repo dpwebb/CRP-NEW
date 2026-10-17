@@ -1,6 +1,9 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
+const os = require('node:os');
+const { spawn } = require('node:child_process');
+const { once } = require('node:events');
 const { TestService } = require('../harness.cjs');
 const seo = require('../../public-seo.cjs');
 async function run(unused, check) {
@@ -86,7 +89,52 @@ async function run(unused, check) {
     const safe = seo.render(template, hostile, 'CA');
     check.ok(!safe.includes('</script><script>alert(1)</script>'), 'HTML and JSON public model are script-safe');
     check.ok(safe.includes('\\u003c/script\\u003e'), 'embedded model escapes script delimiters');
+    await realServer(check);
     return { fictional_only: true, country_pages: 4, ip_root_preserved: true, no_provider_calls: true, hosted_actions: false };
   } finally { await service.close(); if (environment === undefined) delete process.env.CRP_DEPLOYMENT_ENV; else process.env.CRP_DEPLOYMENT_ENV = environment; }
+}
+async function realServer(check) {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'crp-seo-worker-'));
+  const child = spawn(process.execPath, [path.join(__dirname, '../../server.cjs')], {
+    env: { ...process.env, CRP_LOCAL_SERVICE_DATA: path.join(temp, 'private'), CRP_LOCAL_SERVICE_HOST: '127.0.0.1', CRP_LOCAL_SERVICE_PORT: '0', CRP_LOCAL_SERVICE_LOG: 'silent', CRP_DEPLOYMENT_ENV: 'production' },
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+  try {
+    const base = await new Promise((resolve, reject) => {
+      let output = ''; const timer = setTimeout(() => reject(Error('SEO_SERVER_START_TIMEOUT')), 15000);
+      child.once('exit', () => { clearTimeout(timer); reject(Error('SEO_SERVER_START_FAILED')); });
+      child.stdout.on('data', chunk => { output += chunk; const match = /listening on (http:\/\/[^\s]+)\//.exec(output); if (match) { clearTimeout(timer); resolve(match[1]); } });
+    });
+    const stateFile = path.join(temp, 'private', 'state.json');
+    const initialState = fs.readFileSync(stateFile);
+    for (const [country, locale] of Object.entries(seo.LOCALES)) {
+      const response = await fetch(base + locale.path); const html = await response.text();
+      check.equal(response.status, 200, country + ': actual worker transport serves regional page');
+      check.ok(html.includes('id="public-homepage-model"'), country + ': actual server uses SSR');
+      check.ok(html.includes('rel="canonical" href="' + seo.ORIGIN + locale.path + '"'), country + ': actual server preserves regional canonical');
+      check.equal(JSON.parse(/id="public-homepage-model" type="application\/json">([\s\S]*?)<\/script>/.exec(html)[1]).country, country, country + ': actual server delivers correct public model');
+      check.match(response.headers.get('content-security-policy'), /googletagmanager/, country + ': actual public CSP allows consent-gated tag');
+      const head = await fetch(base + locale.path, { method: 'HEAD' });
+      check.equal(head.status, 200, country + ': actual worker handles HEAD');
+      check.equal(await head.text(), '', country + ': worker HEAD has no body');
+    }
+    const root = await fetch(base + '/'); const rootHtml = await root.text();
+    check.ok(rootHtml.includes('id="public-homepage-model"'), 'actual adaptive root is server-rendered');
+    check.equal(JSON.parse(/id="public-homepage-model" type="application\/json">([\s\S]*?)<\/script>/.exec(rootHtml)[1]).country, null, 'actual loopback IP retains unknown-location fallback without a remote lookup');
+    for (const route of ['/robots.txt', '/sitemap.xml']) check.equal((await fetch(base + route)).status, 200, route + ': discovery reaches real worker instead of static 404');
+    const privatePage = await fetch(base + '/index.html');
+    check.equal(privatePage.headers.get('x-robots-tag'), 'noindex', 'actual HTTP static application entry is noindex');
+    check.ok(!/googletagmanager/.test(privatePage.headers.get('content-security-policy')), 'actual private static CSP stays strict');
+    const unauthorized = await fetch(base + '/api/session');
+    check.equal(unauthorized.status, 401, 'actual worker retains private authentication refusal');
+    check.equal(unauthorized.headers.get('x-robots-tag'), 'noindex', 'actual worker preserves accumulated indexing headers');
+    for (const route of ['/api/health', '/api/ready']) check.equal((await fetch(base + route)).status, 200, route + ': independent health/readiness stay available');
+    check.ok(fs.readFileSync(stateFile).equals(initialState), 'actual public worker requests preserve initial private state bytes');
+    check.equal(JSON.parse(fs.readFileSync(stateFile, 'utf8')).accounts.length, 0, 'actual public worker requests create no consumer accounts');
+  } finally {
+    if (child.exitCode === null) { const exited = once(child, 'exit'); child.kill('SIGTERM'); await exited; }
+    const resolved = path.resolve(temp); if (path.dirname(resolved) !== path.resolve(os.tmpdir()) || !path.basename(resolved).startsWith('crp-seo-worker-')) throw Error('Refusing unexpected test cleanup path');
+    fs.rmSync(resolved, { recursive: true, force: true });
+  }
 }
 module.exports = { id: 'gp-public-seo', title: 'Public SEO, deterministic regional pages, IP-only root and private indexing boundaries', run };
