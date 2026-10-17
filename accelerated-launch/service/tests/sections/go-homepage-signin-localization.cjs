@@ -323,7 +323,9 @@ async function homepageBrowser(check) {
       check.ok(Boolean(card), 'current source story renders its unchanged title: ' + item.id);
       const excerpt = words(item.summary).slice(0, 100).join(' ');
       check.ok(card.paragraphs.some(text => words(text).join(' ').replace(/…$/, '') === excerpt), 'card uses only first 100 words of the existing CRP summary: ' + item.id);
-      check.ok(card.text.includes(item.status), 'compact caption retains material source/outcome qualification: ' + item.id);
+      check.equal(card.paragraphs[0],[(item.country==='GB'?'UK':item.country),item.date_label||item.date,item.source].join(' · '), 'compact caption uses country, date and source without report-category clutter: ' + item.id);
+      if(item.id==='us-equifax-settlement-2026')check.ok(/proposed|pending/i.test(card.text)&&/denies wrongdoing/i.test(card.text),'proposed settlement remains qualified in the consumer narrative');
+      if(item.id==='us-transunion-2023')check.ok(/alleged/i.test(card.text)&&/neither admitted nor denied/i.test(card.text),'settlement narrative preserves allegation and non-admission qualifications');
       check.ok(card.links.some(link => /read more/i.test(link.text) && link.href === item.url), 'explicit Read more links directly to the identified source: ' + item.id);
     }
     const viewport = page.locator('[data-news-window]'); await viewport.focus();
@@ -332,7 +334,21 @@ async function homepageBrowser(check) {
     check.ok(await viewport.evaluate(node => node === document.activeElement), 'manual keyboard navigation preserves carousel focus');
     country = 'CA'; await page.reload(); await page.waitForFunction(() => window.CRPHomepageData && document.querySelector('.credit-news-item'));
     const canada = await page.evaluate(() => window.CRPHomepageData); check.equal(canada.country, 'CA', 'fresh document re-localizes all public sections together');
-    check.equal(await page.locator('.credit-news-item').count(), canada.news.items.length, 'short jurisdiction inventory is never duplicated to fill desktop slots');
+    check.equal(await page.locator('.credit-news-item').count(), canada.news.items.length, 'jurisdiction inventory contains distinct real stories without padding');
+    for(const active of ['CA','US','GB','AU']){
+      country=active;
+      for(const width of [1440,390]){
+        await page.setViewportSize({width,height:1000});await page.goto(local.base+'/landing.html');await page.locator('.credit-news-item').first().waitFor();
+        const newsModel=(await local.request('GET','/api/homepage')).json.news;
+        check.ok(newsModel.items.length>=3&&newsModel.items.length<=10,active+': verified catalogue is between three and ten stories');
+        const expected=width===1440?3:1;
+        check.equal(await page.locator('.credit-news-item:visible').count(),expected,active+'/'+width+': responsive visible card count');
+        check.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,active+'/'+width+': country carousel has no horizontal overflow');
+        const seen=new Set();for(let i=0;i<newsModel.items.length;i++){const titles=await page.locator('.credit-news-item:visible h3').allTextContents();seen.add(titles[0]);await page.locator('.credit-news-item:visible [data-news-direction="1"]').first().click();}
+        check.equal(seen.size,newsModel.items.length,active+'/'+width+': Next reaches every distinct country story before repeating');
+        check.ok(newsModel.items.every(item=>item.country===active),active+'/'+width+': navigation stays within the IP country');
+      }
+    }
     // Exercise the existing client-only fallback independently of the new SSR
     // path. The ordinary pages above and GP still verify the actual SSR output.
     async function clientOnlyFixture(target) {

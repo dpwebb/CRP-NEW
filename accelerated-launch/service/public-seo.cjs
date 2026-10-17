@@ -31,7 +31,7 @@ function reportLinks(home) {
 }
 function newsCards(data) {
   return data.items.map((item, i, items) => {
-    const caption = [item.country === 'GB' ? 'UK' : item.country, item.type, item.date, item.source, item.bureau, item.status].filter(Boolean).join(' · ');
+    const caption = [item.country === 'GB' ? 'UK' : item.country, item.date_label || item.date, item.source].filter(Boolean).join(' · ');
     const summary = String(item.summary || '').trim().split(/\s+/).slice(0, 100).join(' ');
     return `<li class="credit-news-item" aria-label="Story ${i + 1} of ${items.length}: ${escape(item.title)}"${i > 2 ? ' hidden' : ''}><p class="credit-news-meta">${escape(caption)}</p><h3>${escape(item.title)}</h3><p class="credit-news-summary">${escape(summary)}</p><a class="credit-news-more" href="${escape(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="Read more: ${escape(item.title)} (opens in a new tab)">Read more ↗</a><div class="credit-news-card-controls"><button type="button" data-news-direction="-1" aria-label="Previous story"${items.length < 2 ? ' disabled' : ''}>← Previous</button><button type="button" data-news-direction="1" aria-label="Next story"${items.length < 2 ? ' disabled' : ''}>Next →</button></div></li>`;
   }).join('');
@@ -69,8 +69,7 @@ function render(template, home, routeCountry) {
   html = html.replace('Loading recent reports and decisions…', escape(home.news.scope + ' · Past five years · Inventory updated ' + home.news.reviewed_at));
   const count = home.news.items.length;
   html = html.replace('data-news-position aria-live="polite" aria-atomic="true"></p>', `data-news-position aria-live="polite" aria-atomic="true">${count === 1 ? '1 report' : count ? 'Report 1 of ' + count : ''}</p>`);
-  const missing = home.news.coverage.filter(row => (!home.news.country || row.country === home.news.country) && row.court_decisions === 0).map(row => row.name);
-  const coverage = missing.length ? 'No court decisions are included yet for ' + missing.join(', ') + '. Available reports and reviews are labelled.' : 'Court decisions, settlements and reported experiences are labelled separately.';
+  const coverage = 'CRP helps you check the facts and prepare a dispute. You stay in control.';
   html = html.replace('data-news-coverage></p>', `data-news-coverage>${escape(coverage)}</p>`).replace('<noscript><p>Enable JavaScript to load reports selected for your country.</p></noscript>', '<noscript><p>These source-linked reports are available without JavaScript. Enable JavaScript to use the story controls.</p></noscript>');
   return html;
 }

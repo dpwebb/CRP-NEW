@@ -18,7 +18,7 @@
     function card(item,i,count){
       const node=document.createElement('li'),caption=document.createElement('p'),heading=document.createElement('h3'),summary=document.createElement('p'),controls=document.createElement('div');
       node.className='credit-news-item';node.setAttribute('aria-label','Story '+(i+1)+' of '+count+': '+item.title);
-      caption.className='credit-news-meta';caption.textContent=[item.country==='GB'?'UK':item.country,item.type,item.date,item.source,item.bureau,item.status].filter(Boolean).join(' · ');
+      caption.className='credit-news-meta';caption.textContent=[item.country==='GB'?'UK':item.country,item.date_label||item.date,item.source].filter(Boolean).join(' · ');
       heading.textContent=item.title;summary.className='credit-news-summary';summary.textContent=String(item.summary||'').trim().split(/\s+/).slice(0,100).join(' ');
       const more=sourceLink(item.url,'Read more ↗');more.setAttribute('aria-label','Read more: '+item.title+' (opens in a new tab)');more.className='credit-news-more';controls.className='credit-news-card-controls';
       for(const direction of [-1,1]){const button=document.createElement('button');button.type='button';button.dataset.newsDirection=String(direction);button.textContent=direction<0?'← Previous':'Next →';button.setAttribute('aria-label',direction<0?'Previous story':'Next story');button.disabled=count<2;controls.append(button);}
@@ -36,8 +36,7 @@
       const data=home.news;if(!home.ok||!data?.ok||!Array.isArray(data.items))throw Error('unavailable');
       nodes=data.items.map((item,i)=>card(item,i,data.items.length));
       scope.textContent=data.scope+' · Past five years · Inventory updated '+(data.reviewed_at||'date unavailable');
-      const missing=(data.coverage||[]).filter(row=>(!data.country||row.country===data.country)&&row.court_decisions===0).map(row=>row.name);
-      coverage.textContent=missing.length?'No court decisions are included yet for '+missing.join(', ')+'. Available reports and reviews are labelled.':'Court decisions, settlements and reported experiences are labelled separately.';
+      coverage.textContent='CRP helps you check the facts and prepare a dispute. You stay in control.';
       if(!nodes.length){scope.textContent=data.scope+' · No qualifying recent stories are included yet.';viewport.hidden=true;position.textContent='';return;}
       viewport.hidden=false;show(0);
     }).catch(()=>{scope.textContent='Stories could not be loaded. Please refresh this page to try again.';viewport.hidden=true;list.replaceChildren();position.textContent='';});

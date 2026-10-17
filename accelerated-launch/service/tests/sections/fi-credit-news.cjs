@@ -1,12 +1,27 @@
 'use strict';
-const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),http=require('node:http');
+const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),http=require('node:http'),vm=require('node:vm');
 const news=require('../../credit-news.cjs'),{createService}=require('../../app.cjs');
 async function run(t,check){
  const now=new Date('2026-10-14T12:00:00Z');
  for(const country of Object.keys(news.COUNTRIES)){
   const result=news.select(country,now);check.ok(result.items.length>0,country+' has researched reporting');
   check.ok(result.items.every(item=>item.country===country),country+' never receives another country');
+  check.ok(result.items.length>=3&&result.items.length<=10,country+' supplies three or more verified stories within the ten-story ceiling');
  }
+ const injected=Object.keys(news.COUNTRIES).flatMap(country=>Array.from({length:15},(_,i)=>({id:'fictional-'+country+'-'+i,country,date:'2026-09-'+String(i+1).padStart(2,'0'),type:'Fictional test only',url:'https://example.test/'+country+'/'+i,title:'Fictional cap fixture',summary:'Isolated fictional catalogue data.'})));
+ injected.push({...injected[14],id:'fictional-duplicate-url'}, {...injected[13],url:'https://example.test/duplicate-id'}, {...injected[12],id:'fictional-future',date:'2099-01-01'}, {...injected[11],id:'fictional-expired',date:'2000-01-01'});
+ const source=fs.readFileSync(require.resolve('../../credit-news.cjs'),'utf8');
+ const sandbox={module:{exports:{}}};vm.runInNewContext(source.replace('const ITEMS = Object.freeze([','const ITEMS = Object.freeze(['+injected.map(row=>JSON.stringify(row)).join(',')+','),sandbox);
+ const bounded=sandbox.module.exports;
+ for(const country of Object.keys(news.COUNTRIES)){
+  const items=bounded.select(country,now).items;
+  check.equal(items.length,10,country+' more than three rotates through ten unique stories');
+  check.equal(new Set(items.map(row=>row.id)).size,10,country+' cap has no repeated IDs');
+  check.equal(new Set(items.map(row=>row.url)).size,10,country+' cap has no repeated source URLs');
+  check.ok(items.every(row=>row.country===country),country+' larger catalogue remains country isolated');
+  check.ok(items.every(row=>!['fictional-future','fictional-expired'].includes(row.id)),country+' expired and future stories never fill the carousel');
+ }
+ const fallback=bounded.select(null,now);for(const country of Object.keys(news.COUNTRIES))check.equal(fallback.items.filter(row=>row.country===country).length,10,'unknown-IP fallback still caps each country independently: '+country);
  for(const country of [null,undefined,'ZZ','DE','UK','usd'])check.equal(news.select(country,now).items.length,news.ITEMS.length,'unknown/unsupported location uses all four: '+country);
  check.equal(new Set(news.ITEMS.map(item=>item.id)).size,news.ITEMS.length,'unique story identifiers');
  for(const item of news.ITEMS){check.ok(new URL(item.url).protocol==='https:','HTTPS source '+item.id);check.ok(item.date>='2021-10-14'&&item.date<='2026-10-14','eligible verified date '+item.id);}
@@ -21,8 +36,9 @@ async function run(t,check){
  for(const country of ['CA','GB','AU'])check.equal(mixed.coverage.find(row=>row.country===country).court_decisions,0,'court-story shortfall remains explicit for '+country);
  check.equal(news.select(null,new Date('2032-01-01')).reviewed_at,news.REVIEWED_AT,'source-review date does not advance with filtering date');
  check.ok(news.select(null,new Date('2022-04-26T12:00:00Z')).items.length===0,'future publications excluded');
- check.ok(news.select('GB',new Date('2027-04-27T23:00:00Z')).items.length===1,'five-year boundary included through anniversary day');
- check.equal(news.select('GB',new Date('2027-04-28T00:00:00Z')).items.length,0,'past five-year boundary removed automatically');
+ check.ok(news.select('GB',new Date('2027-04-27T23:00:00Z')).items.some(row=>row.id==='gb-guardian-2022'),'five-year boundary included through anniversary day');
+ check.ok(!news.select('GB',new Date('2027-04-28T00:00:00Z')).items.some(row=>row.id==='gb-guardian-2022'),'past five-year boundary removed automatically without removing newer stories');
+ for(const item of news.ITEMS.filter(row=>row.date_precision==='year'))check.equal(item.date_label,item.date.slice(0,4),'year-only decision never claims an invented publication day: '+item.id);
  check.equal(news.select(null,new Date('2032-01-01')).items.length,0,'expired inventory never displayed');
  for(const country of ['CA','US','GB','AU',null,'DE','THROW']){
   const directory=fs.mkdtempSync(path.join(os.tmpdir(),'crp-news-test-'));const service=createService({dataDir:directory,geoLocate:async()=>{if(country==='THROW')throw Error('provider unavailable');return country;},logSink:()=>{}});
