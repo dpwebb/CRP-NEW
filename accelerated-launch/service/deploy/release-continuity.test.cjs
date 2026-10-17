@@ -53,7 +53,7 @@ function fixture(label, mutate, options = {}) {
   write(root, 'accelerated-launch/service/deploy/unit-tool.cjs', "'use strict'; module.exports = true;\n");
   write(root,'accelerated-launch/service/deploy/unchanged-control.sh','#!/bin/sh\nexit 0\n');
   write(root, 'accelerated-launch/service/tests/run-tests.cjs', "const SECTION_FILES = [\n  'a-core.cjs',\n  'b-ui.cjs',\n  'c-security.cjs'\n];\n");
-  write(root, 'accelerated-launch/service/tests/verification-lanes.cjs', "const LANE_IDS = { consumer: ['b-ui'], security: ['c-security'], browser: ['b-ui'] };\nmodule.exports = { LANE_IDS };\n");
+  write(root, 'accelerated-launch/service/tests/verification-lanes.cjs', "const LANE_IDS = { consumer: ['b-ui'], security: ['c-security'], browser: ['b-ui'] };\n" + (options.laneAdditions || '') + "module.exports = { LANE_IDS };\n");
   for (const id of ['a-core', 'b-ui', 'c-security']) write(root, 'accelerated-launch/service/tests/sections/' + id + '.cjs', "module.exports = { id: '" + id + "' };\n");
   const capturedName = 'accelerated-launch/service/tests/captured-helper.cjs';
   if (options.captured) {
@@ -73,7 +73,7 @@ function fixture(label, mutate, options = {}) {
   if (git(root, ['diff', '--cached', '--name-only'])) git(root, ['commit', '-qm', 'fictional candidate']);
   const changedFiles = git(root, ['diff', '--name-only', baseCommit, '--']).split(/\r?\n/).filter(Boolean).sort();
   const risk = inputs.classify(changedFiles);
-  const selected = risk.mode === 'PRESENTATION' ? ['b-ui', 'c-security'] : [];
+  const selected = risk.mode === 'PRESENTATION' ? (options.selectedSections || ['b-ui', 'c-security']) : [];
   const snapshot = Object.fromEntries(sources(root).map(row => [row.file, row.sha256]));
   snapshot['accelerated-launch/service/deploy/unchanged-control.sh']=hash(path.join(root,'accelerated-launch/service/deploy/unchanged-control.sh'));
   for (const file of changedFiles.filter(file=>!/\.md$/i.test(file))) snapshot[file] = fs.existsSync(path.join(root, file)) ? hash(path.join(root, file)) : null;
@@ -87,7 +87,7 @@ function fixture(label, mutate, options = {}) {
   let focusedFile = null;
   if (selected.length) {
     const focusedSections = sections.filter(row => selected.includes(row.id));
-    const execution = { mode: 'FOCUSED', selected_sections: selected, sections: focusedSections, totals: { passed: 2, failed: 0, skipped: 0 }, unrun_sections: ['a-core'], source_drift: [], source_hashes: sources(root) };
+    const execution = { mode: 'FOCUSED', selected_sections: selected, sections: focusedSections, totals: { passed: focusedSections.length, failed: 0, skipped: 0 }, unrun_sections: sections.filter(row => !selected.includes(row.id)).map(row => row.id), source_drift: [], source_hashes: sources(root) };
     focusedFile = writeJson(base, 'focused.json', { mode: 'FOCUSED', execution, totals: execution.totals });
   }
   const buildOptions = { root, plan, baselineFile, focusedFile, toolsVerificationFile, candidate, outputDirectory: path.join(base, 'proof') };
@@ -118,6 +118,14 @@ try {
   assert.deepEqual(presentation.verdict.requiredFocusedSections, ['b-ui', 'c-security']);
   assert.equal(presentation.verdict.baselineRaw.totals.passed, 3);
   assert.equal(presentation.verdict.freshFocusedRaw.totals.passed, 2);
+  const additions = "LANE_IDS.security.unshift('a-core');\nLANE_IDS.consumer.unshift('c-security', 'a-core');\nLANE_IDS.browser.unshift('a-core');\n";
+  const extended = accepted('lane-additions', root => write(root, 'accelerated-launch/service/ui/styles.css', 'main { color: navy; }\n'), { laneAdditions: additions, selectedSections: ['a-core', 'b-ui', 'c-security'] });
+  assert.deepEqual(extended.verdict.requiredFocusedSections, ['a-core', 'b-ui', 'c-security']);
+  assert.equal(extended.verdict.freshFocusedRaw.totals.passed, 3);
+  accepted('lane-bracket-push-no-execution', root => write(root, 'accelerated-launch/service/ui/styles.css', 'main { color: navy; }\n'), { laneAdditions: "LANE_IDS['browser'].push('a-core');\nthrow Error('Lane source must never execute during proof validation');\n", selectedSections: ['a-core', 'b-ui', 'c-security'] });
+  rejected('omitted-lane-addition', root => write(root, 'accelerated-launch/service/ui/styles.css', 'main { color: navy; }\n'), /planned sections/, { laneAdditions: additions });
+  rejected('unknown-lane-addition', root => write(root, 'accelerated-launch/service/ui/styles.css', 'main { color: navy; }\n'), /unknown product section/, { laneAdditions: "LANE_IDS.security.unshift('unknown-section');\n" });
+  rejected('dynamic-lane-addition', root => write(root, 'accelerated-launch/service/ui/styles.css', 'main { color: navy; }\n'), /literal section/, { laneAdditions: "LANE_IDS.security.unshift(extraSections);\n" });
   assert.equal(hash(presentation.buildOptions.baselineFile), hash(path.join(presentation.args.evidenceRoot, 'raw/baseline.json')));
   assert.equal(hash(presentation.buildOptions.focusedFile), hash(path.join(presentation.args.evidenceRoot, 'raw/focused.json')));
   assert(presentation.verdict.evidenceRefs.some(row => row.file.startsWith('before/')));
