@@ -87,6 +87,17 @@ async function deferredChecks(check) {
   await cancel.node('delete').onclick(); await cancel.node('deleteAccount').onclick();
   check.equal(cancel.calls.filter(row => row.method === 'DELETE').length, 0, 'Cancel sends neither destructive request');
   for (const moment of ['before-confirm', 'during-confirm']) {
+    const staleAccount = harness(() => ({ ok: true, cases: [], account_documents: [] }));
+    staleAccount.evaluate('state.step=STEP.CASE; state.caseId=null; state.view=null; renderCase(document.getElementById("panel"));');
+    let confirms = 0;
+    const changeAccount = () => staleAccount.evaluate('accountEpoch++; state.account={account_id:"accountB",email:"other-fictional@example.test"};');
+    staleAccount.context.confirm = () => { confirms++; if (moment === 'during-confirm') changeAccount(); return true; };
+    if (moment === 'before-confirm') changeAccount();
+    await staleAccount.node('deleteAccount').onclick();
+    check.equal(staleAccount.calls.filter(row => row.method === 'DELETE').length, 0, `${moment}: empty-account deletion cannot follow an account change`);
+    check.equal(confirms, moment === 'before-confirm' ? 0 : 1, 'account custody is checked on both sides of native confirmation');
+  }
+  for (const moment of ['before-confirm', 'during-confirm']) {
     const stale = harness(() => ({ ok: true, cases: [], account_documents: [] }));
     stale.evaluate('state.step=STEP.CASE; renderCase(document.getElementById("panel"));');
     let confirms = 0;
@@ -326,5 +337,68 @@ async function browserChecks(t, check) {
     }
   } finally { await browser.close(); }
 }
-async function run(t, check) { await deferredChecks(check); await browserChecks(t, check); return { fictional_only: true, delayed_responses: true, confirmation_cancel: true, selected_result_download: true, latest_packet_notice: true, public_support: true, shared_quota: true, expired_renewal_control: true, aggregate_renewal_display: true, grace_deadline_copy: true, actual_dom_clipboard_fallback: true, real_chrome_widths: [1440, 390], provider_proof: false }; }
+async function emptyAccountBrowserChecks(t, check) {
+  const kept = await t.unpaidAccount('kept-empty-privacy@example.test');
+  const keptRow = t.service.store.state().accounts.find(row => row.account_id === kept.account_id);
+  const browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+  const out = path.join(__dirname, '../../out/account-no-report-deletion', require('node:crypto').randomUUID());
+  fs.mkdirSync(out, { recursive: true });
+  try {
+    for (const width of [1440, 390]) {
+      const actor = await t.unpaidAccount(`empty-privacy-${width}@example.test`);
+      const context = await browser.newContext({ viewport: { width, height: 1000 } });
+      const page = await context.newPage(); page.setDefaultTimeout(15000);
+      const deletes = [];
+      page.on('request', request => { if (request.method() === 'DELETE') deletes.push(new URL(request.url()).pathname); });
+      await page.goto(t.base + '/index.html#signin');
+      await page.locator('#email').fill(actor.email); await page.locator('#password').fill('a-long-enough-password');
+      await page.locator('#signin').click(); await page.locator('#signin-skip-two-factor').click();
+      await page.getByRole('heading', { name: 'Upload your credit report', exact: true }).waitFor();
+      if (width === 390) await page.getByRole('button', { name: 'Navigation menu', exact: true }).click();
+      await page.getByRole('button', { name: 'Privacy and deletion', exact: true }).click();
+      await page.getByText('No stored cases.', { exact: true }).waitFor();
+      check.ok(await page.locator('#deleteAccount').isVisible(), `${width}px account deletion is reachable before any report or case`);
+      check.equal(await page.locator('#delete').count(), 0, `${width}px no report deletion is offered without a report`);
+      check.equal(await page.locator('[data-status]').count(), 0, `${width}px no report status controls are offered without a report`);
+      check.ok((await page.locator('#panel').innerText()).includes('subscription renewal'), 'the renewal prerequisite remains visible for an empty account');
+      const beforeCancel = t.service.store.state();
+      page.once('dialog', dialog => dialog.dismiss()); await page.locator('#deleteAccount').click();
+      check.equal(deletes.length, 0, `${width}px Cancel sends no destructive request`);
+      check.deepEqual(t.service.store.state(), beforeCancel, `${width}px Cancel preserves the complete fictional store`);
+      check.equal((await t.request('GET', '/api/session', { token: actor.token })).status, 200, 'Cancel preserves account access');
+      let failOnce = true;
+      await page.route('**/api/account', async route => {
+        if (route.request().method() === 'DELETE' && failOnce) {
+          failOnce = false;
+          return route.fulfill({ status: 502, contentType: 'application/json', body: JSON.stringify({ ok: false, error: { message: 'Renewal could not be stopped. Your account has not been deleted. Please try again.' } }) });
+        }
+        return route.continue();
+      });
+      page.once('dialog', dialog => dialog.accept()); await page.locator('#deleteAccount').click();
+      await page.getByText(/Renewal could not be stopped/).waitFor();
+      check.ok(await page.locator('#deleteAccount').isVisible(), `${width}px a refused cancellation leaves empty-account deletion available`);
+      check.equal((await t.request('GET', '/api/session', { token: actor.token })).status, 200, 'refused cancellation keeps the actual account');
+      await page.route('**/api/privacy', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ ok: false, error: { message: 'Fictional inventory unavailable' } }) }));
+      if (width === 390) await page.getByRole('button', { name: 'Navigation menu', exact: true }).click();
+      await page.getByRole('button', { name: 'Help', exact: true }).click();
+      if (width === 390) await page.getByRole('button', { name: 'Navigation menu', exact: true }).click();
+      await page.getByRole('button', { name: 'Privacy and deletion', exact: true }).click();
+      await page.getByText('Your inventory could not be loaded. Open this page again to retry.', { exact: true }).waitFor();
+      check.ok(await page.locator('#deleteAccount').isEnabled(), 'inventory-read failure does not block an independent account deletion');
+      check.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${width}px empty-account privacy has no horizontal overflow`);
+      await page.screenshot({ path: path.join(out, `privacy-${width}.png`), fullPage: true });
+      page.once('dialog', dialog => dialog.accept()); await page.locator('#deleteAccount').click();
+      await page.locator('#email').waitFor();
+      check.equal((await t.request('GET', '/api/session', { token: actor.token })).status, 401, `${width}px Confirm removes the actual empty account and its sessions`);
+      check.equal(t.service.store.state().accounts.some(row => row.account_id === actor.account_id), false, 'the owned account row is absent');
+      check.deepEqual(t.service.store.state().accounts.find(row => row.account_id === kept.account_id), keptRow, 'the separate fictional account is byte-for-byte intact');
+      check.ok(deletes.every(route => route === '/api/account'), 'no report or unrelated deletion route was requested');
+      await page.reload(); await page.locator('#email').waitFor();
+      check.equal(await page.locator('#deleteAccount').count(), 0, 'reload cannot restore deleted account controls');
+      await context.close();
+    }
+  } finally { await browser.close(); }
+  return { actual_loopback_http: true, fresh_unpaid_accounts: 2, widths: [1440, 390], native_cancel_and_confirm: true, refused_cancellation_ui: 'injected HTTP refusal; independent backend billing suite retains provider coverage', inventory_failure: true, unrelated_account_preserved: true, output_directory: out };
+}
+async function run(t, check) { await deferredChecks(check); await browserChecks(t, check); const emptyAccountDeletion = await emptyAccountBrowserChecks(t, check); return { fictional_only: true, delayed_responses: true, confirmation_cancel: true, selected_result_download: true, latest_packet_notice: true, public_support: true, shared_quota: true, expired_renewal_control: true, aggregate_renewal_display: true, grace_deadline_copy: true, actual_dom_clipboard_fallback: true, real_chrome_widths: [1440, 390], provider_proof: false, empty_account_deletion: emptyAccountDeletion }; }
 module.exports = { id: 'gi-audit-consumer-flow', title: 'Consumer audit corrections preserve context, explicit deletion choice and understandable report controls', run };

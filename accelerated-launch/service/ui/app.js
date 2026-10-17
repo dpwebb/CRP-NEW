@@ -2797,29 +2797,28 @@ function renderHistory(panel) {
 
 function renderCase(panel) {
   if (!state.account) { panel.innerHTML = `${notices()}<h1>Sign in to manage your reports</h1>${supportContactBlock()}`; return; }
-  if (!state.view) { panel.innerHTML = `${notices()}<h1>Open a case first</h1>`; return; }
   const view = state.view;
-  const deletionLabel = reportIdentityText(view);
+  const deletionLabel = view ? reportIdentityText(view) : '';
   panel.innerHTML = `
     <h1>Privacy, cases and deletion</h1>
-    <p class="lede">Use these labels to keep track of your report. Changing a label does not send anything to the bureau.</p>
+    <p class="lede">${view ? 'Use these labels to keep track of your report. Changing a label does not send anything to the bureau.' : 'Manage your stored information or delete your account. You do not need to upload a report.'}</p>
     ${notices()}
-    <div class="obs">
+    ${view ? `<div class="obs">
       <span class="pill">${esc(({ OPEN: 'Open', REVIEWED: 'Reviewed', RESPONSE_RECORDED: 'Reply received', CLOSED: 'Closed' })[view.case.status] || 'Open')}</span>
       <h3>${esc(regionLabel(view.case.country, view.case.region))}</h3>
       ${currentReportIdentity(view)}
       <p class="evidence">${esc(view.status_label || '')}</p>
       ${[['OPEN', 'Open'], ['REVIEWED', 'Reviewed'], ['RESPONSE_RECORDED', 'Reply received'], ['CLOSED', 'Closed']].map(([s, label]) =>
         `<button class="secondary" data-status="${s}" ${s === view.case.status ? 'disabled' : ''}>Mark ${label}</button>`).join('')}
-    </div>
+    </div>` : '<p class="note">No report is open. You can still review your privacy information and delete your account.</p>'}
     <div class="obs" id="privacyInventory">Loading your stored documents and retention information…</div>
     <div class="obs">
       <h3>Deleting</h3>
-      <p class="evidence"><strong>Report to delete:</strong> ${esc(deletionLabel)}</p>
+      ${view ? `<p class="evidence"><strong>Report to delete:</strong> ${esc(deletionLabel)}</p>
       <p class="evidence">Deleting a report removes its uploaded files, saved results and packets from your account. Save any copies you need first.</p>
-      <p class="evidence">Account deletion must stop any subscription renewal before your account can be removed. If this cannot be confirmed, your account stays available.</p>
       <button class="danger" id="delete">Delete this report and its files</button>
-      <div id="dependent-letter-choice" aria-live="polite"></div>
+      <div id="dependent-letter-choice" aria-live="polite"></div>` : ''}
+      <p class="evidence">Account deletion must stop any subscription renewal before your account can be removed. If this cannot be confirmed, your account stays available.</p>
       <button class="danger" id="deleteAccount">Delete my whole account</button>
     </div>`;
 
@@ -2875,14 +2874,16 @@ function renderCase(panel) {
     catch (error) { if (error.cancelled) throw error; state.savedReportsStatus = 'error'; }
     if (state.caseId === null) render();
   };
-  el('delete').onclick = () => run(async () => {
+  if (el('delete')) el('delete').onclick = () => run(async () => {
     ensurePrivacy();
     if (!window.confirm?.(`Delete ${deletionLabel}? Its files, saved results, packets and copied comparisons will be removed. Save any copies you need first. Choose Cancel to keep it.`)) return;
     ensurePrivacy();
     await deleteReport();
   }, { redraw: false });
   el('deleteAccount').onclick = () => run(async () => {
+    ensurePrivacy();
     if (!window.confirm?.('Delete your whole account? We must confirm that any subscription renewal is stopped first. Then your reports, ID copies, results and account details will be removed. Save any copies you need first. Choose Cancel to keep your account.')) return;
+    ensurePrivacy();
     accountEpoch++;
     const ensure = accountContext();
     await currentRequest(ensure, 'DELETE', '/api/account');
