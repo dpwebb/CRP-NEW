@@ -31,6 +31,8 @@ async function run(unused, check) {
       check.ok(response.text.includes('hreflang="x-default" href="' + seo.ORIGIN + '/"'), country + ': root is x-default');
       const match = /<script id="public-homepage-model" type="application\/json">([\s\S]*?)<\/script>/.exec(response.text);
       const model = JSON.parse(match[1]);
+      check.ok(!/<li[^>]*role="group"|<li[^>]*aria-roledescription="slide"/.test(response.text), country + ': SSR carousel retains native listitem semantics');
+      for (const item of model.news.items) check.ok(response.text.includes('aria-label="Read more: ' + item.title.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) + ' (opens in a new tab)"'), country + ': SSR source link identifies its story');
       check.equal(model.country, country, country + ': hydration and initial HTML share one country');
       check.equal(model.example.fictional, true, country + ': illustration remains fictional');
       check.ok(response.text.includes('data-nosnippet class="story-art"'), country + ': sample finding excluded from text snippets');
@@ -123,9 +125,33 @@ async function realServer(check) {
     check.equal(JSON.parse(/id="public-homepage-model" type="application\/json">([\s\S]*?)<\/script>/.exec(rootHtml)[1]).country, null, 'actual loopback IP retains unknown-location fallback without a remote lookup');
     for (const route of ['/robots.txt', '/sitemap.xml']) check.equal((await fetch(base + route)).status, 200, route + ': discovery reaches real worker instead of static 404');
     const privatePage = await fetch(base + '/index.html');
+    check.equal(privatePage.headers.get('content-encoding'), null, 'private application shell remains uncompressed');
+    for (const route of ['/au/', '/ca/', '/uk/', '/us/', '/story.css', '/credit-news.css', '/homepage.js', '/sitemap.xml']) {
+      const identity = await fetch(base + route, { headers: { 'Accept-Encoding': 'identity' } });
+      const expected = Buffer.from(await identity.arrayBuffer());
+      const compressed = await fetch(base + route, { headers: { 'Accept-Encoding': 'gzip' } });
+      check.equal(compressed.headers.get('content-encoding'), 'gzip', route + ': public transfer is compressed');
+      check.ok(Buffer.from(await compressed.arrayBuffer()).equals(expected), route + ': compressed response decodes to exact public bytes');
+      check.match(compressed.headers.get('cache-control'), /no-store/, route + ': compression preserves no-store');
+      check.equal(compressed.headers.get('vary'), 'Accept-Encoding', route + ': representation varies by supported encoding');
+      const head = await fetch(base + route, { method: 'HEAD', headers: { 'Accept-Encoding': 'gzip' } });
+      check.equal(head.headers.get('content-length'), compressed.headers.get('content-length'), route + ': HEAD matches encoded length');
+      check.equal(await head.text(), '', route + ': encoded HEAD has no body');
+      const denied = await fetch(base + route, { headers: { 'Accept-Encoding': 'gzip;q=0, *;q=1' } });
+      check.equal(denied.headers.get('content-encoding'), null, route + ': explicit gzip refusal wins over wildcard');
+    }
+    for (const name of ['Roboto-Bold', 'OpenSans-Regular', 'OpenSans-Bold']) {
+      const response = await fetch(base + '/' + name + '.woff2');
+      const actual = Buffer.from(await response.arrayBuffer());
+      check.equal(response.headers.get('content-type'), 'font/woff2', name + ': correct font MIME');
+      check.equal(actual.subarray(0,4).toString(), 'wOF2', name + ': valid WOFF2 signature');
+      check.ok(actual.equals(fs.readFileSync(path.join(__dirname, '../../ui', name + '.woff2'))), name + ': exact binary font transfer');
+      check.ok(actual.length < fs.statSync(path.join(__dirname, '../../ui', name + '.ttf')).size / 2, name + ': font payload more than halved');
+    }
     check.equal(privatePage.headers.get('x-robots-tag'), 'noindex', 'actual HTTP static application entry is noindex');
     check.ok(!/googletagmanager/.test(privatePage.headers.get('content-security-policy')), 'actual private static CSP stays strict');
     const unauthorized = await fetch(base + '/api/session');
+    check.equal(unauthorized.headers.get('content-encoding'), null, 'private API refusal remains uncompressed');
     check.equal(unauthorized.status, 401, 'actual worker retains private authentication refusal');
     check.equal(unauthorized.headers.get('x-robots-tag'), 'noindex', 'actual worker preserves accumulated indexing headers');
     for (const route of ['/api/health', '/api/ready']) check.equal((await fetch(base + route)).status, 200, route + ': independent health/readiness stay available');

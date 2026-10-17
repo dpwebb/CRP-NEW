@@ -17,10 +17,10 @@
     function sourceLink(url,text){const target=new URL(url);if(target.protocol!=='https:')throw Error('unavailable');const link=document.createElement('a');link.href=target.href;link.textContent=text;link.target='_blank';link.rel='noopener noreferrer';link.setAttribute('aria-label',text+' (opens in a new tab)');return link;}
     function card(item,i,count){
       const node=document.createElement('li'),caption=document.createElement('p'),heading=document.createElement('h3'),summary=document.createElement('p'),controls=document.createElement('div');
-      node.className='credit-news-item';node.setAttribute('role','group');node.setAttribute('aria-roledescription','slide');node.setAttribute('aria-label','Story '+(i+1)+' of '+count);
+      node.className='credit-news-item';node.setAttribute('aria-label','Story '+(i+1)+' of '+count+': '+item.title);
       caption.className='credit-news-meta';caption.textContent=[item.country==='GB'?'UK':item.country,item.type,item.date,item.source,item.bureau,item.status].filter(Boolean).join(' · ');
       heading.textContent=item.title;summary.className='credit-news-summary';summary.textContent=String(item.summary||'').trim().split(/\s+/).slice(0,100).join(' ');
-      const more=sourceLink(item.url,'Read more ↗');more.className='credit-news-more';controls.className='credit-news-card-controls';
+      const more=sourceLink(item.url,'Read more ↗');more.setAttribute('aria-label','Read more: '+item.title+' (opens in a new tab)');more.className='credit-news-more';controls.className='credit-news-card-controls';
       for(const direction of [-1,1]){const button=document.createElement('button');button.type='button';button.dataset.newsDirection=String(direction);button.textContent=direction<0?'← Previous':'Next →';button.setAttribute('aria-label',direction<0?'Previous story':'Next story');button.disabled=count<2;controls.append(button);}
       node.append(caption,heading,summary,more,controls);return node;
     }

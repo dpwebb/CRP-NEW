@@ -1,6 +1,8 @@
 Roboto Bold: Copyright 2011 Google Inc. All Rights Reserved.
 Open Sans Regular and Bold: Digitized data copyright 2010-2011, Google Corporation.
-These unmodified fonts are licensed under the Apache License, Version 2.0.
+These fonts are licensed under the Apache License, Version 2.0.
+The original TTF files are unmodified. WOFF2 copies were losslessly re-encoded
+locally on October 17, 2026 with FontTools 4.67.0; no glyphs were removed.
 Copied from the installed fonts used by the owner-approved Your Story reference designs.
 
 

@@ -24,13 +24,13 @@ function discovery(pathname) {
   return { status: 200, content_type: 'application/xml; charset=utf-8', text: '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">' + variants.map(row => `<url><loc>${ORIGIN}${row.path}</loc>${alternates}</url>`).join('') + '</urlset>\n' };
 }
 function reportLinks(home) {
-  return home.free_reports.map(report => `<a class="story-report-link" href="${escape(report.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escape(report.title)} (opens in a new tab)"><span><strong>${escape(home.country ? report.bureau : report.country + ' · ' + report.bureau)}</strong><small>${escape(report.title)}</small></span><span aria-hidden="true">↗</span></a>`).join('');
+  return home.free_reports.map(report => `<a class="story-report-link" href="${escape(report.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escape(home.country ? report.bureau : report.country + ' · ' + report.bureau)} ${escape(report.title)} (opens in a new tab)"><span><strong>${escape(home.country ? report.bureau : report.country + ' · ' + report.bureau)}</strong><small>${escape(report.title)}</small></span><span aria-hidden="true">↗</span></a>`).join('');
 }
 function newsCards(data) {
   return data.items.map((item, i, items) => {
     const caption = [item.country === 'GB' ? 'UK' : item.country, item.type, item.date, item.source, item.bureau, item.status].filter(Boolean).join(' · ');
     const summary = String(item.summary || '').trim().split(/\s+/).slice(0, 100).join(' ');
-    return `<li class="credit-news-item" role="group" aria-roledescription="slide" aria-label="Story ${i + 1} of ${items.length}"${i > 2 ? ' hidden' : ''}><p class="credit-news-meta">${escape(caption)}</p><h3>${escape(item.title)}</h3><p class="credit-news-summary">${escape(summary)}</p><a class="credit-news-more" href="${escape(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="Read more (opens in a new tab)">Read more ↗</a><div class="credit-news-card-controls"><button type="button" data-news-direction="-1" aria-label="Previous story"${items.length < 2 ? ' disabled' : ''}>← Previous</button><button type="button" data-news-direction="1" aria-label="Next story"${items.length < 2 ? ' disabled' : ''}>Next →</button></div></li>`;
+    return `<li class="credit-news-item" aria-label="Story ${i + 1} of ${items.length}: ${escape(item.title)}"${i > 2 ? ' hidden' : ''}><p class="credit-news-meta">${escape(caption)}</p><h3>${escape(item.title)}</h3><p class="credit-news-summary">${escape(summary)}</p><a class="credit-news-more" href="${escape(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="Read more: ${escape(item.title)} (opens in a new tab)">Read more ↗</a><div class="credit-news-card-controls"><button type="button" data-news-direction="-1" aria-label="Previous story"${items.length < 2 ? ' disabled' : ''}>← Previous</button><button type="button" data-news-direction="1" aria-label="Next story"${items.length < 2 ? ' disabled' : ''}>Next →</button></div></li>`;
   }).join('');
 }
 function metadata(country) {

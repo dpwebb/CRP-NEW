@@ -314,6 +314,9 @@ async function homepageBrowser(check) {
       check.equal(await page.locator('body').evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(255, 255, 255)', width + ': homepage retains the approved white background');
     }
     const cards = await page.locator('.credit-news-item').evaluateAll(nodes => nodes.map(node => ({ text: node.innerText || node.textContent, title: node.querySelector('h3')?.textContent, paragraphs: [...node.querySelectorAll('p')].map(p => p.textContent), links: [...node.querySelectorAll('a')].map(a => ({ text: a.textContent.trim(), href: a.href })) })));
+    check.equal(await page.locator('.credit-news-item[role], .credit-news-item[aria-roledescription]').count(), 0, 'hydrated carousel preserves native list semantics');
+    const accessibleLinks = await page.locator('.credit-news-more').evaluateAll(nodes => nodes.map(node => node.getAttribute('aria-label')));
+    check.ok(model.news.items.every(item => accessibleLinks.includes('Read more: ' + item.title + ' (opens in a new tab)')), 'hydrated source links identify each story to assistive technology');
     check.equal(cards.length, model.news.items.length, 'carousel contains exactly the real scoped stories without duplicates');
     for (const item of model.news.items) {
       const card = cards.find(row => row.title === item.title);

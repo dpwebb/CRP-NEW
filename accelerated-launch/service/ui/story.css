@@ -1,6 +1,6 @@
-@font-face { font-family: 'CRP Roboto'; src: url('Roboto-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
-@font-face { font-family: 'CRP Open Sans'; src: url('OpenSans-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
-@font-face { font-family: 'CRP Open Sans'; src: url('OpenSans-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'CRP Roboto'; src: url('Roboto-Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'CRP Open Sans'; src: url('OpenSans-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'CRP Open Sans'; src: url('OpenSans-Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
 /* Public and signed-out surfaces only. Authenticated workspace styles stay in style.css. */
 body.story-page, body.auth-entry { margin:0; background:#ffffff; color:#16324f; font-family:'CRP Open Sans',Arial,sans-serif; }
 .story-page *, .auth-entry * { box-sizing:border-box; }
