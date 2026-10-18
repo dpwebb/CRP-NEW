@@ -15,9 +15,9 @@ const surface = {
   payment_actions: { cancel_unfinished_checkout: true }
 };
 const planCatalog = { currency: 'CAD', plans: [
-  { plan_code: 'report_once', amount_display: '$5.95 CAD', amount_cents: 595, interval: 'one_time' },
-  { plan_code: 'monthly', amount_display: '$7.95 CAD', amount_cents: 795, interval: 'month' },
-  { plan_code: 'annual', amount_display: '$79.50 CAD', amount_cents: 7950, interval: 'year' }
+  { plan_code: 'report_once', amount_display: '$15.95 CAD', amount_cents: 1595, interval: 'one_time' },
+  { plan_code: 'monthly', amount_display: '$27.95 CAD', amount_cents: 2795, interval: 'month' },
+  { plan_code: 'annual', amount_display: '$279.50 CAD', amount_cents: 27950, interval: 'year' }
 ] };
 function view(result = 'result-current') {
   return { case: { case_id: 'caseA', country: 'CA', region: 'CA-NS', status: 'OPEN', selected_bureau: 'TRANSUNION', report_date: '2026-10-14' },

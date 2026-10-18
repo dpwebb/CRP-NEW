@@ -2,22 +2,22 @@
 const assert = require('node:assert/strict');
 const { upgradeQuote } = require('../upgrade-credit.cjs');
 const purchase = { account_id: 'a', payment_id: 'paid_1', payment_intent: 'pi_1',
-  verified_payment: true, plan_code: 'report_once', currency: 'cad', amount_cents: 595,
+  verified_payment: true, plan_code: 'report_once', currency: 'cad', amount_cents: 1595,
   status: 'paid', paid_at: '2026-01-01T12:00:00.000Z' };
 const base = { accountId: 'a', purchase, targetPlan: 'monthly', now: '2026-10-02T12:00:00.000Z' };
-assert.equal(upgradeQuote(base).first_invoice_cents, 200);
-assert.equal(upgradeQuote(base).renewal_cents, 795);
+assert.equal(upgradeQuote(base).first_invoice_cents, 1200);
+assert.equal(upgradeQuote(base).renewal_cents, 2795);
 assert.equal(upgradeQuote(base).expires_at, null, 'a nine-month-old payment still counts');
-assert.equal(upgradeQuote({ ...base, targetPlan: 'annual' }).first_invoice_cents, 7355);
-assert.equal(upgradeQuote({ ...base, targetPlan: 'annual' }).renewal_cents, 7950);
+assert.equal(upgradeQuote({ ...base, targetPlan: 'annual' }).first_invoice_cents, 26355);
+assert.equal(upgradeQuote({ ...base, targetPlan: 'annual' }).renewal_cents, 27950);
 const second = { ...purchase, payment_id: 'paid_2', payment_intent: 'pi_2' };
 const both = upgradeQuote({ ...base, purchases: [purchase, second] });
-assert.equal(both.credit_cents, 795, 'all unused lower-plan receipts count, capped at the new bill');
+assert.equal(both.credit_cents, 2795, 'all unused lower-plan receipts count, capped at the new bill');
 assert.equal(both.first_invoice_cents, 0);
 assert.equal(both.remaining_credit_cents, 395, 'excess cash credit remains');
-assert.equal(upgradeQuote({ ...base, purchases: [purchase, purchase] }).credit_cents, 595, 'same receipt is not counted twice');
+assert.equal(upgradeQuote({ ...base, purchases: [purchase, purchase] }).credit_cents, 1595, 'same receipt is not counted twice');
 assert.equal(upgradeQuote({ ...base, purchases: [purchase, { ...purchase, payment_id: 'first_invoice' }] }).credit_cents,
-  595, 'Checkout and first invoice for one payment intent do not double the credit');
+  1595, 'Checkout and first invoice for one payment intent do not double the credit');
 assert.equal(upgradeQuote({ ...base, purchase: { ...purchase, amount_cents: 250 } }).credit_cents,
   250, 'a discounted payment contributes only actual cash paid');
 assert.equal(upgradeQuote({ ...base, targetPlan: 'annual', purchase: { ...purchase, plan_code: 'monthly', amount_cents: 200 } }).credit_cents,
@@ -26,10 +26,10 @@ assert.equal(upgradeQuote({ ...base, purchase: { ...purchase, plan_code: 'monthl
   0, 'same-priced plans do not qualify');
 assert.equal(upgradeQuote({ ...base, targetPlan: 'annual', purchase: { ...purchase, plan_code: 'annual', amount_cents: 7950 } }).credit_cents,
   0, 'annual payments do not discount another annual purchase');
-assert.equal(upgradeQuote({ ...base, purchase: { ...purchase, consumed_cents: 200, remaining_amount_cents: 395 } }).credit_cents, 395);
-assert.equal(upgradeQuote({ ...base, purchase: { ...purchase, consumed_cents: 200, refunded_cents: 100,
+assert.equal(upgradeQuote({ ...base, purchase: { ...purchase, consumed_cents: 1200, remaining_amount_cents: 395 } }).credit_cents, 395);
+assert.equal(upgradeQuote({ ...base, purchase: { ...purchase, consumed_cents: 1200, refunded_cents: 100,
   remaining_amount_cents: 295 } }).credit_cents, 295, 'partly spent and partly returned cash contributes only its unused net remainder');
-const minimumReceipts = Array.from({ length: 10 }, (_, index) => ({ ...purchase, plan_code: 'monthly', amount_cents: 795,
+const minimumReceipts = Array.from({ length: 10 }, (_, index) => ({ ...purchase, plan_code: 'monthly', amount_cents: 2795,
   payment_id: 'minimum_' + index, payment_intent: 'pi_minimum_' + index, ...(index ? {} : { refunded_cents: 39 }) }));
 const minimumQuote = upgradeQuote({ ...base, targetPlan: 'annual', purchases: minimumReceipts });
 assert.equal(minimumQuote.first_invoice_cents, 50, 'a nonzero first invoice remains chargeable');

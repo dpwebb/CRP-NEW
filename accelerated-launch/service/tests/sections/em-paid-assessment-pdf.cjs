@@ -22,8 +22,8 @@ const issue = (overrides = {}) => ({ issue_id: 'private-issue-id', check_id: 'CO
 const rendering = (items) => ({ jurisdiction: { country: 'CA', region: 'CA-NS' },
   assessed_on: '2026-10-08', policy: { digest: 'private-evidence-policy', policy_id: 'internal-policy-id' },
   issues: items, checks_not_run: [{ reason: 'private-unrun-reason' }], unresolved_report_fields: [{ field: 'private-unresolved-field' }] });
-const quotes = { monthly: { regular_cents: 795, credit_cents: 595, first_invoice_cents: 200, renewal_cents: 795, currency: 'cad', allowed: true, eligible: true },
-  annual: { regular_cents: 7950, credit_cents: 595, first_invoice_cents: 7355, renewal_cents: 7950, currency: 'cad', allowed: true, eligible: true } };
+const quotes = { monthly: { regular_cents: 2795, credit_cents: 1595, first_invoice_cents: 1200, renewal_cents: 2795, currency: 'cad', allowed: true, eligible: true },
+  annual: { regular_cents: 27950, credit_cents: 1595, first_invoice_cents: 26355, renewal_cents: 27950, currency: 'cad', allowed: true, eligible: true } };
 
 async function run(t, check) {
   const report = rendering([issue(), issue({ issue_id: 'private-information-id', basis_type: 'LIMITATION_ASSESSMENT',
@@ -50,8 +50,8 @@ async function run(t, check) {
   check.ok(text.includes('Similar accounts to review') && text.includes('REVIEW'), 'weaker-evidence review entries are retained without turning them into violations');
   check.ok(text.includes('Build your dispute packet') && text.includes('print and mail') && text.includes('Check your next report')
     && text.includes('Keep your reports together'), 'subscription value covers selected packets, new reports and history in simple words');
-  check.ok(text.includes('Monthly: CAD 2.00 for your first payment after CAD 5.95 credit. Then CAD 7.95 a month.')
-    && text.includes('Yearly: CAD 73.55 for your first payment after CAD 5.95 credit. Then CAD 79.50 a year.'), 'the one-off PDF distinguishes authoritative first-payment credit from renewal price');
+  check.ok(text.includes('Monthly: CAD 12.00 for your first payment after CAD 15.95 credit. Then CAD 27.95 a month.')
+    && text.includes('Yearly: CAD 263.55 for your first payment after CAD 15.95 credit. Then CAD 279.50 a year.'), 'the one-off PDF distinguishes authoritative first-payment credit from renewal price');
   check.ok(text.includes('Your unused payments for cheaper plans count toward an upgrade.'), 'the owner-approved accumulated credit benefit is stated');
   check.ok(!/not legal advi[cs]e|guarantee|raise your score|delete the debt/i.test(text), 'the report contains no prohibited disclaimer or result promise');
   check.ok(text.includes('Assessed on: 2026-10-08') && text.includes('Report prepared: 2026-10-08'), 'the persisted check date is distinct from the report preparation date');
@@ -65,8 +65,8 @@ async function run(t, check) {
   check.ok(subscriber.includes('Your subscription includes dispute packets.') && subscriber.includes('Your next step'), 'subscriber downloads give usable next steps for features already held');
   check.ok(!subscriber.includes('Sign in and open Plans to see your credit and upgrade price.'), 'a subscriber is not asked to repurchase their subscription');
   const zeroQuote = comparableText(pdfText(renderAssessmentPdf(rendering([issue()]), '2026-10-08', { plan_code: 'report_once',
-    upgrade_quotes: { monthly: { ...quotes.monthly, credit_cents: 795, first_invoice_cents: 0 } } }).bytes));
-  check.ok(zeroQuote.includes('Monthly: CAD 0.00 for your first payment after CAD 7.95 credit.'), 'full first-bill credit never becomes a negative PDF price');
+    upgrade_quotes: { monthly: { ...quotes.monthly, credit_cents: 2795, first_invoice_cents: 0 } } }).bytes));
+  check.ok(zeroQuote.includes('Monthly: CAD 0.00 for your first payment after CAD 27.95 credit.'), 'full first-bill credit never becomes a negative PDF price');
   const merged = comparableText(pdfText(renderAssessmentPdf(rendering([issue({ supported_bases: [{
     citation: 'Published report guide, payment history', rule_source_version: '2026-07',
     uncertainty: 'Verify which reporting month the bureau used.',

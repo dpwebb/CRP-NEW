@@ -53,9 +53,9 @@ function tick() { return new Promise((resolve) => setTimeout(resolve, 0)); }
 const PLANS_BODY = {
   plan_catalog: {
     plans: [
-      { plan_code: 'report_once', label: 'CRP One-Time Credit Report', currency: 'cad', amount_cents: 595, amount_display: '$5.95 CAD', interval: 'one_time', headline: 'One report lifecycle', grants: ['one uploaded PDF credit report held privately for one case'] },
-      { plan_code: 'monthly', label: 'CRP Monthly', currency: 'cad', amount_cents: 795, amount_display: '$7.95 CAD', interval: 'month', headline: 'Monthly access', grants: ['the same report lifecycle, for cases opened while the plan is active'] },
-      { plan_code: 'annual', label: 'CRP Annual', currency: 'cad', amount_cents: 7950, amount_display: '$79.50 CAD', interval: 'year', headline: 'Annual access', grants: ['the same report lifecycle, for cases opened while the plan is active'] }
+      { plan_code: 'report_once', label: 'CRP One-Time Credit Report', currency: 'cad', amount_cents: 1595, amount_display: '$15.95 CAD', interval: 'one_time', headline: 'One report lifecycle', grants: ['one uploaded PDF credit report held privately for one case'] },
+      { plan_code: 'monthly', label: 'CRP Monthly', currency: 'cad', amount_cents: 2795, amount_display: '$27.95 CAD', interval: 'month', headline: 'Monthly access', grants: ['the same report lifecycle, for cases opened while the plan is active'] },
+      { plan_code: 'annual', label: 'CRP Annual', currency: 'cad', amount_cents: 27950, amount_display: '$279.50 CAD', interval: 'year', headline: 'Annual access', grants: ['the same report lifecycle, for cases opened while the plan is active'] }
     ]
   },
   payment: { state: 'NOT_CONFIGURED', plain: 'These plans are recorded, but no payment provider is connected, so nothing can be purchased.' }
@@ -74,9 +74,9 @@ async function run(t, check) {
   const plans = await t.request('GET', '/api/billing/plans', { token: unpaid.token });
   check.equal(plans.status, 200, 'the billing plans view is reachable without a purchase');
   const byCode = Object.fromEntries(plans.json.plan_catalog.plans.map((p) => [p.plan_code, p]));
-  check.equal(byCode.report_once.amount_cents, 595, 'one-time price is CAD 5.95');
-  check.equal(byCode.monthly.amount_cents, 795, 'monthly price is CAD 7.95');
-  check.equal(byCode.annual.amount_cents, 7950, 'annual price is CAD 79.50');
+  check.equal(byCode.report_once.amount_cents, 1595, 'one-time price is CAD 15.95');
+  check.equal(byCode.monthly.amount_cents, 2795, 'monthly price is CAD 27.95');
+  check.equal(byCode.annual.amount_cents, 27950, 'annual price is CAD 279.50');
   check.equal(byCode.report_once.interval, 'one_time', 'one-time plan is a one-time purchase');
   check.equal(byCode.monthly.interval, 'month', 'monthly plan renews monthly');
   check.equal(plans.json.entitlement.entitled, false, 'an unpaid account reports not entitled');
@@ -91,7 +91,7 @@ async function run(t, check) {
   check.equal(paidEnt.json.entitlement.access_via, 'ONE_TIME_CREDIT', 'through the one-time credit');
   check.equal(paidEnt.json.entitlement.plan_code, 'report_once', 'with the plan named');
   check.equal(paidEnt.json.upgrade_credit.eligible, true, 'a verified one-time payment earns an eligible upgrade credit');
-  check.equal(paidEnt.json.upgrade_credit.credit_cents, 595, 'worth CAD 5.95');
+  check.equal(paidEnt.json.upgrade_credit.credit_cents, 1595, 'worth CAD 15.95');
 
   const unpaidEnt = await t.request('GET', '/api/entitlement', { token: unpaid.token });
   check.equal(unpaidEnt.json.entitlement.entitled, false, 'a different account sees only its own (unpaid) state, never the paid account');
@@ -121,10 +121,10 @@ async function run(t, check) {
       const upgrade_quotes = Object.fromEntries(PLANS_BODY.plan_catalog.plans.map(p => {
         const is_current = responderState.entitled && responderState.access_via === 'SUBSCRIPTION' && p.plan_code === responderState.plan_code;
         const allowed = !(responderState.entitled && responderState.access_via === 'SUBSCRIPTION' && (p.plan_code === 'report_once' || is_current));
-        const credit_cents = responderState.credit && allowed && p.plan_code !== 'report_once' ? 595 : 0;
+        const credit_cents = responderState.credit && allowed && p.plan_code !== 'report_once' ? 1595 : 0;
         return [p.plan_code, { eligible: credit_cents > 0, regular_cents: p.amount_cents, first_invoice_cents: p.amount_cents - credit_cents, credit_cents, renewal_cents: p.amount_cents, currency: 'cad', allowed, is_current, revision: `billing-fixture-${p.plan_code}-${credit_cents}` }];
       }));
-      return { status: 200, body: { ok: true, ...PLANS_BODY, upgrade_quotes, entitlement: { entitled: responderState.entitled, state: responderState.entitled ? 'ACTIVE' : 'NO_SUBSCRIPTION', access_via: responderState.access_via, plan_code: responderState.plan_code, expires_at: null, cancel_at_period_end: responderState.cancelAtPeriodEnd }, upgrade_credit: { eligible: responderState.credit, credit_cents: responderState.credit ? 595 : 0, currency: 'cad', expires_at: null, reserved_now: false } } };
+      return { status: 200, body: { ok: true, ...PLANS_BODY, upgrade_quotes, entitlement: { entitled: responderState.entitled, state: responderState.entitled ? 'ACTIVE' : 'NO_SUBSCRIPTION', access_via: responderState.access_via, plan_code: responderState.plan_code, expires_at: null, cancel_at_period_end: responderState.cancelAtPeriodEnd }, upgrade_credit: { eligible: responderState.credit, credit_cents: responderState.credit ? 1595 : 0, currency: 'cad', expires_at: null, reserved_now: false } } };
     }
     if (method === 'POST' && url === '/api/billing/checkout') return responderState.checkoutFails ? { status: 503, body: { ok: false, error: { code: 'PAYMENT_PROVIDER_NOT_CONFIGURED', message: 'No payment provider is connected.' } } } : { status: 201, body: { ok: true, checkout: { redirect_grants_nothing: true, redirect_url: 'https://example.test/checkout' } } };
     if (method === 'POST' && url === '/api/entitlement/cancel') return responderState.cancelFails ? { status: 409, body: { ok: false, error: { code: 'NO_ACTIVE_PURCHASE_TO_CANCEL', message: 'There is no purchase recorded for this account to cancel.' } } } : { status: 200, body: { ok: true, cancellation: { at_period_end: true, plain: 'Your purchase will not renew.' } } };
@@ -148,8 +148,8 @@ async function run(t, check) {
   await tick(); await tick();
   const billingBox = dom.elementById('billingView');
   check.ok(/Plans and prices/.test(billingBox.innerHTML), 'the Billing step shows the plans');
-  check.ok(/\$5\.95 CAD/.test(billingBox.innerHTML), 'one-time price and currency are shown');
-  check.ok(/\$7\.95 CAD/.test(billingBox.innerHTML) && /\$79\.50 CAD/.test(billingBox.innerHTML), 'recurring prices and currency are shown');
+  check.ok(/\$15\.95 CAD/.test(billingBox.innerHTML), 'one-time price and currency are shown');
+  check.ok(/\$27\.95 CAD/.test(billingBox.innerHTML) && /\$279\.50 CAD/.test(billingBox.innerHTML), 'recurring prices and currency are shown');
   check.ok(/one-time purchase/.test(billingBox.innerHTML), 'one-time purchase type is shown');
   check.ok(/renews monthly/.test(billingBox.innerHTML) && /renews annually/.test(billingBox.innerHTML), 'recurring renewal is shown');
   check.ok(/You have no active paid plan/.test(billingBox.innerHTML), 'the unpaid access state is shown');
@@ -165,9 +165,9 @@ async function run(t, check) {
   await tick(); await tick();
   check.ok(/renews automatically/.test(dom.elementById('billingView').innerHTML), 'a subscription shows its renewal behavior');
   check.ok(/Cancel renewal/.test(dom.elementById('billingView').innerHTML), 'a subscription shows a cancellation control');
-  check.ok(/\$5\.95 CAD/.test(dom.elementById('billingView').innerHTML) && /\$73\.55 CAD/.test(dom.elementById('billingView').innerHTML), 'the annual upgrade shows the server credit and adjusted price');
+  check.ok(/\$15\.95 CAD/.test(dom.elementById('billingView').innerHTML) && /\$263\.55 CAD/.test(dom.elementById('billingView').innerHTML), 'the annual upgrade shows the server credit and adjusted price');
   check.ok(/CURRENT PLAN/.test(dom.elementById('billingView').innerHTML) && !/id="checkout-monthly"|id="checkout-report_once"/.test(dom.elementById('billingView').innerHTML), 'an active subscriber cannot buy the same or a lower plan again');
-  check.ok(/Then \$79\.50 CAD per year/.test(dom.elementById('billingView').innerHTML), 'the regular annual renewal price is separate from today\'s discounted amount');
+  check.ok(/Then \$279\.50 CAD per year/.test(dom.elementById('billingView').innerHTML), 'the regular annual renewal price is separate from today\'s discounted amount');
 
   responderState.cancelAtPeriodEnd = true;
   vm.runInContext('state.step = STEP.BILLING; render();', ctx);
@@ -214,7 +214,7 @@ async function run(t, check) {
   await tick(); await tick();
   await dom.elementById('signout').onclick();
   await tick();
-  resolveBilling({ ok: true, ...PLANS_BODY, entitlement: { entitled: true, state: 'ACTIVE', access_via: 'SUBSCRIPTION', plan_code: 'monthly', expires_at: null, cancel_at_period_end: false }, upgrade_credit: { eligible: false, credit_cents: 595, currency: 'cad' } });
+  resolveBilling({ ok: true, ...PLANS_BODY, entitlement: { entitled: true, state: 'ACTIVE', access_via: 'SUBSCRIPTION', plan_code: 'monthly', expires_at: null, cancel_at_period_end: false }, upgrade_credit: { eligible: false, credit_cents: 1595, currency: 'cad' } });
   await tick(); await tick();
   check.ok(!/Cancel renewal/.test(panel.innerHTML), 'a delayed response after sign-out never renders the previous account\'s billing state');
   responderState.billingDeferred = null;

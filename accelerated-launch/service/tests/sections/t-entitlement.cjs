@@ -256,7 +256,7 @@ async function verificationFailures(t, check, evidence) {
     account_reference: target.account_id,
     plan_code: 'monthly',
     session_reference: reference,
-    amount_cents: 795,
+    amount_cents: 2795,
     currency: 'cad',
     occurred_at: new Date().toISOString()
   };
@@ -329,7 +329,7 @@ async function expiryCancellationAndRevocation(t, check, evidence) {
     account_reference: lapsed.account_id,
     plan_code: 'monthly',
     session_reference: lapsedCheckout.json.checkout.provider_reference,
-    amount_cents: 795,
+    amount_cents: 2795,
     currency: 'cad',
     period_end: new Date(Date.now() - 86400000).toISOString(),
     occurred_at: new Date().toISOString()
@@ -673,9 +673,9 @@ async function isolationAndLegacyParity(t, check, evidence) {
     return { entitled, stranger };
   }
   const pricing = fs.readFileSync(LEGACY_PRICING, 'utf8');
-  check.equal(plans.plan('report_once').amount_cents, 595, 'owner-approved one-time CAD price');
-  check.equal(plans.plan('monthly').amount_cents, 795, 'owner-approved monthly CAD price');
-  check.equal(plans.plan('annual').amount_cents, 7950, 'owner-approved annual CAD price');
+  check.equal(plans.plan('report_once').amount_cents, 1595, 'owner-approved one-time CAD price');
+  check.equal(plans.plan('monthly').amount_cents, 2795, 'owner-approved monthly CAD price');
+  check.equal(plans.plan('annual').amount_cents, 27950, 'owner-approved annual CAD price');
   check.equal(plans.BILLING_CURRENCY, 'cad', 'owner-approved currency replaces legacy USD pricing');
   check.ok(/report_once:\s*"one_time"/.test(pricing), 'legacy one-time interval remains a reuse reference');
 

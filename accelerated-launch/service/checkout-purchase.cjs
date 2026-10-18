@@ -32,7 +32,8 @@ async function openCheckout(store, actor, input, env) {
     if (existing.state === 'OPENING') {
       if (!existing.provider_request) throw new ServiceError('CHECKOUT_OPEN_FAILED');
       try {
-        const recovered = await callProvider(provider, { ...existing.provider_request, resume: true }, existing.is_subscription_upgrade);
+        const recovered = await callProvider(provider, { ...existing.provider_request, amount_cents: existing.amount_cents,
+          price_id: existing.provider_price_id || existing.provider_request.price_id, resume: true }, existing.is_subscription_upgrade);
         bindProviderResult(store, actor, existing.checkout_id, recovered);
       } catch (error) {
         throw new ServiceError('PAYMENT_CONFIRMATION_PENDING', { reason: error.code || 'PROVIDER_RECOVERY_UNCONFIRMED' });
@@ -59,6 +60,8 @@ async function openCheckout(store, actor, input, env) {
   const returnUrl = typeof body.return_url === 'string' && /^https?:\/\//.test(body.return_url) ? body.return_url : null;
   const checkoutId = id('chk'), now = new Date().toISOString();
   const original = isUpgrade ? entitlement.controlling(store.state().entitlements.filter(r => r.account_id === actor.account_id), now) : null;
+  const originalCheckout = original && store.state().checkout_sessions.find(c => c.account_id === actor.account_id && c.checkout_id === original.checkout_id);
+  const priceId = provider.provider_id === 'stripe' ? payments.priceIdFor(env, code, currency) : null;
   if (isUpgrade && provider.provider_id === 'stripe' && typeof provider.upgradeSubscription !== 'function') {
     throw new ServiceError('CHECKOUT_OPEN_FAILED');
   }
@@ -71,6 +74,7 @@ async function openCheckout(store, actor, input, env) {
     if (busy) throw new ServiceError('CHECKOUT_ALREADY_IN_PROGRESS');
     state.checkout_sessions.push({ checkout_id: checkoutId, account_id: actor.account_id, plan_code: code,
       case_id: caseId, amount_cents: plan.amount_cents, currency: plan.currency, provider_id: provider.provider_id,
+      provider_price_id: priceId,
       provider_reference: null, state: 'OPENING', created_at: now,
       expires_at: new Date(Date.now() + 86400000).toISOString(), is_subscription_upgrade: isUpgrade,
       previous_entitlement_id: original?.entitlement_id || null,
@@ -92,10 +96,13 @@ async function openCheckout(store, actor, input, env) {
         access_via: plans.GRANTS[code].access_via, checkout_id: checkoutId, provider_reference: null,
         created_at: now, granted_at: null, expires_at: null, event_ids: [] });
     });
-    const request = { account_id: actor.account_id, plan_code: code, currency, return_url: returnUrl, checkout_id: checkoutId, request_started_at: now,
+    const request = { account_id: actor.account_id, plan_code: code, currency, amount_cents: plan.amount_cents, price_id: priceId,
+      return_url: returnUrl, checkout_id: checkoutId, request_started_at: now,
       customer_email: store.state().accounts.find(a => a.account_id === actor.account_id)?.email,
       credit_amount_cents: reservation.amount_cents || 0, apply_upgrade_credit: reservation.reserved };
     if (isUpgrade) Object.assign(request, { existing_plan_code: original.plan_code,
+      existing_price_id: originalCheckout?.provider_price_id || null,
+      existing_amount_cents: original.plan_amount_cents ?? originalCheckout?.amount_cents,
       existing_checkout_id: original.checkout_id, provider_reference: original.provider_reference,
       subscription_reference: original.provider_subscription_reference });
     store.update(state => { state.checkout_sessions.find(c => c.checkout_id === checkoutId).provider_request = request; });
@@ -128,6 +135,7 @@ function bindProviderResult(store, actor, checkoutId, opened) {
     row.provider_reference = opened.provider_reference;
     row.redirect_url = opened.redirect_url;
     row.provider_subscription_reference = opened.subscription_reference || row.provider_subscription_reference;
+    if (opened.price_id) row.provider_price_id ||= opened.price_id;
     if (opened.expires_at) row.expires_at = opened.expires_at;
     const pending = state.entitlements.find(e => e.checkout_id === checkoutId && e.state === 'PENDING');
     if (pending) pending.provider_reference = opened.provider_reference;
@@ -135,6 +143,9 @@ function bindProviderResult(store, actor, checkoutId, opened) {
 }
 function publicCheckout(store, actor, provider, row) {
   const entitlement = require('./entitlement.cjs'), plan = plans.plan(row.plan_code, row.currency);
+  // An open payment keeps the price the consumer reviewed when it was created.
+  plan.amount_cents = row.amount_cents;
+  plan.amount_display = `${row.currency === 'gbp' ? '£' : '$'}${(row.amount_cents / 100).toFixed(2)} ${row.currency.toUpperCase()}`;
   return { checkout_id: row.checkout_id, plan, provider_id: provider.provider_id,
     provider_is_a_working_payment: provider.is_a_working_payment === true, provider_reference: row.provider_reference,
     redirect_url: row.redirect_url, redirect_grants_nothing: true, is_subscription_upgrade: row.is_subscription_upgrade,

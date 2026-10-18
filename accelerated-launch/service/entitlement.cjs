@@ -495,6 +495,17 @@ function plansView(store, actor, env, requestedCurrency = 'cad') {
   const pending = store.state().checkout_sessions.find(c => c.account_id === actor.account_id && ['OPEN', 'OPENING'].includes(c.state));
   const currency = current.entitled && current.access_via === 'SUBSCRIPTION' ? current.currency || 'cad' : pending?.currency || requestedCurrency;
   const catalog = plans.catalog(currency);
+  const subscribed = current.entitled && current.access_via === ACCESS_VIA.SUBSCRIPTION;
+  if (subscribed) {
+    const contracted = subscriptionPrice(store, actor.account_id);
+    const activePlan = catalog.plans.find(p => p.plan_code === current.plan_code);
+    if (activePlan && contracted !== null) {
+      activePlan.amount_cents = contracted;
+      activePlan.amount_display = `${currency === 'gbp' ? '£' : '$'}${(contracted / 100).toFixed(2)} ${currency.toUpperCase()}`;
+      catalog.catalog_digest = crypto.createHash('sha256').update(JSON.stringify(catalog.plans.map(p =>
+        [p.plan_code, p.currency, p.amount_cents, p.interval]))).digest('hex');
+    }
+  }
   catalog.currency_locked = Boolean(pending) || current.entitled && current.access_via === 'SUBSCRIPTION';
   const provider = payments.describeProvider(env);
   const upgradeCredit = credits.creditView(store, actor.account_id, nowIso(), current.entitled && current.access_via === 'SUBSCRIPTION' ? current.plan_code : null, currency);
@@ -533,6 +544,9 @@ function upgradeQuotes(store, actor, requestedCurrency = 'cad') {
       first_invoice_cents: plans.plan(code, currency).amount_cents, renewal_cents: plans.plan(code, currency).amount_cents,
       eligible: false, currency, source_plan_codes: [], remaining_credit_cents: 0 };
     const isCurrent = subscribed && current.plan_code === code;
+    const contracted = isCurrent ? subscriptionPrice(store, actor.account_id) : null;
+    if (contracted !== null) Object.assign(raw, { regular_cents: contracted,
+      first_invoice_cents: contracted, renewal_cents: contracted });
     const higher = !subscribed || plans.plan(code, currency).amount_cents > plans.plan(current.plan_code, currency).amount_cents;
     const renewalBlocked = code !== 'report_once' && !subscribed && current.renewal_cancellation_available;
     const allowed = !isCurrent && higher && !busy && !renewalBlocked;
@@ -545,12 +559,20 @@ function upgradeQuotes(store, actor, requestedCurrency = 'cad') {
   }));
 }
 
+/** Recorded contract amounts survive changes to prices for new purchases. */
+function subscriptionPrice(store, accountId) {
+  const row = controlling(rowsFor(store.state(), accountId), nowIso());
+  const purchase = store.state().checkout_sessions.find(c => c.account_id === accountId && c.checkout_id === row?.checkout_id);
+  const amount = row?.plan_amount_cents ?? purchase?.amount_cents;
+  return Number.isSafeInteger(amount) && amount >= 0 ? amount : null;
+}
+
 function pendingCheckout(store, actor) {
   const row = store.state().checkout_sessions.filter(c => c.account_id === actor.account_id &&
     ['OPEN', 'OPENING'].includes(c.state)).at(-1);
   return row ? { checkout_id: row.checkout_id, plan_code: row.plan_code, case_id: row.case_id || null, redirect_url: row.redirect_url || null,
     is_subscription_upgrade: row.is_subscription_upgrade === true, payable_cents: row.payable_cents,
-    credit_cents: row.credit_applied_cents || 0, renewal_cents: plans.plan(row.plan_code).amount_cents,
+    credit_cents: row.credit_applied_cents || 0, renewal_cents: row.amount_cents,
     currency: row.currency } : null;
 }
 
@@ -644,6 +666,7 @@ function eventFingerprint(event) {
   ];
   if (typeof event.checkout_reference === 'string') relevant.push(event.checkout_reference);
   if (typeof event.invoice_reference === 'string') relevant.push(event.invoice_reference);
+  if (typeof event.price_id === 'string') relevant.push(event.price_id);
   if (typeof event.payment_intent === 'string') relevant.push(event.payment_intent);
   if (Number.isSafeInteger(event.refunded_cents)) relevant.push(String(event.refunded_cents));
   return crypto.createHash('sha256').update(relevant.join('\u0000'), 'utf8').digest('hex');

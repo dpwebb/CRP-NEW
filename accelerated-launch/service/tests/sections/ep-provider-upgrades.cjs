@@ -44,34 +44,34 @@ async function run(t, check) {
     const actor = await t.unpaidAccount('ep-primary@example.test');
     const other = await t.unpaidAccount('ep-other@example.test');
     const report = await payReport(actor);
-    check.equal((await getPlans(actor)).upgrade_quotes.monthly.first_invoice_cents, 200,
+    check.equal((await getPlans(actor)).upgrade_quotes.monthly.first_invoice_cents, 1200,
       'Plan page quote subtracts the paid one-report amount');
     check.equal((await getPlans(other)).upgrade_quotes.annual.credit_cents, 0, 'another account sees no credit');
     const month = await pay(actor, 'monthly');
-    check.equal(month.checkout.upgrade_credit.credit_cents, 595, 'actual Checkout uses the server-quoted credit');
-    check.equal(month.session.amount_total, 200, 'mock provider charges only the quoted monthly cash subtotal');
+    check.equal(month.checkout.upgrade_credit.credit_cents, 1595, 'actual Checkout uses the server-quoted credit');
+    check.equal(month.session.amount_total, 1200, 'mock provider charges only the quoted monthly cash subtotal');
     const coupon = [...mock.coupons.values()][0];
-    check.equal(coupon.amount_off, 595, 'provider receives the calculated fixed cash credit');
+    check.equal(coupon.amount_off, 1595, 'provider receives the calculated fixed cash credit');
     check.equal(coupon.duration, 'once', 'renewals are not discounted');
     check.equal(coupon.max_redemptions, 1, 'coupon is bound to one use');
     const firstInvoice = mock.invoices.get(month.session.invoice);
-    check.equal(creditsFor(actor).find(row => row.payment_id === firstInvoice.id).amount_cents, 200,
-      'discounted monthly receipt credits actual cash instead of catalog CAD7.95');
+    check.equal(creditsFor(actor).find(row => row.payment_id === firstInvoice.id).amount_cents, 1200,
+      'discounted monthly receipt credits actual cash instead of catalog CAD27.95');
     const beforeFirstReplay = creditsFor(actor).length;
     const firstReplay = await events('invoice.paid', firstInvoice);
     check.equal(firstReplay.status, 200, 'first invoice after Checkout is processed');
     check.equal(creditsFor(actor).length, beforeFirstReplay, 'Checkout and first invoice mint one cash receipt');
-    check.equal((await getPlans(actor)).upgrade_quotes.annual.credit_cents, 200, 'annual counts only unused monthly cash');
+    check.equal((await getPlans(actor)).upgrade_quotes.annual.credit_cents, 1200, 'annual counts only unused monthly cash');
 
-    const history1 = mock.historicalInvoice(month.subscription.id, 795);
-    const history2 = mock.historicalInvoice(month.subscription.id, 795);
-    const refunded = mock.historicalInvoice(month.subscription.id, 795);
+    const history1 = mock.historicalInvoice(month.subscription.id, 2795);
+    const history2 = mock.historicalInvoice(month.subscription.id, 2795);
+    const refunded = mock.historicalInvoice(month.subscription.id, 2795);
     mock.refundIntent(refunded.payment_intent);
-    mock.historicalInvoice(month.subscription.id, 795, { currency: 'usd' });
-    mock.historicalInvoice(month.subscription.id, 795, { subscription: 'sub_foreign', include_in_list_for: month.subscription.id });
+    mock.historicalInvoice(month.subscription.id, 2795, { currency: 'usd' });
+    mock.historicalInvoice(month.subscription.id, 2795, { subscription: 'sub_foreign', include_in_list_for: month.subscription.id });
     resetHistory(actor);
     const historical = await getPlans(actor);
-    check.equal(historical.upgrade_quotes.annual.credit_cents, 1790, 'provider read-back imports every unused monthly payment');
+    check.equal(historical.upgrade_quotes.annual.credit_cents, 6790, 'provider read-back imports every unused monthly payment');
     check.ok(mock.calls.some(c => c.path === '/v1/invoices' && c.query.starting_after), 'historical invoice read follows pagination');
     check.equal(creditsFor(actor).find(row => row.payment_id === refunded.id)?.state, 'REVOKED',
       'refunded historical receipt is retained with no usable credit');
@@ -83,7 +83,7 @@ async function run(t, check) {
     const missingReview = await purchase(actor, 'annual');
     check.equal(missingReview.status, 409, 'saved-card upgrade requires the reviewed quote revision');
     check.equal(subscriptionWrites().length, beforeUpgradeCalls, 'unreviewed upgrade never calls the saved-card update');
-    const recentRenewal = mock.historicalInvoice(month.subscription.id, 795);
+    const recentRenewal = mock.historicalInvoice(month.subscription.id, 2795);
     const renewedMonth = await events('invoice.paid', recentRenewal);
     check.equal(renewedMonth.json.event.accepted, true, 'another verified monthly payment is recorded');
     const stale = await purchase(actor, 'annual', { quote_revision: historical.upgrade_quotes.annual.revision });
@@ -91,8 +91,8 @@ async function run(t, check) {
     check.equal(subscriptionWrites().length, beforeUpgradeCalls, 'stale quote does not call the saved card');
     const currentPlans = await getPlans(actor);
     const quote = currentPlans.upgrade_quotes.annual;
-    check.equal(quote.credit_cents, 2585, 'upgrade counts all unused lower-plan cash payments');
-    check.equal(quote.first_invoice_cents, 5365, 'quoted annual cash charge matches the accumulated credit');
+    check.equal(quote.credit_cents, 9585, 'upgrade counts all unused lower-plan cash payments');
+    check.equal(quote.first_invoice_cents, 18365, 'quoted annual cash charge matches the accumulated credit');
     const oldEntitlement = read().entitlements.find(row => row.account_id === actor.account_id && row.plan_code === 'monthly' && row.state === 'ACTIVE');
     const upgrade = await purchase(actor, 'annual', { quote_revision: quote.revision });
     check.equal(upgrade.status, 201, 'owned annual upgrade opens: ' + upgrade.text);
@@ -227,7 +227,7 @@ async function run(t, check) {
     const freshId = await invoiceEvents('invoice.paid', paidAnnual);
     check.equal(freshId.json.event.duplicate, true, 'same invoice with a fresh event ID is idempotent');
     check.equal(creditsFor(actor).length, receiptCount, 'replays mint no additional credit');
-    const yearRenewal = mock.invoice(month.subscription, 'annual', 7950);
+    const yearRenewal = mock.invoice(month.subscription, 'annual', 27950);
     yearRenewal.lines.data[0].period.end += 366 * 86400;
     mock.payInvoice(yearRenewal.id);
     check.equal((await invoiceEvents('invoice.paid', yearRenewal)).json.event.accepted, true, 'modern annual renewal uses its normal full price');
@@ -248,7 +248,7 @@ async function run(t, check) {
     check.equal(voidUpgrade.status, 201, 'second account opens a pending upgrade');
     const voidInvoice = mock.voidInvoice(voidUpgrade.json.checkout.provider_reference);
     check.equal((await invoiceEvents('invoice.voided', voidInvoice)).json.event.accepted, true, 'modern signed void releases its pending upgrade');
-    check.equal((await getPlans(voidActor)).upgrade_quotes.annual.credit_cents, 795, 'void restores unused monthly cash credit');
+    check.equal((await getPlans(voidActor)).upgrade_quotes.annual.credit_cents, 2795, 'void restores unused monthly cash credit');
     check.equal((await status(voidActor)).plan_code, 'monthly', 'void preserves prior monthly access');
     check.equal(voidMonth.subscription.metadata.plan_code, 'monthly', 'void restores monthly provider metadata before another upgrade');
     check.equal(voidMonth.subscription.metadata.checkout_id, voidMonth.checkout.checkout_id,
@@ -260,7 +260,7 @@ async function run(t, check) {
     check.equal(recovered.status, 201, 'provider-expired invoice is reconciled before retry');
     check.equal(read().checkout_sessions.find(row => row.checkout_id === expiring.json.checkout.checkout_id).state,
       'EXPIRED', 'expired pending checkout does not strand the credit');
-    check.equal(recovered.json.checkout.upgrade_credit.credit_cents, 795, 'same unused credit is available on the retry');
+    check.equal(recovered.json.checkout.upgrade_credit.credit_cents, 2795, 'same unused credit is available on the retry');
     const pendingCancellation = await t.request('POST', '/api/entitlement/cancel', { token: voidActor.token, body: {} });
     check.equal(pendingCancellation.status, 200, 'monthly subscriber can stop renewal with an unpaid annual upgrade: ' + pendingCancellation.text);
     check.equal(mock.invoices.get(recovered.json.checkout.provider_reference).status, 'void', 'cancellation voids the pending annual invoice');
@@ -282,7 +282,7 @@ async function run(t, check) {
     check.equal(mock.invoices.size, beforeFailInvoices, 'failed provider update creates no chargeable invoice');
     check.equal(mock.intents.size, beforeFailIntents, 'failed update charges no cash');
     check.equal((await status(failureActor)).plan_code, 'monthly', 'provider failure keeps paid monthly access');
-    check.equal((await getPlans(failureActor)).upgrade_quotes.annual.credit_cents, 795, 'failed update releases its reserved credit');
+    check.equal((await getPlans(failureActor)).upgrade_quotes.annual.credit_cents, 2795, 'failed update releases its reserved credit');
     const gate = mock.pauseNextUpgrade();
     const firstTry = purchase(failureActor, 'annual', { quote_revision: failureQuote.revision });
     try {
@@ -296,14 +296,14 @@ async function run(t, check) {
 
     const centsActor = await t.unpaidAccount('ep-small-invoice@example.test');
     const centsMonth = await pay(centsActor, 'monthly');
-    for (let index = 0; index < 9; index++) mock.historicalInvoice(centsMonth.subscription.id, 795);
+    for (let index = 0; index < 9; index++) mock.historicalInvoice(centsMonth.subscription.id, 2795);
     const centsInvoice = mock.invoices.get(centsMonth.session.invoice);
     await events('charge.refunded', mock.refundIntent(centsInvoice.payment_intent, 39));
     resetHistory(centsActor);
     const centsQuote = (await getPlans(centsActor)).upgrade_quotes.annual;
-    check.equal(centsQuote.available_credit_cents, 7911, 'all verified net cents remain counted');
+    check.equal(centsQuote.available_credit_cents, 27911, 'all verified net cents remain counted');
     check.equal(centsQuote.first_invoice_cents, 50, 'nonzero invoice reaches the configured CAD minimum charge');
-    check.equal(centsQuote.credit_cents, 7900, 'only the chargeable discount is reserved');
+    check.equal(centsQuote.credit_cents, 27900, 'only the chargeable discount is reserved');
     check.equal(centsQuote.remaining_credit_cents, 11, 'the extra unused cents remain in the account');
     const centsUpgrade = await purchase(centsActor, 'annual', { quote_revision: centsQuote.revision });
     check.equal(centsUpgrade.status, 201, 'a few-cents remainder does not block the upgrade');
@@ -322,14 +322,14 @@ async function run(t, check) {
     const currentAfterPartial = await status(partialCurrentActor);
     check.equal(currentAfterPartial.state, 'ACTIVE', 'a partial refund preserves the paid subscription period');
     check.equal(currentAfterPartial.entitled, true, 'current paid report and packet access remain available after a partial refund');
-    check.equal((await getPlans(partialCurrentActor)).upgrade_quotes.annual.credit_cents, 695, 'current subscription contributes only the unrefunded unused cash');
-    const fullCurrentRefund = mock.refundIntent(partialCurrentInvoice.payment_intent, 795);
+    check.equal((await getPlans(partialCurrentActor)).upgrade_quotes.annual.credit_cents, 2695, 'current subscription contributes only the unrefunded unused cash');
+    const fullCurrentRefund = mock.refundIntent(partialCurrentInvoice.payment_intent, 2795);
     check.equal((await events('charge.refunded', fullCurrentRefund)).json.event.accepted, true, 'a later full cumulative refund is processed');
     check.equal((await status(partialCurrentActor)).entitled, false, 'a full refund still revokes the refunded subscription access');
 
     const delayedActor = await t.unpaidAccount('ep-delayed-monthly@example.test');
     const delayedMonth = await pay(delayedActor, 'monthly');
-    const newerMonthly = mock.invoice(delayedMonth.subscription, 'monthly', 795);
+    const newerMonthly = mock.invoice(delayedMonth.subscription, 'monthly', 2795);
     newerMonthly.lines.data[0].period.start += 31 * 86400;
     newerMonthly.lines.data[0].period.end += 31 * 86400;
     mock.payInvoice(newerMonthly.id);
@@ -348,7 +348,7 @@ async function run(t, check) {
     check.equal(currentMonthlyIdentity.expires_at, new Date(newerMonthly.lines.data[0].period.end * 1000).toISOString(),
       'newer monthly renewal records its canonical paid-through date');
     const initialMonthly = mock.invoices.get(delayedMonth.session.invoice);
-    const historicalMonthly = mock.historicalInvoice(delayedMonth.subscription.id, 795, {
+    const historicalMonthly = mock.historicalInvoice(delayedMonth.subscription.id, 2795, {
       created: initialMonthly.lines.data[0].period.start - 31 * 86400,
       status_transitions: { paid_at: initialMonthly.lines.data[0].period.start - 31 * 86400 },
       lines: { data: [{ ...clone(initialMonthly.lines.data[0]), period: {
@@ -356,11 +356,11 @@ async function run(t, check) {
         end: initialMonthly.lines.data[0].period.start } }] }
     });
     resetHistory(delayedActor);
-    check.equal((await getPlans(delayedActor)).upgrade_quotes.annual.credit_cents, 2385,
+    check.equal((await getPlans(delayedActor)).upgrade_quotes.annual.credit_cents, 8385,
       'owned history imports the older monthly cash alongside both newer unused payments');
     const historicalReceipts = () => creditsFor(delayedActor).filter(row => row.payment_id === historicalMonthly.id);
     check.equal(historicalReceipts().length, 1, 'older canonical cash is imported as one owned receipt');
-    check.equal(historicalReceipts()[0].remaining_amount_cents, 795, 'older unused payment remains available for an upgrade');
+    check.equal(historicalReceipts()[0].remaining_amount_cents, 2795, 'older unused payment remains available for an upgrade');
     const cashBeforeDelayed = creditsFor(delayedActor).length;
     const delayedPaid = await invoiceEvents('invoice.paid', historicalMonthly);
     check.equal(delayedPaid.json.event.accepted, true, 'delayed modern paid webhook recognizes the older canonical receipt');
@@ -377,7 +377,7 @@ async function run(t, check) {
       'refund of delayed older cash preserves the independently paid newer monthly access');
     check.equal((await status(delayedActor)).entitled, true, 'consumer keeps access through the newer paid monthly period');
     check.equal(historicalReceipts()[0].remaining_amount_cents, 0, 'refunded older cash no longer funds an upgrade');
-    check.equal((await getPlans(delayedActor)).upgrade_quotes.annual.credit_cents, 1590,
+    check.equal((await getPlans(delayedActor)).upgrade_quotes.annual.credit_cents, 5590,
       'only the two unrefunded unused monthly payments remain available');
     const newerRefund = mock.refundIntent(newerMonthly.payment_intent);
     check.equal((await events('charge.refunded', newerRefund)).json.event.accepted, true,
@@ -386,10 +386,10 @@ async function run(t, check) {
 
     const refundActor = await t.unpaidAccount('ep-refund@example.test');
     const refundMonth = await pay(refundActor, 'monthly');
-    const refundedRenewal = mock.historicalInvoice(refundMonth.subscription.id, 795);
+    const refundedRenewal = mock.historicalInvoice(refundMonth.subscription.id, 2795);
     resetHistory(refundActor);
     const refundQuote = (await getPlans(refundActor)).upgrade_quotes.annual;
-    check.equal(refundQuote.credit_cents, 1590, 'two unspent monthly payments fund one pending upgrade');
+    check.equal(refundQuote.credit_cents, 5590, 'two unspent monthly payments fund one pending upgrade');
     const refundDraft = await purchase(refundActor, 'annual', { quote_revision: refundQuote.revision });
     const refundCharge = mock.refundIntent(refundedRenewal.payment_intent);
     check.equal((await events('charge.refunded', refundCharge)).json.event.accepted, true, 'signed source refund is processed');
@@ -398,40 +398,40 @@ async function run(t, check) {
     check.equal(refundMonth.subscription.metadata.checkout_id, refundMonth.checkout.checkout_id, 'source refund restores the original purchase binding');
     check.equal((await status(refundActor)).plan_code, 'monthly', 'unrelated historical refund does not end current monthly payment');
     check.equal(creditsFor(refundActor).find(row => row.payment_id === refundMonth.session.invoice).remaining_amount_cents,
-      795, 'surviving cash credit is released without being consumed');
+      2795, 'surviving cash credit is released without being consumed');
     check.equal(creditsFor(refundActor).filter(row => row.state === 'RESERVED').length, 0, 'void leaves no surviving stranded reservation');
     const invalidPaid = clone(mock.invoices.get(refundDraft.json.checkout.provider_reference));
     invalidPaid.status = 'paid'; invalidPaid.paid = true; invalidPaid.amount_paid = invalidPaid.amount_due;
     const blockedAfterRefund = await events('invoice.paid', invalidPaid);
     check.ok(blockedAfterRefund.status < 500 && (blockedAfterRefund.status >= 400 || blockedAfterRefund.json.event.accepted === false),
       'revoked discounted invoice cannot activate annual access later');
-    const partialRenewal = mock.historicalInvoice(refundMonth.subscription.id, 795);
+    const partialRenewal = mock.historicalInvoice(refundMonth.subscription.id, 2795);
     resetHistory(refundActor);
     const partialQuote = (await getPlans(refundActor)).upgrade_quotes.annual;
-    check.equal(partialQuote.credit_cents, 1590, 'a new historical renewal adds its actual unused cash');
+    check.equal(partialQuote.credit_cents, 5590, 'a new historical renewal adds its actual unused cash');
     const partialDraft = await purchase(refundActor, 'annual', { quote_revision: partialQuote.revision });
     check.equal(partialDraft.status, 201, 'unused cash can fund another reviewed upgrade');
     const partialCharge = mock.refundIntent(partialRenewal.payment_intent, 100);
     check.equal((await events('charge.refunded', partialCharge)).json.event.accepted, true, 'signed partial source refund is processed');
     check.equal(mock.invoices.get(partialDraft.json.checkout.provider_reference).status, 'void', 'partial refund voids the now-inaccurate discounted invoice');
     const partiallyRefunded = creditsFor(refundActor).find(row => row.payment_id === partialRenewal.id);
-    check.equal(partiallyRefunded.amount_cents, 795, 'partial refund preserves the original cash receipt');
+    check.equal(partiallyRefunded.amount_cents, 2795, 'partial refund preserves the original cash receipt');
     check.equal(partiallyRefunded.refunded_cents, 100, 'partial refund records the cumulative returned amount');
-    check.equal(partiallyRefunded.remaining_amount_cents, 695, 'only the returned cash is removed from unused credit');
+    check.equal(partiallyRefunded.remaining_amount_cents, 2695, 'only the returned cash is removed from unused credit');
     check.equal(creditsFor(refundActor).filter(row => row.state === 'RESERVED').length, 0, 'partial refund releases every allocation for its cancelled invoice');
-    check.equal((await getPlans(refundActor)).upgrade_quotes.annual.credit_cents, 1490, 'consumer can review the corrected cash credit after partial refund');
+    check.equal((await getPlans(refundActor)).upgrade_quotes.annual.credit_cents, 5490, 'consumer can review the corrected cash credit after partial refund');
     check.equal((await status(refundActor)).plan_code, 'monthly', 'partial historical refund preserves the independently paid monthly access');
-    const readBackPartial = mock.historicalInvoice(refundMonth.subscription.id, 795);
+    const readBackPartial = mock.historicalInvoice(refundMonth.subscription.id, 2795);
     mock.refundIntent(readBackPartial.payment_intent, 200);
     resetHistory(refundActor);
-    check.equal((await getPlans(refundActor)).upgrade_quotes.annual.credit_cents, 2085,
+    check.equal((await getPlans(refundActor)).upgrade_quotes.annual.credit_cents, 8085,
       'provider read-back imports only the remaining cash of a previously unseen partial-refund receipt');
     const readBackRow = () => creditsFor(refundActor).find(row => row.payment_id === readBackPartial.id);
-    check.equal(readBackRow().amount_cents, 795, 'historical partial refund retains the actual original payment');
+    check.equal(readBackRow().amount_cents, 2795, 'historical partial refund retains the actual original payment');
     check.equal(readBackRow().refunded_cents, 200, 'historical partial refund retains the cumulative returned amount');
-    check.equal(readBackRow().remaining_amount_cents, 595, 'historical partial refund leaves unreturned cash eligible');
+    check.equal(readBackRow().remaining_amount_cents, 2595, 'historical partial refund leaves unreturned cash eligible');
     resetHistory(refundActor); await getPlans(refundActor);
-    check.equal(readBackRow().remaining_amount_cents, 595, 'repeated historical partial-refund import is idempotent');
+    check.equal(readBackRow().remaining_amount_cents, 2595, 'repeated historical partial-refund import is idempotent');
 
     const zeroActor = await t.unpaidAccount('ep-zero@example.test');
     await payReport(zeroActor); await payReport(zeroActor);
@@ -447,14 +447,14 @@ async function run(t, check) {
     const cancelledZero = await t.request('POST', '/api/entitlement/cancel', { token: zeroActor.token, body: {} });
     check.equal(cancelledZero.status, 200, 'a fully credited subscriber can cancel renewal too: ' + cancelledZero.text);
     const partiallyUsed = creditsFor(zeroActor).find(row => row.remaining_amount_cents === 395);
-    check.equal(partiallyUsed.consumed_cents, 200, 'one source receipt was partly consumed by the paid subscription');
+    check.equal(partiallyUsed.consumed_cents, 1200, 'one source receipt was partly consumed by the paid subscription');
     const usedRefund = mock.refundIntent(partiallyUsed.payment_intent, 100);
     const firstPartialEvent = 'evt_partly_used_cash_refund';
     check.equal((await events('charge.refunded', usedRefund, firstPartialEvent)).json.event.accepted, true,
       'partial refund of a partly used source payment is processed');
     const adjustedUsed = () => creditsFor(zeroActor).find(row => row.credit_id === partiallyUsed.credit_id);
-    check.equal(adjustedUsed().amount_cents, 595, 'returned cash never rewrites the original paid amount');
-    check.equal(adjustedUsed().consumed_cents, 200, 'a refund never erases credit already allocated to a paid upgrade');
+    check.equal(adjustedUsed().amount_cents, 1595, 'returned cash never rewrites the original paid amount');
+    check.equal(adjustedUsed().consumed_cents, 1200, 'a refund never erases credit already allocated to a paid upgrade');
     check.equal(adjustedUsed().refunded_cents, 100, 'returned cash remains a separate cumulative ledger amount');
     check.equal(adjustedUsed().remaining_amount_cents, 295, 'the remaining credit is paid cash minus consumed credit and refund');
     check.equal((await events('charge.refunded', usedRefund, firstPartialEvent)).json.event.duplicate, true, 'same partial-refund event is idempotent');
@@ -469,7 +469,7 @@ async function run(t, check) {
     resetHistory(zeroActor); await getPlans(zeroActor);
     check.equal(adjustedUsed().refunded_cents, 150, 'repeated provider read-back does not add the refund again');
     check.equal(adjustedUsed().remaining_amount_cents, 245, 'provider read-back cannot reset spent or returned credit');
-    check.equal(adjustedUsed().consumed_cents, 200, 'provider read-back keeps already settled allocations');
+    check.equal(adjustedUsed().consumed_cents, 1200, 'provider read-back keeps already settled allocations');
     check.equal((await status(zeroActor)).plan_code, 'monthly', 'refund of the earlier report payment preserves the verified zero-due monthly purchase');
 
     const uncertainActor = await t.unpaidAccount('ep-uncertain@example.test');
@@ -483,7 +483,7 @@ async function run(t, check) {
     check.equal(mock.invoices.size, beforeLostInvoice + 1, 'provider already created precisely one pending invoice');
     const pendingPosition = await getPlans(uncertainActor);
     const pendingId = pendingPosition.pending_checkout.checkout_id;
-    check.equal(pendingPosition.pending_checkout.credit_cents, 795, 'original reviewed credit stays bound while provider outcome is uncertain');
+    check.equal(pendingPosition.pending_checkout.credit_cents, 2795, 'original reviewed credit stays bound while provider outcome is uncertain');
     check.equal(pendingPosition.upgrade_quotes.annual.allowed, false, 'another upgrade is blocked while its outcome is uncertain');
     check.equal((await status(uncertainActor)).plan_code, 'monthly', 'uncertain provider reply keeps prior access');
     const foreignResume = await purchase(other, 'annual', { resume_checkout_id: pendingId });
@@ -496,7 +496,7 @@ async function run(t, check) {
     check.equal(failedResume.json.error.code, 'PAYMENT_CONFIRMATION_PENDING', 'recovery refusal avoids a false no-payment claim');
     check.ok(!/nothing was sent|nothing.*charged/i.test(failedResume.json.error.message), 'recovery explains the uncertain original payment honestly');
     check.equal(read().checkout_sessions.find(row => row.checkout_id === pendingId).state, 'OPENING', 'failed recovery retains the original pending request');
-    check.equal(creditsFor(uncertainActor).reduce((sum, row) => sum + row.reserved_amount_cents, 0), 795, 'failed recovery retains the approved credit reservation');
+    check.equal(creditsFor(uncertainActor).reduce((sum, row) => sum + row.reserved_amount_cents, 0), 2795, 'failed recovery retains the approved credit reservation');
     check.equal(mock.invoices.size, beforeLostInvoice + 1, 'failed recovery creates no second invoice');
     recoverableInvoice.amount_due = originalDue;
     const writesBeforeResume = subscriptionWrites().length;

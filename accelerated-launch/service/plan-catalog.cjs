@@ -1,5 +1,5 @@
 'use strict';
-/** Owner-approved fixed native prices, October 11. No exchange-rate pricing.
+/** Owner-approved fixed native prices, October 17. No exchange-rate pricing.
  * Payment currency never expands product permissions.
  */
 
@@ -10,10 +10,10 @@ const PLAN_CODES = Object.freeze(['report_once', 'monthly', 'annual']);
 /** Historical CAD prices in cents, retained for existing CAD contracts. */
 const BASE_PRICE_CAD_CENTS = Object.freeze({ report_once: 595, monthly: 795, annual: 7950 });
 const NATIVE_PRICES = Object.freeze({
-  cad: BASE_PRICE_CAD_CENTS,
-  usd: Object.freeze({ report_once: 495, monthly: 595, annual: 5950 }),
-  aud: Object.freeze({ report_once: 595, monthly: 795, annual: 7950 }),
-  gbp: Object.freeze({ report_once: 315, monthly: 425, annual: 4250 })
+  cad: Object.freeze({ report_once: 1595, monthly: 2795, annual: 27950 }),
+  usd: Object.freeze({ report_once: 1495, monthly: 2595, annual: 25950 }),
+  aud: Object.freeze({ report_once: 1595, monthly: 2795, annual: 27950 }),
+  gbp: Object.freeze({ report_once: 1315, monthly: 2425, annual: 24250 })
 });
 const CURRENCIES = Object.freeze(Object.keys(NATIVE_PRICES));
 const COUNTRY_CURRENCY = Object.freeze({ CA: 'cad', US: 'usd', AU: 'aud', GB: 'gbp' });

@@ -13,6 +13,12 @@ const second = () => Math.floor(Date.now() / 1000);
 
 class StripeUpgradeFixture {
   constructor() {
+    this.prices = new Map(); this.primaryPrices = new Map();
+    for (const currency of catalog.CURRENCIES) for (const code of catalog.PLAN_CODES) {
+      const id = priceFor(code, currency);
+      this.primaryPrices.set(currency + '/' + code, id);
+      this.prices.set(id, { code, currency, amount: catalog.NATIVE_PRICES[currency][code] });
+    }
     this.sessions = new Map(); this.subscriptions = new Map(); this.invoices = new Map();
     this.intents = new Map(); this.charges = new Map(); this.coupons = new Map();
     this.calls = []; this.sequence = 0; this.pageSize = 2; this.failUpgrade = false;
@@ -40,10 +46,23 @@ class StripeUpgradeFixture {
     this.base = 'http://127.0.0.1:' + this.server.address().port; resolve(this);
   })); }
   close() { return new Promise(resolve => this.server.close(resolve)); }
-  env(origin) { const native = {}; for (const currency of ['usd', 'aud', 'gbp']) for (const code of catalog.PLAN_CODES) native['STRIPE_PRICE_' + code.toUpperCase() + '_' + currency.toUpperCase()] = priceFor(code, currency); return { ...native, CRP_PAYMENT_PROVIDER: 'stripe', STRIPE_SECRET_KEY: 'sk_test_fictional_upgrade_fixture',
+  priceFor(code, currency = 'cad') { return this.primaryPrices.get(currency + '/' + code); }
+  rotatePrices(previous, suffix) {
+    for (const currency of catalog.CURRENCIES) for (const code of catalog.PLAN_CODES) {
+      this.prices.get(this.priceFor(code, currency)).amount = previous[currency][code];
+      const id = priceFor(code, currency) + '_' + suffix;
+      this.primaryPrices.set(currency + '/' + code, id);
+      this.prices.set(id, { code, currency, amount: catalog.NATIVE_PRICES[currency][code] });
+    }
+  }
+  env(origin) { const native = {}; for (const currency of catalog.CURRENCIES) for (const code of catalog.PLAN_CODES) {
+    const name = 'STRIPE_PRICE_' + code.toUpperCase() + (currency === 'cad' ? '' : '_' + currency.toUpperCase());
+    native[name] = this.priceFor(code, currency);
+    const old = [...this.prices].filter(([id, p]) => p.code === code && p.currency === currency && id !== native[name]).map(([id]) => id);
+    if (old.length) native[name + '_LEGACY'] = old.join(',');
+  } return { ...native, CRP_PAYMENT_PROVIDER: 'stripe', STRIPE_SECRET_KEY: 'sk_test_fictional_upgrade_fixture',
     STRIPE_PUBLISHABLE_KEY: 'pk_test_fictional_upgrade_fixture',
-    STRIPE_WEBHOOK_SECRET: SECRET, STRIPE_PRICE_REPORT_ONCE: PRICES.report_once,
-    STRIPE_PRICE_MONTHLY: PRICES.monthly, STRIPE_PRICE_ANNUAL: PRICES.annual,
+    STRIPE_WEBHOOK_SECRET: SECRET,
     STRIPE_APP_ORIGINS: origin, CRP_STRIPE_API_BASE: this.base }; }
   metadata(params, prefix = 'metadata') {
     return Object.fromEntries(Object.entries(params).filter(([key]) => key.startsWith(prefix + '['))
@@ -60,12 +79,14 @@ class StripeUpgradeFixture {
   }
   invoice(subscription, plan, amount, patch = {}) {
     const id = 'in_fixture_' + ++this.sequence, from = second(), currency = subscription.currency || 'cad';
+    const currentId = subscription.items?.data?.[0]?.price?.id;
+    const priceId = this.prices.get(currentId)?.code === plan ? currentId : this.priceFor(plan, currency);
     const invoice = { id, object: 'invoice', subscription: subscription.id, customer: subscription.customer,
       currency, livemode: false, status: 'open', paid: false, amount_due: amount, amount_paid: 0,
       amount_remaining: amount, created: from, payment_intent: null,
       hosted_invoice_url: 'https://invoice.stripe.com/i/' + id,
-      lines: { data: [{ id: 'il_' + id, price: { id: priceFor(plan, currency) }, quantity: 1,
-        amount: catalog.NATIVE_PRICES[currency][plan], period: { start: from, end: from + (plan === 'annual' ? 366 : 31) * 86400 } }] },
+      lines: { data: [{ id: 'il_' + id, price: { id: priceId }, quantity: 1,
+        amount: this.prices.get(priceId).amount, period: { start: from, end: from + (plan === 'annual' ? 366 : 31) * 86400 } }] },
       status_transitions: { paid_at: null }, ...patch };
     this.invoices.set(id, invoice); return invoice;
   }
@@ -146,8 +167,8 @@ class StripeUpgradeFixture {
     if (key && this.idempotent.has(key)) return yes(this.idempotent.get(key));
     const saved = body => { if (key) this.idempotent.set(key, clone(body)); return yes(body); };
     if (call.method === 'GET' && call.path.startsWith('/v1/prices/')) {
-      const { code, currency } = resolvePrice(id);
-      return code ? yes({ id, currency, unit_amount: catalog.NATIVE_PRICES[currency][code], livemode: false,
+      const { code, currency, amount } = this.prices.get(id) || {};
+      return code ? yes({ id, currency, unit_amount: amount, livemode: false,
         type: code === 'report_once' ? 'one_time' : 'recurring',
         ...(code === 'report_once' ? {} : { recurring: { interval: code === 'monthly' ? 'month' : 'year' } }) }) : missing();
     }
@@ -157,21 +178,22 @@ class StripeUpgradeFixture {
       this.coupons.set(coupon.id, coupon); return saved(coupon);
     }
     if (call.method === 'POST' && call.path === '/v1/checkout/sessions') {
-      const { code, currency } = resolvePrice(p['line_items[0][price]']);
+      const selectedPrice = p['line_items[0][price]'];
+      const { code, currency, amount } = this.prices.get(selectedPrice) || {};
       const metadata = this.metadata(p), discount = this.coupons.get(p['discounts[0][coupon]'])?.amount_off || 0;
       const sessionId = 'cs_fixture_' + ++this.sequence;
       const session = { id: sessionId, object: 'checkout.session', mode: p.mode, status: 'open',
-        payment_status: 'unpaid', amount_total: catalog.NATIVE_PRICES[currency][code] - discount, currency,
+        payment_status: 'unpaid', amount_total: amount - discount, currency,
         client_reference_id: p.client_reference_id, metadata, livemode: false, created: second(),
         expires_at: second() + 86400, subscription: null, invoice: null, payment_intent: null,
-        line_items: { data: [{ price: { id: priceFor(code, currency) }, quantity: 1 }] }, url: 'https://checkout.stripe.com/c/' + sessionId };
+        line_items: { data: [{ price: { id: selectedPrice }, quantity: 1 }] }, url: 'https://checkout.stripe.com/c/' + sessionId };
       if (p.mode === 'subscription') {
         const subId = 'sub_fixture_' + ++this.sequence;
         const sub = { id: subId, object: 'subscription', currency, livemode: false, metadata: this.metadata(p, 'subscription_data[metadata]'),
           status: 'incomplete', customer: 'cus_' + p.client_reference_id, collection_method: 'charge_automatically',
           cancel_at_period_end: false, pending_update: null, schedule: null,
           current_period_end: second() + (code === 'annual' ? 366 : 31) * 86400,
-          items: { data: [{ id: 'si_fixture_' + this.sequence, price: { id: priceFor(code, currency) }, quantity: 1 }] } };
+          items: { data: [{ id: 'si_fixture_' + this.sequence, price: { id: selectedPrice }, quantity: 1 }] } };
         this.subscriptions.set(sub.id, sub); const invoice = this.invoice(sub, code, session.amount_total);
         sub.latest_invoice = invoice.id; session.subscription = sub.id; session.invoice = invoice.id;
       }
@@ -190,7 +212,10 @@ class StripeUpgradeFixture {
         if (this.upgradeGate) { const hold = this.upgradeGate; this.upgradeGate = null; hold.started(); await hold.gate; }
         if (this.failUpgrade) { this.failUpgrade = false; return { status: 400, body: { error: { message: 'fictional definitive upgrade refusal' } } }; }
         const discount = this.coupons.get(p['discounts[0][coupon]'])?.amount_off || 0;
-        const invoice = this.invoice(sub, 'annual', catalog.NATIVE_PRICES[sub.currency || 'cad'].annual - discount);
+        const selectedPrice = p['items[0][price]'];
+        const invoice = this.invoice(sub, 'annual', this.prices.get(selectedPrice).amount - discount);
+        invoice.lines.data[0].price.id = selectedPrice;
+        invoice.lines.data[0].amount = this.prices.get(selectedPrice).amount;
         sub.pending = { invoice_id: invoice.id, plan_price: p['items[0][price]'], metadata: this.metadata(p) };
         // Stripe metadata may change before the pending price change is paid.
         sub.metadata = { ...sub.pending.metadata };

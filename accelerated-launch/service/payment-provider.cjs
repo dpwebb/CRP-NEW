@@ -218,12 +218,13 @@ const STRIPE_ADAPTER = Object.freeze({
 });
 
 /** Map a configured Price ID back to the plan it belongs to. */
-function planCodeFromPrice(env, priceId) {
+function planCodeFromPrice(env, priceId, currency) {
   if (typeof priceId !== 'string' || !priceId) return null;
-  for (const currency of plans.CURRENCIES) for (const planCode of Object.keys(STRIPE_PRICE_NAMES)) {
-    if (priceIdFor(env, planCode, currency) === priceId) return planCode;
+  const matches = [];
+  for (const unit of currency ? [currency] : plans.CURRENCIES) for (const planCode of plans.PLAN_CODES) {
+    if (acceptedPriceIdsFor(env, planCode, unit).includes(priceId)) matches.push(planCode);
   }
-  return null;
+  return matches.length === 1 ? matches[0] : null;
 }
 
 /** Verify a Stripe Price object against the owner-approved catalog (currency, amount, cadence). */
@@ -287,8 +288,7 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
   } catch { /* fall back to configured-id check below */ }
 
   if (!plans.isCurrency(session.currency)) return { mismatch: 'UNSUPPORTED_PAYMENT_CURRENCY' };
-  const configuredId = priceIdFor(env, planCode, session.currency);
-  if (priceId && configuredId && priceId !== configuredId) {
+  if (priceId && planCodeFromPrice(env, priceId, session.currency) !== planCode) {
     return { mismatch: 'PRICE_ID_DOES_NOT_MATCH_THE_PLAN' };
   }
 
@@ -327,6 +327,7 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
     subscription_reference: session.mode === 'subscription'
       ? (typeof session.subscription === 'string' ? session.subscription : session.subscription?.id) || null : null,
     amount_cents: Number.isInteger(session.amount_total) ? session.amount_total : null,
+    price_id: priceId,
     tax_cents: verifiedTaxCents,
     currency: typeof session.currency === 'string' ? session.currency : null,
     period_end: periodEnd,
@@ -373,8 +374,8 @@ async function normalizeInvoiceEvent(env, secretKey, base, invoice, eventId, typ
   const lines = invoice.lines?.data || [];
   if (lines.length !== 1 || !plans.isCurrency(invoice.currency)) return null;
   const priceId = lines.length === 1 ? (typeof lines[0].price === 'string' ? lines[0].price : lines[0].price?.id) : null;
-  const invoicePlan = ['monthly', 'annual'].find(code => priceIdFor(env, code, invoice.currency) === priceId);
-  if (!invoicePlan || lines[0].quantity !== 1 || !plans.isCurrency(invoice.currency)) return null;
+  const invoicePlan = planCodeFromPrice(env, priceId, invoice.currency);
+  if (!['monthly', 'annual'].includes(invoicePlan) || lines[0].quantity !== 1 || !plans.isCurrency(invoice.currency)) return null;
   const presentment = await paymentPresentment(secretKey, base, invoice.payment_intent, invoice.amount_paid, invoice.currency);
   return {
     event_id: eventId,
@@ -386,6 +387,7 @@ async function normalizeInvoiceEvent(env, secretKey, base, invoice, eventId, typ
     checkout_reference: resolved.checkoutId,
     invoice_reference: invoice.id,
     amount_cents: Number.isInteger(invoice.amount_paid) ? invoice.amount_paid : null,
+    price_id: priceId,
     tax_cents: verifiedInvoiceTaxCents(invoice),
     currency: typeof invoice.currency === 'string' ? invoice.currency : null,
     period_end: lines[0].period?.end ? new Date(lines[0].period.end * 1000).toISOString() : resolved.periodEnd,
@@ -450,7 +452,7 @@ async function normalizeChargeEvent(env, secretKey, base, charge, eventId, type)
       accountRef = resolved.accountRef;
       const price = invoice.lines?.data?.[0]?.price;
       const priceId = typeof price === 'string' ? price : price?.id;
-      planCode = ['monthly', 'annual'].find(p => priceIdFor(env, p, invoice.currency) === priceId) || resolved.planCode;
+      planCode = planCodeFromPrice(env, priceId, invoice.currency) || resolved.planCode;
     }
   }
   if (!accountRef) return null;
@@ -520,6 +522,25 @@ function priceIdFor(env, planCode, currency = 'cad') {
   return typeof value === 'string' && value ? value : null;
 }
 
+/** Retired IDs identify existing contracts only; new sales use priceIdFor. */
+function acceptedPriceIdsFor(env, planCode, currency = 'cad') {
+  if (!plans.isCurrency(currency) || !plans.isPlanCode(planCode)) return [];
+  const name = STRIPE_PRICE_NAMES[planCode] + (currency === 'cad' ? '' : '_' + currency.toUpperCase());
+  const legacy = typeof env[name + '_LEGACY'] === 'string' ? env[name + '_LEGACY'].split(',').map(v => v.trim()).filter(Boolean) : [];
+  return [...new Set([priceIdFor(env, planCode, currency), ...legacy].filter(Boolean))];
+}
+
+function validPriceBindings(env) {
+  const seen = new Set();
+  for (const currency of plans.CURRENCIES) for (const code of plans.PLAN_CODES) {
+    for (const value of acceptedPriceIdsFor(env, code, currency)) {
+      if (!/^price_[A-Za-z0-9_]+$/.test(value) || seen.has(value)) return false;
+      seen.add(value);
+    }
+  }
+  return true;
+}
+
 /**
  * The real Stripe adapter. It is selected only when STRIPE_SECRET_KEY is configured, and every outbound call
  * it makes is a Stripe API call on behalf of the account. A checkout redirect is a destination, never a grant:
@@ -536,7 +557,7 @@ function makeStripeAdapter(env) {
     const req = request || {};
     const planCode = req.plan_code;
     const mode = planCode === 'report_once' ? 'payment' : 'subscription';
-    const priceId = priceIdFor(env, planCode, req.currency || 'cad');
+    const priceId = req.price_id || priceIdFor(env, planCode, req.currency || 'cad');
     const cancelledReturn = new URL(req.return_url);
     cancelledReturn.searchParams.set('checkout_cancelled', '1');
     const params = {
@@ -592,6 +613,29 @@ function makeStripeAdapter(env) {
     if (found.status !== 200 || !priceMatchesCatalog(planCode, found.json, currency)) refuse('CONFIGURED_PRICE_MISMATCH');
     return found.json;
   }
+  async function checkoutPrice(req) {
+    const currency = req.currency || 'cad';
+    if (!req.resume) {
+      const price = await confirmedPrice(req.plan_code, currency);
+      if (req.price_id && req.price_id !== price.id || req.amount_cents !== undefined && req.amount_cents !== price.unit_amount) refuse('CONFIGURED_PRICE_MISMATCH');
+      return price;
+    }
+    // Older interrupted intents may lack an ID. Recover only one exact,
+    // read-verified price matching the amount originally reserved by the server.
+    const ids = req.price_id ? [req.price_id] : acceptedPriceIdsFor(env, req.plan_code, currency);
+    const matching = [];
+    for (const id of ids) {
+      if (planCodeFromPrice(env, id, currency) !== req.plan_code) continue;
+      const got = await stripe.retrievePrice(secretKey, id, base), price = got.json;
+      const expected = req.amount_cents ?? plans.plan(req.plan_code, currency).amount_cents;
+      if (got.status === 200 && price?.id === id && price.unit_amount === expected && price.currency === currency &&
+          price.livemode === /^(?:sk|rk)_live_/.test(secretKey) &&
+          (req.plan_code === 'report_once' ? price.type === 'one_time' :
+            price.recurring?.interval === (req.plan_code === 'monthly' ? 'month' : 'year') && (price.recurring.interval_count ?? 1) === 1)) matching.push(price);
+    }
+    if (matching.length !== 1) uncertain('CHECKOUT_RECOVERY_PRICE_UNCONFIRMED');
+    return matching[0];
+  }
   async function ownedSubscription(req) {
     let subscriptionId = req.subscription_reference;
     if (!subscriptionId) {
@@ -617,27 +661,45 @@ function makeStripeAdapter(env) {
     let invoice = sub.latest_invoice;
     if (typeof invoice === 'string') invoice = (await providerWrite(stripe.retrieveInvoice(secretKey, invoice, base))).json;
     const price = invoice?.lines?.data?.[0]?.price;
+    const amount = req.amount_cents ?? plans.plan('annual', req.currency || 'cad').amount_cents;
     if (!/^in_[A-Za-z0-9_]+$/.test(invoice?.id || '') || objectId(invoice.subscription) !== sub.id ||
-        invoice.currency !== (req.currency || 'cad') || invoice.amount_due !== plans.plan('annual', req.currency || 'cad').amount_cents - req.credit_amount_cents ||
-        invoice.lines?.data?.length !== 1 || objectId(price) !== priceIdFor(env, 'annual', req.currency || 'cad') || invoice.lines.data[0].quantity !== 1) {
+        !Number.isSafeInteger(amount) || amount < 0 ||
+        invoice.currency !== (req.currency || 'cad') || invoice.amount_due !== amount - req.credit_amount_cents ||
+        invoice.lines?.data?.length !== 1 ||
+        (req.price_id ? objectId(price) !== req.price_id : planCodeFromPrice(env, objectId(price), req.currency || 'cad') !== 'annual') ||
+        invoice.lines.data[0].quantity !== 1) {
       uncertain('UPGRADE_INVOICE_MISMATCH');
     }
     return invoice;
   }
+  async function requireSourcePrice(req, item) {
+    const id = objectId(item?.price), currency = req.currency || 'cad';
+    if (req.existing_price_id ? id !== req.existing_price_id : planCodeFromPrice(env, id, currency) !== 'monthly') refuse('SUBSCRIPTION_NOT_READY_TO_UPGRADE');
+    if (req.existing_amount_cents !== undefined) {
+      const found = await stripe.retrievePrice(secretKey, id, base), price = found.json;
+      if (found.status !== 200 || price?.id !== id || price.currency !== currency ||
+          price.unit_amount !== req.existing_amount_cents || price.recurring?.interval !== 'month' ||
+          (price.recurring.interval_count ?? 1) !== 1 || price.livemode !== /^(?:sk|rk)_live_/.test(secretKey)) refuse('SUBSCRIPTION_NOT_READY_TO_UPGRADE');
+    }
+  }
   function upgradeResult(sub, invoice, req) {
     return { provider_reference: invoice.id, subscription_reference: sub.id,
+      price_id: objectId(invoice.lines?.data?.[0]?.price),
       redirect_url: invoice.status === 'paid' ? req.return_url : invoice.hosted_invoice_url,
       expires_at: sub.pending_update?.expires_at ? new Date(sub.pending_update.expires_at * 1000).toISOString() : null,
       mode: 'EXISTING_SUBSCRIPTION_UPGRADE', is_a_working_payment: true };
   }
   async function restoreUpgrade(req) {
-    const request = req.provider_request;
+    const request = req.provider_request && { ...req.provider_request,
+      amount_cents: req.amount_cents ?? req.provider_request.amount_cents,
+      price_id: req.provider_price_id || req.provider_request.price_id };
     if (!request || !req.is_subscription_upgrade) refuse('RESTORE_UPGRADE_BINDING_MISSING');
     const sub = await ownedSubscription({ ...request, resume: true });
     if (sub.metadata.checkout_id === request.existing_checkout_id) return { restored: true };
     const invoice = await upgradeInvoice(sub, request);
     if (!['void', 'uncollectible'].includes(invoice.status) || sub.pending_update ||
-        sub.items?.data?.length !== 1 || objectId(sub.items.data[0].price) !== priceIdFor(env, 'monthly', request.currency || 'cad')) refuse('RESTORE_UPGRADE_NOT_VOID');
+        sub.items?.data?.length !== 1) refuse('RESTORE_UPGRADE_NOT_VOID');
+    await requireSourcePrice(request, sub.items.data[0]);
     const changed = await stripe.updateSubscription(secretKey, sub.id, {
       'metadata[account_id]': request.account_id, 'metadata[plan_code]': request.existing_plan_code,
       'metadata[checkout_id]': request.existing_checkout_id, 'metadata[previous_checkout_id]': ''
@@ -667,9 +729,9 @@ function makeStripeAdapter(env) {
         err.code = 'RETURN_URL_OUTSIDE_CONFIGURED_ORIGINS';
         throw err;
       }
-      await confirmedPrice(req.plan_code, req.currency || 'cad');
+      const selectedPrice = await checkoutPrice(req);
       const coupon = await creditCoupon(req);
-      const { params } = sessionParams({ ...req, credit_coupon_id: coupon });
+      const { params } = sessionParams({ ...req, price_id: selectedPrice.id, credit_coupon_id: coupon });
       const result = await providerWrite(stripe.createCheckoutSession(secretKey, params, base, `crp-checkout-${req.checkout_id}`));
       if (result.status !== 200) {
         const err = new Error(`STRIPE_CHECKOUT_FAILED:${result.status}`);
@@ -683,7 +745,8 @@ function makeStripeAdapter(env) {
         redirect_url: result.json.url,
         mode: result.json.mode,
         expires_at: result.json.expires_at ? new Date(result.json.expires_at * 1000).toISOString() : null,
-        is_a_working_payment: true
+        is_a_working_payment: true,
+        price_id: selectedPrice.id
       };
     },
 
@@ -699,13 +762,15 @@ function makeStripeAdapter(env) {
       const items = sub.items?.data || [];
       if (sub.currency && sub.currency !== (req.currency || 'cad')) refuse('SUBSCRIPTION_CURRENCY_MISMATCH');
       if (!req.resume && (sub.status !== 'active' || sub.collection_method !== 'charge_automatically' || sub.schedule || sub.pending_update ||
-          items.length !== 1 || items[0].quantity !== 1 || objectId(items[0].price) !== priceIdFor(env, 'monthly', req.currency || 'cad'))) {
+          items.length !== 1 || items[0].quantity !== 1 ||
+          (req.existing_price_id ? objectId(items[0].price) !== req.existing_price_id : planCodeFromPrice(env, objectId(items[0].price), req.currency || 'cad') !== 'monthly'))) {
         refuse('SUBSCRIPTION_NOT_READY_TO_UPGRADE');
       }
       if (items.length !== 1 || !/^si_/.test(items[0].id || '')) refuse('UPGRADE_SUBSCRIPTION_ITEMS_MISMATCH');
-      await confirmedPrice('annual', req.currency || 'cad');
+      if (!req.resume) await requireSourcePrice(req, items[0]);
+      const selectedPrice = await checkoutPrice(req);
       const coupon = await creditCoupon(req);
-      const params = { 'items[0][id]': items[0].id, 'items[0][price]': priceIdFor(env, 'annual', req.currency || 'cad'),
+      const params = { 'items[0][id]': items[0].id, 'items[0][price]': selectedPrice.id,
         'items[0][quantity]': 1, billing_cycle_anchor: 'now', proration_behavior: 'none',
         payment_behavior: 'pending_if_incomplete', cancel_at_period_end: false,
         'metadata[account_id]': req.account_id, 'metadata[plan_code]': 'annual', 'metadata[checkout_id]': req.checkout_id,
@@ -775,8 +840,8 @@ function makeStripeAdapter(env) {
                 !Number.isInteger(invoice.amount_paid) || invoice.amount_paid <= 0) continue;
             const lines = invoice.lines?.data || [];
             const code = lines.length === 1 && lines[0].quantity === 1
-              ? ['monthly', 'annual'].find(p => priceIdFor(env, p, invoice.currency) === objectId(lines[0].price)) : null;
-            if (!code) continue;
+              ? planCodeFromPrice(env, objectId(lines[0].price), invoice.currency) : null;
+            if (!['monthly', 'annual'].includes(code)) continue;
             await receipt(invoice, code, invoice.id, invoice.amount_paid,
               new Date((invoice.status_transitions?.paid_at || invoice.created) * 1000).toISOString());
           }
@@ -791,7 +856,8 @@ function makeStripeAdapter(env) {
 
     async cancelCheckout(req) {
       if (!req.provider_reference && req.is_subscription_upgrade) {
-        const request = req.provider_request;
+        const request = { ...req.provider_request, amount_cents: req.amount_cents ?? req.provider_request?.amount_cents,
+          price_id: req.provider_price_id || req.provider_request?.price_id };
         const sub = await ownedSubscription({ ...request, resume: true });
         if (sub.metadata.checkout_id === request.existing_checkout_id) return { cancelled: true };
         req = { ...req, provider_reference: (await upgradeInvoice(sub, request)).id };
@@ -930,7 +996,7 @@ function makeStripeAdapter(env) {
           session.status !== 'complete' ||
           !(session.payment_status === 'paid' || session.payment_status === 'no_payment_required' && session.amount_total === 0) || session.livemode !== liveMode ||
           session.client_reference_id !== req.account_id || !metadataMatches(session) ||
-          !Array.isArray(lineItems) || lineItems.length !== 1 || lineItems[0]?.price?.id !== priceIdFor(env, req.plan_code, req.currency || 'cad')) {
+          !Array.isArray(lineItems) || lineItems.length !== 1 || planCodeFromPrice(env, lineItems[0]?.price?.id, req.currency || 'cad') !== req.plan_code) {
         refuse('CANCELLATION_CHECKOUT_MISMATCH');
       }
       const subscriptionId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id;
@@ -1010,7 +1076,7 @@ function describeProvider(env) {
   if (requested === STRIPE_ADAPTER.provider_id) {
     const required = STRIPE_CONFIGURATION_NAMES.concat(STRIPE_PRICE_CONFIGURATION_NAMES, [STRIPE_APP_ORIGINS]);
     const missing = required.filter((name) => !e[name]);
-    const configured = missing.length === 0;
+    const configured = missing.length === 0 && validPriceBindings(e);
     const secretKey = typeof e.STRIPE_SECRET_KEY === 'string' ? e.STRIPE_SECRET_KEY : '';
     const keyMode = secretKey.startsWith('sk_live_') ? 'live' : (secretKey.startsWith('sk_test_') ? 'test' : 'unknown');
     return Object.assign(base, {
@@ -1021,9 +1087,9 @@ function describeProvider(env) {
       configured,
       key_mode: keyMode,
       missing_configuration: missing,
-      reason: configured ? 'STRIPE_CONFIGURED_NOT_YET_VERIFIED_AGAINST_TEST_MODE' : 'STRIPE_CONFIGURATION_INCOMPLETE',
+      reason: configured ? 'STRIPE_CONFIGURED_NOT_YET_VERIFIED_AGAINST_TEST_MODE' : missing.length ? 'STRIPE_CONFIGURATION_INCOMPLETE' : 'STRIPE_PRICE_BINDINGS_INVALID',
       plain: configured
-        ? 'Stripe is connected with the recorded CAD prices. Nothing is charged until you choose a plan and complete checkout.'
+        ? 'Stripe is connected with the recorded fixed prices. Nothing is charged until you choose a plan and complete checkout.'
         : 'Stripe is requested but its configuration is incomplete, so nothing can be purchased.',
       /* INTERNAL RELEASE RECORD — never rendered on a consumer screen. The launch gate reads this field; the
          consumer-facing sentence above says only what a consumer needs before buying. */
@@ -1069,6 +1135,8 @@ module.exports = {
   parseOrigins,
   isAllowedOrigin,
   priceIdFor,
+  acceptedPriceIdsFor,
+  validPriceBindings,
   planCodeFromPrice,
   priceMatchesCatalog,
   normalizeStripeEvent,

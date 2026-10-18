@@ -45,6 +45,7 @@ async function recordVerifiedEvent(store, event, provider) {
     if (event.payment_verified === false) return refuse('EVENT_IGNORED_UNPAID_CHECKOUT');
     if (!checkout) return refuse('EVENT_IGNORED_CHECKOUT_UNKNOWN');
     if (checkout.plan_code !== event.plan_code) return refuse('EVENT_IGNORED_PLAN_MISMATCH');
+    if (stripe && checkout.provider_price_id && event.price_id !== checkout.provider_price_id) return refuse('EVENT_IGNORED_PRICE_MISMATCH');
     if (!['OPEN', 'OPENING'].includes(checkout.state)) return refuse('EVENT_IGNORED_CHECKOUT_NOT_PAYABLE');
     const expected = checkout.payable_cents ?? checkout.amount_cents - (checkout.credit_applied_cents || 0);
     if (event.currency !== checkout.currency || event.amount_cents !== expected) return refuse('EVENT_IGNORED_PAYMENT_AMOUNT_MISMATCH');
@@ -78,6 +79,7 @@ async function recordVerifiedEvent(store, event, provider) {
     if (effect === 'CANCEL_AT_PERIOD_END' && row.checkout_id !== event.checkout_reference) return refuse('EVENT_IGNORED_SUBSCRIPTION_MISMATCH');
     if (effect === 'RENEW') {
       const purchase = owned.find(c => c.checkout_id === row.checkout_id);
+      if (purchase?.provider_price_id && event.price_id !== purchase.provider_price_id) return refuse('EVENT_IGNORED_PRICE_MISMATCH');
       if (!event.invoice_reference || event.payment_verified !== true || event.currency !== (row.currency || purchase?.currency || 'cad')) return refuse('EVENT_IGNORED_UNPAID_INVOICE');
       const first = owned.find(c => c.initial_invoice_reference === event.invoice_reference);
       const expected = first ? first.payable_cents : row.plan_amount_cents ?? purchase?.amount_cents ?? plans.plan(event.plan_code, event.currency).amount_cents;

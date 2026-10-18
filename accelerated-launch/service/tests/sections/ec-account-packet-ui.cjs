@@ -667,7 +667,7 @@ async function checkoutPendingPaymentRefresh() {
   assert.equal(h.evaluate('state.entitlement.entitled'), false); assert.equal(h.evaluate('state.view.assessment_access.dispute_packet'), false);
   h.evaluate('renderResults(document.getElementById("panel")); wireCheckoutReturn();');
   assert.match(h.panel.innerHTML, /Check payment/); assert.ok(!/id="buy-|Create my dispute packet/.test(h.panel.innerHTML), 'pending payment offers refresh instead of a second purchase');
-  h.evaluate('renderBillingView({ plan_catalog: { plans: [{ plan_code: "monthly", amount_display: "$7.95 CAD", interval: "month" }] } });');
+  h.evaluate('renderBillingView({ plan_catalog: { plans: [{ plan_code: "monthly", amount_display: "$27.95 CAD", interval: "month" }] } });');
   assert.ok(!/id="checkout-/.test(h.node('billingView').innerHTML), 'Billing also directs the pending consumer to Check payment rather than another checkout');
   await h.evaluate('startCheckout("monthly")'); assert.equal(h.calls.filter(row => row.method === 'POST').length, 0);
   paid = true; await h.node('checkout-return-retry').onclick();

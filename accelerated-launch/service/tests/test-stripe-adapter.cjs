@@ -65,7 +65,7 @@ function startMock() {
         fixture.session.line_items = { data: [{ price: { id: params.get('line_items[0][price]') } }] };
         fixture.session.mode = params.get('mode');
         const plan = fixture.session.metadata.plan_code;
-        const cents = { report_once: 595, monthly: 795, annual: 7950 }[plan];
+        const cents = { report_once: 1595, monthly: 2795, annual: 27950 }[plan];
         const coupon = fixture.coupons[params.get('discounts[0][coupon]')];
         fixture.session.amount_total = cents - (coupon?.amount_off || 0);
         fixture.session.payment_status = fixture.session.amount_total === 0 ? 'no_payment_required' : 'paid';
@@ -141,7 +141,7 @@ function startMock() {
     if (req.url.startsWith('/v1/prices/')) {
       const id = url.pathname.split('/').at(-1), code = Object.keys(PRICE_IDS).find(plan => PRICE_IDS[plan] === id);
       if (!code) return respond({ error: { message: 'unknown price' } }, 404);
-      return respond({ id, currency: 'cad', unit_amount: { report_once: 595, monthly: 795, annual: 7950 }[code],
+      return respond({ id, currency: 'cad', unit_amount: { report_once: 1595, monthly: 2795, annual: 27950 }[code],
         ...(code === 'report_once' ? { type: 'one_time' } : { recurring: { interval: code === 'annual' ? 'year' : 'month' }, type: 'recurring' }) });
     }
     if (url.pathname === '/v1/invoices') {
@@ -326,13 +326,13 @@ async function main() {
   const annualBody = new URLSearchParams(mock.calls.filter(call => call.path === '/v1/checkout/sessions').at(-1).body);
   assert.equal(annualBody.get('line_items[0][price]'), PRICE_IDS.annual, 'yearly Checkout uses its own validated yearly Price');
   assert.equal(annualBody.get('adaptive_pricing[enabled]'), 'false');
-  assert.equal(mock.fixture.session.amount_total, 7155, 'the provider fixture bills the exact yearly price less unused monthly cash');
+  assert.equal(mock.fixture.session.amount_total, 27155, 'the provider fixture bills the exact yearly price less unused monthly cash');
   const ownedCheckout = { checkout_id: 'chk_unit_annual', provider_reference: annual.provider_reference,
     provider_subscription_reference: 'sub_unit_annual' };
   const receipts = await adapter.readPaidReceipts({ account_id: 'acc_unit_annual', checkouts: [ownedCheckout] });
   assert.equal(receipts.length, 1, 'owned invoice history has one initial cash receipt');
   assert.equal(receipts[0].payment_id, mock.fixture.session.invoice, 'historical reads use the same canonical invoice receipt');
-  assert.equal(receipts[0].amount_cents, 7155, 'reconciliation never replaces discounted cash with the full catalog price');
+  assert.equal(receipts[0].amount_cents, 27155, 'reconciliation never replaces discounted cash with the full catalog price');
   assert.equal(receipts[0].plan_code, 'annual', 'historical receipt keeps its original purchased plan');
   assert.equal(receipts[0].verified_payment, true, 'the provider independently confirms the paid receipt');
 

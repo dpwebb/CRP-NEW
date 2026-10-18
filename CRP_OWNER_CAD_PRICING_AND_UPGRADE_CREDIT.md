@@ -1,5 +1,7 @@
 # Owner-approved CAD pricing and upgrade offer
 
+Current pricing authority: [October 17 pricing update](CRP_PRICING_UPDATE_2026_10_17.md). Its new fixed CAD/USD/AUD/GBP catalog supersedes the historical prices below for new purchases and upgrades. Existing contracted prices and actual historical cash receipts retain their values. The following October1 record remains historical evidence.
+
 Date: 2026-10-01. Source: explicit owner instruction in this conversation.
 
 | Plan | Regular price | Cadence |

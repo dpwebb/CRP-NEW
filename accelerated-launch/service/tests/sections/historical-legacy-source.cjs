@@ -55,16 +55,16 @@ async function run(t, check) {
   check.ok(legacyMime.includes('application/pdf'), 'the legacy gate still accepts PDF');
   check.deepEqual(
     uploads.SUPPORTED_MIME_PREFIXES.filter((prefix) => !legacyMime.includes(prefix)),
-    ['image/png', 'image/jpeg'],
-    'the only types beyond the legacy gate are the B6-INGEST-003 image additions'
+    ['image/png', 'image/jpeg', 'image/tiff'],
+    'types beyond the legacy gate are the approved PNG, JPEG and TIFF additions'
   );
 
   const legacyExtensions = stringArray(reportStore, 'safe') || [];
   check.ok(legacyExtensions.includes('.pdf'), 'the legacy extension allowlist still contains .pdf');
   check.deepEqual(
     uploads.SUPPORTED_EXTENSIONS.filter((ext) => !legacyExtensions.includes(ext)),
-    ['.png', '.jpg', '.jpeg'],
-    'the only extensions beyond the legacy gate are the B6-INGEST-003 image additions'
+    ['.png', '.jpg', '.jpeg', '.tif', '.tiff'],
+    'extensions beyond the legacy gate are the approved PNG, JPEG and TIFF additions'
   );
 
   /* The same boundary conditions, exercised on our port. */

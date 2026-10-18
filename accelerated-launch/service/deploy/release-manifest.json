@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-17T23:11:16.155Z",
+  "generated_at": "2026-10-18T01:43:33.867Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 110,
-      "digest": "EB094F32E60A897885657D0469327022B5C0000393207F30C979163ADB9280EE",
+      "digest": "0130421A20595F3106EFE0F5D8E25A11083244904CC311643E5694F4264E7CAC",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -130,7 +130,7 @@
         },
         {
           "file": "accelerated-launch/service/billing-event-effects.cjs",
-          "sha256": "9E20ED8B02BDCB6F78DF18BBAF475713A7EDD350D2663FB15D898D6302E28D03"
+          "sha256": "570DD7E7AC060DEE51731FC22E070074C4EC9DB0C45FD665530432C229446A26"
         },
         {
           "file": "accelerated-launch/service/billing-reconciliation.cjs",
@@ -154,7 +154,7 @@
         },
         {
           "file": "accelerated-launch/service/checkout-purchase.cjs",
-          "sha256": "0914FA8D6FAD044C27AF4ED92655A14F323F60B6DB53D9FD91C4D83F5D736B4D"
+          "sha256": "9FC10F9F709041E1D6E0BE3A65655AE597CC8382B0F149A1658719C7ECB42B09"
         },
         {
           "file": "accelerated-launch/service/clarification.cjs",
@@ -226,7 +226,7 @@
         },
         {
           "file": "accelerated-launch/service/entitlement.cjs",
-          "sha256": "A947803E717425086E77474475ACC32ED64DAFC049232455534EF2DC7C006C68"
+          "sha256": "8D0710FC8BD577D20ABAC7BAE10A2C272618D89851C3CC0E410F9A5CFA2D6BA8"
         },
         {
           "file": "accelerated-launch/service/errors.cjs",
@@ -374,11 +374,11 @@
         },
         {
           "file": "accelerated-launch/service/payment-provider.cjs",
-          "sha256": "63504F593BD4CD06F241B10BB3E285314AD597E5FE5BE6ED21EBC859001CF55E"
+          "sha256": "6BE7A84932B35334F23F9933B423114192B708899E8ED229AAA89E9C6081BC74"
         },
         {
           "file": "accelerated-launch/service/plan-catalog.cjs",
-          "sha256": "18FC6FC91BBBA7638C7DFD817E7E0940FAB68D029193289F8EC3554AACFC1E9A"
+          "sha256": "F1DEC8575F2BF75DB272FC38F6232CCB86FCF667B3B7828FA04FAAA19181729D"
         },
         {
           "file": "accelerated-launch/service/pricing-location.cjs",
@@ -779,6 +779,6 @@
       ]
     }
   ],
-  "manifest_digest": "375724EFE7DD0734DD98CF606ECE8D732AAEE941D235ADF05CD7F052FAC4C12B",
+  "manifest_digest": "0834BA52BEE3CA03C1782E8116D309EBE3E4B9ACD0E9382FA994C13D6D04D54E",
   "total_file_count": 183
 }

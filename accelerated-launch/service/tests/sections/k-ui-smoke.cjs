@@ -248,9 +248,9 @@ function makeResponder() {
     if (method === 'POST' && url === '/api/cases/case_stub/evaluate') return { status: 201, body: { ok: true, result: CASE_VIEW.result } };
     if (method === 'GET' && (url === '/api/billing/plans' || url === '/api/pricing')) {
       return { status: 200, body: { ok: true, plan_catalog: { currency: 'cad', plans: [
-        { plan_code: 'report_once', label: 'CRP One-Time Credit Report', amount_display: '$5.95 CAD', interval: 'one_time', grants: ['the complete assessment of the report already uploaded for this case'] },
-        { plan_code: 'monthly', label: 'CRP Monthly', amount_display: '$7.95 CAD', interval: 'month', grants: ['complete assessments and assessment downloads for your reports'] },
-        { plan_code: 'annual', label: 'CRP Annual', amount_display: '$79.50 CAD', interval: 'year', grants: ['complete assessments and assessment downloads for your reports'] }
+        { plan_code: 'report_once', label: 'CRP One-Time Credit Report', amount_display: '$15.95 CAD', interval: 'one_time', grants: ['the complete assessment of the report already uploaded for this case'] },
+        { plan_code: 'monthly', label: 'CRP Monthly', amount_display: '$27.95 CAD', interval: 'month', grants: ['complete assessments and assessment downloads for your reports'] },
+        { plan_code: 'annual', label: 'CRP Annual', amount_display: '$279.50 CAD', interval: 'year', grants: ['complete assessments and assessment downloads for your reports'] }
       ] } } };
     }
     if (method === 'GET' && url === '/api/cases/case_stub/response-draft') {
@@ -502,7 +502,7 @@ async function run(t, check) {
   check.ok(!/violations:|potential issues:/.test(panel.innerHTML), 'without confidence tier counts');
   check.ok(/VIOLATION/.test(panel.innerHTML) && /Two details on the report cannot both be right/.test(panel.innerHTML), 'with the teaser title and the sole breach label');
   check.ok(/This is the most serious violation we found that you can dispute\./.test(panel.innerHTML), 'plain wording explains why this one example was chosen');
-  check.ok(/id="buy-report_once"/.test(panel.innerHTML) && /\$5\.95 CAD/.test(panel.innerHTML), 'and the one-time unlock choice with its recorded price');
+  check.ok(/id="buy-report_once"/.test(panel.innerHTML) && /\$15\.95 CAD/.test(panel.innerHTML), 'and the one-time unlock choice with its recorded price');
   check.ok(/id="buy-monthly"/.test(panel.innerHTML) && /id="buy-annual"/.test(panel.innerHTML), 'and the two subscription choices');
   check.ok(!/Check: <b>/.test(panel.innerHTML) && !/id="packet-block"/.test(panel.innerHTML), 'while the complete findings and the packet stay out of the free view');
   vm.runInContext('state.view = { ...FREE_VIEW, assessment_summary: { ...FREE_VIEW.assessment_summary, teaser: { ...FREE_VIEW.assessment_summary.teaser, confidence_label: null } } }; render();', ctx);

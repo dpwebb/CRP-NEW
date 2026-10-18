@@ -32,7 +32,7 @@ function makeContext(responder) {
   return { ctx, get, calls };
 }
 function plans() {
-  const amount = { report_once: 595, monthly: 795, annual: 7950 };
+  const amount = { report_once: 1595, monthly: 2795, annual: 27950 };
   return Object.entries(amount).map(([plan_code, amount_cents]) => ({ plan_code, amount_cents, amount_display: `$${(amount_cents / 100).toFixed(2)} CAD`, currency: 'cad', interval: plan_code === 'annual' ? 'year' : plan_code === 'monthly' ? 'month' : 'one_time' }));
 }
 function quote(code, credit = 0, extras = {}) {
@@ -44,8 +44,8 @@ function billing() {
     ok: true, plan_catalog: { currency: 'cad', plans: plans() },
     entitlement: { entitled: true, access_via: 'ONE_TIME_CREDIT', plan_code: 'report_once' },
     payment: { is_a_working_payment: true },
-    upgrade_credit: { eligible: true, credit_cents: 1190, currency: 'cad', expires_at: null, reserved_now: false },
-    upgrade_quotes: { report_once: quote('report_once'), monthly: quote('monthly', 795, { remaining_credit_cents: 395 }), annual: quote('annual', 1190) }
+    upgrade_credit: { eligible: true, credit_cents: 3190, currency: 'cad', expires_at: null, reserved_now: false },
+    upgrade_quotes: { report_once: quote('report_once'), monthly: quote('monthly', 2795, { remaining_credit_cents: 395 }), annual: quote('annual', 3190) }
   };
 }
 function reportView() {
@@ -100,10 +100,10 @@ async function run(t, check) {
   check.ok(/Print and mail your disputes|Compare your next report|Keep your reports together/.test(panel.innerHTML), 'subscriber benefits accompany the one-off report');
   for (const benefit of ['Print and mail your disputes', 'Compare your next report', 'Keep your reports together']) check.ok(panel.innerHTML.includes(benefit), `the report explains ${benefit}`);
   check.ok(/aria-label="Subscription benefits"/.test(panel.innerHTML) && /<svg[^>]+aria-hidden="true"/.test(panel.innerHTML), 'benefit graphics are decorative and their meanings have accessible text');
-  check.ok(/Your available credit: <b>\$11\.90 CAD/.test(panel.innerHTML), 'the report shows the combined unused-payment credit supplied by the server');
+  check.ok(/Your available credit: <b>\$31\.90 CAD/.test(panel.innerHTML), 'the report shows the combined unused-payment credit supplied by the server');
   check.ok(/Monthly — \$0\.00 CAD today/.test(panel.innerHTML), 'the report monthly button shows the capped zero-dollar quote');
-  check.ok(/Yearly — \$67\.60 CAD today/.test(panel.innerHTML), 'the report yearly button uses the adjusted server quote');
-  check.ok(/Then \$7\.95 CAD per month/.test(panel.innerHTML) && /Then \$79\.50 CAD per year/.test(panel.innerHTML), 'report upgrade offers keep regular renewal prices clear');
+  check.ok(/Yearly — \$247\.60 CAD today/.test(panel.innerHTML), 'the report yearly button uses the adjusted server quote');
+  check.ok(/Then \$27\.95 CAD per month/.test(panel.innerHTML) && /Then \$279\.50 CAD per year/.test(panel.innerHTML), 'report upgrade offers keep regular renewal prices clear');
   check.ok(/\$3\.95 CAD remains for a later upgrade/.test(panel.innerHTML), 'unused excess credit is shown without reducing the bill below zero');
   check.ok(!/id="create-packet"|id="packet-block"/.test(panel.innerHTML), 'marketing does not grant a one-off purchase subscriber packet access');
   await dom.get('download-assessment').onclick();
@@ -119,7 +119,7 @@ async function run(t, check) {
   await tick(); await tick();
   const box = dom.get('billingView');
   check.ok(/Pay today/.test(box.innerHTML) && /Plan price/.test(box.innerHTML) && /Your credit/.test(box.innerHTML), 'Plans visually explain price minus credit and the amount due today');
-  check.ok(/\$11\.90 CAD/.test(box.innerHTML) && /\$67\.60 CAD/.test(box.innerHTML), 'Plans and Results use the same account-specific quote');
+  check.ok(/\$31\.90 CAD/.test(box.innerHTML) && /\$247\.60 CAD/.test(box.innerHTML), 'Plans and Results use the same account-specific quote');
   check.ok(/Every unused|unused lower-plan payments/.test(box.innerHTML) && !/90 days|90-day|expires in/.test(box.innerHTML), 'the upgrade benefit includes all unused lower-plan payments without the retired expiry');
   check.ok(/Checkout confirms your final price before you pay/.test(box.innerHTML), 'Plans state when the final purchase price is confirmed');
 
@@ -129,7 +129,7 @@ async function run(t, check) {
   vm.runInContext('state.step = STEP.BILLING; render();', ctx);
   await tick(); await tick();
   check.ok(/CURRENT PLAN/.test(box.innerHTML) && !/id="checkout-monthly"|id="checkout-report_once"/.test(box.innerHTML), 'a monthly subscriber sees a current-plan marker and no repeat or lower-plan purchase');
-  check.ok(/Review yearly upgrade/.test(box.innerHTML) && /\$59\.65 CAD/.test(box.innerHTML), 'the yearly upgrade price credits unused lower-plan payments including the monthly payment');
+  check.ok(/Review yearly upgrade/.test(box.innerHTML) && /\$259\.65 CAD/.test(box.innerHTML), 'the yearly upgrade price credits unused lower-plan payments including the monthly payment');
   const beforeUpgrade = dom.calls.filter(c => c.method === 'POST' && c.url === '/api/billing/checkout').length;
   await dom.get('checkout-annual').onclick(); await tick(); await tick();
   check.equal(dom.calls.filter(c => c.method === 'POST' && c.url === '/api/billing/checkout').length, beforeUpgrade, 'reviewing a subscription upgrade does not bill the saved payment method');

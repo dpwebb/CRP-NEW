@@ -37,14 +37,14 @@ async function run(service, check) {
   await payWithBody(service, a, { plan_code: 'report_once', case_id: await service.assessedCase(a) });
   check.equal(credits().length, 1, 'a verified one-time payment earns one credit');
   check.equal(credits()[0].state, 'ELIGIBLE', 'which starts ELIGIBLE');
-  check.equal(credits()[0].amount_cents, 595, 'worth CAD 5.95');
+  check.equal(credits()[0].amount_cents, 1595, 'worth CAD 15.95');
 
   /* ---- 2. A monthly checkout atomically reserves it and quotes the first-invoice credit. ---- */
   const monthly = await service.openCheckout(a, 'monthly');
   check.equal(monthly.status, 201, 'monthly checkout opens');
   check.equal(monthly.json.checkout.upgrade_credit.reserved, true, 'and the credit is reserved');
-  check.equal(monthly.json.checkout.upgrade_credit.first_invoice_cents, 200, 'first invoice subtotal CAD 2.00');
-  check.equal(monthly.json.checkout.upgrade_credit.renewal_cents, 795, 'renewal stays CAD 7.95');
+  check.equal(monthly.json.checkout.upgrade_credit.first_invoice_cents, 1200, 'first invoice subtotal CAD 12.00');
+  check.equal(monthly.json.checkout.upgrade_credit.renewal_cents, 2795, 'renewal stays CAD 27.95');
   check.equal(credits()[0].state, 'RESERVED', 'state is RESERVED');
 
   /* ---- 3. A concurrent annual checkout cannot use the same credit twice. ---- */
@@ -59,7 +59,7 @@ async function run(service, check) {
     account_reference: a.account_id,
     plan_code: 'monthly',
     session_reference: monthly.json.checkout.provider_reference,
-    amount_cents: 200,
+    amount_cents: 1200,
     currency: 'cad',
     occurred_at: new Date().toISOString()
   });
@@ -92,7 +92,7 @@ async function run(service, check) {
     plan_code: 'report_once',
     session_reference: 'test_pi_refunded',
     payment_intent: 'test_pi_refunded',
-    amount_cents: 595,
+    amount_cents: 1595,
     currency: 'cad',
     occurred_at: new Date().toISOString()
   });
@@ -107,7 +107,7 @@ async function run(service, check) {
     account_reference: d.account_id,
     plan_code: 'monthly',
     session_reference: 'test_cs_unpaid',
-    amount_cents: 795,
+    amount_cents: 2795,
     currency: 'cad',
     payment_verified: false,
     occurred_at: new Date().toISOString()

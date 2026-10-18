@@ -7,7 +7,7 @@ async function run(t, check) {
   const now = new Date().toISOString();
   const paidAt = new Date(Date.now() - 200 * 86400000).toISOString();
   const receipt = (id, patch = {}) => ({ account_id: 'eo_account_a', payment_id: id,
-    payment_intent: 'pi_' + id, plan_code: 'report_once', amount_cents: 595,
+    payment_intent: 'pi_' + id, plan_code: 'report_once', amount_cents: 1595,
     currency: 'cad', paid_at: paidAt, verified_payment: true, ...patch });
   const add = value => store.update(state => credits.recordPayment(state, value));
   const rows = () => store.state().upgrade_credits;
@@ -15,7 +15,7 @@ async function run(t, check) {
 
   check.equal(add(receipt('unverified', { verified_payment: false })).created, false, 'unverified bodies mint no credit');
   check.equal(credits.creditFromPayment(store, 'a', 'old_call', 'pi_old_call', paidAt).created, false,
-    'compatibility wrapper cannot assume a verified CAD 5.95 payment');
+    'compatibility wrapper cannot assume a verified payment from a catalog price');
   for (const patch of [{ currency: 'eur' }, { amount_cents: -1 }, { amount_cents: 1.5 },
     { amount_cents: Number.MAX_SAFE_INTEGER + 1 }, { paid_at: 'invalid' },
     { paid_at: new Date(Date.now() + 86400000).toISOString() }, { plan_code: 'unknown' },
@@ -35,22 +35,22 @@ async function run(t, check) {
   check.equal(add(receipt('report_1', { account_id: 'eo_account_b' })).reason, 'PAYMENT_RECEIPT_MISMATCH',
     'a receipt cannot be reassigned to another account');
   const beforeRead = JSON.stringify(store.state());
-  check.equal(view().monthly.available_credit_cents, 1190, 'all old, unused one-report payments count');
-  check.equal(view().monthly.credit_cents, 795, 'credit is capped at the first monthly bill');
+  check.equal(view().monthly.available_credit_cents, 3190, 'all old, unused one-report payments count');
+  check.equal(view().monthly.credit_cents, 2795, 'credit is capped at the first monthly bill');
   check.equal(view().monthly.first_invoice_cents, 0, 'the invoice never becomes negative');
   check.equal(view().monthly.remaining_credit_cents, 395, 'extra credit remains for a higher plan');
-  check.equal(view().annual.first_invoice_cents, 6760, 'annual includes both report receipts');
-  check.equal(view().annual.renewal_cents, 7950, 'renewal price stays unchanged');
+  check.equal(view().annual.first_invoice_cents, 24760, 'annual includes both report receipts');
+  check.equal(view().annual.renewal_cents, 27950, 'renewal price stays unchanged');
   check.equal(view('eo_account_b').annual.credit_cents, 0, 'account credit is isolated');
   check.equal(JSON.stringify(store.state()), beforeRead, 'quoting does not mutate the private store');
-  check.equal(credits.creditView(store, 'eo_account_a', now).credit_cents, 1190, 'summary reflects actual unused cash');
+  check.equal(credits.creditView(store, 'eo_account_a', now).credit_cents, 3190, 'summary reflects actual unused cash');
   check.equal(credits.creditView(store, 'eo_account_b', now).credit_cents, 0, 'ineligible summary does not advertise fixed credit');
 
   const reserved = credits.reserveCredit(store, 'eo_account_a', 'eo_monthly', now, 'monthly');
-  check.equal(reserved.amount_cents, 795, 'one atomic reservation sums contributing receipts');
-  check.deepEqual(reserved.allocations.map(value => value.amount_cents), [595, 200], 'only the necessary part of the second receipt is allocated');
+  check.equal(reserved.amount_cents, 2795, 'one atomic reservation sums contributing receipts');
+  check.deepEqual(reserved.allocations.map(value => value.amount_cents), [1595, 1200], 'only the necessary part of the second receipt is allocated');
   check.equal(credits.reserveCredit(store, 'eo_account_a', 'eo_monthly', now, 'monthly').amount_cents,
-    795, 'retry returns its reservation rather than spending again');
+    2795, 'retry returns its reservation rather than spending again');
   check.equal(credits.reserveCredit(store, 'eo_account_b', 'eo_monthly', now, 'monthly').reserved,
     false, 'a checkout ID cannot borrow another account reservation');
   check.equal(credits.reserveCredit(store, 'eo_account_a', 'eo_concurrent', now, 'annual').reserved,
@@ -61,14 +61,14 @@ async function run(t, check) {
   check.equal(rows().reduce((total, row) => total + row.consumed_cents, 0), 0, 'plan mismatch consumes nothing');
   check.equal(credits.releaseCredit(store, 'unknown').released, false, 'unrelated checkout cannot release reserved money');
   check.equal(credits.releaseCredit(store, 'eo_monthly').count, 2, 'failed checkout releases every contributing receipt');
-  check.equal(view().monthly.available_credit_cents, 1190, 'released credit remains fully usable');
+  check.equal(view().monthly.available_credit_cents, 3190, 'released credit remains fully usable');
 
   credits.reserveCredit(store, 'eo_account_a', 'eo_paid_monthly', now, 'monthly');
   const settled = store.update(state => credits.settleReservations(state, 'eo_paid_monthly', 'monthly', now));
-  check.equal(settled.amount_cents, 795, 'settlement consumes precisely the verified credited amount');
+  check.equal(settled.amount_cents, 2795, 'settlement consumes precisely the verified credited amount');
   check.deepEqual(rows().map(row => [row.consumed_cents, row.remaining_amount_cents, row.state]),
-    [[595, 0, 'REDEEMED'], [200, 395, 'ELIGIBLE']], 'fully spent and partly spent receipts retain accurate balances');
-  check.equal(rows()[1].allocations[0].amount_cents, 200, 'partial consumption keeps an immutable allocation record');
+    [[1595, 0, 'REDEEMED'], [1200, 395, 'ELIGIBLE']], 'fully spent and partly spent receipts retain accurate balances');
+  check.equal(rows()[1].allocations[0].amount_cents, 1200, 'partial consumption keeps an immutable allocation record');
   check.equal(credits.redeemCredit(store, 'eo_paid_monthly', 'monthly', now).redeemed, false, 'duplicate activation cannot consume again');
   check.equal(view().annual.credit_cents, 395, 'only the unspent part can apply to the next upgrade');
 
