@@ -900,6 +900,7 @@ function createService(options) {
     catch { adminUnavailable = true; }
   }
   const logger = new Logger(opts.logSink);
+  const affiliate = require('./affiliate-attribution.cjs').create(store, opts.affiliate);
   const googleSignIn = require('./auth0-google.cjs').create(store, opts.googleSignIn);
   const passwordReset = require('./password-reset.cjs').create(store, { mailer: opts.passwordResetMailer || require('./confirmation-mail.cjs').sender(), origin: opts.passwordResetOrigin, logger });
   const requestPolicy=require('./request-policy.cjs').policy();
@@ -938,6 +939,7 @@ function createService(options) {
    * clear what a crash left behind. Reported rather than performed silently, so the operator can see it.
    */
   function startup() {
+    affiliate.start();
     const recovery = retention.applyRetention(store, {});
     const report = Object.assign({}, recovery, {
       store_recovered_from_backup: store.recoveredFromBackup === true,
@@ -954,6 +956,8 @@ function createService(options) {
     const urlPath = new URL(req.url, 'http://127.0.0.1').pathname;
     try {
       requestPolicy(req);
+      const referral = affiliate.capture(req);
+      if (referral) { sendText(res, referral.status, '', 'text/plain', referral.headers); return; }
       const seo = require('./public-seo.cjs');
       if (seo.noIndex(urlPath, process.env.CRP_DEPLOYMENT_ENV)) res.setHeader('X-Robots-Tag', 'noindex');
       if (!urlPath.startsWith('/api/')) {
@@ -1053,6 +1057,12 @@ function createService(options) {
         sendText(res, outcome.status, outcome.text, outcome.content_type, outcome.headers);
         return;
       }
+      if (outcome.status < 300 && ['createAccount', 'finishGoogleSignIn', 'finishSignup', 'sessionInfo'].includes(matched.name)) {
+        try {
+          const clear = affiliate.bind(req, actor || outcome.json?.account);
+          if (clear) { outcome.headers ||= {}; outcome.headers['Set-Cookie'] = [...[].concat(outcome.headers['Set-Cookie'] || []), clear]; }
+        } catch { logger.log({event:'AFFILIATE_BINDING',outcome:'PERSISTENCE_FAILED'}); }
+      }
       sendJson(res, outcome.status, outcome.json, outcome.headers);
     } catch (err) {
       /* A store that cannot read its own state refuses the request; it never answers from an empty state. */
@@ -1074,7 +1084,7 @@ function createService(options) {
     }
   }
 
-  return { store, adminStore, logger, handle, surface, startup, passwordReset, close() { googleSignIn.close(); adminStore?.close(); } };
+  return { store, adminStore, logger, handle, surface, startup, passwordReset, close() { affiliate.close(); googleSignIn.close(); adminStore?.close(); } };
 }
 
 function sendJson(res, status, body, headers) {

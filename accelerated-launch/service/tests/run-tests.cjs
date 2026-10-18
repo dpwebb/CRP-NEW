@@ -20,6 +20,7 @@ const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
 
 const OUT_DIR = path.join(__dirname, '..', 'out');
 const SECTION_FILES = [
+  'gs-affiliate-attribution.cjs',
   'gr-google-signin.cjs',
   'gq-public-analytics.cjs',
   'gp-public-seo.cjs',
