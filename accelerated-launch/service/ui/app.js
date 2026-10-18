@@ -3202,11 +3202,11 @@ function renderBillingView(data) {
   catch { state.publicPricing = null; }
   if (!currentStartup()) return;
   if (state.emailResetMode) { render(); el('auth-title')?.focus?.(); return; }
-  if (location.hash === '#google-signin-error') {
+  if (typeof location !== 'undefined' && location.hash === '#google-signin-error') {
     history.replaceState(null, '', location.pathname + '#signin');
     state.error = 'Google sign-in was cancelled or could not be confirmed. Please try again, or use your email and password.';
   }
-  if (location.hash === '#google-signin') {
+  if (typeof location !== 'undefined' && location.hash === '#google-signin') {
     try { state.googleSignInPending = await api('GET', '/api/auth/google/pending'); }
     catch (error) { state.error = error.message; history.replaceState(null, '', location.pathname + '#signin'); }
     if (!currentStartup()) return;

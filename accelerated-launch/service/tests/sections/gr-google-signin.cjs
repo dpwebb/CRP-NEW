@@ -125,7 +125,8 @@ async function run(disabled, check) {
     check.equal((await finish(linkCookie, { link_account: true, password: 'a-long-enough-password' })).json.error.code, 'TWO_FACTOR_REQUIRED', 'existing MFA cannot be skipped during linking');
     check.equal((await finish(linkCookie, { link_account: true, password: 'a-long-enough-password', code: 'bad' })).status, 401, 'wrong MFA refuses linking');
     check.equal(row(old.account_id).external_identities, undefined, 'failed MFA never attaches identity');
-    const linked = await finish(linkCookie, { link_account: true, password: 'a-long-enough-password', code: security.totp(setup.json.secret) });
+    const linkedCode = security.totp(setup.json.secret);
+    const linked = await finish(linkCookie, { link_account: true, password: 'a-long-enough-password', code: linkedCode });
     check.equal(linked.status, 200, 'password plus enrolled MFA links existing account');
     check.equal(linked.json.account.account_id, old.account_id, 'linking preserves existing account ID');
     check.equal(row(old.account_id).password_hash, oldBefore.password_hash, 'linking preserves native password');
@@ -133,7 +134,7 @@ async function run(disabled, check) {
     const mfaCookie = await start(); overrides = { sub: 'google-oauth2|fictional-existing', email: old.email }; await callback(mfaCookie); overrides = {};
     check.equal((await pending(mfaCookie)).json.two_factor_required, true, 'linked Google account still needs CRP MFA');
     check.equal((await finish(mfaCookie, {})).json.error.code, 'TWO_FACTOR_REQUIRED', 'Google cannot bypass CRP MFA');
-    check.equal((await finish(mfaCookie, { code: security.totp(setup.json.secret) })).status, 401, 'MFA counter cannot be replayed through Google');
+    check.equal((await finish(mfaCookie, { code: linkedCode })).status, 401, 'MFA counter cannot be replayed through Google');
     service.service.store.update(s => { s.accounts.find(a => a.account_id === old.account_id).two_factor_last_counter -= 1; });
     check.equal((await finish(mfaCookie, { code: security.totp(setup.json.secret) })).status, 200, 'Google plus fresh factor opens same CRP account');
 
