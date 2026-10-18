@@ -480,7 +480,7 @@ async function run(service, check) {
   check.ok(/The same debt appears more than once/.test(summaryText) && /This is the most serious violation we found that you can dispute\./.test(summaryText),
     'the browser previews the higher-priority duplicate and explains why it was selected');
   check.equal((summaryText.match(/\bVIOLATION\b/g) || []).length, 1, 'the unpaid browser shows exactly one violation example');
-  check.ok(/Unlock this report/.test(summaryText) && /\$5\.95 CAD/.test(summaryText) && /Monthly/.test(summaryText) && /Yearly/.test(summaryText), 'and the purchase choices with their recorded prices');
+  check.ok(/Unlock this report/.test(summaryText) && /\$15\.95 CAD/.test(summaryText) && /Monthly/.test(summaryText) && /Yearly/.test(summaryText), 'and the purchase choices with their recorded prices');
   check.ok(!/Check: /.test(summaryText) && !/id="packet-block"/.test(await freePage.content()), 'while the complete findings and the packet stay locked');
   const shot = `${process.env.TEMP || '.'}/crp-unpaid-summary.png`;
   await freePage.screenshot({ path: shot, fullPage: true });
@@ -524,7 +524,7 @@ async function run(service, check) {
   check.equal(paidReportBytes.subarray(0, 5).toString(), '%PDF-', 'the paid browser download contains actual PDF bytes');
   const paidReportText = require('../packet-pdf-assertions.cjs').pdfText(paidReportBytes);
   check.ok(/CREDIT REGULATOR PRO/.test(paidReportText) && /Fictional Creditor/.test(paidReportText), 'the branded report includes the consumer assessment agency names');
-  check.ok(/Canada \/ Nova Scotia/.test(paidReportText) && /CAD 2\.00/.test(paidReportText), 'the browser PDF shows the selected location and authoritative upgrade price');
+  check.ok(/Canada \/ Nova Scotia/.test(paidReportText) && /CAD 12\.00/.test(paidReportText), 'the browser PDF shows the selected location and authoritative upgrade price');
   const previousResult = (await service.request('GET', `/api/cases/${freeCase.case_id}`, { token: freeActor.token })).json.view.result_id;
   await freePage.locator('#go-subscribe').click(); await freePage.waitForSelector('#checkout-monthly');
   const subscriberRequest = freePage.waitForRequest(r => r.url().endsWith('/api/billing/checkout'));

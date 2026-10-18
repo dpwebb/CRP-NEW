@@ -374,7 +374,8 @@ async function stopPendingCheckout(provider, checkout) {
   let request = { ...checkout, subscription_reference: checkout.provider_subscription_reference };
   if (!request.provider_reference && !request.is_subscription_upgrade) {
     if (!request.provider_request || typeof provider.createCheckout !== 'function') throw Error('CHECKOUT_RECOVERY_BINDING_MISSING');
-    const resolved = await provider.createCheckout({ ...request.provider_request, resume: true });
+    const resolved = await provider.createCheckout({ ...request.provider_request, amount_cents: checkout.amount_cents,
+      price_id: checkout.provider_price_id || request.provider_request.price_id, resume: true });
     request.provider_reference = resolved.provider_reference;
   }
   if (typeof provider.cancelCheckout !== 'function') throw Error('CHECKOUT_CANCELLATION_NOT_CONFIGURED');
@@ -666,7 +667,6 @@ function eventFingerprint(event) {
   ];
   if (typeof event.checkout_reference === 'string') relevant.push(event.checkout_reference);
   if (typeof event.invoice_reference === 'string') relevant.push(event.invoice_reference);
-  if (typeof event.price_id === 'string') relevant.push(event.price_id);
   if (typeof event.payment_intent === 'string') relevant.push(event.payment_intent);
   if (Number.isSafeInteger(event.refunded_cents)) relevant.push(String(event.refunded_cents));
   return crypto.createHash('sha256').update(relevant.join('\u0000'), 'utf8').digest('hex');

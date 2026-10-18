@@ -107,7 +107,7 @@ async function run(t, check) {
       check.equal(JSON.stringify(t.service.store.state().checkout_sessions.find(c => c.checkout_id === checkoutId)), retained,
         'price presentation never rewrites the historical purchase');
       const sub = mock.subscriptions.get(session.subscription), renewal = mock.invoice(sub, 'monthly', prior);
-      retainedBuyers.push({ buyer, sub, currency, checkoutId });
+      retainedBuyers.push({ buyer, sub, currency, checkoutId, oldRenewal: renewal });
       renewal.lines.data[0].amount = prior;
       mock.payInvoice(renewal.id);
       const renewed = await t.request('POST', '/api/billing/events', mock.signed('invoice.paid', renewal));
@@ -122,6 +122,18 @@ async function run(t, check) {
     t.service.store.update(state => {
       const row = state.checkout_sessions.find(c => c.checkout_id === pending.json.checkout.checkout_id);
       row.amount_cents = 4250; row.payable_cents = 4250;
+    });
+    const crashedBuyer = await t.unpaidAccount('old-opening-gbp@example.test');
+    const crashed = await t.request('POST', '/api/billing/checkout', { token: crashedBuyer.token,
+      body: { plan_code: 'annual', currency: 'gbp', return_url: t.base + '/' } });
+    check.equal(crashed.status, 201, 'a separately owned old unfinished checkout has an actual provider session');
+    const crashedId = crashed.json.checkout.checkout_id, crashedSession = mock.sessions.get(crashed.json.checkout.provider_reference);
+    crashedSession.amount_total = 4250;
+    mock.idempotent.get('/v1/checkout/sessions:crp-checkout-' + crashedId).amount_total = 4250;
+    t.service.store.update(state => {
+      const row = state.checkout_sessions.find(c => c.checkout_id === crashedId);
+      row.amount_cents = 4250; row.payable_cents = 4250; row.state = 'OPENING'; row.provider_reference = null;
+      delete row.provider_price_id; delete row.provider_request.amount_cents; delete row.provider_request.price_id;
     });
     const priorPrices = { cad: { report_once: 595, monthly: 795, annual: 7950 },
       usd: { report_once: 495, monthly: 595, annual: 5950 }, aud: { report_once: 595, monthly: 795, annual: 7950 },
@@ -144,6 +156,43 @@ async function run(t, check) {
         'provider read-back after migration preserves the old contract');
       check.equal(billing.json.upgrade_quotes.annual.credit_cents, prior * 3, 'legacy invoice history preserves each actual payment once');
     }
+    const sessionCount = mock.sessions.size;
+    const unrelated = JSON.stringify(t.service.store.state().entitlements.filter(e => e.account_id !== crashedBuyer.account_id));
+    const stopOld = await t.request('POST', '/api/entitlement/cancel', { token: crashedBuyer.token,
+      body: { cancel_checkout_id: crashedId } });
+    check.equal(stopOld.status, 200, 'normal cancellation recovers a true old request with no saved amount or price ID');
+    const recoveredRequest = mock.calls.filter(c => c.method === 'POST' && c.path === '/v1/checkout/sessions').at(-1);
+    check.equal(recoveredRequest.params['line_items[0][price]'], crashedSession.line_items.data[0].price.id,
+      'old-intent recovery requests the original legacy price rather than the current primary');
+    check.equal(recoveredRequest.idempotency_key, 'crp-checkout-' + crashedId, 'old-intent recovery retains its original idempotency key');
+    check.equal(mock.sessions.size, sessionCount, 'old-intent cancellation opens no additional session');
+    check.equal(crashedSession.status, 'expired', 'normal cancellation expires the original provider session');
+    check.equal(t.service.store.state().checkout_sessions.find(c => c.checkout_id === crashedId).state, 'CANCELLED',
+      'the recovered local checkout is cancelled');
+    check.equal(t.service.store.state().entitlements.find(e => e.checkout_id === crashedId).state, 'CANCELLED',
+      'the old pending entitlement grants no access after cancellation');
+    check.equal(JSON.stringify(t.service.store.state().entitlements.filter(e => e.account_id !== crashedBuyer.account_id)), unrelated,
+      'cancelling the old intent preserves every unrelated entitlement');
+
+    const replayBuyer = retainedBuyers[0], signedReplay = mock.signed('invoice.paid', replayBuyer.oldRenewal, 'evt_old_semantic_replay');
+    const normalized = await provider.resolveProvider(process.env).verifyEvent({ headers: signedReplay.headers, rawBody: signedReplay.raw });
+    check.equal(normalized.verified, true, 'the historical invoice retry crosses the normal signature and provider-read boundary');
+    const event = normalized.event, originalFields = [String(event.type), String(event.account_reference), String(event.plan_code),
+      String(event.session_reference), event.amount_cents == null ? '' : String(event.amount_cents), event.currency || '', event.period_end || ''];
+    for (const field of ['checkout_reference', 'invoice_reference', 'payment_intent']) if (typeof event[field] === 'string') originalFields.push(event[field]);
+    if (Number.isSafeInteger(event.refunded_cents)) originalFields.push(String(event.refunded_cents));
+    const oldFingerprint = crypto.createHash('sha256').update(originalFields.join('\u0000'), 'utf8').digest('hex');
+    const originalEntitlement = JSON.parse(JSON.stringify(t.service.store.state().entitlements.find(e => e.account_id === replayBuyer.buyer.account_id)));
+    t.service.store.update(state => {
+      state.billing_events.find(e => e.invoice_reference === replayBuyer.oldRenewal.id && e.outcome === 'APPLIED').fingerprint = oldFingerprint;
+      const row = state.entitlements.find(e => e.account_id === replayBuyer.buyer.account_id);
+      row.state = 'PAST_DUE'; row.grace_until = new Date(Date.now() + 3600000).toISOString();
+    });
+    const beforeReplay = JSON.stringify(t.service.store.state());
+    const replayed = await t.request('POST', '/api/billing/events', signedReplay);
+    check.equal(replayed.json.event.duplicate, true, 'a fresh event ID for a stored pre-migration fingerprint stays a duplicate');
+    check.equal(JSON.stringify(t.service.store.state()), beforeReplay, 'old invoice retry neither clears grace nor changes any stored row');
+    t.service.store.update(state => { state.entitlements[state.entitlements.findIndex(e => e.account_id === replayBuyer.buyer.account_id)] = originalEntitlement; });
     const retained = retainedBuyers[0], adapter = provider.resolveProvider(process.env);
     const originalCheckout = t.service.store.state().checkout_sessions.find(c => c.checkout_id === retained.checkoutId);
     const oldAnnual = provider.acceptedPriceIdsFor(process.env, 'annual', 'cad').find(id => id !== provider.priceIdFor(process.env, 'annual', 'cad'));
@@ -151,8 +200,8 @@ async function run(t, check) {
       'an old price requires an explicit legacy mapping');
     check.equal(provider.planCodeFromPrice(process.env, oldAnnual, 'usd'), null, 'legacy prices cannot cross currency boundaries');
     const recovery = { account_id: retained.buyer.account_id, plan_code: 'annual', existing_plan_code: 'monthly',
-      currency: 'cad', amount_cents: 7950, price_id: oldAnnual, existing_amount_cents: 795,
-      existing_price_id: originalCheckout.provider_price_id, existing_checkout_id: originalCheckout.checkout_id,
+      currency: 'cad', amount_cents: 7950, price_id: oldAnnual,
+      existing_checkout_id: originalCheckout.checkout_id,
       subscription_reference: retained.sub.id, checkout_id: 'chk_old_interrupted_upgrade', return_url: t.base + '/',
       credit_amount_cents: 0, request_started_at: new Date().toISOString(), resume: true };
     mock.loseUpgradeResponse = true;
