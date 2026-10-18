@@ -61,6 +61,7 @@ const state = {
   wantTwoFactor: false,
   twoFactorSetup: null,
   signInInvitation: null,
+  googleSignInPending: null,
   contactLocation: null,
   packetReturn: null,
   packetChoices: null,
@@ -516,11 +517,48 @@ function submitAuth(fn, formId, message) {
   return run(fn).finally(() => { authPending = false;const current=el(formId);current?.removeAttribute?.('aria-busy');for(const control of current?.querySelectorAll?.('input, button')||[])control.disabled=false; });
 }
 
+function renderGoogleSignIn(panel) {
+  const pending = state.googleSignInPending, rendered = renderSequence, epoch = accountEpoch;
+  const ensure = () => { if (state.googleSignInPending !== pending || rendered !== renderSequence || epoch !== accountEpoch) throw cancelledAction(); };
+  const create = pending.action === 'CREATE_ACCOUNT', link = pending.action === 'LINK_ACCOUNT';
+  panel.innerHTML = `<div class="auth-intro"><p class="story-eyebrow">Google sign-in</p><h1 id="auth-title" tabindex="-1">${create ? 'Finish your CRP account.' : link ? 'Connect your CRP account.' : 'Continue to CRP.'}</h1><p class="lede">${esc(pending.email)}</p></div>
+    <div class="auth-form-card">${notices(true)}<form id="google-finish-form">
+    ${create ? '<p>Google confirmed your email. Choose a backup password so you can also sign in without Google. Next, save your CRP recovery key.</p>' : link ? '<p>A CRP account already uses this email. Enter its password to connect Google safely. Your saved reports and account stay together.</p>' : '<p>Your Google account is confirmed.</p>'}
+    ${create || link ? `<label for="google-password">${create ? 'Backup password' : 'CRP password'}</label><input id="google-password" type="password" required ${create ? 'minlength="12"' : ''} maxlength="1024" autocomplete="${create ? 'new-password' : 'current-password'}">${create ? '<p class="auth-helper">At least 12 characters</p><label for="google-password-confirm">Enter your backup password again</label><input id="google-password-confirm" type="password" required minlength="12" maxlength="1024" autocomplete="new-password">' : ''}` : ''}
+    ${pending.two_factor_required ? '<label for="google-code">Six-digit code from your CRP authenticator</label><input id="google-code" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6">' : ''}
+    <div class="auth-actions"><button class="primary" type="submit" id="google-finish">${create ? 'Create my CRP account' : link ? 'Connect Google and sign in' : 'Sign in'}</button><button class="secondary" type="button" id="google-cancel">Cancel</button></div><p id="auth-status" role="status" aria-live="polite"></p></form>${supportContactBlock()}</div>`;
+  el('google-finish-form').onsubmit = event => {
+    event.preventDefault();
+    return submitAuth(async () => {
+      ensure(); const password = el('google-password')?.value;
+      if (create && password !== el('google-password-confirm').value) throw new Error('Your backup passwords do not match. Enter them again.');
+      let data;
+      try { data = await api('POST', '/api/auth/google/finish', { create_account: create, link_account: link, ...(password ? { password } : {}), code: el('google-code')?.value || '' }); }
+      catch (error) {
+        ensure();
+        if (['GOOGLE_ACCOUNT_LINK_REQUIRED', 'GOOGLE_ACCOUNT_SETUP_REQUIRED', 'TWO_FACTOR_REQUIRED'].includes(error.code)) state.googleSignInPending = await api('GET', '/api/auth/google/pending');
+        if (error.code === 'GOOGLE_SIGN_IN_EXPIRED') { state.googleSignInPending = null; history.replaceState(null, '', location.pathname + '#signin'); }
+        throw error;
+      }
+      ensure(); state.googleSignInPending = null;
+      history.replaceState(null, '', location.pathname + '#signin');
+      const current = () => { if (epoch !== accountEpoch || rendered !== renderSequence) throw cancelledAction(); };
+      await acceptSignIn(data, current);
+      if (data.recovery_key) state.recoveryKey = data.recovery_key;
+    }, 'google-finish-form', 'Finishing Google sign-in…');
+  };
+  el('google-cancel').onclick = () => {
+    if (authPending) return;
+    return run(async () => { ensure(); await api('DELETE', '/api/auth/google/pending'); ensure(); state.googleSignInPending = null; state.error = null; history.replaceState(null, '', location.pathname + '#signin'); });
+  };
+}
+
 function renderAccount(panel) {
   if (state.emailResetMode) { renderEmailPasswordReset(panel); return; }
   if (state.emailRecoveryMode) { renderEmailRecoveryRequest(panel); return; }
   if (state.account) { if(state.accountSecurity?.signup_complete===false){renderSignupSecurity(panel);return;}if(state.signInInvitation){renderSignInInvitation(panel);return;}if(state.securityMode){renderSecuritySettings(panel);return;}renderAccountDetails(panel); return; }
   if (state.recoveryMode) { renderRecovery(panel); return; }
+  if (state.googleSignInPending) { renderGoogleSignIn(panel); return; }
   if (signInChallenge) { renderSignInChallenge(panel); return; }
   const signInEntry = (typeof location !== 'undefined' && location.hash === '#signin');
   panel.innerHTML = `
@@ -530,7 +568,7 @@ function renderAccount(panel) {
     <p class="lede">${signInEntry ? 'Enter your email and password to continue.' : 'Start with your email and a password. You can upload your report after signing in.'}</p>
     </div><div class="auth-form-card">
     ${(typeof location !== 'undefined' && location.protocol === 'file:') ? '<p class="note" id="local-preview-note">This saved page is a visual preview. To create an account, <a href="https://staging.creditregulatorpro.com/index.html#create">open the running staging site</a>.</p>' : ''}
-    ${notices(true)}<form id="auth-form">
+    ${notices(true)}${surface?.google_sign_in ? '<button type="button" class="secondary google-signin" id="signin-google">Continue with Google</button><p class="auth-divider">or use your email</p>' : ''}<form id="auth-form">
     <div class="auth-fields">
       <div>
         <label for="email">Email address</label>
@@ -554,6 +592,18 @@ function renderAccount(panel) {
     </form>${supportContactBlock()}</div>`;
 
   const credentials = () => ({ email: el('email').value, password: el('password').value, code: el('signin-code')?.value || '' });
+  if (el('signin-google')) el('signin-google').onclick = () => {
+    if (authPending) return;
+    authPending = true; const rendered = renderSequence, epoch = accountEpoch;
+    el('signin-google').disabled = true;
+    return run(async () => {
+      const data = await api('POST', '/api/auth/google/start', {});
+      if (rendered !== renderSequence || epoch !== accountEpoch || state.account) throw cancelledAction();
+      const destination = new URL(data.authorize_url);
+      if (destination.protocol !== 'https:' || !destination.hostname.endsWith('.auth0.com') || destination.pathname !== '/authorize') throw new Error('Google sign-in is not available right now.');
+      location.assign(destination.href);
+    }).finally(() => { authPending = false; if (el('signin-google')) el('signin-google').disabled = false; });
+  };
   el('create').onclick = (event) => {
     event?.preventDefault?.();
     if (signInEntry) { location.hash = '#create'; render(); return; }
@@ -643,8 +693,17 @@ function renderSignupSecurity(panel) {
 }
 function renderSecuritySettings(panel) {
   panel.innerHTML=`${notices(true)}<h1>Account security</h1>${recoveryKeyBlock()}<h2>Password recovery</h2><p>Forgot your password or lost your recovery key? On the log in page, choose “Forgot your password?” then “Email me a password reset link.” You can reset by email without your key. Your authenticator stays enabled.</p><p>Keep your recovery key private. It can also recover access if you lose your authenticator. Creating a new key replaces your old one.</p><label for="security-password">Current password</label><input id="security-password" type="password" autocomplete="current-password">${state.accountSecurity?.two_factor_enabled?'<label for="security-code">Authenticator code</label><input id="security-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6">':''}<button id="create-recovery-key" class="secondary">Create a new recovery key</button><h2>Two-factor authentication</h2>${twoFactorFields()}${state.accountSecurity?.two_factor_enabled?'<label for="disable-factor-password">Current password</label><input id="disable-factor-password" type="password" autocomplete="current-password"><label for="disable-factor-code">Authenticator code</label><input id="disable-factor-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><button id="disable-two-factor" class="secondary">Turn off two-factor authentication</button>':''}<p><button id="security-back" class="primary">Back to my account</button></p>`;
+  if (state.accountSecurity?.google_connected) {
+    panel.innerHTML += '<h2>Google sign-in</h2><p>Google is connected to your CRP account. To disconnect it, enter your current password above and your authenticator code if enabled. This signs you out of CRP on all devices. Your password and recovery key will still work.</p><button id="disconnect-google" class="secondary">Disconnect Google and sign out</button>';
+  }
   wireRecoveryKey();wireNewRecoveryKey();wireTwoFactor();
   el('security-back').onclick=()=>{state.securityMode=false;render();};
+  if (el('disconnect-google')) el('disconnect-google').onclick = () => run(async () => {
+    const ensure = accountContext();
+    await api('DELETE', '/api/account/google-identity', { password: el('security-password').value, code: el('security-code')?.value || '' });
+    ensure(); clearClientAccountForRecovery(); state.step = STEP.ACCOUNT;
+    history.replaceState(null, '', location.pathname + '#signin'); state.notice = 'Google disconnected. Sign in with your email and password.';
+  });
   if(el('disable-two-factor'))el('disable-two-factor').onclick=()=>run(async()=>{const password=el('disable-factor-password').value,code=el('disable-factor-code').value;state.accountSecurity=await api('POST','/api/account/2fa/disable',{password,code});state.notice='Two-factor authentication turned off.';});
 }
 
@@ -722,6 +781,7 @@ function clearClientAccountForRecovery() {
   state.view = null; state.entitlement = null; state.payment = null; state.upgrade_credit = null; state.upgrade_quotes = null;
   state.upgrade_confirmation = null; state.support = null; state.billing = null; state.result_list = [];
   state.accountSecurity = null; state.recoveryKey = null; state.twoFactorSetup = null; state.wantTwoFactor = false;
+  state.googleSignInPending = null;
   state.securityMode = false; state.contactLocation = null; state.packetReturn = null; state.checkoutReturn = null;
   state.assessing = false; state.assessment_error = null; state.purchase_needed = null;
   state.storageSnapshot = null; state.savedReportFilter = '';
@@ -3142,6 +3202,16 @@ function renderBillingView(data) {
   catch { state.publicPricing = null; }
   if (!currentStartup()) return;
   if (state.emailResetMode) { render(); el('auth-title')?.focus?.(); return; }
+  if (location.hash === '#google-signin-error') {
+    history.replaceState(null, '', location.pathname + '#signin');
+    state.error = 'Google sign-in was cancelled or could not be confirmed. Please try again, or use your email and password.';
+  }
+  if (location.hash === '#google-signin') {
+    try { state.googleSignInPending = await api('GET', '/api/auth/google/pending'); }
+    catch (error) { state.error = error.message; history.replaceState(null, '', location.pathname + '#signin'); }
+    if (!currentStartup()) return;
+    state.step = STEP.ACCOUNT; render(); el('auth-title')?.focus?.(); return;
+  }
   try {
     const session = await api('GET', '/api/session');
     if (!currentStartup()) return;

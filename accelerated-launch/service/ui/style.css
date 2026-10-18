@@ -193,6 +193,8 @@ footer { max-width:1360px; margin:auto; display:flex; justify-content:space-betw
 @media (max-width:900px) { .benefit-grid { grid-template-columns:1fr; gap:22px; } .benefit-card { display:grid; grid-template-columns:32px 1fr; column-gap:14px; } .benefit-card svg { grid-row:1/3; } .benefit-card h3 { margin-top:0; } }
 @media (max-width:700px) { .subscription-benefits { padding:20px; } .subscription-benefits h2 { font-size:20px; } .subscription-choices { grid-template-columns:1fr; } .plan-card > button { width:100%; } .upgrade-offer { padding:18px; } }
 
+.google-signin{width:100%;min-height:44px;background:#fff;color:#1f1f1f;border:1px solid #747775;border-radius:4px;font-weight:600}
+.auth-divider{text-align:center;color:var(--muted);margin:1rem 0}
 /* The public landing links open a focused account entry; the wizard begins after sign-in. */
 body.auth-entry .sidebar, body.auth-entry .top, body.auth-entry .intro,
 body.auth-entry .banner, body.auth-entry .support-details, body.auth-entry .progress,

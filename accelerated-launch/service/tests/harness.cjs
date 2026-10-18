@@ -89,7 +89,7 @@ class TestService {
     this.dataDir = temporaryDataDir(tag || 'run');
     this.logs = [];
     this.autoSignup=options.autoSignup!==false;this.confirmationMessages=[];this.resetMessages=[];
-    this.service = createService({ passwordResetOrigin:()=>this.base, passwordResetMailer:async message=>{this.resetMessages.push(message);if(options.passwordResetMailer)await options.passwordResetMailer(message);}, registrationMailer: async message=>{this.confirmationMessages.push(message);if(options.registrationMailer)await options.registrationMailer(message);}, dataDir: this.dataDir, geoLocate: options.geoLocate || (async () => 'CA'), logSink: (line) => this.logs.push(line) });
+    this.service = createService({ googleSignIn: options.googleSignIn, passwordResetOrigin:()=>this.base, passwordResetMailer:async message=>{this.resetMessages.push(message);if(options.passwordResetMailer)await options.passwordResetMailer(message);}, registrationMailer: async message=>{this.confirmationMessages.push(message);if(options.registrationMailer)await options.registrationMailer(message);}, dataDir: this.dataDir, geoLocate: options.geoLocate || (async () => 'CA'), logSink: (line) => this.logs.push(line) });
     this.server = http.createServer((req, res) => {
       this.service.handle(req, res).catch(() => {
         if (!res.headersSent) {

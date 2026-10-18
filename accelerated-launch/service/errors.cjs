@@ -7,6 +7,13 @@
  */
 
 const STATUS_BY_CODE = Object.freeze({
+  GOOGLE_SIGN_IN_UNAVAILABLE: 503,
+  GOOGLE_SIGN_IN_INVALID: 401,
+  GOOGLE_SIGN_IN_EXPIRED: 401,
+  GOOGLE_SIGN_IN_CANCELLED: 400,
+  GOOGLE_SIGN_IN_SIGN_OUT_FIRST: 409,
+  GOOGLE_ACCOUNT_LINK_REQUIRED: 409,
+  GOOGLE_ACCOUNT_SETUP_REQUIRED: 409,
   SIGNUP_SECURITY_REQUIRED: 403,
   EMAIL_CONFIRMATION_WAIT: 429,
   EMAIL_CONFIRMATION_INVALID: 400,
@@ -101,6 +108,13 @@ const STATUS_BY_CODE = Object.freeze({
 
 /** Plain-language copy for every machine code. The consumer UI renders these and nothing rawer. */
 const MESSAGE_BY_CODE = Object.freeze({
+  GOOGLE_SIGN_IN_UNAVAILABLE: 'Google sign-in is not available right now. You can still use your email and password.',
+  GOOGLE_SIGN_IN_INVALID: 'We could not confirm this Google sign-in. Please start again.',
+  GOOGLE_SIGN_IN_EXPIRED: 'This Google sign-in expired. Please start again.',
+  GOOGLE_SIGN_IN_CANCELLED: 'Google sign-in was cancelled. You can try again.',
+  GOOGLE_SIGN_IN_SIGN_OUT_FIRST: 'Sign out of your current CRP account before signing in with Google.',
+  GOOGLE_ACCOUNT_LINK_REQUIRED: 'Confirm your CRP password to connect this Google account.',
+  GOOGLE_ACCOUNT_SETUP_REQUIRED: 'Choose a backup password to finish creating your CRP account.',
   SIGNUP_SECURITY_REQUIRED: 'Confirm your email and save your recovery key to finish signup.',
   EMAIL_CONFIRMATION_WAIT: 'Wait one minute before requesting another confirmation email.',
   EMAIL_CONFIRMATION_INVALID: 'That code does not match. Check your confirmation email and try again.',

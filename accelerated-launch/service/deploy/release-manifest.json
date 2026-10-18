@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-18T02:18:31.614Z",
+  "generated_at": "2026-10-18T16:08:08.463Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -61,8 +61,8 @@
     },
     {
       "id": "RUNTIME",
-      "file_count": 110,
-      "digest": "560371B620BB232864C28A740958C492C000AA172B851F82D34B9BA089BA837A",
+      "file_count": 111,
+      "digest": "59BF3561053022C5F5D243CBD983A47179F014345B658138C8EA332875ECA5E8",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -86,7 +86,7 @@
         },
         {
           "file": "accelerated-launch/service/accounts.cjs",
-          "sha256": "1CF67F65A37BF0675A8650A3D5B41CCC588561BABB4FEED3096D6AF92A0075EA"
+          "sha256": "037A3415167C89B76D09A33C4B238490A66229FDBB6ADE25A3C1BB5A4DF4E8C1"
         },
         {
           "file": "accelerated-launch/service/admin-access.cjs",
@@ -102,7 +102,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "CE77EDF382BD44D460068B5E73186380D62B7712FCBA225FE0E2DE8416AACA32"
+          "sha256": "3D6562432A212050F2A16136002C3E1FCEBEFE48FDDE470C5E77BE7CD738EF46"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -123,6 +123,10 @@
         {
           "file": "accelerated-launch/service/au-disclosure-fields.cjs",
           "sha256": "FA16830D17619DF8D4BCF22234DC3E986CBAEDA78C7D3190932A08F131995641"
+        },
+        {
+          "file": "accelerated-launch/service/auth0-google.cjs",
+          "sha256": "2D4FC9226F13835165711316435050AB38D6DE2CB5032D1F736A8C36B52E51C9"
         },
         {
           "file": "accelerated-launch/service/billing-credits.cjs",
@@ -230,7 +234,7 @@
         },
         {
           "file": "accelerated-launch/service/errors.cjs",
-          "sha256": "C8671C1D99C5A5D26342779E82A19263CBE18D11B1687B640333A34A5B4D61EC"
+          "sha256": "9CAFCD1CADE37D75CE3E3EDF4C3875C0749A6865325240F5115B0FF6E8F4F03E"
         },
         {
           "file": "accelerated-launch/service/evaluation.cjs",
@@ -466,7 +470,7 @@
         },
         {
           "file": "accelerated-launch/service/request-policy.cjs",
-          "sha256": "5EBA19FB12D113BE86957E6D6DA7C9FD253DB2F0A3B60E0DD66F10A3EDDB1053"
+          "sha256": "0C929C1D0E43749912CB1C1F356AEADBD022ADA41DC892CBD7A3F746449345DB"
         },
         {
           "file": "accelerated-launch/service/results.cjs",
@@ -482,7 +486,7 @@
         },
         {
           "file": "accelerated-launch/service/signup-security.cjs",
-          "sha256": "8C3B3EDD8696C3EB45EE231AA5FD91202501BD394D0DE14173F714143EAA6F4E"
+          "sha256": "517505E2F7B9BC14F0D927AC6D5B584D5E550223007E877E9A6A62DC7DBB5B33"
         },
         {
           "file": "accelerated-launch/service/store-diagnostic.cjs",
@@ -626,7 +630,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 37,
-      "digest": "C14626F49E4746F3981AF91003C6998A8A29F7F5566737755216FDD0F47194B0",
+      "digest": "0A71B41B96FE52DCB10ECDB0D51052C62D39D437D0C332257475D98BD0A2FA11",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -666,7 +670,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "44981FD48A1B5169A0C400A6468C967259D25BC362FE60E12A4EA0AE9BBA8AE2"
+          "sha256": "AA6FCA091A11740E9FB3F0EB95D8B9486759AD2E80890143A91B8B4DCC164C00"
         },
         {
           "file": "accelerated-launch/service/ui/brand-logo.png",
@@ -770,7 +774,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/style.css",
-          "sha256": "02CF884FBD494D89605534F9DEC6B94F73DB8B28FF79A2D82FA2413447C6734D"
+          "sha256": "BFA7D6D77ED08F7688C59B56C05FE999A7FD81F9AA3117844C8E062F72DC9E99"
         },
         {
           "file": "accelerated-launch/service/ui/theme.css",
@@ -779,6 +783,6 @@
       ]
     }
   ],
-  "manifest_digest": "193EDEBFA9C24BF1DCD4AA69E2DEC2FD53A663FA1F97B2DDE17721DB806026CA",
-  "total_file_count": 183
+  "manifest_digest": "BBCE767FF08DE40DD879191CD6EE47ADC4C2EF94E07B872E48BF6BC18422AA21",
+  "total_file_count": 184
 }

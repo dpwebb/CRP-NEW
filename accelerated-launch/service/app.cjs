@@ -148,11 +148,17 @@ function sessionToken(req) {
 
 /** Route table. `auth: true` means the dispatcher resolves the session BEFORE the handler runs. */
 const ROUTES = Object.freeze([
+  ['POST', '/api/auth/google/start', false, 'startGoogleSignIn'],
+  ['GET', '/api/auth/google/callback', false, 'googleSignInCallback'],
+  ['GET', '/api/auth/google/pending', false, 'googleSignInPending'],
+  ['POST', '/api/auth/google/finish', false, 'finishGoogleSignIn'],
+  ['DELETE', '/api/auth/google/pending', false, 'cancelGoogleSignIn'],
   ['POST', '/api/accounts', false, 'createAccount'],
   ['POST', '/api/sessions', false, 'signIn'],
   ['DELETE', '/api/sessions/current', false, 'signOut'],
   ['GET', '/api/session', true, 'sessionInfo'],
   ['GET', '/api/account/security', true, 'accountSecurity'],
+  ['DELETE', '/api/account/google-identity', true, 'disconnectGoogle'],
   ['POST', '/api/account/confirm-email', true, 'confirmEmail'],
   ['POST', '/api/account/resend-confirmation', true, 'resendConfirmation'],
   ['POST', '/api/account/confirm-recovery-key', true, 'confirmRecoveryKey'],
@@ -334,13 +340,26 @@ function availabilityFor(row) {
 }
 
 /** The consumer-facing handler set. Every consumer-visible string it returns came from another module. */
-function buildHandlers(store, logger, surface, pricingCurrency, registrationMailer, adminStore) {
+function buildHandlers(store, logger, surface, pricingCurrency, registrationMailer, adminStore, googleSignIn) {
   const ownerRoute = (account, token) => {
     const nextPath = adminStore && require('./admin-access.cjs').ownerSignInPath(adminStore, account, token);
     return nextPath === '/admin' ? { next_path: '/admin' } : {};
   };
   return {
     /* ------------------------------------------------------------ accounts and sessions */
+
+    startGoogleSignIn: ({ req }) => googleSignIn.start(req),
+    googleSignInCallback: ({ req }) => googleSignIn.callback(req),
+    googleSignInPending: ({ req }) => ({ status: 200, json: googleSignIn.pending(req) }),
+    cancelGoogleSignIn: ({ req }) => googleSignIn.cancel(req),
+    finishGoogleSignIn: ({ req, body }) => {
+      const { opened, clearCookie } = googleSignIn.finish(req, body);
+      logger.log({ event: 'GOOGLE_SIGN_IN', outcome: 'OK' });
+      return { status: 200, json: { ok: true, account: opened.account, signed_in: true,
+        ...(opened.recovery_key ? { recovery_key: opened.recovery_key } : {}),
+        ...accounts.securityView(store, opened.account), ...ownerRoute(opened.account, opened.token) },
+        headers: { 'Set-Cookie': [sessionCookie(opened.token, 86400), clearCookie] } };
+    },
 
     createAccount: async ({ body, res }) => {
       const created = accounts.createAccount(store, body, { requireSignupSecurity: true });
@@ -375,6 +394,8 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
     confirmTwoFactor: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').confirmTwoFactor(store,actor,body)}}),
     disableTwoFactor: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').disableTwoFactor(store,actor,body)}}),
     accountSecurity: ({ actor }) => ({ status: 200, json: { ok: true, ...accounts.securityView(store, actor) } }),
+    disconnectGoogle: ({ actor, body }) => ({ status: 200, json: { ok: true, ...accounts.disconnectGoogle(store, actor, body) },
+      headers: { 'Set-Cookie': [sessionCookie('', 0), `${ADMIN_COOKIE}=; HttpOnly; SameSite=Strict; Path=/api/admin/; Max-Age=0${process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : ''}`] } }),
     issueRecoveryKey: ({ actor, body }) => {
       const issued = accounts.issueRecoveryKey(store, actor, body);
       logger.log({ event: 'RECOVERY_KEY_ISSUED', outcome: 'OK' });
@@ -879,13 +900,15 @@ function createService(options) {
     catch { adminUnavailable = true; }
   }
   const logger = new Logger(opts.logSink);
+  const googleSignIn = require('./auth0-google.cjs').create(store, opts.googleSignIn);
   const passwordReset = require('./password-reset.cjs').create(store, { mailer: opts.passwordResetMailer || require('./confirmation-mail.cjs').sender(), origin: opts.passwordResetOrigin, logger });
   const requestPolicy=require('./request-policy.cjs').policy();
   const surface = loadJurisdictionSurface();
+  surface.google_sign_in = googleSignIn.status().enabled;
   const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
   const handlers = Object.assign(
     {},
-    buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || require('./confirmation-mail.cjs').sender(), adminStore),
+    buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || require('./confirmation-mail.cjs').sender(), adminStore, googleSignIn),
     buildCaseHandlers(store, logger, surface, pricingCurrency),
     buildBillingHandlers(store, logger, pricingCurrency),
     {requestPasswordReset: ({body}) => ({status:200,json:{ok:true,...passwordReset.request(body)}}),
@@ -1051,7 +1074,7 @@ function createService(options) {
     }
   }
 
-  return { store, adminStore, logger, handle, surface, startup, passwordReset, close() { adminStore?.close(); } };
+  return { store, adminStore, logger, handle, surface, startup, passwordReset, close() { googleSignIn.close(); adminStore?.close(); } };
 }
 
 function sendJson(res, status, body, headers) {

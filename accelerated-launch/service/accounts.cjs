@@ -4,8 +4,8 @@
  *
  * OWNER-ALL82-001 / B2. This is identity for a LOCAL, single-operator service: it establishes that one
  * consumer's cases belong to one account and that nobody else can read them. It is deliberately not an
- * identity provider integration — plan section 5 excludes speculative infrastructure, and the legacy
- * Auth0 wiring is unreachable and read-only here.
+ * provider integration in its original baseline. The owner-authorized Google handoff
+ * now accepts only server-verified Auth0 identities through auth0-google.cjs; legacy wiring stays unused.
  *
  * Secrets: passwords use salted scrypt; explicitly imported bcrypt credentials convert on valid sign-in.
  * The session token
@@ -325,6 +325,72 @@ function checkCredentials(state, email, password) {
     return { account };
 }
 
+/** Called only after auth0-google verifies the authorization transaction and ID token.
+ * Never merge by email alone: first-time linking also proves the existing password
+ * and its enrolled factor. Subsequent sign-ins use immutable issuer/subject and CRP MFA.
+ */
+function signInWithGoogle(store, identity, input = {}) {
+  if (!identity || typeof identity.issuer !== 'string' || !/^https:\/\/[a-z0-9.-]+\.auth0\.com\/$/.test(identity.issuer) ||
+      !/^google-oauth2\|[A-Za-z0-9_-]{1,200}$/.test(identity.subject || '') || !EMAIL.test(identity.email || '') ||
+      normalizeEmail(identity.email) !== identity.email) throw new ServiceError('GOOGLE_SIGN_IN_INVALID');
+  const session = createSessionRow(null);
+  const outcome = store.update(state => {
+    const matches = state.accounts.filter(a => (a.external_identities || []).some(i => i.issuer === identity.issuer && i.subject === identity.subject));
+    if (matches.length > 1) return { refuse: 'GOOGLE_SIGN_IN_INVALID' };
+    let account = matches[0], key = null;
+    const alreadyLinked = Boolean(account);
+    if (!account) {
+      account = state.accounts.find(a => a.email === identity.email);
+      if (account) {
+        if (input.link_account !== true) return { refuse: 'GOOGLE_ACCOUNT_LINK_REQUIRED' };
+        if (typeof input.password !== 'string' || input.password.length > 1024) return { refuse: 'INVALID_CREDENTIALS' };
+        const checked = checkCredentials(state, account.email, input.password);
+        if (checked.refuse) return checked;
+        account = checked.account;
+      } else {
+        if (input.create_account !== true) return { refuse: 'GOOGLE_ACCOUNT_SETUP_REQUIRED' };
+        if (typeof input.password !== 'string' || input.password.length < MIN_PASSWORD_LENGTH || input.password.length > 1024) return { refuse: 'INVALID_ACCOUNT_DETAILS' };
+        const salt = crypto.randomBytes(16).toString('hex'); key = recoveryKey();
+        account = { account_id: newId('acc'), email: identity.email, password_salt: salt,
+          password_hash: hashPassword(input.password, salt), recovery_key_digest: recoveryDigest(key),
+          recovery_key_created_at: nowIso(), created_at: nowIso(), failed_sign_ins: 0,
+          signup_security_required: true, email_verified_at: nowIso(), profile: { contact_email: identity.email } };
+        state.accounts.push(account);
+      }
+    }
+    if (account.locked_until && Date.parse(account.locked_until) > Date.now()) return { refuse: 'TOO_MANY_FAILED_SIGN_INS' };
+    if (account.two_factor_secret && !input.code) return { refuse: 'TWO_FACTOR_REQUIRED' };
+    if (!require('./signup-security.cjs').verifySignIn(store, account, input.code)) return { refuse: 'TWO_FACTOR_INVALID' };
+    if (!alreadyLinked) {
+      account.external_identities = [...(account.external_identities || []), { provider: 'auth0_google', issuer: identity.issuer, subject: identity.subject, linked_at: nowIso() }];
+    }
+    session.row.account_id = account.account_id;
+    state.sessions.push(session.row); trimSessions(state, account.account_id);
+    return { account: { account_id: account.account_id, email: account.email }, ...(key ? { recovery_key: key } : {}) };
+  });
+  if (outcome.refuse) throw new ServiceError(outcome.refuse);
+  return { ...outcome, token: session.token };
+}
+
+function disconnectGoogle(store, actor, input = {}) {
+  if (typeof input.password !== 'string' || input.password.length > 1024) throw new ServiceError('INVALID_CREDENTIALS');
+  const outcome = store.update(state => {
+    const current = state.accounts.find(a => a.account_id === actor.account_id);
+    if (!current) return { refuse: 'AUTHENTICATION_REQUIRED' };
+    const checked = checkCredentials(state, current.email, input.password);
+    if (checked.refuse) return checked;
+    if (current.two_factor_secret && !input.code) return { refuse: 'TWO_FACTOR_REQUIRED' };
+    if (!require('./signup-security.cjs').verifySignIn(store, current, input.code)) return { refuse: 'TWO_FACTOR_INVALID' };
+    current.external_identities = (current.external_identities || []).filter(i => i.provider !== 'auth0_google');
+    if (!current.external_identities.length) delete current.external_identities;
+    // Every earlier consumer session, including one opened through Google, expires.
+    state.sessions = state.sessions.filter(s => s.account_id !== current.account_id);
+    return { google_connected: false, signed_out: true };
+  });
+  if (outcome.refuse) throw new ServiceError(outcome.refuse);
+  return outcome;
+}
+
 /**
  * Resolve a bearer token to its account. Unknown, expired, destroyed and absent tokens are one refusal: a
  * caller cannot tell a lapsed session from a forged one, and neither one works.
@@ -375,6 +441,8 @@ function signOutEverywhere(store, accountId) {
 }
 
 module.exports = {
+  disconnectGoogle,
+  signInWithGoogle,
   verifyAccountPassword,
   checkCredentials,
   securityView,

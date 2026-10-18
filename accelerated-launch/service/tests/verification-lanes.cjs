@@ -24,3 +24,5 @@ LANE_IDS.security.unshift('gp-public-seo');
 LANE_IDS.consumer.unshift('gq-public-analytics');
 LANE_IDS.security.unshift('gq-public-analytics');
 module.exports = { SOURCE_AUDIT_FILES, LANE_IDS };
+LANE_IDS.security.unshift('gr-google-signin');
+LANE_IDS.browser.unshift('gr-google-signin');
