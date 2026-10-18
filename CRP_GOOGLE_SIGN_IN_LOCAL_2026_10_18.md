@@ -2,7 +2,7 @@
 
 Owner request: “Integrate Google Sign in protocols for CRP the Auth0 site is loged in”. The owner chose “Use an existing CRP Google OAuth client”. This authorizes this bounded integration and inspection of the existing provider setup. Root alone writes source, runs tests and operates browser/provider surfaces. Unrelated dirty AGENTS/release documents, output and previous release evidence are preserved. Staging/production activation and another source push are separate actions.
 
-Checkpoint: IMPLEMENTED_AND_FOCUSED_VERIFIED; GOVERNED_FULL_PENDING; PROVIDER_CONFIGURATION_AND_REAL_GOOGLE_ACCEPTANCE_PENDING. This is a local successor to accepted source 1851bcdd360d009cf228e9f4f6e4db6930ccb7fa/build crp-v1-193edebfa9c24bf1. No existing operational store, hosted service or provider configuration has been changed.
+Checkpoint: LOCAL_INTEGRATION_VERIFIED_AND_PACKAGED; APPROVED_PROVIDER_CALLBACKS_SAVED; OWNER_GOOGLE_CREDENTIAL_ENTRY_AND_REAL_GOOGLE_ACCEPTANCE_PENDING. This is a local successor to accepted source 1851bcdd360d009cf228e9f4f6e4db6930ccb7fa/build crp-v1-193edebfa9c24bf1. No existing operational store or hosted service has been changed. The two specifically approved provider callback additions below are saved; earlier no-write observations are historical.
 
 ## Implemented behavior
 
@@ -14,7 +14,7 @@ Account security also allows the owner to disconnect Google using the current CR
 
 Configuration is disabled by default: `CRP_AUTH0_GOOGLE_ENABLED=0`, with explicit `CRP_AUTH0_DOMAIN`, `CRP_AUTH0_CLIENT_ID` and `CRP_AUTH0_PUBLIC_ORIGIN`. Production/staging origins must match their exact known HTTPS hosts. Only loopback local development may use HTTP. No Auth0 client secret is needed for the existing public client. Exact callback suffix: `/api/auth/google/callback`. Ephemeral handoffs deliberately expire across service restarts; there is no persistent token migration.
 
-## Current provider inspection — no writes
+## Initial provider inspection — historical no-write observations
 
 The logged-in Canadian Auth0 tenant is `dev-gptogs44fcgwy3ws.ca.auth0.com`. The existing `CRP` SPA client is `qhlb8UbJtQHnrbyhFmGavd1XNO5MSif6`; Google (`google-oauth2`) is already enabled for it. Its current callback list contains only `http://localhost:5173/`. A separate `CRP AUTH0` SPA uses `YYdKTD43WmcjI8QvYtYkwGwMAcNbJ5jT` and only `http://localhost:5173`; neither application was altered, deleted, converted or recreated.
 
@@ -43,3 +43,22 @@ Official implementation references: [Auth0 Code with PKCE](https://auth0.com/doc
 Frozen7bb9eee/bbce767f/184 is superseded for final verification. Its first isolated prepare refused missing Windows `flock`/`systemctl` before any product test. A new r2 plan preserved that refusal and used the unchanged, source-bound monitoring dependency-injection review, with product reuse explicitly disabled. The full attempt then stopped on an uncaught `ReferenceError: location is not defined` in the new bootstrap fragment handling, observed while the existing FL VM test loaded the UI outside a browser. Its failed receipt `5FF740445EA38F0B3071897D62617CF9C161DBB100BDB2642D681E612CBB90DB` and all outputs remain in the first `google-signin-verification` checkout; no complete-full totals are claimed. Runtime correction adds the existing `typeof location` guard to both new fragment branches. The replay test now also retains the exact previously used MFA code rather than generating a potentially newer code at a 30-second boundary. Focused R7 passes521/0/0 across Google and FL, including real browser signup/repeat/Cancel; a new frozen source, isolated checkout and fresh governed full are required.
 
 Later provider inspection resolves the earlier pending detail view. The Google web client is in the production-published External application. Its two current JavaScript origins are `http://localhost:5175` and `https://creditregulatorpro.com`; its two current redirects are `https://creditregulatorpro.com/_api/auth/oauth_callback` and `http://localhost:5175/_api/auth/oauth_callback`. Preserve all four entries when appending the Auth0 callback. The selected Auth0 CRP public client already has Authorization Code enabled, OIDC conformant enabled and RS256 signing. No grant, signing, callback, credential, origin, audience or publishing setting was changed.
+
+## Final local verification and package
+
+Frozen source `7324f2802686769a16eeecc60f89471c8fab4401`, build `crp-v1-fa8390ae803e61a9`, manifest `FA8390AE803E61A9C065298ABDC3E9D2C172BEE35525A7317CF33121F5B20531` ships184 files. The fresh isolated `google-signin-verification-r2/CRP-NEW` checkout completed governed prepare/check/record/package: 19553 passed,0 failed,0 skipped; all188 sections complete,392 tested source files,0 source drift and0 unrun. Eleven syntax checks and ten tooling suites passed. All55 accepted prerequisites and58 reviewed dynamic inputs were bound; unchanged monitoring doubles are explicit with product reuse disabled. There is no hosted or real-Google acceptance claim.
+
+Evidence root: `C:/Users/webbd/.codex/worktrees/google-signin-verification-r2/CRP-NEW/accelerated-launch/service/out/google-signin-release-20261018-r3/`.
+
+- Full raw: `checks/attempts/product-verification-82a19a3a-3fdf-478b-871f-288f4c6f0778/outputs/full-regression.json`, SHA256 `A2A01FB5B51EFA3BE185ABF1EF078409B4D57FF2B4C775C530423D1FEBDC490D`.
+- Verification: `checks/verification-c9974cb8-9794-4ba7-8547-d07048245f4c.json`, SHA256 `8BC55B965DAD0FF7E78534009FD96431B2B93BBEE894194D7F132554F4934A61`.
+- Package: `candidate/package-receipt.json`, SHA256 `DC318948F87B60EC423C7BEECF64296275B35261BC6EFD815DE260713311E108`.
+- Archive: `candidate/attempt-82c5d33f-0335-4ae5-ad7a-4ebe40ebfa6e/candidate.tar.gz`, SHA256 `97594BB75A40753094E4D5FC8ECF500629FF53EEE6BA57C6CF43B439841215F8`.
+
+Canonical `accelerated-launch/service/out/google-signin-local-20261018/local-completion.json` verifies the immutable artifacts and canonical shipped bytes. Of184 shipped files,176 predecessor files remain exact; one new runtime file and seven changed files comprise this integration. The original19104/0/0 full remains exact at `E6847D571B5AC1BB535DA92B559BE90DE223F5F3EDB2B2A01038E8060473D6FA`. Every refusal, timeout and failed predecessor remains preserved. Do not regenerate the manifest or repeat the passing full/package for documentation closure. Package `production_ready:false`; no staging/production activation or new integration source push occurred.
+
+## Approved callback changes and credential handoff
+
+The owner explicitly answered “Approve both callback additions”. Root appended exactly `https://dev-gptogs44fcgwy3ws.ca.auth0.com/login/callback` to the existing Google client redirects and exactly `http://127.0.0.1:8891/api/auth/google/callback` to the existing Auth0 CRP application's callbacks. Both persisted on fresh page load. Both prior Google redirects and JavaScript origins remain, and Auth0 retains its original localhost callback/logout/web origin. Auth0 visibly reported successful save. Google save observation initially timed out; fresh read-only detail navigation verified persistence without resubmitting. Screenshots: `output/playwright/google-signin-local-20261018/google-callback-saved.jpg` and `auth0-callback-saved.jpg`.
+
+No staging/production callback, grant, application type, connection membership, scope, publishing status or credential was changed by root. The Google connection still visibly uses development keys. It is shared by five existing applications. The owner was handed the open Google connection tab to personally enter the existing Google client credentials and submit Save, retaining existing scopes/memberships. Browser credential-change policy requires that handoff; secrets must not be pasted in chat. Real Google sign-in remains NOT_RUN. The empty isolated preview remains available at `http://127.0.0.1:8891/index.html#signin`; it is separate from operational consumer data.
