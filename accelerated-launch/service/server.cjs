@@ -26,6 +26,7 @@ const server = http.createServer((req, res) => {
     return res.end(req.method==='HEAD'?'':JSON.stringify({...identity(),ok:ready,storage_ready:ready,storage_recovered:dispatcher.storage?.recovered===true}));
   }
   if ((req.method === 'GET' || req.method === 'HEAD') && !pathname.startsWith('/api/')) {
+    if (req.method === 'GET' && pathname === '/affiliate/referral') return dispatcher.handle(req, res);
     // Public HTML/discovery use the same renderer and IP model as the existing
     // homepage endpoint, in the sole store-owning worker. Other static assets
     // and liveness/readiness keep their existing independent HTTP path.
