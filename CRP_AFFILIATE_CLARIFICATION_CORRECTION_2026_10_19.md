@@ -1,0 +1,11 @@
+# Optional clarification correction button
+
+The owner explicitly approved a bounded consumer UI repair, one focused browser regression, required final checks and staging verification on October 19, 2026. Production remains conditional on all required release gates. This exception permits only `ui/app.js`, the existing `bw-browser-wizzard.cjs` regression section, the generated release manifest and this record in the isolated affiliate-attribution checkout.
+
+On staging build `crp-v1-2295fdf11771c527`, saving Skip succeeds after the separately approved packaging repair. The saved-answer view displays Correct my answer without Save my answers. `wireClarification` returned when that submit control was absent, before binding the correction handler. A real-browser regression reproduced the resulting failure to open answer controls; its failed receipt remains preserved.
+
+Bind the existing correction handler before the missing-submit return. Keep the report-use policy, answer validation, independent report facts, findings, billing, authentication and consumer choices intact. The regression uses the existing fictional qualified-report case and normal UI actions: Skip save, Correct my answer, I don't know save. It verifies successful endpoint responses, unchanged facts/confidence, retained superseded Skip and a separate active consumer statement.
+
+Shared UI and test inputs changed, so one new governed full regression is required at the final source freeze. The earlier 19,143-pass full remains historical and cannot replace that new run. Package only reviewed committed bytes, use a fresh guarded staging transition with verified stopped snapshot and exact business-data preservation, then verify the actual hosted correction flow. Do not repeat prior sandbox purchases, enable capture, alter provider configuration or promote production from this repair alone.
+
+Local evidence: `accelerated-launch/service/out/affiliate-correction-ui-20261019/`. Earlier hosted defect and successful Skip proof: `accelerated-launch/service/out/affiliate-policy-package-20261019/clarification/`. Affiliate WORK.md Batch53 records the complete allowlist, permitted actions and checks. No delegation or new dependencies.

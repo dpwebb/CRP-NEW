@@ -353,6 +353,29 @@ async function run(service, check) {
     'the supported issue uses the sole consumer breach term required by the latest owner amendment');
   check.ok(/entry older than the ordinary reporting period|not shown to be absent/.test(probBlock), 'with the affirmative concern and the exception uncertainty');
   check.ok(!/ESTABLISHED REPORTING ISSUE/.test(probBlock), 'never an established issue');
+  const beforeClarification = (await (await page.request.get(service.base + '/api/cases/' + opened.caseId)).json()).view;
+  const independentFacts = view => view.result.issues.map(issue => ({ confidence: issue.confidence, source_facts: issue.source_facts, evidence: issue.evidence, explanation: issue.explanation, uncertainty: issue.uncertainty }));
+  await page.getByRole('button', { name: 'Skip', exact: true }).click();
+  const skipSaved = page.waitForResponse(response => response.url().endsWith('/clarify') && response.request().method() === 'POST');
+  await page.locator('#clarify-submit').click();
+  check.equal((await skipSaved).status(), 200, 'the ordinary optional Skip answer saves successfully');
+  await page.locator('#report-use-correct').waitFor();
+  check.equal(await page.locator('#clarify-submit').count(), 0, 'a saved answer has a correction button without a submit control');
+  await page.locator('#report-use-correct').click();
+  await page.locator('#q-report-use').waitFor({ state: 'visible' });
+  check.equal(await page.locator('#report-use-correct').count(), 0, 'Correct my answer opens the normal answer controls');
+  await page.getByRole('button', { name: "I don't know", exact: true }).click();
+  const unknownSaved = page.waitForResponse(response => response.url().endsWith('/clarify') && response.request().method() === 'POST');
+  await page.locator('#clarify-submit').click();
+  check.equal((await unknownSaved).status(), 200, 'the corrected unknown answer saves through the ordinary endpoint');
+  await page.locator('#report-use-correct').waitFor();
+  const afterClarification = (await (await page.request.get(service.base + '/api/cases/' + opened.caseId)).json()).view;
+  check.deepEqual(independentFacts(afterClarification), independentFacts(beforeClarification), 'correcting an optional answer preserves independent report facts and finding confidence');
+  const statements = afterClarification.clarifications.filter(row => row.question_id === 'report-use');
+  check.ok(statements.some(row => row.answer === 'SKIP' && row.superseded === true), 'correction retains the superseded Skip statement');
+  check.ok(statements.some(row => row.answer === 'I_DONT_KNOW' && row.superseded === false && row.source === 'CONSUMER_STATEMENT'), 'unknown remains a separate active consumer statement');
+  check.ok(afterClarification.clarification_questions.length <= 2, 'correction preserves the bounded question count');
+  evidence.clarification_correction = { real_browser: true, skip_status: 200, correction_controls_opened: true, unknown_status: 200, independent_facts_unchanged: true, prior_statement_retained: true };
   await page.close();
 
   /* ---- 3. Multiple issues: select only one, download contains only that one. ---- */
