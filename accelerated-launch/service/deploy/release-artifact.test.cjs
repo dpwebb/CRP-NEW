@@ -9,6 +9,20 @@ fs.mkdirSync(root);
 const git=args=>execFileSync('git',args,{cwd:root,stdio:['pipe','pipe','pipe']}).toString().trim();
 function put(name,text){const file=path.join(root,name);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text);return file;}
 try{
+  // Source-tree tests can hide an omitted runtime data file. Exercise the policy
+  // reader with only files admitted by the actual release inventory.
+  const candidateRoot=path.resolve(__dirname,'../../..');
+  const admitted=require('./build-release-manifest.cjs').collectGroups().flatMap(group=>group.files);
+  const policyReader='accelerated-launch/adapters/report-use.cjs';
+  const policyData='accelerated-launch/service/report-use-policy.json';
+  const policyPackage=path.join(temp,'policy-package');
+  for(const file of [policyReader,policyData]){
+    const entry=admitted.find(row=>row.file===file);
+    check(()=>assert.ok(entry,'Runtime policy dependency must be admitted: '+file));
+    const to=path.join(policyPackage,file);fs.mkdirSync(path.dirname(to),{recursive:true});
+    fs.copyFileSync(path.join(candidateRoot,file),to);
+  }
+  check(()=>assert.deepEqual(require(path.join(policyPackage,policyReader)).policyIdentity(),require(path.join(candidateRoot,policyReader)).policyIdentity(),'Packaged policy reader retains the exact approved policy identity'));
   git(['init']);git(['config','user.name','CRP tooling fixture']);git(['config','user.email','tooling@example.test']);git(['config','core.autocrlf','false']);
   const runtime='accelerated-launch/service/app.cjs',css='accelerated-launch/service/ui/style.css',manifestPath='accelerated-launch/service/deploy/release-manifest.json';
   put(runtime,"module.exports={fixture:true};\n");put(css,'body{color:green}\n');
