@@ -1,0 +1,7 @@
+# Country rights guides release — October 20, 2026
+
+Owner now authorizes “Deploy to staging and production” for the separate country rights guides implemented and reviewed locally. Root is the sole source, host, provider and browser operator. Preserve all accounts, consumer work, security, signed authority, provider/affiliate configuration and prior release evidence. No source push, live charge, real-consumer sign-in/MFA, provider/grant change, mailing, shared reboot or old-operation replay is authorized.
+
+Current status: RELEASE_PREPARATION; NOT_DEPLOYED. Source scope is the four exact additional public guide routes, homepage link text/destinations and sitemap; Google Analytics defaults and homepage layouts/content remain unchanged. Read CRP_COUNTRY_RIGHTS_GUIDES_LOCAL_2026_10_20.md. Freeze a new committed manifest, verify in an isolated managed checkout using existing accepted prerequisites, retain the passing full/package unchanged, then conduct fresh required staging acceptance and guarded production promotion with whole stopped snapshots, rollback and authenticated installed pre/post encrypted backups. All 30/123/46 criteria and new fictional QA ownership/cleanup must remain evidenced; no historical intent can be reused.
+
+Baseline is completed source5dac66ed53af5b663a4c02791881cac8a4dbb6ff/buildcrp-v1-8088e90ecaeac503/187 files. Original19,777/0/0 full and5E215B87 package remain immutable. Current hosted state must be independently observed before any transition; historical counts are not a fresh custody claim.

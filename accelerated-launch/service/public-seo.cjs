@@ -2,6 +2,7 @@
 /** Public presentation only. A regional URL never changes account, report or billing location. */
 const content = require('./homepage-content.cjs');
 const news = require('./credit-news.cjs');
+const rights = require('./credit-rights-guides.cjs');
 // Keep the approved stylesheet order and all rules. Public SSR avoids three
 // render-blocking round trips; signed-in/application styles remain external.
 const publicStyles = ['story.css', 'credit-news.css', 'theme.css'].map(name => require('node:fs').readFileSync(require('node:path').join(__dirname, 'ui', name), 'utf8')).join('\n').replace(/url\('(Roboto-Bold|OpenSans-Regular|OpenSans-Bold)\.woff2'\)/g, "url('/$1.woff2')");
@@ -24,7 +25,7 @@ function discovery(pathname) {
   if (pathname !== '/sitemap.xml') return null;
   const variants = [{ path: '/', lang: 'x-default' }, ...Object.values(LOCALES)];
   const alternates = variants.map(row => `<xhtml:link rel="alternate" hreflang="${row.lang}" href="${ORIGIN}${row.path}"/>`).join('');
-  return { status: 200, content_type: 'application/xml; charset=utf-8', text: '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">' + variants.map(row => `<url><loc>${ORIGIN}${row.path}</loc>${alternates}</url>`).join('') + '</urlset>\n' };
+  return { status: 200, content_type: 'application/xml; charset=utf-8', text: '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">' + variants.map(row => `<url><loc>${ORIGIN}${row.path}</loc>${alternates}</url>`).join('') + Object.keys(rights.guides).map(country => `<url><loc>${ORIGIN}${rights.pathFor(country)}</loc></url>`).join('') + '</urlset>\n' };
 }
 function reportLinks(home) {
   return home.free_reports.map(report => `<a class="story-report-link" href="${escape(report.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escape(home.country ? report.bureau : report.country + ' · ' + report.bureau)} ${escape(report.title)} (opens in a new tab)"><span><strong>${escape(home.country ? report.bureau : report.country + ' · ' + report.bureau)}</strong> <small>${escape(report.title)}</small></span><span aria-hidden="true">↗</span></a>`).join('');
@@ -62,7 +63,7 @@ function render(template, home, routeCountry) {
   html = html.replace(/(<div class="story-free-links" data-home-reports>)[\s\S]*?(<\/div><p class="story-free-note")/, (_, start, end) => start + reportLinks(home) + end);
   html = html.replace(/(<p class="story-free-note" data-home-reports-note>)[\s\S]*?<\/p>/, (_, start) => start + escape(home.report_access_note) + '</p>');
   const name = content.COUNTRIES[home.country];
-  const guide = name ? `<section class="story-report-guide" aria-labelledby="report-guide-title"><h2 id="report-guide-title">Review your credit report in ${escape(['US', 'GB'].includes(home.country) ? 'the ' + name : name)}</h2><p>Get your report directly from ${escape(LOCALES[home.country].reports)} using the links above. Review the accounts and dates, then upload the report to see your free summary. With a subscription, choose supported issues and review your dispute packet before you print and mail it.</p><p>Report access and assessment coverage are separate. Check the available bureau and report options in your workspace.</p>${routeCountry ? '' : `<a href="${LOCALES[home.country].path}">Credit report guide for ${escape(name)}</a>`}</section>` : '';
+  const guide = name ? `<section class="story-report-guide" aria-labelledby="report-guide-title"><h2 id="report-guide-title">Review your credit report in ${escape(['US', 'GB'].includes(home.country) ? 'the ' + name : name)}</h2><p>Get your report directly from ${escape(LOCALES[home.country].reports)} using the links above. Review the accounts and dates, then upload the report to see your free summary. With a subscription, choose supported issues and review your dispute packet before you print and mail it.</p><p>Report access and assessment coverage are separate. Check the available bureau and report options in your workspace.</p><a href="${rights.pathFor(home.country)}">Your credit reporting rights in ${escape(['US', 'GB'].includes(home.country) ? 'the ' + name : name)}</a></section>` : '';
   html = html.replace('    <section class="story-how"', guide + '\n    <section class="story-how"');
   html = html.replace('<figure class="story-art"', '<figure data-nosnippet class="story-art"');
   html = html.replace('<ul class="credit-news-list"></ul>', `<ul class="credit-news-list" data-ssr-news>${newsCards(home.news)}</ul>`);

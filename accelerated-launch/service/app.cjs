@@ -871,6 +871,9 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency) {
  */
 function staticResponse(req, urlPath) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return null;
+  const rights = require('./credit-rights-guides.cjs');
+  const guideCountry = rights.countryForPath(urlPath);
+  if (guideCountry) return {status: 200, text: rights.render(guideCountry), content_type: 'text/html; charset=utf-8', public_guide: true};
   const regionalPage = require('./public-seo.cjs').countryForPath(urlPath);
   const adminAsset = process.env.CRP_ADMIN_ENABLED === '1' && ADMIN_ASSETS.includes(urlPath);
   if (!regionalPage && !adminAsset && !STATIC_ALLOWLIST.includes(urlPath) && !(process.env.CRP_DEPLOYMENT_ENV === 'staging' &&
@@ -982,8 +985,8 @@ function createService(options) {
           const home = routeCountry ? seo.regionalModel(routeCountry) : (await handlers.publicHomepage({ req })).json;
           asset.text = seo.render(asset.text, home, routeCountry);
         }
-        if (!asset.public_homepage && asset.content_type.startsWith('text/html')) res.setHeader('X-Robots-Tag', 'noindex');
-        if (asset.public_homepage || !asset.content_type.startsWith('text/html')) {
+        if (!asset.public_homepage && !asset.public_guide && asset.content_type.startsWith('text/html')) res.setHeader('X-Robots-Tag', 'noindex');
+        if (asset.public_homepage || asset.public_guide || !asset.content_type.startsWith('text/html')) {
           sendPublicText(req, res, asset.status, asset.text, asset.content_type, publicHeaders);
           return;
         }

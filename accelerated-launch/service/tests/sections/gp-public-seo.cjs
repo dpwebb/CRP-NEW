@@ -66,9 +66,40 @@ async function run(unused, check) {
     check.ok(!/Disallow: \/(?:story|homepage|credit-news)/.test(robots.text), 'public rendering assets remain crawlable');
     const sitemap = await service.request('GET', '/sitemap.xml');
     check.equal(sitemap.status, 200, 'sitemap served');
-    check.equal((sitemap.text.match(/<loc>/g) || []).length, 5, 'sitemap lists only root and four public pages');
+    check.equal((sitemap.text.match(/<loc>/g) || []).length, 9, 'sitemap lists root, four homepages and four rights guides');
     check.ok(!/index.html|api\/|staging|account|token|lastmod/.test(sitemap.text), 'no private, staging, query-secret or fictional fresh dates in sitemap');
     check.equal((await service.request('POST', '/sitemap.xml')).status, 404, 'discovery endpoints do not accept mutations');
+    const rights = require('../../credit-rights-guides.cjs');
+    for (const [country, guide] of Object.entries(rights.guides)) {
+      const route = rights.pathFor(country);
+      const response = await service.request('GET', route + '?country=ZZ&token=fictional-secret', {headers:{Host:'untrusted.invalid'}});
+      check.equal(response.status, 200, country + ': separate rights guide is public');
+      check.equal(response.setCookie, null, country + ': guide creates no session');
+      check.equal(response.headers.get('x-robots-tag'), null, country + ': production guide is indexable');
+      check.ok(response.text.includes('rel="canonical" href="' + seo.ORIGIN + route + '"'), country + ': guide canonical is fixed');
+      check.ok(!response.text.includes('fictional-secret') && !response.text.includes('untrusted.invalid'), country + ': request values are never reflected');
+      check.ok(response.text.includes('<html lang="' + guide.lang + '">'), country + ': guide language');
+      check.ok(!response.text.includes('public-homepage-model'), country + ': guide does not repeat homepage');
+      check.ok(!/googletagmanager|google-analytics|public-analytics\.js/.test(response.text), country + ': guide does not expand analytics defaults');
+      check.ok(!/googletagmanager|google-analytics/.test(response.headers.get('content-security-policy')), country + ': guide retains private Google-free CSP');
+      check.ok(response.text.includes('2026-10-20') && response.text.includes('broader than the checks CRP currently supports'), country + ': review date and assessment boundary visible');
+      check.ok(response.text.includes('href="/' + guide.slug + '/"'), country + ': return link preserves regional homepage');
+      for (const [, , ids] of guide.sections) for (const id of ids) check.ok(response.text.includes(rights.sources[id][1]), country + ': official source ' + id + ' available without JS');
+      const head = await service.request('HEAD', route);
+      check.equal(head.status, 200, country + ': guide HEAD works');
+      check.equal(head.text, '', country + ': HEAD has no body');
+      check.equal((await service.request('POST', route)).status, 404, country + ': guide refuses mutation method');
+      const home = await service.request('GET', seo.LOCALES[country].path);
+      check.ok(home.text.includes('href="' + route + '">Your credit reporting rights in '), country + ': country homepage links to additional guide');
+      check.ok(sitemap.text.includes('<loc>' + seo.ORIGIN + route + '</loc>'), country + ': guide discoverable');
+      process.env.CRP_DEPLOYMENT_ENV = 'staging';
+      check.equal((await service.request('GET', route)).headers.get('x-robots-tag'), 'noindex', country + ': staging guide stays noindex');
+      process.env.CRP_DEPLOYMENT_ENV = 'production';
+    }
+    const canada = (await service.request('GET', rights.pathFor('CA'))).text;
+    for (const [code, name] of rights.regions) check.ok(canada.includes('id="region-' + code.toLowerCase() + '"') && canada.includes(name), name + ': local guidance available without JS');
+    check.ok(canada.includes('does not state a verified local reporting or investigation deadline'), 'unverified provincial deadlines are not invented');
+    for (const route of ['/ca/credit-reporting-rights', '/de/credit-reporting-rights/', '/ca/credit-reporting-rights/private', '/credit-rights-guides.cjs']) check.equal((await service.request('GET', route)).status, 404, route + ': exact routes only');
     for (const route of ['/index.html#signin', '/?checkout=return', '/?checkout=cancel']) {
       const response = await service.request('GET', route);
       check.equal(response.status, 200, route + ': existing application entry stays available');
