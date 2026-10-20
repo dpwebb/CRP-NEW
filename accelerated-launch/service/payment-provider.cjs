@@ -910,8 +910,8 @@ function makeStripeAdapter(env) {
       const result = await stripe.retrieveSession(secretKey, req.provider_reference, base);
       if (result.status !== 200) return { outcome: 'STRIPE_RETRIEVE_FAILED', paid: false };
       const session = result.json;
-      const paid = (session.payment_status === 'paid' || session.payment_status === 'no_payment_required' && session.amount_total === 0) &&
-        (session.mode === 'payment' || session.subscription);
+      const paid = Boolean((session.payment_status === 'paid' || session.payment_status === 'no_payment_required' && session.amount_total === 0) &&
+        (session.mode === 'payment' || session.subscription));
       return { outcome: paid ? 'PROVIDER_CONFIRMED_PAID' : 'NOT_PAID_AT_PROVIDER', paid,
         expired: session.status === 'expired', session };
     },

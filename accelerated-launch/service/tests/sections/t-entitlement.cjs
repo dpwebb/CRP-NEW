@@ -480,6 +480,25 @@ async function stripeRenewalCancellation(t, check, evidence) {
   function releaseUpdate() { releaseHeld(); releaseHeld = null; mock.fixture.updateGate = null; mock.fixture.updateStarted = null; }
   try {
     const subscriber = await activate('success');
+    const beforeConfirmation = JSON.stringify(t.service.store.state().entitlements);
+    const confirmation = await t.request('POST', '/api/billing/confirm', { token: subscriber.actor.token,
+      body: { provider_reference: subscriber.checkout.provider_reference } });
+    check.equal(confirmation.status, 200, 'a paid subscription reference confirms as a Boolean through the actual provider adapter');
+    check.equal(confirmation.json.confirmation.confirmed, true, 'subscription confirmation returns literal true');
+    check.equal(JSON.stringify(t.service.store.state().entitlements), beforeConfirmation, 'confirmation creates no entitlement or grant');
+    mock.fixture.session.payment_status = 'unpaid';
+    const refusedConfirmation = await t.request('POST', '/api/billing/confirm', { token: subscriber.actor.token,
+      body: { provider_reference: subscriber.checkout.provider_reference } });
+    check.equal(refusedConfirmation.status, 409, 'an unpaid provider subscription still cannot confirm');
+    check.equal(JSON.stringify(t.service.store.state().entitlements), beforeConfirmation, 'refused confirmation preserves paid authority');
+    mock.fixture.session.payment_status = 'paid';
+    const subscriptionReference = mock.fixture.session.subscription;
+    mock.fixture.session.subscription = { id: subscriptionReference };
+    const expandedConfirmation = await t.request('POST', '/api/billing/confirm', { token: subscriber.actor.token,
+      body: { provider_reference: subscriber.checkout.provider_reference } });
+    check.equal(expandedConfirmation.status, 200, 'an expanded subscription reference also confirms as a Boolean');
+    check.equal(JSON.stringify(t.service.store.state().entitlements), beforeConfirmation, 'expanded-reference confirmation remains read-only');
+    mock.fixture.session.subscription = subscriptionReference;
     const original = structuredClone(rowFor(subscriber.actor));
     const stranger = await t.unpaidAccount('stripe-cancel-stranger@example.test');
     const writes = updates().length;
