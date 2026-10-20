@@ -346,6 +346,58 @@ async function appendEvidence(target, entry, isReport, position, copyBudget) {
   } else throw coded('INVALID_REQUEST');
   return pages;
 }
+function isIdentityImage(entry) {
+  return entry.label === 'IDENTITY' && ['image/png', 'image/jpeg'].includes(String(entry.content_type || '').toLowerCase().split(';')[0].trim());
+}
+async function appendIdentitySheet(doc, entries, position) {
+  entries = [...entries].sort((a,b) => {
+    const first = a.entry.uploaded_at || '', second = b.entry.uploaded_at || '';
+    return first < second ? -1 : first > second ? 1 : a.index - b.index;
+  });
+  const images = [];
+  for (const { entry, index } of entries) {
+    const bytes = Buffer.from(entry.bytes, 'base64');
+    try {
+      const image = String(entry.content_type).toLowerCase().split(';')[0].trim() === 'image/png' ? await doc.embedPng(bytes) : await doc.embedJpg(bytes);
+      if (![image.width, image.height].every(n => Number.isFinite(n) && n > 0)) throw new Error('IMAGE');
+      images.push({ entry, image, bytes });
+    } catch {
+      throw Object.assign(coded('PACKET_ATTACHMENT_UNREADABLE'), { attachment: { kind: 'document', index, reason: 'UNREADABLE' } });
+    }
+  }
+  // Pick the grid with the largest smallest image edge, then the most image
+  // area. Pixel dimensions never determine an invented physical document size.
+  const bounds = { x: 50, top: 686, width: 512, height: 636 }, gap = 16;
+  let best;
+  for (let columns = 1; columns <= images.length; columns++) {
+    const rows = Math.ceil(images.length / columns), cellWidth = (bounds.width - gap * (columns - 1)) / columns,
+      cellHeight = (bounds.height - gap * (rows - 1)) / rows;
+    if (cellWidth <= 12 || cellHeight <= 28) continue;
+    const placements = images.map(({ image }, at) => {
+      const scale = Math.min((cellWidth - 12) / image.width, (cellHeight - 28) / image.height), width = image.width * scale, height = image.height * scale;
+      const rowStart = Math.floor(at / columns) * columns, inRow = Math.min(columns, images.length - rowStart),
+        rowOffset = (columns-inRow)*(cellWidth+gap)/2,
+        cellX = bounds.x + rowOffset + at % columns * (cellWidth + gap), cellTop = bounds.top - Math.floor(at / columns) * (cellHeight + gap);
+      const x = cellX + (cellWidth - width) / 2, y = cellTop - 18 - (cellHeight - 24 + height) / 2;
+      return { x, y, width, height, caption_x: x, caption_y: y + height + 8 };
+    });
+    const edge = Math.min(...placements.map(p => Math.min(p.width, p.height))), area = placements.reduce((sum, p) => sum + p.width * p.height, 0);
+    if (!best || edge > best.edge + .01 || Math.abs(edge - best.edge) <= .01 && area > best.area) best = { placements, edge, area };
+  }
+  if (!best) throw coded('INVALID_REQUEST');
+  const page = doc.insertPage(position, [612, 792]), heading = await doc.embedFont(lib.StandardFonts.HelveticaBold), caption = await doc.embedFont(lib.StandardFonts.Helvetica);
+  page.drawText('Identification copies', { x: 50, y: 742, size: 18, font: heading, color: rgb(.1, .2, .3) });
+  page.drawText('Selected identification images - complete copies, fitted proportionally', { x: 50, y: 722, size: 9, font: caption, color: rgb(.25, .3, .35) });
+  const sources = images.map(({ entry, image, bytes }, at) => {
+    const placement = best.placements[at];
+    page.drawText('Copy ' + (at + 1), { x: placement.caption_x, y: placement.caption_y, size: 10, font: heading, color: rgb(.2, .25, .3) });
+    page.drawImage(image, { x: placement.x, y: placement.y, width: placement.width, height: placement.height });
+    return { file_id: entry.file_id || null, filename: entry.filename || '', source_page: 1, original_sha256: digest(bytes),
+      image_width: image.width, image_height: image.height, x: placement.x, y: placement.y, width: placement.width, height: placement.height };
+  });
+  page.drawText('Check that every copy is complete and readable before printing.', { x: 50, y: 32, size: 9, font: caption, color: rgb(.25, .3, .35) });
+  return { grouped_identification: true, sources, file_ids: sources.map(source => source.file_id), page_width: 612, page_height: 792 };
+}
 async function compose(input) {
   const copyBudget = { bytes: 0, pages: 0 };
   if (input.forms != null && (!Array.isArray(input.forms) || input.forms.length)) throw coded('INVALID_REQUEST');
@@ -356,7 +408,16 @@ async function compose(input) {
   const reviewPages = fields.map(field => ({ page: field.page, kind: 'letter', page_width: field.page_width, page_height: field.page_height, annotation_available: false }));
   const noteFont = await doc.embedFont(fs.readFileSync(path.join(__dirname, 'packet-fonts', 'NotoSans-Regular.ttf')), { subset: true });
   let position = fields.length;
+  const identityImages = (input.documents || []).map((entry, index) => ({ entry, index })).filter(({ entry }) => isIdentityImage(entry));
+  let identitySheetAdded = false;
   for (const [kind, entries] of [['report', input.reports || []], ['document', input.documents || []]]) for (const [index, entry] of entries.entries()) {
+    if (kind === 'document' && identityImages.length > 1 && isIdentityImage(entry)) {
+      if (identitySheetAdded) continue;
+      const identity = await appendIdentitySheet(doc, identityImages, position);
+      reviewPages.push({ page: position + 1, kind: 'document', label: 'IDENTITY', file_id: null, annotation_available: false, ...identity });
+      sections.push({ kind: 'document', label: 'IDENTITY', file_id: null, start_page: position + 1, page_count: 1, ...identity });
+      position++; identitySheetAdded = true; continue;
+    }
     let pages;
     try { pages = await appendEvidence(doc, entry, kind === 'report', position, copyBudget); }
     catch (error) {

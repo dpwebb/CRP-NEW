@@ -203,6 +203,61 @@ async function encryptedEvidenceChecks(check, form) {
   refuses(check, { letter_text: LETTER, documents: [1, 2].map(() => ({ bytes: Buffer.alloc(33 * 1024 * 1024), content_type: 'application/pdf' })) }, 'original aggregate upload limit still applies before invoking a worker');
 }
 
+async function identificationImages() {
+  const images = [];
+  for (const [index, title] of ['FICTIONAL LICENCE FRONT', 'FICTIONAL LICENCE BACK', 'FICTIONAL PASSPORT'].entries()) {
+    const doc = await lib.PDFDocument.create({ updateMetadata: false }), size = index === 2 ? [700, 1000] : [856, 540];
+    const page = doc.addPage(size);
+    page.drawRectangle({ x: 8, y: 8, width: size[0]-16, height: size[1]-16, borderWidth: 4, borderColor: lib.rgb(.12,.3,.5), color: lib.rgb(.94,.97,1) });
+    page.drawText(title, { x: 32, y: size[1]-64, size: 28 });
+    page.drawText('SAMPLE ONLY - NOT VALID IDENTIFICATION', { x: 32, y: size[1]-110, size: 18 });
+    page.drawText('Morgan Fiction / ID TEST '+(index+1), { x: 32, y: size[1]/2, size: 24 });
+    page.drawText('ALL FOUR EDGES MUST REMAIN VISIBLE', { x: 32, y: 32, size: 18 });
+    const jpeg = index === 1, bytes = execFileSync('pdftoppm', ['-f','1','-l','1','-singlefile','-scale-to','1200',jpeg?'-jpeg':'-png','-'],
+      { input: Buffer.from(await doc.save()), timeout: 20000, maxBuffer: 12*1024*1024, windowsHide: true, stdio: ['pipe','pipe','pipe'] });
+    images.push({ bytes, content_type: jpeg ? 'image/jpeg' : 'image/png', label: 'IDENTITY', filename: ['fictional-licence-front.png','fictional-licence-back.jpg','fictional-passport.png'][index], file_id: String(index+1).padStart(32,'0') });
+  }
+  return images;
+}
+async function identificationSheetChecks(t, check) {
+  const images = await identificationImages(), originals = images.map(entry => hash(entry.bytes));
+  const address = await document(['FICTIONAL ADDRESS COPY']), source = await document(['FICTIONAL REPORT SOURCE']);
+  const input = { letter_text: LETTER, instructions: 'Keep this instruction page.', reports: [{ bytes: source, content_type: 'application/pdf', relevant_pages: [1] }],
+    documents: [...images, { bytes: address, content_type: 'application/pdf', label: 'ADDRESS' }] };
+  const packet = composePacket(input), sheet = packet.sections.find(section => section.grouped_identification);
+  check.equal(packet.page_count, 5, 'three ID images use one physical page alongside instructions, letter, report and address proof');
+  check.equal(packet.sections.reduce((n, section) => n+section.page_count,0), packet.page_count, 'shared ID sheet is counted once in the physical-page manifest');
+  check.deepEqual(sheet.file_ids, images.map(entry => entry.file_id), 'every selected identification image is bound to the shared sheet in input order');
+  check.deepEqual(sheet.sources.map(item => item.original_sha256), originals, 'each shared-sheet image retains its original byte hash');
+  check.deepEqual(images.map(entry => hash(entry.bytes)), originals, 'grouping never modifies uploaded image bytes');
+  check.equal(packet.review_pages.filter(page => page.grouped_identification).length, 1, 'review has exactly one physical identification sheet');
+  const doc = await lib.PDFDocument.load(packet.bytes), physical = doc.getPage(sheet.start_page-1);
+  const embedded = physical.node.Resources().lookup(n('XObject'), lib.PDFDict).entries().map(([,ref])=>doc.context.lookup(ref));
+  check.equal(embedded.filter(object=>object.dict?.get(n('Subtype'))?.toString()==='/Image').length, images.length, 'the single printed sheet embeds all three actual image objects');
+  for (const [at, source] of sheet.sources.entries()) {
+    check.ok(source.x>=50&&source.y>=50&&source.x+source.width<=562.01&&source.y+source.height<=686.01, 'ID copy '+at+' fits inside the print margins without cropping');
+    check.ok(Math.abs(source.width/source.height-source.image_width/source.image_height)<.000001, 'ID copy '+at+' retains its original proportions');
+    check.ok(Math.min(source.width,source.height)>=120, 'the three-image fixture keeps copy '+at+' at a readable printed size');
+    if (images[at].content_type==='image/png') {
+      const expected = await lib.PngEmbedder.for(images[at].bytes);
+      check.ok(Buffer.from(lib.decodePDFRawStream(embedded[at]).decode()).equals(Buffer.from(expected.image.rgbChannel)), 'PNG ID '+at+' retains every original RGB pixel');
+    } else check.ok(Buffer.from(embedded[at].getContents()).equals(images[at].bytes), 'JPEG identification is embedded without recompression');
+    for (const other of sheet.sources.slice(at+1)) check.ok(source.x+source.width<=other.x+.01||other.x+other.width<=source.x+.01||source.y+source.height<=other.y+.01||other.y+other.height<=source.y+.01, 'identification images never overlap');
+  }
+  const eight = composePacket({ letter_text: LETTER, documents: Array.from({length:8},(_,at)=>({...images[at%3],file_id:String(at+1).padStart(32,'0')})) });
+  check.ok(eight.page_count===2&&eight.sections[1].sources.length===8, 'all eight account identification images are retained on one sheet');
+  const coldInput = { ...input, version: VERSION, reports: input.reports.map(entry=>({...entry,bytes:entry.bytes.toString('base64')})), documents: input.documents.map(entry=>({...entry,bytes:entry.bytes.toString('base64')})) };
+  check.equal(coldWorker(coldInput).bytes, coldWorker(coldInput).bytes, 'shared-sheet bytes are deterministic across independent composition workers');
+  let failure;
+  try { composePacket({ letter_text: LETTER, documents: [images[0],{...images[1],bytes:Buffer.from('broken JPEG'),filename:'unreadable-identification.jpg'}] }); } catch(error) { failure=error; }
+  check.equal(failure?.detail?.filename, 'unreadable-identification.jpg', 'a failed shared-sheet copy is still identified by its own filename');
+  check.equal(composePacket({ letter_text: LETTER, documents: [images[0],{...images[1],label:'ADDRESS'}] }).page_count,3,'address images are kept separate from identification images');
+  const ordered = composePacket({ letter_text: LETTER, documents: [{...images[1],uploaded_at:'2026-10-20T10:00:02.000Z'},{...images[0],uploaded_at:'2026-10-20T10:00:01.000Z'}] });
+  check.deepEqual(ordered.sections[1].file_ids,[images[0].file_id,images[1].file_id],'shared identification sheet follows upload time rather than opaque storage IDs');
+  const out=path.resolve(__dirname,'../../out/identification-sheet-local');fs.mkdirSync(out,{recursive:true});
+  fs.writeFileSync(path.join(out,'identification-sheet.pdf'),packet.bytes);fs.writeFileSync(path.join(out,'identification-sheet.png'),render(packet.bytes,sheet.start_page));
+  fs.writeFileSync(path.join(out,'layout.json'),JSON.stringify(sheet,null,2));
+}
 async function run(t, check) {
   const report = await document(['REPORT PAGE 1 NOT RELEVANT', 'REPORT PAGE 2 CEDAR AND MAPLE COLLECTIONS', 'REPORT PAGE 3 NOT RELEVANT', 'REPORT PAGE 4 SUPPORTING AMOUNT']);
   const address = await document(['FICTIONAL PROOF OF ADDRESS']);
@@ -309,7 +364,8 @@ async function run(t, check) {
   refuses(check, { letter_text: LETTER, forms: [{ bytes: Buffer.from('%PDF-1.7\ninvalid') }] }, 'damaged retired form input is rejected before rendering', 'INVALID_REQUEST');
   refuses(check, { letter_text: LETTER, documents: [{ bytes: png, content_type: 'image/gif' }] }, 'unsupported document type is refused rather than omitted');
   await encryptedEvidenceChecks(check, form);
+  await identificationSheetChecks(t, check);
   if (t?.dataDir) for (const [filename, bytes] of [['inline-editable-packet.pdf', packet.bytes], ['inline-edited-packet.pdf', saved], ['inline-long-letter.pdf', long.bytes]]) fs.writeFileSync(path.join(t.dataDir, filename), bytes);
   return { single_complete_pdf: true, no_bureau_form_components: true, source_pages_only: true, editable_letter: true, deterministic_approval_bytes: true, independent_print_rendering: true };
 }
-module.exports = { run, ENCRYPTED_FIXTURES, id: 'ew-inline-packet-composer', title: 'Editable letter and PDF composition controls with exact inline evidence/document copies' };
+module.exports = { run, ENCRYPTED_FIXTURES, identificationImages, id: 'ew-inline-packet-composer', title: 'Editable letter and PDF composition controls with exact inline evidence/document copies' };

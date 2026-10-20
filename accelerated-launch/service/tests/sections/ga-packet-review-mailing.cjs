@@ -216,6 +216,57 @@ async function recoveryChecks(t,browser,actor,source,check,out){
  }finally{await copyUi.context.close();}
   return{unsupported_glyph_wording_preserved:true,unreadable_copy_replaced:true,later_raster_letter_draft_preserved:true,saved_annotation_preserved:true,native_date_cancel_preserves_all_pages:true,confirmed_date_replacement_discards_only_accepted_letter_edits:true};
 }
+async function identificationSheetBrowser(t,browser,source,check,out){
+ const actor=await t.account('identification-sheet-browser@example.test'),req=(method,url,body)=>t.request(method,url,{token:actor.token,body});
+ const c=(await req('POST','/api/cases',{country:'CA',region:'CA-NS',bureau:'EQUIFAX'})).json.case,base='/api/cases/'+c.case_id;
+ await req('POST',base+'/files',{originalFilename:'fictional-identification-sheet-report.pdf',mimeType:'application/pdf',declaredBytes:source.length,contentBase64:source.toString('base64')});
+ await req('POST',base+'/evaluate',{});let view=(await req('GET',base+'/packet')).json.view;
+ await req('POST',base+'/packet/select',{issue_ids:view.eligible_issues.map(issue=>issue.issue_id)});await t.preparePostalPacket(actor,c.case_id);
+ view=(await req('GET',base+'/packet')).json.view;
+ const images=await require('./ew-inline-packet-composer.cjs').identificationImages(),ids=[];
+ for(const [at,image] of images.entries()){
+  const uploaded=await req('POST','/api/account/documents',{originalFilename:image.filename,mimeType:image.content_type,declaredBytes:image.bytes.length,contentBase64:image.bytes.toString('base64'),document_type:'IDENTITY',document_kind:at===2?'PASSPORT':'DRIVING_LICENCE'});
+  check.equal(uploaded.status,201,'fictional ID image '+at+' uploads through the owned document route');ids.push(uploaded.json.document.file_id);
+ }
+ const address=view.support.documents.filter(doc=>doc.document_type==='ADDRESS'&&view.support.selected_document_ids.includes(doc.file_id)).map(doc=>doc.file_id),chosen=[...ids,...address];
+ const support={...view.support.settings,document_ids:chosen,document_dates:Object.fromEntries(chosen.map(id=>[id,view.support.settings.document_dates?.[id]||'']))};
+ check.equal((await req('POST',base+'/packet/support',{support})).status,200,'three ID images and existing address proof are selected normally');
+ const originals=new Map(chosen.map(id=>[id,sha(t.service.store.readBlob(id))]));
+ const context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage();page.setDefaultTimeout(20000);
+ try{
+  await page.goto(t.base+'/index.html#signin');await page.locator('#email').fill(actor.email);await page.locator('#password').fill('a-long-enough-password');await page.locator('#signin').click();await page.locator('#signin-skip-two-factor').click();
+  await page.locator('#open').waitFor();await page.locator('#refresh').click();await page.locator('[data-open="'+c.case_id+'"]').click();await page.locator('#create-packet:enabled').click();await page.locator('#packet-preview-reviewed:enabled').waitFor();
+  view=(await req('GET',base+'/packet')).json.view;
+  const metadata=(await req('GET',base+'/packet/preview/pages?version='+view.packet.preview_version)).json,sheet=metadata.review_pages.find(item=>item.grouped_identification);
+  check.ok(Boolean(sheet),'actual packet review exposes the single grouped identification sheet');
+  check.deepEqual([...sheet.file_ids].sort(),[...ids].sort(),'shared review metadata identifies every owned selected image exactly once');
+  check.deepEqual(sheet.sources.map(item=>[item.file_id,item.filename]).sort(),ids.map((id,at)=>[id,images[at].filename]).sort(),'every grouped source retains its own original filename');
+  check.equal(metadata.review_pages.filter(item=>item.label==='IDENTITY').length,1,'three selected ID images occupy one physical packet page');
+  const sheetNode=page.locator('#packet-sheet-'+sheet.page);
+  for(const width of [1440,390]){
+   await page.setViewportSize({width,height:1000});
+   check.deepEqual(await sheetNode.locator('ol li').allTextContents(),sheet.sources.map(source=>source.filename),'review identifies every image on the shared sheet at '+width+'px');
+   check.ok(await sheetNode.locator('img').evaluate(image=>image.complete&&image.naturalWidth>0),'the complete identification sheet actually renders at '+width+'px');
+   check.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'shared-sheet review does not overflow at '+width+'px');
+   await sheetNode.screenshot({path:path.join(out,'identification-sheet-'+width+'.png')});
+  }
+  await page.locator('#packet-preview-reviewed').check();await page.locator('#packet-approve').click();await page.locator('#packet-download:enabled').waitFor();
+  const preview=await req('GET',base+'/packet/preview?version='+view.packet.preview_version),download=await req('GET',base+'/packet-download'),print=await req('GET',base+'/packet-print');
+  check.ok(download.status===200&&download.bytes.equals(preview.bytes)&&print.bytes.equals(download.bytes),'approved shared ID sheet has identical preview, print and download PDF bytes');
+  fs.writeFileSync(path.join(out,'identification-sheet-approved.pdf'),download.bytes);
+  const unrelated=await t.request('GET',base+'/packet/preview/pages?version='+view.packet.preview_version,{token:(await t.account('identification-sheet-other@example.test')).token});
+  check.equal(unrelated.status,403,'a different account cannot read grouped private identification metadata');
+  check.ok(!JSON.stringify(unrelated.json).includes(images[0].filename),'grouped identification filenames do not leak through ownership refusal');
+  const remaining=chosen.filter(id=>id!==ids[1]);
+  await req('POST',base+'/packet/support',{support:{...support,document_ids:remaining,document_dates:Object.fromEntries(remaining.map(id=>[id,support.document_dates[id]]))}});
+  const changed=(await req('GET',base+'/packet')).json.view.packet;
+  check.ok(changed.preview_version!==view.packet.preview_version&&!changed.approved,'changing a shared-page image invalidates its earlier approval even with the same page count');
+  check.ok((await req('GET',base+'/packet-download')).status!==200,'changed identification selection cannot download the old approved packet');
+  const updated=(await req('GET',base+'/packet/preview/pages?version='+changed.preview_version)).json;
+  check.deepEqual([...updated.review_pages.find(item=>item.grouped_identification).file_ids].sort(),[ids[0],ids[2]].sort(),'only the consumer-selected ID images remain on the regenerated sheet');
+  for(const [id,hash] of originals)check.equal(sha(t.service.store.readBlob(id)),hash,'composition and selection changes preserve original supporting blob '+id);
+ }finally{await context.close();}
+}
 async function run(t,check){
  const out=path.join(R,'accelerated-launch/service/out/packet-review-mailing');fs.mkdirSync(out,{recursive:true});
  const a=await t.account('packet-review-mailing@example.test'),req=(m,u,body)=>t.request(m,u,{token:a.token,body});
@@ -283,6 +334,7 @@ async function run(t,check){
   check.ok(normalized.includes('Fictional final-page consumer edit.')&&normalized.includes('Please compare these impossible account dates.'),'the printable packet retains the last-page edit and evidence note');
   const finalPrintResponse=page.waitForResponse(r=>new URL(r.url()).pathname===route+'/packet-print'),finalPopup=page.waitForEvent('popup');await page.locator('#packet-print').click();const finalPrintPage=await finalPopup;await finalPrintPage.waitForURL('blob:**');check.ok((await(await finalPrintResponse).body()).equals(editedBytes),'printing uses that same saved and approved edited PDF');await finalPrintPage.close();
   const recovery=await recoveryChecks(t,browser,a,source,check,out);
+  await identificationSheetBrowser(t,browser,source,check,out);
    const finalMetadata=(await req('GET',route+'/packet/preview/pages?version='+finalView.packet.preview_version)).json;
    for(const width of [1440,390]){
     await page.setViewportSize({width,height:1000});await reviewControlsAbsent(page,check,'Review at '+width+'px');

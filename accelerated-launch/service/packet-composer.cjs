@@ -63,7 +63,7 @@ function composePacket(input) {
           || typeof annotation.note !== 'string' || annotation.note.length > 200)) throw new ServiceError('INVALID_REQUEST');
       return { bytes: bytes.toString('base64'), content_type: entry.content_type, relevant_pages: entry.relevant_pages,
         label: typeof entry.label === 'string' ? entry.label.slice(0, 300) : '', filename: typeof entry.filename === 'string' ? entry.filename.slice(0, 300) : '',
-        file_id: entry.file_id || null, markers, annotations };
+        file_id: entry.file_id || null, uploaded_at: typeof entry.uploaded_at === 'string' ? entry.uploaded_at.slice(0,40) : '', markers, annotations };
     });
   };
   if (input.instructions != null && (typeof input.instructions !== 'string' || !input.instructions.trim() || input.instructions.length > 6000)) throw new ServiceError('INVALID_REQUEST');

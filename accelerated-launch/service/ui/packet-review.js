@@ -3,7 +3,7 @@
 // editable here; existing report annotations remain part of the owned packet.
 window.CRP_PACKET_REVIEW = (() => {
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const pageLabel = page => ({instructions:'Instructions for you',letter:'Your dispute letter',IDENTITY:'Identification copy',IDENTIFICATION:'Identification copy',ADDRESS:'Address verification copy',SUPPORTING:'Supporting evidence'}[page.label] || {instructions:'Instructions for you',letter:'Your dispute letter'}[page.kind] || page.label || 'Packet page');
+  const pageLabel = page => page.grouped_identification ? 'Identification copies' : ({instructions:'Instructions for you',letter:'Your dispute letter',IDENTITY:'Identification copy',IDENTIFICATION:'Identification copy',ADDRESS:'Address verification copy',SUPPORTING:'Supporting evidence'}[page.label] || {instructions:'Instructions for you',letter:'Your dispute letter'}[page.kind] || page.label || 'Packet page');
   function mount(options) {
     const { root, caseId, version, ensure, request, changed } = options;
     const base = `/api/cases/${encodeURIComponent(caseId)}/packet/preview/pages`, query = '?version=' + encodeURIComponent(version);
@@ -31,6 +31,13 @@ window.CRP_PACKET_REVIEW = (() => {
         sheet.dataset.packetPage = meta.page; sheet.setAttribute('aria-label', `Page ${meta.page} of ${data.page_count}: ${pageLabel(meta)}`);
         sheet.innerHTML = `<h4>Page ${meta.page} of ${data.page_count} - ${escape(pageLabel(meta))}${meta.source_page ? ` (${meta.kind.startsWith('report')?'report':'document'} page ${meta.source_page})` : ''}</h4>${meta.kind === 'instructions' ? '<p class="note">For you only. Remove this page before sending.</p>' : ''}<div class="packet-sheet-scroll"><div class="packet-sheet" style="aspect-ratio:${meta.page_width}/${meta.page_height}"><img alt="${escape(pageLabel(meta))} - page ${meta.page}" class="packet-page-image"></div></div>`;
         list.append(sheet);
+        if (meta.grouped_identification) {
+          const copies = document.createElement('div'); copies.className = 'evidence';
+          const note = document.createElement('p'); note.textContent = 'These identification images share one printed page. Check that each copy is complete and readable.';
+          const names = document.createElement('ol');
+          for (const source of meta.sources || []) { const name = document.createElement('li'); name.textContent = source.filename || 'Identification copy'; names.append(name); }
+          copies.append(note, names); sheet.insertBefore(copies, sheet.querySelector('.packet-sheet-scroll'));
+        }
         if (meta.rendered_as_images) {
           const note = document.createElement('p'); note.className = 'evidence';
           note.textContent = 'This supporting copy is shown as images. Your original upload is unchanged.';
