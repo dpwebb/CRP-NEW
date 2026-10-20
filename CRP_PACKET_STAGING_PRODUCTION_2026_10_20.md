@@ -1,0 +1,13 @@
+# Packet attachments and identification sheet release — October 20, 2026
+
+Owner authority: “push and deploy to Staging and Live production”. Root is the sole source, host, provider and browser operator. This authorizes publication of the intended packet changes, guarded staging deployment, fresh exact-build acceptance and conditional production deployment of the same immutable candidate.
+
+Candidate source is `8adc5c8b01cd41214a58ba2463674ddfe4ae2fa5`, build `crp-v1-3c6a0a990e579e73`, manifest `3C6A0A990E579E73ABFD2F14FE0AEE86BC931A880104A90BBE194E3C3226C07A`, 186 shipped files. It includes filename-specific attachment validation, print-permitted supporting-PDF image conversion with retained originals, and a readable shared page for selected identification images. See the two local implementation records.
+
+The original 19,719/0/0 full and every prior failure remain unchanged. First packaging refused the changed whole-shell environment binding before creating an archive. The desktop tool supplies a distinct execution identity on later shell calls. A fresh verification and immediate packaging now run in one process with the original frozen source, plan and reviewed prerequisites; no environment guard is waived. No manifest regeneration occurs.
+
+Evidence is private under `accelerated-launch/service/out/packet-staging-production-20261020/` and the managed `identification-sheet-verification` worktree. At the first fresh whole read-only observation, both hosted sites remain build `d3bfef7e375d586e`: production PID1431715, 6 accounts/340 non-session rows/109 blobs; staging PID1167539, 46 accounts/785 rows/170 blobs. Baseline receipt SHA256 `1F8B6741E8A0CCC14308B0195439263519411D20EB9332FC692137FAE1CC68F0`. These current rows, blobs, account security, signed authority, private configuration and unrelated Affiliate runtime/configuration must be preserved.
+
+Before activation require current custody, expected-previous-build guards, verified whole stopped snapshots and data-preserving rollback. Production requires the current candidate's 30 gates/123 criteria/46 predicates, fresh bounded fictional staging acceptance with existing Sandbox configuration, complete packet visual review/approval/browser download, portable Linux validation, fresh provider/configuration reads and authenticated pre/post installed encrypted backups. Never replay earlier campaigns or uncertain intents. Do not authenticate as a real consumer, change provider configuration/grants, make a live charge, send mail, reboot the shared host or modify Affiliate. Preserve unrelated untracked `output/`.
+
+Current status: RELEASE_IN_PROGRESS; neither staging nor production has been changed by this campaign.
