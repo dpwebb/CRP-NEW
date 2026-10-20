@@ -120,6 +120,36 @@ async function run(unused, check) {
     check.ok(choices.text.includes('data-analytics-accept') && choices.text.includes('data-analytics-decline'), 'both choices are on privacy page');
     check.ok(!/google-analytics|googletagmanager/.test(choices.headers.get('content-security-policy')), 'privacy page CSP prevents Google connections');
     check.equal(choices.headers.get('x-robots-tag'), 'noindex', 'preference page excluded from indexing');
+    const { chromium } = require('C:/Users/webbd/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+    const actual = await chromium.launch({ headless: true, executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+    const screenshots = path.join(__dirname, '../../out', 'analytics-privacy-browser-' + require('node:crypto').randomUUID());
+    fs.mkdirSync(screenshots, { recursive: true });
+    try {
+      for (const width of [1440,390]) {
+        const context = await actual.newContext({ viewport: { width, height: 1000 } });
+        let googleRequests = 0;
+        context.on('request', request => { if (/google-analytics\.com|googletagmanager\.com/.test(request.url())) googleRequests++; });
+        const page = await context.newPage();
+        await page.goto(service.base + '/ca/');
+        const privacyLink = page.getByRole('link', { name: 'Privacy and analytics', exact: true });
+        check.ok(await privacyLink.isVisible(), width + 'px: privacy link stays visible outside hidden mobile footer navigation');
+        check.equal(await page.locator('[data-analytics-accept], [data-analytics-decline]').count(), 0, width + 'px: homepage has no choices');
+        await privacyLink.click();
+        check.ok(page.url().endsWith('/privacy.html'), width + 'px: actual footer link opens privacy page');
+        check.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, width + 'px: privacy page has no horizontal overflow');
+        await page.getByRole('button', { name: 'Accept analytics', exact: true }).click();
+        check.match(await page.locator('[data-analytics-status]').innerText(), /Analytics accepted/, width + 'px: actual acceptance works');
+        await page.reload();
+        check.match(await page.locator('[data-analytics-status]').innerText(), /Analytics accepted/, width + 'px: acceptance survives reload');
+        await page.getByRole('button', { name: 'Analytics preferences', exact: true }).click();
+        await page.getByRole('button', { name: 'Decline analytics', exact: true }).click();
+        await page.reload();
+        check.match(await page.locator('[data-analytics-status]').innerText(), /Optional analytics are off/, width + 'px: withdrawal survives reload');
+        check.equal(googleRequests, 0, width + 'px: local privacy flow never contacts Google');
+        await page.screenshot({ path: path.join(screenshots, 'privacy-' + width + '.png'), fullPage: true });
+        await context.close();
+      }
+    } finally { await actual.close(); }
     check.equal(JSON.stringify(service.service.store.state()), before, 'measurement setup never touches consumer store');
     return { fictional_only: true, google_requests: 0, hosted_actions: false, private_tracking: false };
   } finally { await service.close(); if (environment === undefined) delete process.env.CRP_DEPLOYMENT_ENV; else process.env.CRP_DEPLOYMENT_ENV = environment; }
