@@ -582,11 +582,27 @@ async function stripeRenewalCancellation(t, check, evidence) {
     mock.fixture.charges[oldChargeId].amount_refunded = mock.fixture.charges[oldChargeId].amount;
     mock.fixture.subscription.status = 'canceled';
     mock.fixture.subscriptions[olderSubscription.id] = structuredClone(mock.fixture.subscription);
+    const modernRefundCharge = structuredClone(mock.fixture.charges[oldChargeId]);
+    delete modernRefundCharge.invoice;
+    const beforeRejectedRefund = JSON.stringify(t.service.store.state().entitlements);
+    for (const [field, value, label] of [['payment_intent', 'pi_wrong_charge', 'wrong payment reference'], ['livemode', true, 'wrong provider mode']]) {
+      const previousValue = mock.fixture.charges[oldChargeId][field];
+      mock.fixture.charges[oldChargeId][field] = value;
+      const invalid = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { id: 'evt_modern_refund_refused_' + field,
+        type: 'charge.refunded', livemode: false, created: Math.floor(Date.now() / 1000), data: { object: modernRefundCharge } });
+      const refused = await t.request('POST', '/api/billing/events', { raw: invalid.raw, headers: invalid.headers });
+      check.equal(refused.status, 400, 'a fresh charge with ' + label + ' cannot revoke access');
+      check.equal(JSON.stringify(t.service.store.state().entitlements), beforeRejectedRefund, 'refused ' + label + ' preserves every entitlement');
+      mock.fixture.charges[oldChargeId][field] = previousValue;
+    }
+    const chargeReadsBefore = mock.calls.filter(call => call.method === 'GET' && call.path === '/v1/charges/' + oldChargeId).length;
     const endOld = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { id: 'evt_cancel_replacement_refund',
       type: 'charge.refunded', livemode: false, created: Math.floor(Date.now() / 1000),
-      data: { object: structuredClone(mock.fixture.charges[oldChargeId]) } });
+      data: { object: modernRefundCharge } });
     const oldEnded = await t.request('POST', '/api/billing/events', { raw: endOld.raw, headers: endOld.headers });
     check.equal(oldEnded.json?.event?.accepted, true, 'the old monthly purchase ends through a verified provider refund');
+    check.equal(mock.calls.filter(call => call.method === 'GET' && call.path === '/v1/charges/' + oldChargeId).length,
+      chargeReadsBefore + 1, 'a current webhook without Charge.invoice resolves the exact charge through the pinned reader');
     check.equal((await t.request('GET', '/api/entitlement', { token: replacement.actor.token })).json.entitlement.entitled,
       false, 'old monthly access has genuinely ended before a new yearly purchase');
     const confirmedEnd = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { id: 'evt_cancel_replacement_stopped',

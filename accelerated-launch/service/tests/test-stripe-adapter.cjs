@@ -75,7 +75,7 @@ function startMock() {
         fixture.session.payment_intent = fixture.session.mode === 'payment' ? intentId : null;
         fixture.intents[intentId] = { id: intentId, status: 'succeeded', currency: 'cad', latest_charge: chargeId,
           metadata: fixture.session.mode === 'payment' ? { ...fixture.session.metadata } : {} };
-        fixture.charges[chargeId] = { id: chargeId, payment_intent: intentId, amount: fixture.session.amount_total,
+        fixture.charges[chargeId] = { id: chargeId, payment_intent: intentId, livemode: false, amount: fixture.session.amount_total,
           amount_refunded: 0, refunded: false, disputed: false };
         if (fixture.session.mode === 'subscription') {
           fixture.session.invoice = 'in_' + suffix;

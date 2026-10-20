@@ -441,6 +441,18 @@ async function normalizeChargeEvent(env, secretKey, base, charge, eventId, type)
       }
     } catch { /* leave unresolved */ }
   }
+  // Current webhook payloads omit Charge.invoice. Resolve this same charge through
+  // the existing pinned reader before following its subscription invoice.
+  if (!accountRef && !charge.invoice && charge.id && piId) {
+    try {
+      const fetched = await stripe.retrieveCharge(secretKey, charge.id, base);
+      const mode = /^(?:sk|rk)_(test|live)_/.exec(secretKey || '')?.[1];
+      if (fetched.status !== 200 || fetched.json?.id !== charge.id || !mode ||
+          fetched.json.livemode !== (mode === 'live') ||
+          (typeof fetched.json.payment_intent === 'string' ? fetched.json.payment_intent : fetched.json.payment_intent?.id) !== piId) return null;
+      charge = fetched.json;
+    } catch { return null; }
+  }
   // Subscription metadata is not copied onto its payment intent. Follow the charge's invoice.
   if (!accountRef && charge.invoice) {
     const invoiceId = typeof charge.invoice === 'string' ? charge.invoice : charge.invoice.id;
