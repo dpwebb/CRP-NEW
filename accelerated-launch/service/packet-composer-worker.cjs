@@ -120,16 +120,33 @@ async function printableSupportingImages(target, bytes, position, budget) {
   const original = await PDFDocument.load(bytes, { updateMetadata: false, ignoreEncryption: true, throwOnInvalidObject: false });
   const encryption = original.context.lookup(original.context.trailerInfo.Encrypt);
   const permissions = encryption instanceof PDFDict && encryption.lookupMaybe(name('P'), lib.PDFNumber)?.asNumber();
-  const count = original.getPageCount();
+  const count = Number(pageLines[0].replace(/^Pages:\s+/, ''));
+  let structuralCount;
+  try { structuralCount = original.getPageCount(); } catch { /* Rendering metadata can recover a malformed page tree. */ }
   if (!original.isEncrypted || !(encryption instanceof PDFDict) || encryption.get(name('Filter'))?.toString() !== '/Standard' ||
-      !Number.isSafeInteger(permissions) || (permissions & 4) !== 4 || count !== Number(pageLines[0].replace(/^Pages:\s+/, '')) || count < 1 || count > 400) throw new Error('PDF');
+      !Number.isSafeInteger(permissions) || (permissions & 4) !== 4 || (structuralCount != null && structuralCount !== count) || count < 1 || count > 400) throw new Error('PDF');
   if (target.getPageCount() + count > 400 || budget.pages + count > 400) throw coded('INVALID_REQUEST');
+  // Poppler can read bank statements whose page tree pdf-lib cannot traverse.
+  // Keep the independent encryption/P-bit checks above, then require complete,
+  // unambiguous page geometry from the same engine that renders every page.
+  const boxInfo = execFileSync('pdfinfo', ['-upw', '', '-f', '1', '-l', String(count), '-box', '-'],
+    { ...options, timeout: Math.max(1, deadline-Date.now()), maxBuffer: 1024*1024 }).toString('utf8');
+  const counts = boxInfo.split(/\r?\n/).filter(line=>/^Pages:/.test(line)), boxes = new Map(), rotations = new Map();
+  if (counts.length !== 1 || Number(counts[0].replace(/^Pages:\s+/, '')) !== count) throw new Error('PDF');
+  for (const line of boxInfo.split(/\r?\n/)) {
+    const box = /^Page\s+(\d+)\s+MediaBox:\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*$/.exec(line),
+      rotation = /^Page\s+(\d+)\s+rot:\s+(-?\d+)\s*$/.exec(line);
+    if (box) { const page = Number(box[1]); if (boxes.has(page)) throw new Error('PDF'); boxes.set(page,box.slice(2).map(Number)); }
+    if (rotation) { const page = Number(rotation[1]); if (rotations.has(page)) throw new Error('PDF'); rotations.set(page,Number(rotation[2])); }
+  }
+  if (boxes.size !== count || rotations.size !== count) throw new Error('PDF');
   const dpi = (permissions & 2048) === 2048 ? 200 : 150;
   const pages = [];
   for (let at = 0; at < count; at++) {
-    const source = original.getPage(at), rotation = ((source.getRotation().angle % 360) + 360) % 360;
+    const box = boxes.get(at+1), rotation = ((rotations.get(at+1) % 360) + 360) % 360;
+    if (!box || !Number.isFinite(rotation)) throw new Error('PDF');
     if (![0, 90, 180, 270].includes(rotation)) throw new Error('PDF');
-    const size = source.getSize(), width = rotation === 90 || rotation === 270 ? size.height : size.width,
+    const size = {width:box[2]-box[0],height:box[3]-box[1]}, width = rotation === 90 || rotation === 270 ? size.height : size.width,
       height = rotation === 90 || rotation === 270 ? size.width : size.height;
     if (![width, height].every(n => Number.isFinite(n) && n > 0 && n <= 14400)) throw new Error('PDF');
     const pixels = Math.ceil(width * dpi / 72) * Math.ceil(height * dpi / 72);
@@ -365,29 +382,57 @@ async function appendIdentitySheet(doc, entries, position) {
       throw Object.assign(coded('PACKET_ATTACHMENT_UNREADABLE'), { attachment: { kind: 'document', index, reason: 'UNREADABLE' } });
     }
   }
-  // Pick the grid with the largest smallest image edge, then the most image
-  // area. Pixel dimensions never determine an invented physical document size.
-  const bounds = { x: 50, top: 686, width: 512, height: 636 }, gap = 16;
+  // Fit natural image proportions in rows or columns, trying both paper
+  // orientations. Equal grid cells waste space around mixed card/passport sizes.
+  const gap = 14, captionSpace = 18, partitions = new Map();
+  const addPartition = sizes => partitions.set(sizes.join(','), sizes);
+  for (let groups = 1; groups <= images.length; groups++) {
+    const sizes = []; let remaining = images.length;
+    for (let at = 0; at < groups; at++) { const size = Math.ceil(remaining / (groups-at)); sizes.push(size); remaining -= size; }
+    addPartition(sizes);
+  }
+  for (let first = 1; first < images.length; first++) {
+    addPartition([first, images.length-first]);
+    for (let second = 1; second < images.length-first; second++) addPartition([first, second, images.length-first-second]);
+  }
   let best;
-  for (let columns = 1; columns <= images.length; columns++) {
-    const rows = Math.ceil(images.length / columns), cellWidth = (bounds.width - gap * (columns - 1)) / columns,
-      cellHeight = (bounds.height - gap * (rows - 1)) / rows;
-    if (cellWidth <= 12 || cellHeight <= 28) continue;
-    const placements = images.map(({ image }, at) => {
-      const scale = Math.min((cellWidth - 12) / image.width, (cellHeight - 28) / image.height), width = image.width * scale, height = image.height * scale;
-      const rowStart = Math.floor(at / columns) * columns, inRow = Math.min(columns, images.length - rowStart),
-        rowOffset = (columns-inRow)*(cellWidth+gap)/2,
-        cellX = bounds.x + rowOffset + at % columns * (cellWidth + gap), cellTop = bounds.top - Math.floor(at / columns) * (cellHeight + gap);
-      const x = cellX + (cellWidth - width) / 2, y = cellTop - 18 - (cellHeight - 24 + height) / 2;
-      return { x, y, width, height, caption_x: x, caption_y: y + height + 8 };
+  for (const [pageWidth, pageHeight] of [[612,792],[792,612]]) for (const columns of [false,true]) for (const sizes of partitions.values()) {
+    const bounds = { x: 36, top: pageHeight-86, width: pageWidth-72, height: pageHeight-134 };
+    let offset = 0;
+    const groups = sizes.map(count => {
+      const entries = images.slice(offset, offset+count); offset += count;
+      const ratios = entries.map(({image}) => columns ? image.height/image.width : image.width/image.height), ratio = ratios.reduce((n,r)=>n+r,0);
+      return { entries, ratios, ratio, factor: Math.min(...ratios.map(r=>Math.min(1,r))),
+        cap: (columns ? bounds.height-count*captionSpace-(count-1)*gap : bounds.width-(count-1)*gap)/ratio };
     });
+    const budget = columns ? bounds.width-(groups.length-1)*gap : bounds.height-groups.length*captionSpace-(groups.length-1)*gap;
+    if (budget <= 0 || groups.some(g=>g.cap<=0)) continue;
+    const edgeLimit = Math.min(...groups.map(g=>g.cap*g.factor), budget/groups.reduce((n,g)=>n+1/g.factor,0));
+    for (const group of groups) group.size = edgeLimit/group.factor;
+    let spare = budget-groups.reduce((n,g)=>n+g.size,0);
+    for (const group of [...groups].sort((a,b)=>b.ratio*(b.cap*b.cap-b.size*b.size)-a.ratio*(a.cap*a.cap-a.size*a.size))) {
+      const extra = Math.min(spare,group.cap-group.size); group.size += extra; spare -= extra;
+    }
+    const placements = [];
+    let cursor = columns ? bounds.x+spare/2 : bounds.top-spare/2;
+    for (const group of groups) {
+      const cross = group.ratio*group.size+(group.entries.length-1)*gap+(columns?group.entries.length*captionSpace:0);
+      let inner = columns ? bounds.top-(bounds.height-cross)/2 : bounds.x+(bounds.width-cross)/2;
+      for (const [at] of group.entries.entries()) {
+        const width = columns ? group.size : group.size*group.ratios[at], height = columns ? group.size*group.ratios[at] : group.size;
+        const x = columns ? cursor : inner, top = columns ? inner : cursor, y = top-captionSpace-height;
+        placements.push({x,y,width,height,caption_x:x,caption_y:top-10});
+        inner += columns ? -(height+captionSpace+gap) : width+gap;
+      }
+      cursor += columns ? group.size+gap : -(group.size+captionSpace+gap);
+    }
     const edge = Math.min(...placements.map(p => Math.min(p.width, p.height))), area = placements.reduce((sum, p) => sum + p.width * p.height, 0);
-    if (!best || edge > best.edge + .01 || Math.abs(edge - best.edge) <= .01 && area > best.area) best = { placements, edge, area };
+    if (!best || edge > best.edge + .01 || Math.abs(edge - best.edge) <= .01 && area > best.area) best = { placements, edge, area, pageWidth, pageHeight };
   }
   if (!best) throw coded('INVALID_REQUEST');
-  const page = doc.insertPage(position, [612, 792]), heading = await doc.embedFont(lib.StandardFonts.HelveticaBold), caption = await doc.embedFont(lib.StandardFonts.Helvetica);
-  page.drawText('Identification copies', { x: 50, y: 742, size: 18, font: heading, color: rgb(.1, .2, .3) });
-  page.drawText('Selected identification images - complete copies, fitted proportionally', { x: 50, y: 722, size: 9, font: caption, color: rgb(.25, .3, .35) });
+  const page = doc.insertPage(position, [best.pageWidth, best.pageHeight]), heading = await doc.embedFont(lib.StandardFonts.HelveticaBold), caption = await doc.embedFont(lib.StandardFonts.Helvetica);
+  page.drawText('Identification copies', { x: 36, y: best.pageHeight-42, size: 18, font: heading, color: rgb(.1, .2, .3) });
+  page.drawText('Selected identification images - complete copies, fitted proportionally', { x: 36, y: best.pageHeight-62, size: 9, font: caption, color: rgb(.25, .3, .35) });
   const sources = images.map(({ entry, image, bytes }, at) => {
     const placement = best.placements[at];
     page.drawText('Copy ' + (at + 1), { x: placement.caption_x, y: placement.caption_y, size: 10, font: heading, color: rgb(.2, .25, .3) });
@@ -395,8 +440,8 @@ async function appendIdentitySheet(doc, entries, position) {
     return { file_id: entry.file_id || null, filename: entry.filename || '', source_page: 1, original_sha256: digest(bytes),
       image_width: image.width, image_height: image.height, x: placement.x, y: placement.y, width: placement.width, height: placement.height };
   });
-  page.drawText('Check that every copy is complete and readable before printing.', { x: 50, y: 32, size: 9, font: caption, color: rgb(.25, .3, .35) });
-  return { grouped_identification: true, sources, file_ids: sources.map(source => source.file_id), page_width: 612, page_height: 792 };
+  page.drawText('Check that every copy is complete and readable before printing.', { x: 36, y: 26, size: 9, font: caption, color: rgb(.25, .3, .35) });
+  return { grouped_identification: true, sources, file_ids: sources.map(source => source.file_id), page_width: best.pageWidth, page_height: best.pageHeight };
 }
 async function compose(input) {
   const copyBudget = { bytes: 0, pages: 0 };

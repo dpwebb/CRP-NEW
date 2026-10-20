@@ -73,12 +73,12 @@ function rasterDifference(first, second, firstPage = 1, secondPage = 1, dpi = 96
   return { equal_dimensions: true, mean_absolute_rgb: absolute / a.pixels.length, substantial_pixel_fraction: substantial / (a.width * a.height), changed_ink_fraction: changedInk / Math.max(1, ink) };
 }
 const artworkMatches = difference => difference.equal_dimensions && difference.mean_absolute_rgb <= 1 && difference.substantial_pixel_fraction <= .01 && difference.changed_ink_fraction <= .20;
-function isolatedWorker(exec) {
+function isolatedWorker(exec, library = lib) {
   // Substitute only local process results to exercise malformed permission output and
   // expansion bounds without allocating or persisting large consumer attachments.
   const filename = path.join(__dirname, '../../packet-composer-worker.cjs'), worker = new Module(filename, module);
   worker.filename = filename; worker.paths = Module._nodeModulePaths(path.dirname(filename));
-  worker.require = request => request === 'node:child_process' ? { execFileSync: exec } : Module.prototype.require.call(worker, request);
+  worker.require = request => request === 'node:child_process' ? { execFileSync: exec } : request === './pdf-vendor/pdf-lib-1.17.1.min.js' ? library : Module.prototype.require.call(worker, request);
   worker._compile(fs.readFileSync(filename, 'utf8'), filename);
   return worker.exports;
 }
@@ -187,6 +187,27 @@ async function encryptedEvidenceChecks(check, form) {
   try { await isolatedWorker((command, args, options) => { if (command === 'pdfinfo') return Buffer.from(falsePermission); spoofedPrints++; return execFileSync(command, args, options); }).compose({ ...coldInput, reports: [], documents: [{ bytes: ENCRYPTED_FIXTURES.noprint, content_type: 'application/pdf' }] }); } catch (caught) { printFailure = caught; }
   check.equal(printFailure?.code, 'PACKET_ATTACHMENT_UNREADABLE', 'supporting image conversion independently refuses actual no-print permissions despite spoofed metadata');
   check.equal(spoofedPrints, 0, 'print-prohibited supporting evidence is never rasterized');
+  const structuralFailureLibrary = { ...lib, PDFDocument: {
+    create: (...args)=>lib.PDFDocument.create(...args),
+    load: async (...args)=>{
+      const document = await lib.PDFDocument.load(...args);
+      return args[1]?.ignoreEncryption ? new Proxy(document,{get(target,key){
+        if(key==='getPageCount')return()=>{throw new Error('Unusable structural page tree');};
+        const value=Reflect.get(target,key);return typeof value==='function'?value.bind(target):value;
+      }}) : document;
+    }
+  }};
+  const recovered = await isolatedWorker(execFileSync,structuralFailureLibrary).compose({letter_text:LETTER,reports:[],documents:[{bytes:noCopy.toString('base64'),content_type:'application/pdf'}]});
+  check.equal(recovered.page_count,3,'Poppler geometry recovers both printable statement pages when the structural page tree is unreadable');
+  check.ok(recovered.sections[1].rendered_as_images&&recovered.sections[1].original_sha256===hash(noCopy),'page-tree recovery retains exact original provenance and uses image copies');
+  let duplicateGeometryError, geometryRenders=0;
+  try { await isolatedWorker((command,args,options)=>{
+    if(command==='pdftoppm')geometryRenders++;
+    const value=execFileSync(command,args,options);
+    return command==='pdfinfo'&&args.includes('-box')?Buffer.concat([value,Buffer.from('\nPage 1 MediaBox: 0.00 0.00 612.00 792.00\n')]):value;
+  }).compose({letter_text:LETTER,reports:[],documents:[{bytes:noCopy.toString('base64'),content_type:'application/pdf'}]}); } catch(error) {duplicateGeometryError=error;}
+  check.equal(duplicateGeometryError?.code,'PACKET_ATTACHMENT_UNREADABLE','ambiguous per-page geometry refuses the supporting image copy');
+  check.equal(geometryRenders,0,'duplicate geometry is rejected before any page is rendered');
   // Two small genuine encrypted inputs each expanding to an otherwise valid 33 MiB
   // conversion would breach the shared 64 MiB copy budget although neither alone does.
   const expanded = Buffer.alloc(33 * 1024 * 1024, 32); converted.copy(expanded);
@@ -232,12 +253,14 @@ async function identificationSheetChecks(t, check) {
   check.deepEqual(images.map(entry => hash(entry.bytes)), originals, 'grouping never modifies uploaded image bytes');
   check.equal(packet.review_pages.filter(page => page.grouped_identification).length, 1, 'review has exactly one physical identification sheet');
   const doc = await lib.PDFDocument.load(packet.bytes), physical = doc.getPage(sheet.start_page-1);
+  check.deepEqual(physical.getSize(),{width:sheet.page_width,height:sheet.page_height},'review geometry matches the actual chosen paper orientation');
+  check.ok(sheet.sources.reduce((area,item)=>area+item.width*item.height,0)/((sheet.page_width-72)*(sheet.page_height-134))>=.75,'mixed front/back/passport copies fill at least 75 percent of the available image area');
   const embedded = physical.node.Resources().lookup(n('XObject'), lib.PDFDict).entries().map(([,ref])=>doc.context.lookup(ref));
   check.equal(embedded.filter(object=>object.dict?.get(n('Subtype'))?.toString()==='/Image').length, images.length, 'the single printed sheet embeds all three actual image objects');
   for (const [at, source] of sheet.sources.entries()) {
-    check.ok(source.x>=50&&source.y>=50&&source.x+source.width<=562.01&&source.y+source.height<=686.01, 'ID copy '+at+' fits inside the print margins without cropping');
+    check.ok(source.x>=35.99&&source.y>=47.99&&source.x+source.width<=sheet.page_width-35.99&&source.y+source.height<=sheet.page_height-85.99, 'ID copy '+at+' fits inside the print margins without cropping');
     check.ok(Math.abs(source.width/source.height-source.image_width/source.image_height)<.000001, 'ID copy '+at+' retains its original proportions');
-    check.ok(Math.min(source.width,source.height)>=120, 'the three-image fixture keeps copy '+at+' at a readable printed size');
+    check.ok(Math.min(source.width,source.height)>=200, 'the three-image fixture enlarges every copy beyond the earlier sheet layout');
     if (images[at].content_type==='image/png') {
       const expected = await lib.PngEmbedder.for(images[at].bytes);
       check.ok(Buffer.from(lib.decodePDFRawStream(embedded[at]).decode()).equals(Buffer.from(expected.image.rgbChannel)), 'PNG ID '+at+' retains every original RGB pixel');
