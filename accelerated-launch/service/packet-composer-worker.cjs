@@ -106,7 +106,7 @@ async function load(bytes, allowPermittedEvidenceCopy = false, budget) {
 }
 async function printableSupportingImages(target, bytes, position, budget) {
   // Supporting copies may be printed as images even when object/text copying is
-  // disabled. Keep the uploaded blob exact; nothing is decrypted or saved to disk.
+  // disabled. Keep the uploaded blob exact; no decrypted file is saved to disk.
   const deadline = Date.now() + COPY_TIMEOUT_MS;
   const options = { input: bytes, timeout: COPY_TIMEOUT_MS, maxBuffer: COPY_MAX_BYTES, windowsHide: true,
     stdio: ['pipe', 'pipe', 'pipe'], env: { ...process.env, LC_ALL: 'C' } };

@@ -2527,6 +2527,9 @@ async function wirePacket(panel) {
     // Validate the exact saved recipe before opening Review. Its bounded PDF cache
     // also serves the subsequent all-page review; no approval is created here.
     const answer = await currentRequest(ensureCurrent, 'GET', `/api/cases/${caseId}/packet`);
+    // Incomplete contact/checklist details keep their existing missing-item
+    // guidance in Review; no packet pages can open until those details are ready.
+    if (!answer.view.packet?.preview_ready) return;
     try {
       await currentRequest(ensureCurrent, 'GET', `/api/cases/${caseId}/packet/preview/pages?version=${encodeURIComponent(answer.view.packet.preview_version)}`);
     } catch (error) {

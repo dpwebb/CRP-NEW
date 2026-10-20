@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-20T14:29:19.885Z",
+  "generated_at": "2026-10-20T14:53:31.994Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 113,
-      "digest": "D018C8C03829AD1F2D1F1BF7613C0756F49D550CA0A448537A7CF372E25BD91B",
+      "digest": "E317566A332DD33044B8F7B723CB0E049A6B8FF7EE7F65086A35069D988F3CD4",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -342,7 +342,7 @@
         },
         {
           "file": "accelerated-launch/service/packet-composer-worker.cjs",
-          "sha256": "1DEB022B861AC5020CFF4BAE653BECD6D5DBDE10E3DE772A3934DC75791157E6"
+          "sha256": "9CBC8E7CA41AB831BB3E14BCB8ECB0059ED097459212A531390C7D88E9E49E1B"
         },
         {
           "file": "accelerated-launch/service/packet-composer.cjs",
@@ -638,7 +638,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 37,
-      "digest": "D8F49BC7273579F4AB6666FED8FC5E9497B12C50DA2C5080F0ABB0FCFEAB75B3",
+      "digest": "380B6E14612D03DA469471153749DDE8F934C52168538BED22416723A406196F",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -678,7 +678,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "64D559DBB4698108085179B8326E57219FDE6E9E698EBA7F584A49502A4D9DFF"
+          "sha256": "8F6DBADB3F8B2136BAE1498945C638B16A064E070044A263C48EDFCA682E6B02"
         },
         {
           "file": "accelerated-launch/service/ui/brand-logo.png",
@@ -791,6 +791,6 @@
       ]
     }
   ],
-  "manifest_digest": "C269E6F781E88006EA48243335D3C61275D54920B95611F795B7A3C67333244C",
+  "manifest_digest": "3375C0D3EE71E968BD3B4A711F50FFEACAD4A9000E55567755CA1E57AACF1081",
   "total_file_count": 186
 }
