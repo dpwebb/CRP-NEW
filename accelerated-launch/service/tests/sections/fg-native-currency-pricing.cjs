@@ -58,11 +58,14 @@ async function run(t, check) {
     }
   }
   const actor = await t.unpaidAccount('native-credit-buckets@example.test');
-  const now = new Date().toISOString();
+  const now = new Date(Date.now() - 1000).toISOString();
   t.service.store.update(state => {
-    for (const currency of ['cad', 'usd']) credits.recordPayment(state, { account_id: actor.account_id,
+    for (const currency of ['cad', 'usd']) {
+      const receipt = credits.recordPayment(state, { account_id: actor.account_id,
       payment_id: 'native_bucket_' + currency, plan_code: 'report_once', amount_cents: plans.plan('report_once', currency).amount_cents,
       currency, paid_at: now, verified_payment: true });
+      check.equal(receipt.created, true, currency + ' bucket has an actually recorded verified payment');
+    }
   });
   check.equal(credits.quotesFor(t.service.store, actor.account_id, now, null, 'usd').monthly.credit_cents, 1495, 'USD upgrade uses USD cash only');
   check.equal(credits.quotesFor(t.service.store, actor.account_id, now, null, 'cad').monthly.credit_cents, 1595, 'CAD credit uses the actual current purchase amount');

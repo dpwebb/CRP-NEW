@@ -75,7 +75,7 @@ const REVIEWED_NON_SHIPPED = Object.freeze([
 
 const GROUPS = [
   { id: 'RUNTIME_ASSETS', dirs: ['accelerated-launch/service/packet-fonts', 'accelerated-launch/service/pdf-vendor', 'accelerated-launch/service/password-vendor'], filter: () => true },
-  { id: 'RUNTIME', dirs: ['accelerated-launch/service'], filter: (n) => n.endsWith('.cjs') || n === 'release-scope.json', exclude: SERVICE_NON_SHIPPED },
+  { id: 'RUNTIME', dirs: ['accelerated-launch/service'], filter: (n) => n.endsWith('.cjs') || n === 'release-scope.json' || n === 'report-use-policy.json', exclude: SERVICE_NON_SHIPPED },
   { id: 'READER_SUPPORT', dirs: ['internal-validation/ca-ns-last-payment-six-year', 'consumer-wizard/dist'], filter: (n) => n.endsWith('.cjs') || n === 'jurisdiction-data.js', exclude: ['internal-validation/ca-ns-last-payment-six-year/tests/'] },
   { id: 'RULE_CONFIGURATION', dirs: ['accelerated-launch/adapters'], filter: (n) => /\.(json|cjs)$/.test(n) },
   { id: 'RULE_CONFIGURATION_TOP_LEVEL', dirs: ['accelerated-launch'], filter: (n) => /\.(json|cjs)$/.test(n), recursive: false },

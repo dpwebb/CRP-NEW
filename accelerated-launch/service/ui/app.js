@@ -2089,6 +2089,13 @@ function clarificationBlock(view) {
 function wireClarification(panel, view) {
   const ensureView = viewContext(), caseId = state.caseId, resultId = view.result_id;
   const ensure = () => { ensureView(); if (state.view?.result_id !== resultId) throw cancelledAction(); };
+  if (el('report-use-correct')) {
+    el('report-use-correct').onclick = () => {
+      ensure();
+      state.correctingReportUse = true;
+      render();
+    };
+  }
   if (!el('clarify-submit')) return;
   const questions = (view.clarification_questions || []).slice(0, 2).filter((q) => !q.requires_reassessment && q.question_key);
   /* C5: the special answers are preserved in their own state keyed by question_key. The browser converts a
@@ -2139,12 +2146,6 @@ function wireClarification(panel, view) {
     btn.onclick = () => {
       if (prior) prior();
       for (const rb of reportUseBands) if (rb.qKey === btn.dataset.skip) rb.showBand('');
-    };
-  }
-  if (el('report-use-correct')) {
-    el('report-use-correct').onclick = () => {
-      state.correctingReportUse = true;
-      render();
     };
   }
   el('clarify-submit').onclick = () => run(async () => {
