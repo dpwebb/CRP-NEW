@@ -1,5 +1,7 @@
 # Coordinated CRP and Affiliate staging release
 
+Production successor completed: see [CRP_PAIRED_PRODUCTION_2026_10_20.md](CRP_PAIRED_PRODUCTION_2026_10_20.md) for the fresh d3bf30/123/46 acceptance, guarded production activation, complete owned cleanup, independent database custody and source pushes. The staging checkpoints below retain their original build/date/scope; their earlier production-pending statements are historical.
+
 ## Authority and scope
 
 The owner asked the Affiliate task to facilitate deployment and then explicitly authorized sending this deployment handoff to CRP. The original user messages and the handoff were read from thread 01a15783-1539-7902-b071-f97e36b728fc on October20. Root in this CRP task alone owns the consumer source freeze, governed full/package and guarded staging transition, followed by coordinated hosted staging acceptance. No source push, production promotion, live purchase, provider permission expansion, outgoing payment, real-consumer security action or replay of earlier campaigns is inferred. Exact accepted production versions require the subsequent applicable owner release authority.
