@@ -8,7 +8,8 @@
   const panel = document.querySelector('[data-analytics-choices]');
   const status = document.querySelector('[data-analytics-status]');
   const preferences = document.querySelector('[data-analytics-preferences]');
-  if (!panel || !status || !preferences) return;
+  // Public pages measure only a previously accepted choice. The choice interface lives on privacy.html.
+  if ((!panel || !status || !preferences) && !publicPaths.includes(window.location.pathname)) return;
   let started = false;
   const permitted = () => {
     try {
@@ -61,8 +62,9 @@
   }
   function choose(choice, persist) {
     if (persist) remember(choice);
-    panel.hidden = true;
-    status.textContent = choice === 'accepted' ? 'Analytics accepted. Only public pages on our live website are measured.' : 'Optional analytics are off.';
+    if (panel) panel.hidden = true;
+    preferences?.setAttribute('aria-expanded', 'false');
+    if (status) status.textContent = choice === 'accepted' ? 'Analytics accepted. Only public pages on our live website are measured. Return to the homepage to continue.' : 'Optional analytics are off.';
     if (choice === 'accepted') start();
     else {
       window['ga-disable-' + measurement] = true;
@@ -71,13 +73,16 @@
       if (started) window.location.reload();
     }
   }
-  document.querySelector('[data-analytics-accept]').addEventListener('click', () => choose('accepted', true));
-  document.querySelector('[data-analytics-decline]').addEventListener('click', () => choose('declined', true));
-  preferences.addEventListener('click', () => { panel.hidden = !panel.hidden; });
+  document.querySelector('[data-analytics-accept]')?.addEventListener('click', () => choose('accepted', true));
+  document.querySelector('[data-analytics-decline]')?.addEventListener('click', () => choose('declined', true));
+  preferences?.addEventListener('click', () => { panel.hidden = !panel.hidden; preferences.setAttribute('aria-expanded', String(!panel.hidden)); });
   if (navigator.globalPrivacyControl === true) choose('declined', false);
   else {
     const saved = savedChoice();
     if (saved) choose(saved, false);
-    else panel.hidden = false;
+    else if (panel) { panel.hidden = false; preferences?.setAttribute('aria-expanded', 'true'); }
   }
+  window.addEventListener('storage', event => {
+    if (event.key === preferenceKey || event.key === null) choose(savedChoice() || 'declined', false);
+  });
 })();

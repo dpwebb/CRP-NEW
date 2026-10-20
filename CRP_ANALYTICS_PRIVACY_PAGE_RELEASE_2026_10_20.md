@@ -1,0 +1,9 @@
+# Analytics choices moved to privacy page — October 20, 2026
+
+Owner authority: "Deploy to Staging and Production", followed by "Move choices to a privacy page". Root alone operates. No source push, live charge, provider configuration/grant, affiliate switch, mailing, real-consumer authentication/MFA, shared reboot or replay of historical operations is authorized or required.
+
+Current status: LOCAL_FOCUSED_PASS; RELEASE_PREPARATION_PENDING. Both sites freshly report healthy/admin available on crp-v1-8d50a548fdea08d4. Historical packet release remains complete and immutable.
+
+The earlier cookieless/default-on country-policy draft is preserved under accelerated-launch/service/out/analytics-privacy-release-20261020/preserved-draft and excluded from this release. Backend public SEO and homepage CSS were restored to the accepted baseline. The only application-route change is allowing /privacy.html. The homepage selections are removed and a footer link opens the new privacy page. Existing consent preference format, lifetime, measurement ID, granted/denied Google settings, event parameters, cookies and public-production URL restrictions are retained. The privacy page itself never measures or contacts Google; new visitors remain unmeasured until accepting there. Cross-tab withdrawal disables an existing public-page tag before reloading. Private account, report, checkout, billing and affiliate behavior remain unchanged.
+
+Focused analytics/public-SEO proof passed 446 assertions, zero failures or skips, in out/analytics-privacy-release-20261020/focused-r1.json. This is not full regression or hosted acceptance. A frozen committed manifest, required workflow verification/package, fresh staging acceptance, stopped snapshots, data-preserving rollback, production acceptance and final hosted/preservation verification remain required before completion. Preserve every prior package, full, failure, intent and worktree.

@@ -7,16 +7,16 @@ const source = fs.readFileSync(path.join(__dirname, '../../ui/public-analytics.j
 const KEY = 'crp-public-analytics-v1';
 function browser(url, options = {}) {
   const elements = {}, scripts = [], deletedCookies = [], saved = new Map();
-  for (const name of ['choices', 'status', 'preferences', 'accept', 'decline']) elements[name] = { hidden: true, textContent: '', addEventListener: (event, fn) => { elements[name][event] = fn; } };
+  for (const name of ['choices', 'status', 'preferences', 'accept', 'decline']) elements[name] = { hidden: true, textContent: '', setAttribute: (key,value) => { elements[name][key] = value; }, addEventListener: (event, fn) => { elements[name][event] = fn; } };
   if (options.saved) saved.set(KEY, JSON.stringify(options.saved));
   let reloads = 0;
   const location = new URL(url); location.reload = () => { reloads++; };
   const document = {
-    querySelector: selector => elements[selector.slice(16, -1)],
+    querySelector: selector => options.homepage ? null : elements[selector.slice(16, -1)],
     createElement: () => ({}), head: { appendChild: script => { if (options.scriptFailure) return; scripts.push(script); } }
   };
   Object.defineProperty(document, 'cookie', { get: () => '_ga=fictional; _ga_HC8GYCGKMW=fictional; crp_session=preserve; unrelated=preserve', set: value => deletedCookies.push(value) });
-  const window = { location }, context = { window, document, navigator: { globalPrivacyControl: options.gpc }, URL, Date, localStorage: { getItem: k => { if (options.storageFailure) throw Error('fictional storage blocked'); return saved.get(k) || null; }, setItem: (k, v) => { if (options.storageFailure) throw Error('fictional storage blocked'); saved.set(k, v); } } };
+  const window = { location, addEventListener: (event, fn) => { window[event] = fn; } }, context = { window, document, navigator: { globalPrivacyControl: options.gpc }, URL, Date, localStorage: { getItem: k => { if (options.storageFailure) throw Error('fictional storage blocked'); return saved.get(k) || null; }, setItem: (k, v) => { if (options.storageFailure) throw Error('fictional storage blocked'); saved.set(k, v); } } };
   vm.runInNewContext(source, context, { timeout: 1000 });
   return { elements, scripts, deletedCookies, saved, window, reloads: () => reloads, events: () => (window.dataLayer || []).map(a => Array.from(a)) };
 }
@@ -79,6 +79,24 @@ async function run(unused, check) {
   check.equal(noStorage.scripts.length, 0, 'blocked preference storage does not break decline');
   const failed = browser('https://creditregulatorpro.com/', { scriptFailure: true }); failed.elements.accept.click();
   check.equal(failed.elements.choices.hidden, true, 'unavailable Google SDK leaves page usable');
+  const privacy = browser('https://creditregulatorpro.com/privacy.html');
+  check.equal(privacy.elements.choices.hidden, false, 'privacy page exposes first-visit choices');
+  privacy.elements.accept.click();
+  check.equal(JSON.parse(privacy.saved.get(KEY)).choice, 'accepted', 'privacy page saves existing preference format');
+  check.equal(privacy.scripts.length, 0, 'privacy choice itself never loads Google');
+  check.equal(privacy.events().length, 0, 'privacy page sends no Google consent or measurement ping');
+  privacy.elements.preferences.click(); privacy.elements.decline.click();
+  check.equal(JSON.parse(privacy.saved.get(KEY)).choice, 'declined', 'privacy page supports withdrawal');
+  for (const route of ['/', '/au/', '/ca/', '/uk/', '/us/']) {
+    const first = browser('https://creditregulatorpro.com' + route, { homepage: true });
+    check.equal(first.scripts.length, 0, route + ': no homepage controls and no pre-consent measurement');
+    const returning = browser('https://creditregulatorpro.com' + route, { homepage: true, saved: accepted });
+    check.equal(returning.scripts.length, 1, route + ': prior acceptance still measures without homepage controls');
+    returning.saved.set(KEY, JSON.stringify({version:1,choice:'declined',at:Date.now()}));
+    returning.window.storage({key:KEY});
+    check.equal(returning.window['ga-disable-G-HC8GYCGKMW'], true, route + ': withdrawal on privacy page disables open homepage');
+    check.equal(returning.reloads(), 1, route + ': cross-tab withdrawal removes loaded SDK');
+  }
   const environment = process.env.CRP_DEPLOYMENT_ENV; process.env.CRP_DEPLOYMENT_ENV = 'production';
   const service = await new TestService('gq-public-analytics', { geoLocate: async () => 'AU' }).listen();
   try {
@@ -86,7 +104,8 @@ async function run(unused, check) {
     for (const route of ['/', '/au/', '/ca/', '/uk/', '/us/']) {
       const response = await service.request('GET', route);
       check.ok(response.text.includes('src="/public-analytics.js" defer'), route + ': public consent script only');
-      check.ok(response.text.includes('data-analytics-decline'), route + ': decline is as accessible as accept');
+      check.ok(!/data-analytics-(accept|decline|choices|preferences)/.test(response.text), route + ': homepage has no consent selections');
+      check.ok(response.text.includes('href="/privacy.html"'), route + ': privacy choices remain reachable in footer');
       check.ok(!response.text.includes('src="https://www.googletagmanager.com'), route + ': server never preloads Google');
       check.match(response.headers.get('content-security-policy'), /script-src 'self' https:\/\/www.googletagmanager.com/, route + ': narrowly scoped public SDK permission');
     }
@@ -96,6 +115,11 @@ async function run(unused, check) {
       check.ok(!/google-analytics|googletagmanager/.test(response.headers.get('content-security-policy')), route + ': private CSP remains strict');
     }
     check.equal((await service.request('GET', '/public-analytics.js')).status, 200, 'public script is available');
+    const choices = await service.request('GET', '/privacy.html');
+    check.equal(choices.status, 200, 'privacy page is served through exact static allowlist');
+    check.ok(choices.text.includes('data-analytics-accept') && choices.text.includes('data-analytics-decline'), 'both choices are on privacy page');
+    check.ok(!/google-analytics|googletagmanager/.test(choices.headers.get('content-security-policy')), 'privacy page CSP prevents Google connections');
+    check.equal(choices.headers.get('x-robots-tag'), 'noindex', 'preference page excluded from indexing');
     check.equal(JSON.stringify(service.service.store.state()), before, 'measurement setup never touches consumer store');
     return { fictional_only: true, google_requests: 0, hosted_actions: false, private_tracking: false };
   } finally { await service.close(); if (environment === undefined) delete process.env.CRP_DEPLOYMENT_ENV; else process.env.CRP_DEPLOYMENT_ENV = environment; }

@@ -87,7 +87,7 @@ const STATIC_TYPES = Object.freeze({
   '.woff2': 'font/woff2',
   '.txt': 'text/plain; charset=utf-8'
 });
-const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/packet-review.js', '/style.css', '/theme.css', '/homepage.js', '/public-analytics.js', '/favicon.svg', '/brand-logo.svg', '/brand-logo.png', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/Roboto-Bold.woff2', '/OpenSans-Regular.woff2', '/OpenSans-Bold.woff2', '/story-font-license.txt']);
+const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/packet-review.js', '/style.css', '/theme.css', '/homepage.js', '/privacy.html', '/public-analytics.js', '/favicon.svg', '/brand-logo.svg', '/brand-logo.png', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/Roboto-Bold.woff2', '/OpenSans-Regular.woff2', '/OpenSans-Bold.woff2', '/story-font-license.txt']);
 const STAGING_SCORE_SIMULATOR_ASSETS = Object.freeze(['/score-simulator.html', '/score-simulator.css', '/score-simulator.js']);
 const STAGING_MAILING_ASSETS = Object.freeze(['/mailing-preview.html', '/mailing-preview.css', '/mailing-preview.js']);
 const STAGING_REFERRAL_ASSETS = Object.freeze(['/referrals.html', '/referrals.css', '/referrals.js']);
