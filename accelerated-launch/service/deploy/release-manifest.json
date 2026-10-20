@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-20T06:11:12.040Z",
+  "generated_at": "2026-10-20T14:29:19.885Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 113,
-      "digest": "4ADC654693F870029A53079E288B62C662338BB0475A23BAB566AD7896D994F8",
+      "digest": "D018C8C03829AD1F2D1F1BF7613C0756F49D550CA0A448537A7CF372E25BD91B",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -342,11 +342,11 @@
         },
         {
           "file": "accelerated-launch/service/packet-composer-worker.cjs",
-          "sha256": "ACFA9A3CAC03552D0DBC3925E71349E13F99550772534E3674B74BABF760189D"
+          "sha256": "1DEB022B861AC5020CFF4BAE653BECD6D5DBDE10E3DE772A3934DC75791157E6"
         },
         {
           "file": "accelerated-launch/service/packet-composer.cjs",
-          "sha256": "9D8DD4E2476348B24C876437FDCA29BAB2B8078E5B2AADA813FB00170B8646C1"
+          "sha256": "B572DBDD68173D53E179C26D66028EDBEE544DCF75FC52FD52B7608D4CD42578"
         },
         {
           "file": "accelerated-launch/service/packet-page-renderer.cjs",
@@ -366,7 +366,7 @@
         },
         {
           "file": "accelerated-launch/service/packets.cjs",
-          "sha256": "0714F2DF07257A2962491E372E88B3133C94DDE43A110DD82C2096621672867B"
+          "sha256": "D5617AB717462B6325068B3C46C6188B4FD40E9CD548C5E61741BFAF1E279936"
         },
         {
           "file": "accelerated-launch/service/password-reset.cjs",
@@ -638,7 +638,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 37,
-      "digest": "5648BEE295104F122640E6E5EE0C6D41F7ED754BC294BD6CD65C4F08C57F455D",
+      "digest": "D8F49BC7273579F4AB6666FED8FC5E9497B12C50DA2C5080F0ABB0FCFEAB75B3",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -678,7 +678,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "07FC56C8B59393A8FE013DB4724EC1BA0D0DF6DA535FFA23B7E7C07997DECE0A"
+          "sha256": "64D559DBB4698108085179B8326E57219FDE6E9E698EBA7F584A49502A4D9DFF"
         },
         {
           "file": "accelerated-launch/service/ui/brand-logo.png",
@@ -730,7 +730,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/packet-review.js",
-          "sha256": "19303D2F451A428F9E0441CB1803BCFE1FD5ADA118CBA7EBACE8DD9D05170AA5"
+          "sha256": "AA051CBC496F121D9121641FF732AEC17D72C4F3F032C7B0D8FEF34EA1D66141"
         },
         {
           "file": "accelerated-launch/service/ui/partner-access.css",
@@ -791,6 +791,6 @@
       ]
     }
   ],
-  "manifest_digest": "D3BFEF7E375D586E86BF774A3E442E3A72F620F916F1E4A2612C83A619CCDEFB",
+  "manifest_digest": "C269E6F781E88006EA48243335D3C61275D54920B95611F795B7A3C67333244C",
   "total_file_count": 186
 }

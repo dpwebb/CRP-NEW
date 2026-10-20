@@ -27,7 +27,7 @@ function version() {
     }
     // Permitted encrypted evidence depends on the local Poppler copy engine. A
     // changed engine invalidates saved approval identities, even with a warm recipe.
-    for (const tool of ['pdfinfo', 'pdftocairo']) {
+    for (const tool of ['pdfinfo', 'pdftocairo', 'pdftoppm']) {
       const result = spawnSync(tool, ['-v'], { encoding: 'utf8', timeout: 2000, maxBuffer: 8192, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, LC_ALL: 'C' } });
       const identity = !result.error && result.status === 0 && (String(result.stdout || '') + String(result.stderr || '')).match(new RegExp(`^${tool} version ([0-9]+(?:\\.[0-9]+)+)`, 'm'));
       hash.update(tool); hash.update(identity ? identity[1] : 'unavailable');
@@ -81,7 +81,22 @@ function composePacket(input) {
   if (child.error) throw new ServiceError('SERVICE_STATE_UNAVAILABLE');
   let result;
   try { result = JSON.parse(child.stdout); } catch { throw new ServiceError('SERVICE_STATE_UNAVAILABLE'); }
-  if (child.status !== 0 || result.error) throw new ServiceError(['PACKET_ATTACHMENT_UNREADABLE', 'SERVICE_STATE_UNAVAILABLE'].includes(result.error) ? result.error : 'INVALID_REQUEST');
+  if (child.status !== 0 || result.error) {
+    const error = new ServiceError(['PACKET_ATTACHMENT_UNREADABLE', 'SERVICE_STATE_UNAVAILABLE'].includes(result.error) ? result.error : 'INVALID_REQUEST');
+    const failure = result.attachment;
+    const entries = failure?.kind === 'report' ? payload.reports : failure?.kind === 'document' ? payload.documents : null;
+    const entry = Number.isSafeInteger(failure?.index) && failure.index >= 0 ? entries?.[failure.index] : null;
+    if (error.code === 'PACKET_ATTACHMENT_UNREADABLE' && entry) {
+      // Resolve identity from the authorized recipe, never from worker diagnostics.
+      const filename = entry.filename.replace(/[\x00-\x1f\x7f]/g, ' ').trim() || (failure.kind === 'report' ? 'Selected report' : 'Selected document');
+      const reason = ['PDF_RESTRICTED', 'PDF_PRINT_PROHIBITED'].includes(failure.reason) ? failure.reason : 'UNREADABLE';
+      error.detail = { file_id: entry.file_id, filename, attachment_kind: failure.kind, reason };
+      error.message = reason !== 'UNREADABLE'
+        ? `We could not add "${filename}". This PDF does not allow ${reason === 'PDF_PRINT_PROHIBITED' ? 'printing' : 'copying needed for report evidence'}. Replace it with an unrestricted PDF or clear JPG/PNG copies you are allowed to use, then save and review again.`
+        : `We could not add "${filename}". This file cannot be read for the packet. Replace it with a valid, unlocked PDF or clear JPG/PNG copies, then save and review again.`;
+    }
+    throw error;
+  }
   const bytes = Buffer.from(result.bytes || '', 'base64');
   if (bytes.subarray(0, 5).toString('ascii') !== '%PDF-' || result.version !== payload.version || result.sha256 !== digest(bytes) || !Number.isSafeInteger(result.page_count) || result.page_count < 1) throw new ServiceError('SERVICE_STATE_UNAVAILABLE');
   const composed = { bytes, sha256: result.sha256, page_count: result.page_count, sections: result.sections,

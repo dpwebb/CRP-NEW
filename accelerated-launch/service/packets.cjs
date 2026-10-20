@@ -830,9 +830,10 @@ function documentText(packet, row, selected) {
 function completePdf(store, actor, packet, row, selected) {
   const documents = (packet.support?.document_ids || []).map(id => {
     const file = accountDocuments.getDocument(store, actor, id);
-    return { bytes: file.bytes, content_type: file.document.content_type, label: file.document.document_type, file_id: id };
+    return { bytes: file.bytes, content_type: file.document.content_type, filename: file.document.original_filename, label: file.document.document_type, file_id: id };
   }).sort((a,b) => ({ SUPPORTING: 0, IDENTITY: 1, ADDRESS: 2 }[a.label] ?? 3) - ({ SUPPORTING: 0, IDENTITY: 1, ADDRESS: 2 }[b.label] ?? 3));
   const reports = (packet.report_snapshot?.copies || []).map(copy => ({ ...copy,
+    filename: packet.report_snapshot.manifest?.find(item => item.file_id === copy.file_id)?.original_filename || '',
     annotations: (packet.annotations || []).filter(annotation => annotation.file_id === copy.file_id && copy.relevant_pages.includes(annotation.page)) }));
   return composePacket({ letter_text: documentText(packet, row, selected), instructions: packet.support?.channel === 'POSTAL' ? [
     '1. Keep this instruction sheet for yourself. It is not part of the packet you send to the bureau.',

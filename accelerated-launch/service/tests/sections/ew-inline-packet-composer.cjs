@@ -54,9 +54,9 @@ function coldWorker(input) {
     windowsHide: true, stdio: ['pipe', 'pipe', 'pipe']
   }));
 }
-function rasterDifference(first, second, firstPage = 1, secondPage = 1) {
+function rasterDifference(first, second, firstPage = 1, secondPage = 1, dpi = 96) {
   const raster = (bytes, page) => {
-    const ppm = execFileSync('pdftoppm', ['-f', String(page), '-l', String(page), '-r', '96', '-singlefile', '-'], { input: bytes, timeout: 30000, maxBuffer: 8 * 1024 * 1024, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
+    const ppm = execFileSync('pdftoppm', ['-f', String(page), '-l', String(page), '-r', String(dpi), '-singlefile', '-'], { input: bytes, timeout: 30000, maxBuffer: 24 * 1024 * 1024, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
     const header = ppm.subarray(0, 80).toString('ascii').match(/^P6\r?\n(\d+) (\d+)\r?\n255\r?\n/);
     if (!header) throw new Error('RASTER_FORMAT');
     return { width: Number(header[1]), height: Number(header[2]), pixels: ppm.subarray(header[0].length) };
@@ -115,7 +115,54 @@ async function encryptedEvidenceChecks(check, form) {
   for (const variant of ['password', 'nocopy', 'noprint']) {
     const bytes = Buffer.from(ENCRYPTED_FIXTURES[variant], 'base64');
     refuses(check, { letter_text: LETTER, reports: [{ bytes, content_type: 'application/pdf', relevant_pages: [2] }] }, 'encrypted report refuses ' + variant + ' instead of bypassing protection', 'PACKET_ATTACHMENT_UNREADABLE');
+    if (variant === 'nocopy') {
+      const originalHash = hash(bytes), input = { letter_text: LETTER, documents: [{ bytes, content_type: 'application/pdf', filename: 'fictional-statement.pdf', file_id: 'a'.repeat(32) }] };
+      const printed = composePacket(input);
+      check.equal(printed.page_count, 3, 'print-permitted copy-restricted statement contributes both image pages');
+      check.deepEqual(printed.sections[1].source_pages, [1, 2], 'statement image conversion retains every page in order');
+      check.equal(printed.sections[1].rendered_as_images, true, 'converted supporting copy is explicitly labelled as images');
+      check.equal(printed.sections[1].original_sha256, originalHash, 'image conversion is bound to the original uploaded bytes');
+      check.equal(hash(bytes), originalHash, 'conversion never changes the original supporting bytes');
+      const copiedDoc = await lib.PDFDocument.load(printed.bytes);
+      check.ok([1, 2].every(at => copiedDoc.getPage(at).node.Resources().lookup(n('XObject'), lib.PDFDict).entries().some(([, ref]) => copiedDoc.context.lookup(ref).dict?.get(n('Subtype'))?.toString() === '/Image')), 'every converted statement page contains a physical image');
+      for (const page of [1, 2]) {
+        const difference = rasterDifference(bytes, printed.bytes, page, page + 1, printed.sections[1].rendering_dpi);
+        check.ok(artworkMatches(difference), 'converted statement page '+page+' retains its independently rendered artwork at its printing resolution: '+JSON.stringify(difference));
+      }
+      const cold = { ...input, documents: input.documents.map(entry => ({ ...entry, bytes: bytes.toString('base64') })), version: VERSION };
+      const first = coldWorker(cold), second = coldWorker(cold);
+      check.equal(first.bytes, second.bytes, 'uncached image conversion produces stable approval/print/download bytes');
+      const malformed = Buffer.from(bytes.toString('binary').replace('xref\n', '11 0 obj\n<< /Unused +++ >>\nendobj\nxref\n'), 'binary');
+      let strictFailure;
+      try { await lib.PDFDocument.load(malformed, { ignoreEncryption: true, throwOnInvalidObject: true }); } catch (error) { strictFailure = error; }
+      check.ok(Boolean(strictFailure), 'fictional statement reproduces the strict invalid-object parser failure');
+      const compatible = composePacket({ letter_text: LETTER, documents: [{ bytes: malformed, content_type: 'application/pdf', filename: 'fictional-invalid-object-statement.pdf' }] });
+      check.ok(compatible.page_count === 3 && compatible.sections[1].rendered_as_images, 'print-permitted statement with an unused invalid object still renders all supporting pages');
+      for (const page of [1, 2]) check.ok(artworkMatches(rasterDifference(bytes, compatible.bytes, page, page + 1, compatible.sections[1].rendering_dpi)), 'invalid unused object does not change statement image page '+page);
+      const rotatedBytes = Buffer.from(bytes.toString('binary').replace(/\/Contents/g, '/Rotate 90 /Contents'), 'binary');
+      const rotatedCopy = composePacket({ letter_text: LETTER, documents: [{ bytes: rotatedBytes, content_type: 'application/pdf' }] });
+      check.ok(rotatedCopy.review_pages.slice(1).every(page=>page.page_width===792&&page.page_height===612),'every rotated supporting page retains its displayed orientation and size');
+      const rotatedPdf = await lib.PDFDocument.load(rotatedCopy.bytes);
+      for (const page of [1,2]) {
+        const png = execFileSync('pdftoppm',['-upw','','-f',String(page),'-l',String(page),'-singlefile','-r',String(rotatedCopy.sections[1].rendering_dpi),'-png','-'],{input:rotatedBytes,timeout:20000,maxBuffer:12*1024*1024,windowsHide:true,stdio:['pipe','pipe','pipe']});
+        const expected = await lib.PngEmbedder.for(png);
+        const objects = rotatedPdf.getPage(page).node.Resources().lookup(n('XObject'),lib.PDFDict).entries().map(([,ref])=>rotatedPdf.context.lookup(ref));
+        const image = objects.find(object=>object.dict?.get(n('Subtype'))?.toString()==='/Image');
+        check.ok(Buffer.from(lib.decodePDFRawStream(image).decode()).equals(Buffer.from(expected.image.rgbChannel)),'rotated statement page '+page+' embeds every original rendered RGB pixel exactly');
+        // Rotated vector text and a printed image have different antialiasing
+        // phases. Exact embedded pixels above prove the image; independently
+        // check the displayed dimensions and visible artwork placement too.
+        const difference = rasterDifference(rotatedBytes,rotatedCopy.bytes,page,page+1,rotatedCopy.sections[1].rendering_dpi);
+        check.ok(difference.equal_dimensions&&difference.mean_absolute_rgb<=1&&difference.substantial_pixel_fraction<=.01,'rotated statement page '+page+' retains its independently rendered size and artwork placement');
+      }
+      continue;
+    }
     refuses(check, { letter_text: LETTER, documents: [{ bytes, content_type: 'application/pdf' }] }, 'encrypted support copy refuses ' + variant + ' instead of being silently omitted', 'PACKET_ATTACHMENT_UNREADABLE');
+    let failure;
+    try { composePacket({ letter_text: LETTER, documents: [{ bytes, content_type: 'application/pdf', filename: 'fictional-'+variant+'.pdf', file_id: 'a'.repeat(32) }] }); } catch (error) { failure = error; }
+    check.equal(failure?.detail?.filename, 'fictional-'+variant+'.pdf', 'attachment refusal names the exact '+variant+' copy');
+    check.equal(failure?.detail?.reason, variant === 'password' ? 'UNREADABLE' : 'PDF_PRINT_PROHIBITED', 'only verified PDF permissions produce restriction guidance: '+variant);
+    check.ok(failure?.message.includes('Replace it with') && failure?.message.includes('fictional-'+variant+'.pdf'), 'attachment failure explains the replacement required: '+variant);
   }
   refuses(check, { letter_text: LETTER, forms: [{ bytes: allowed, filename: 'encrypted-original.pdf' }] }, 'all retired form components are rejected before rendering', 'INVALID_REQUEST');
   refuses(check, { letter_text: LETTER, reports: [{ bytes: allowed, content_type: 'application/pdf', relevant_pages: [3] }] }, 'permitted encryption cannot relax exact in-range source-page requirements');
@@ -136,6 +183,10 @@ async function encryptedEvidenceChecks(check, form) {
   try { await isolatedWorker((command, args, options) => { if (command === 'pdfinfo') return Buffer.from(falsePermission); spoofedCopies++; return execFileSync(command, args, options); }).compose({ ...coldInput, reports: [{ bytes: noCopy.toString('base64'), content_type: 'application/pdf', relevant_pages: [2] }] }); } catch (caught) { spoofedError = caught; }
   check.equal(spoofedError?.code, 'PACKET_ATTACHMENT_UNREADABLE', 'a spoofed allowed permission line cannot override actual encrypted PDF permission bits');
   check.equal(spoofedCopies, 0, 'withheld copy permission is refused before conversion even with a spoofed tool line');
+  let spoofedPrints = 0, printFailure;
+  try { await isolatedWorker((command, args, options) => { if (command === 'pdfinfo') return Buffer.from(falsePermission); spoofedPrints++; return execFileSync(command, args, options); }).compose({ ...coldInput, reports: [], documents: [{ bytes: ENCRYPTED_FIXTURES.noprint, content_type: 'application/pdf' }] }); } catch (caught) { printFailure = caught; }
+  check.equal(printFailure?.code, 'PACKET_ATTACHMENT_UNREADABLE', 'supporting image conversion independently refuses actual no-print permissions despite spoofed metadata');
+  check.equal(spoofedPrints, 0, 'print-prohibited supporting evidence is never rasterized');
   // Two small genuine encrypted inputs each expanding to an otherwise valid 33 MiB
   // conversion would breach the shared 64 MiB copy budget although neither alone does.
   const expanded = Buffer.alloc(33 * 1024 * 1024, 32); converted.copy(expanded);
@@ -245,10 +296,20 @@ async function run(t, check) {
   for (const pages of [undefined, [], [0], [-1], [1.5], [5]]) refuses(check, { letter_text: LETTER, reports: [{ bytes: report, content_type: 'application/pdf', relevant_pages: pages }] }, 'missing or invalid relevant source pages cannot silently include the whole report: ' + JSON.stringify(pages));
   refuses(check, { letter_text: LETTER, reports: [{ bytes: png, content_type: 'image/png', relevant_pages: [2] }] }, 'image source refuses an invented page number');
   refuses(check, { letter_text: LETTER, documents: [{ bytes: Buffer.from('%PDF-1.7\ninvalid'), content_type: 'application/pdf' }] }, 'damaged support PDF cannot silently disappear from the complete packet', 'PACKET_ATTACHMENT_UNREADABLE');
+  let namedFailure;
+  try { composePacket({ letter_text: LETTER, documents: [
+    { bytes: await document(['Readable first copy']), content_type: 'application/pdf', filename: 'readable.pdf' },
+    { bytes: Buffer.from('%PDF-1.7\ninvalid'), content_type: 'application/pdf', filename: 'damaged <copy>.pdf', file_id: 'b'.repeat(32) }
+  ] }); } catch (error) { namedFailure = error; }
+  check.deepEqual(namedFailure?.detail, { file_id: 'b'.repeat(32), filename: 'damaged <copy>.pdf', attachment_kind: 'document', reason: 'UNREADABLE' }, 'a later damaged copy is identified without exposing another attachment or converter output');
+  let reportFailure;
+  try { composePacket({ letter_text: LETTER, reports: [{ bytes: Buffer.from('%PDF-1.7\ninvalid'), content_type: 'application/pdf', relevant_pages: [1], filename: 'damaged-report.pdf', file_id: 'c'.repeat(32) }] }); } catch (error) { reportFailure = error; }
+  check.equal(reportFailure?.detail?.attachment_kind, 'report', 'unreadable report evidence receives the same filename-specific refusal');
+  check.ok(reportFailure?.message.includes('damaged-report.pdf'), 'unreadable report refusal identifies the report filename');
   refuses(check, { letter_text: LETTER, forms: [{ bytes: Buffer.from('%PDF-1.7\ninvalid') }] }, 'damaged retired form input is rejected before rendering', 'INVALID_REQUEST');
   refuses(check, { letter_text: LETTER, documents: [{ bytes: png, content_type: 'image/gif' }] }, 'unsupported document type is refused rather than omitted');
   await encryptedEvidenceChecks(check, form);
   if (t?.dataDir) for (const [filename, bytes] of [['inline-editable-packet.pdf', packet.bytes], ['inline-edited-packet.pdf', saved], ['inline-long-letter.pdf', long.bytes]]) fs.writeFileSync(path.join(t.dataDir, filename), bytes);
   return { single_complete_pdf: true, no_bureau_form_components: true, source_pages_only: true, editable_letter: true, deterministic_approval_bytes: true, independent_print_rendering: true };
 }
-module.exports = { run, id: 'ew-inline-packet-composer', title: 'Editable letter and PDF composition controls with exact inline evidence/document copies' };
+module.exports = { run, ENCRYPTED_FIXTURES, id: 'ew-inline-packet-composer', title: 'Editable letter and PDF composition controls with exact inline evidence/document copies' };

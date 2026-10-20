@@ -31,6 +31,11 @@ window.CRP_PACKET_REVIEW = (() => {
         sheet.dataset.packetPage = meta.page; sheet.setAttribute('aria-label', `Page ${meta.page} of ${data.page_count}: ${pageLabel(meta)}`);
         sheet.innerHTML = `<h4>Page ${meta.page} of ${data.page_count} - ${escape(pageLabel(meta))}${meta.source_page ? ` (${meta.kind.startsWith('report')?'report':'document'} page ${meta.source_page})` : ''}</h4>${meta.kind === 'instructions' ? '<p class="note">For you only. Remove this page before sending.</p>' : ''}<div class="packet-sheet-scroll"><div class="packet-sheet" style="aspect-ratio:${meta.page_width}/${meta.page_height}"><img alt="${escape(pageLabel(meta))} - page ${meta.page}" class="packet-page-image"></div></div>`;
         list.append(sheet);
+        if (meta.rendered_as_images) {
+          const note = document.createElement('p'); note.className = 'evidence';
+          note.textContent = 'This supporting copy is shown as images. Your original upload is unchanged.';
+          sheet.insertBefore(note, sheet.querySelector('.packet-sheet-scroll'));
+        }
         const paper = sheet.querySelector('.packet-sheet');
         for (const field of (data.editable_fields || []).filter(f => f.page === meta.page && f.section === 'letter')) {
           const editor = document.createElement('textarea'); editor.className = 'packet-page-editor'; editor.dataset.packetLetterPage = meta.page;

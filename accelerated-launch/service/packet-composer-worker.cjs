@@ -35,6 +35,20 @@ function sanitize(doc) {
   for (const [, object] of doc.context.enumerateIndirectObjects()) visit(object);
 }
 const COPY_MAX_BYTES = 64 * 1024 * 1024, COPY_TIMEOUT_MS = 20000;
+// Diagnostic only: this never grants permission or converts a refused attachment.
+function attachmentFailureReason(entry, kind) {
+  if (entry.content_type !== 'application/pdf') return 'UNREADABLE';
+  try {
+    const info = execFileSync('pdfinfo', ['-upw', '', '-'], { input: Buffer.from(entry.bytes, 'base64'),
+      timeout: 2000, maxBuffer: 1024 * 1024, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], env: { ...process.env, LC_ALL: 'C' } }).toString('utf8');
+    const lines = info.split(/\r?\n/).filter(line => /^Encrypted:/.test(line));
+    if (lines.length === 1 && /^Encrypted:\s+yes \(/.test(lines[0])) {
+      if (/\bprint:no\b/.test(lines[0])) return 'PDF_PRINT_PROHIBITED';
+      if (kind === 'report' && /\bcopy:no\b/.test(lines[0])) return 'PDF_RESTRICTED';
+    }
+  } catch { /* A password, damaged file or unavailable diagnostic remains unreadable. */ }
+  return 'UNREADABLE';
+}
 const PDF_LOAD_OPTIONS = { updateMetadata: false, throwOnInvalidObject: true };
 // This vendored ES5 library's Error subclasses do not retain instanceof identity.
 const ENCRYPTED_LOAD_MESSAGE = new lib.EncryptedPDFError().message;
@@ -89,6 +103,50 @@ async function load(bytes, allowPermittedEvidenceCopy = false, budget) {
   if (doc.isEncrypted || !doc.getPageCount()) throw new Error('PDF');
   sanitize(doc);
   return doc;
+}
+async function printableSupportingImages(target, bytes, position, budget) {
+  // Supporting copies may be printed as images even when object/text copying is
+  // disabled. Keep the uploaded blob exact; nothing is decrypted or saved to disk.
+  const deadline = Date.now() + COPY_TIMEOUT_MS;
+  const options = { input: bytes, timeout: COPY_TIMEOUT_MS, maxBuffer: COPY_MAX_BYTES, windowsHide: true,
+    stdio: ['pipe', 'pipe', 'pipe'], env: { ...process.env, LC_ALL: 'C' } };
+  const info = execFileSync('pdfinfo', ['-upw', '', '-'], { ...options, maxBuffer: 1024 * 1024 }).toString('utf8');
+  const permissionLines = info.split(/\r?\n/).filter(line => /^Encrypted:/.test(line));
+  const pageLines = info.split(/\r?\n/).filter(line => /^Pages:/.test(line));
+  if (permissionLines.length !== 1 || !/^Encrypted:\s+yes \(print:yes copy:(?:yes|no) change:(?:yes|no) addNotes:(?:yes|no) algorithm:[\w-]+\)\s*$/.test(permissionLines[0]) ||
+      pageLines.length !== 1 || !/^Pages:\s+[1-9]\d*\s*$/.test(pageLines[0])) throw new Error('PDF');
+  // Some bank PDFs contain unused invalid objects. Only read their structural
+  // encryption/page metadata here; Poppler renders the actual visible pages.
+  const original = await PDFDocument.load(bytes, { updateMetadata: false, ignoreEncryption: true, throwOnInvalidObject: false });
+  const encryption = original.context.lookup(original.context.trailerInfo.Encrypt);
+  const permissions = encryption instanceof PDFDict && encryption.lookupMaybe(name('P'), lib.PDFNumber)?.asNumber();
+  const count = original.getPageCount();
+  if (!original.isEncrypted || !(encryption instanceof PDFDict) || encryption.get(name('Filter'))?.toString() !== '/Standard' ||
+      !Number.isSafeInteger(permissions) || (permissions & 4) !== 4 || count !== Number(pageLines[0].replace(/^Pages:\s+/, '')) || count < 1 || count > 400) throw new Error('PDF');
+  if (target.getPageCount() + count > 400 || budget.pages + count > 400) throw coded('INVALID_REQUEST');
+  const dpi = (permissions & 2048) === 2048 ? 200 : 150;
+  const pages = [];
+  for (let at = 0; at < count; at++) {
+    const source = original.getPage(at), rotation = ((source.getRotation().angle % 360) + 360) % 360;
+    if (![0, 90, 180, 270].includes(rotation)) throw new Error('PDF');
+    const size = source.getSize(), width = rotation === 90 || rotation === 270 ? size.height : size.width,
+      height = rotation === 90 || rotation === 270 ? size.width : size.height;
+    if (![width, height].every(n => Number.isFinite(n) && n > 0 && n <= 14400)) throw new Error('PDF');
+    const pixels = Math.ceil(width * dpi / 72) * Math.ceil(height * dpi / 72);
+    budget.imagePixels = (budget.imagePixels || 0) + pixels;
+    if (budget.imagePixels > 80 * 1024 * 1024 || Date.now() >= deadline) throw new Error('PDF');
+    const png = execFileSync('pdftoppm', ['-upw', '', '-f', String(at + 1), '-l', String(at + 1), '-singlefile', '-r', String(dpi), '-png', '-'],
+      { ...options, timeout: Math.max(1, deadline - Date.now()), maxBuffer: 12 * 1024 * 1024 });
+    budget.bytes += png.length;
+    if (budget.bytes > COPY_MAX_BYTES || !png.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) throw new Error('PDF');
+    const image = await target.embedPng(png);
+    if (Math.abs(image.width - width * dpi / 72) > 2 || Math.abs(image.height - height * dpi / 72) > 2) throw new Error('PDF');
+    const page = target.insertPage(position + at, [width, height]);
+    page.drawImage(image, { x: 0, y: 0, width, height }); pages.push(at + 1);
+  }
+  budget.pages += count;
+  pages.image_copy = { rendered_as_images: true, original_sha256: digest(bytes), rendering_dpi: dpi };
+  return pages;
 }
 function defaultResources(form, doc) {
   let dr = form.acroForm.dict.lookupMaybe(name('DR'), PDFDict);
@@ -233,7 +291,14 @@ async function appendEvidence(target, entry, isReport, position, copyBudget) {
   const type = String(entry.content_type || '').toLowerCase().split(';')[0].trim();
   let source, pages;
   if (type === 'application/pdf') {
-    try { source = await load(bytes, true, copyBudget); } catch (error) { throw coded(error.code === 'INVALID_REQUEST' ? error.code : 'PACKET_ATTACHMENT_UNREADABLE'); }
+    try { source = await load(bytes, true, copyBudget); } catch (error) {
+      if (error.code === 'INVALID_REQUEST') throw error;
+      if (!isReport) {
+        try { return await printableSupportingImages(target, bytes, position, copyBudget); }
+        catch (failure) { if (failure.code === 'INVALID_REQUEST') throw failure; }
+      }
+      throw coded('PACKET_ATTACHMENT_UNREADABLE');
+    }
     // Freeze evidence fields to their saved appearances, retaining source artwork and entered values.
     try {
     const sourceForm = source.getForm();
@@ -291,12 +356,17 @@ async function compose(input) {
   const reviewPages = fields.map(field => ({ page: field.page, kind: 'letter', page_width: field.page_width, page_height: field.page_height, annotation_available: false }));
   const noteFont = await doc.embedFont(fs.readFileSync(path.join(__dirname, 'packet-fonts', 'NotoSans-Regular.ttf')), { subset: true });
   let position = fields.length;
-  for (const [kind, entries] of [['report', input.reports || []], ['document', input.documents || []]]) for (const entry of entries) {
-    const pages = await appendEvidence(doc, entry, kind === 'report', position, copyBudget);
+  for (const [kind, entries] of [['report', input.reports || []], ['document', input.documents || []]]) for (const [index, entry] of entries.entries()) {
+    let pages;
+    try { pages = await appendEvidence(doc, entry, kind === 'report', position, copyBudget); }
+    catch (error) {
+      if (error.code === 'PACKET_ATTACHMENT_UNREADABLE') error.attachment = { kind, index, reason: attachmentFailureReason(entry, kind) };
+      throw error;
+    }
     let inserted = 0;
     for (const sourcePage of pages) {
       const page = doc.getPage(position + inserted), metadata = kind === 'report' ? await reportMarkup(doc, page, entry, sourcePage, noteFont)
-        : { ...sourceGeometry(page), annotation_available: false, annotations: [] };
+        : { ...sourceGeometry(page), annotation_available: false, annotations: [], ...(pages.image_copy || {}) };
       const notePages = metadata.note_pages || []; delete metadata.note_pages;
       reviewPages.push({ page: position + inserted + 1, kind, label: label(entry.label), file_id: entry.file_id || null, source_page: sourcePage, ...metadata });
       inserted++;
@@ -308,7 +378,7 @@ async function compose(input) {
         inserted++;
       }
     }
-    sections.push({ kind, label: label(entry.label), file_id: entry.file_id || null, start_page: position + 1, page_count: inserted, source_pages: pages }); position += inserted;
+    sections.push({ kind, label: label(entry.label), file_id: entry.file_id || null, start_page: position + 1, page_count: inserted, source_pages: [...pages], ...(pages.image_copy || {}) }); position += inserted;
   }
   if (input.instructions != null) {
     if (typeof input.instructions !== 'string' || !input.instructions.trim() || input.instructions.length > 6000) throw coded('INVALID_REQUEST');
@@ -332,7 +402,8 @@ async function compose(input) {
 if (require.main === module) {
   try {
     const raw = fs.readFileSync(0, 'utf8'); if (Buffer.byteLength(raw) > 90 * 1024 * 1024) throw new Error('LIMIT');
-    compose(JSON.parse(raw)).then(result => process.stdout.write(JSON.stringify(result))).catch(error => { process.stdout.write(JSON.stringify({ error: ['PACKET_ATTACHMENT_UNREADABLE', 'INVALID_REQUEST'].includes(error.code) ? error.code : 'SERVICE_STATE_UNAVAILABLE' })); process.exitCode = 1; });
+    compose(JSON.parse(raw)).then(result => process.stdout.write(JSON.stringify(result))).catch(error => { process.stdout.write(JSON.stringify({ error: ['PACKET_ATTACHMENT_UNREADABLE', 'INVALID_REQUEST'].includes(error.code) ? error.code : 'SERVICE_STATE_UNAVAILABLE',
+      ...(error.code === 'PACKET_ATTACHMENT_UNREADABLE' && error.attachment ? { attachment: error.attachment } : {}) })); process.exitCode = 1; });
   } catch { process.stdout.write('{"error":"PACKET_COMPOSITION_FAILED"}'); process.exitCode = 1; }
 }
 module.exports = { compose, wrapped };

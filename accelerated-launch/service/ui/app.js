@@ -2006,6 +2006,20 @@ function wireResultsPacket(panel, view) {
       pv = (await currentRequest(ensureChoice, 'POST', `/api/cases/${caseId}/packet/support`, { support: settings })).view;
     }
     state.view = (await currentRequest(ensureChoice, 'GET', `/api/cases/${caseId}`)).view;
+    if (pv.packet?.preview_ready) {
+      try {
+        await currentRequest(ensureChoice, 'GET', `/api/cases/${caseId}/packet/preview/pages?version=${encodeURIComponent(pv.packet.preview_version)}`);
+        state.packetRepair = null;
+      } catch (error) {
+        if (error.cancelled) throw error;
+        if (error.code === 'PACKET_ATTACHMENT_UNREADABLE') {
+          state.packetRepair = { caseId, message: error.message };
+          state.step = STEP.PREPARE;
+          throw error;
+        }
+        // Other preview problems retain the editable-letter recovery in Review.
+      }
+    }
     state.step = pv.packet?.preview_ready ? STEP.REVIEW : STEP.PREPARE;
     state.notice = pv.packet?.preview_ready ? 'Read every page. You can edit your letter before approving.' : 'Your saved details and copies are included. Add only the missing items.';
   });
@@ -2509,12 +2523,24 @@ async function wirePacket(panel) {
     return ensureCurrent;
   };
 
+  const validateSavedPacket = async ensureCurrent => {
+    // Validate the exact saved recipe before opening Review. Its bounded PDF cache
+    // also serves the subsequent all-page review; no approval is created here.
+    const answer = await currentRequest(ensureCurrent, 'GET', `/api/cases/${caseId}/packet`);
+    try {
+      await currentRequest(ensureCurrent, 'GET', `/api/cases/${caseId}/packet/preview/pages?version=${encodeURIComponent(answer.view.packet.preview_version)}`);
+    } catch (error) {
+      if (!error.cancelled && error.code === 'PACKET_ATTACHMENT_UNREADABLE') state.packetRepair = { caseId, message: error.message };
+      throw error;
+    }
+    state.packetRepair = null;
+  };
   const save = el('packet-save');
   el('packet-prepare-next').onclick = () => run(async () => {
     if (!currentSelection().length) throw new Error('Choose at least one issue to continue.');
     const ensureCurrent = edits ? await persistSelection() : ensureOrigin; ensureCurrent();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
-    state.packetRepair = null;
+    await validateSavedPacket(ensureCurrent);
     state.step = STEP.REVIEW;
     state.notice = 'Your document choices are saved. Review every page before approving.';
   });
@@ -2635,7 +2661,8 @@ async function wirePacket(panel) {
       step = STEP.RESULTS;
       state.notice = 'Your report has a newer assessment. Check its issues and choose your disputes again.';
     }
-    if (edits && !assessmentStale) { const ensureCurrent = await persistSelection(); ensureCurrent(); }
+    const ensureCurrent = edits && !assessmentStale ? await persistSelection() : ensureOrigin; ensureCurrent();
+    if (step === STEP.REVIEW) await validateSavedPacket(ensureCurrent);
     if (step === STEP.ACCOUNT) {
       state.packetReturn = { accountId: state.account.account_id, epoch: accountEpoch, caseId, resultId: pv.packet.result_id || state.view.result_id, step: state.step };
       state.accountProfile = null;
@@ -2700,7 +2727,8 @@ async function wirePacket(panel) {
       packetReviewController?.dispose();
       packetReviewController = null;
       const pages = el('packet-all-pages');
-      pages.innerHTML = '<p class="note stop">We could not show every page. Edit your letter below or complete the missing items, then save and review again. Printing stays unavailable until every page loads.</p><button class="secondary" id="packet-prepare-missing">Complete missing items</button><label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000"></textarea>';
+      const attachmentFailed = error.code === 'PACKET_ATTACHMENT_UNREADABLE';
+      pages.innerHTML = `<p class="note stop">${attachmentFailed ? esc(error.message) + ' Editing your letter will not fix this attachment.' : 'We could not show every page. Edit your letter below or complete the missing items, then save and review again.'} Printing stays unavailable until every page loads.</p><button class="secondary" id="packet-prepare-missing">${attachmentFailed ? 'Replace unreadable attachment' : 'Complete missing items'}</button><label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000"></textarea>`;
       el('packet-prepare-missing').onclick = () => packetLeave(STEP.PREPARE);
       const fallback = el('packet-letter');
       fallback.value = draftLetter || '';

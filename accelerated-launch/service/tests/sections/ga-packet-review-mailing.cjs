@@ -143,7 +143,12 @@ async function recoveryChecks(t,browser,actor,source,check,out){
  await req('POST',copyCase.route+'/packet/support',{support:{...copyView.support.settings,document_ids:[...copyView.support.selected_document_ids,uploads[0]]}});
  const copyUi=await openPacket(copyCase.c);
  try{
-  const {page}=copyUi;await waitFallback(page);await page.getByText('We could not add one of your copies.',{exact:false}).first().waitFor();
+  const {page}=copyUi;await waitFallback(page);await page.getByText('We could not add "fictional-recovery-unreadable.pdf".',{exact:false}).first().waitFor();
+  check.ok((await page.locator('#packet-all-pages').innerText()).includes('Editing your letter will not fix this attachment.'),'attachment fallback distinguishes file replacement from letter editing');
+  // Use the current saved version for the actual attachment refusal.
+  const currentCopy=(await req('GET',copyCase.route+'/packet')).json.view;
+  const attachmentError=await req('GET',copyCase.route+'/packet/preview/pages?version='+currentCopy.packet.preview_version);
+  check.equal(attachmentError.json.error.detail.filename,'fictional-recovery-unreadable.pdf','owned API identifies the unreadable copy by its saved filename');
   check.equal(await page.locator('#packet-letter').inputValue(),customLetter,'an unreadable selected supporting copy leaves existing custom wording editable');
   await blocked(page,'Unreadable supporting copy');
   const corrected=customLetter+'\nFictional fallback edit remains after choosing a clear copy.';
@@ -152,6 +157,22 @@ async function recoveryChecks(t,browser,actor,source,check,out){
   await page.locator('#packet-save').click();check.equal((await(await failedAgain).json()).error.code,'PACKET_ATTACHMENT_UNREADABLE','saving the repaired wording still reports the genuinely unreadable selected copy');
   await waitFallback(page);check.equal(await page.locator('#packet-letter').inputValue(),corrected,'a repeated attachment refusal preserves the corrected fallback wording');
   await page.locator('#packet-prepare-missing').click();await page.locator('#packet-preparation-content').waitFor();
+  const beforeValidation=(await req('GET',copyCase.route+'/packet')).json.view.packet;
+  const rejectedBeforeReview=page.waitForResponse(response=>new URL(response.url()).pathname===copyCase.route+'/packet/preview/pages'&&response.status()===400);
+  await page.locator('#packet-prepare-next').click();await rejectedBeforeReview;
+  await page.locator('#packet-missing-items').getByText('We could not add "fictional-recovery-unreadable.pdf".',{exact:false}).waitFor();
+  check.ok(await page.locator('#packet-preparation-content').isVisible(),'unreadable selected evidence is rejected before entering Review');
+  check.equal(await page.locator('[data-packet-page]').count(),0,'prevalidation opens no partial packet pages');
+  check.equal((await req('GET',copyCase.route+'/packet')).json.view.packet.letter_text,beforeValidation.letter_text,'prevalidation preserves the saved letter');
+  const stranger=await t.account('packet-attachment-stranger@example.test');
+  const hidden=await t.request('GET',copyCase.route+'/packet/preview/pages?version='+currentCopy.packet.preview_version,{token:stranger.token});
+  check.equal(hidden.status,403,'a different account cannot validate or identify the selected private attachment');
+  check.ok(!JSON.stringify(hidden.json).includes('fictional-recovery-unreadable.pdf'),'private filenames do not leak through ownership refusal');
+  await page.locator('[data-step="3"]').click();await page.locator('#create-packet').waitFor();
+  const refusedCreate=page.waitForResponse(response=>new URL(response.url()).pathname===copyCase.route+'/packet/preview/pages'&&response.status()===400);
+  await page.locator('#create-packet').click();await refusedCreate;
+  await page.locator('#packet-preparation-content').waitFor();
+  check.ok((await page.locator('#packet-missing-items').innerText()).includes('fictional-recovery-unreadable.pdf'),'the normal results-to-packet action also names the attachment and stays in preparation');
   await page.locator('[data-packet-document="'+uploads[0]+'"]').uncheck();await page.locator('[data-packet-document="'+uploads[1]+'"]').check();
   await page.locator('#packet-prepare-next').click();await restored(page,'Replacement supporting copy');
   const saved=(await req('GET',copyCase.route+'/packet')).json.view;
@@ -166,6 +187,32 @@ async function recoveryChecks(t,browser,actor,source,check,out){
   const text=require('../packet-pdf-assertions.cjs').comparableText(require('../packet-pdf-assertions.cjs').pdfText(bytes));
   check.ok(text.includes('Fictional fallback edit remains after choosing a clear copy.')&&text.includes('FICTIONAL SUPPORTING EVIDENCE'),'the actual recovered download contains the retained words and readable replacement evidence');
   await page.screenshot({path:path.join(out,'recovered-supporting-copy.png'),fullPage:true});
+  const statement=Buffer.from(require('./ew-inline-packet-composer.cjs').ENCRYPTED_FIXTURES.nocopy,'base64');
+  const statementUpload=await req('POST','/api/account/documents',{originalFilename:'fictional-bank-statement.pdf',mimeType:'application/pdf',declaredBytes:statement.length,contentBase64:statement.toString('base64'),document_type:'SUPPORTING',document_kind:'OTHER_EVIDENCE'});
+  check.equal(statementUpload.status,201,'print-permitted copy-restricted supporting statement uploads normally');
+  const statementId=statementUpload.json.document.file_id;
+  // Set up the newly uploaded supporting choice through the normal owned API;
+  // the following browser action exercises its actual pre-review validation.
+  const statementIds=[...saved.support.selected_document_ids.filter(id=>id!==uploads[1]),statementId];
+  const statementSelection=await req('POST',copyCase.route+'/packet/support',{support:{...saved.support.settings,document_ids:statementIds,
+    document_dates:Object.fromEntries(statementIds.map(id=>[id,saved.support.settings.document_dates?.[id]||'']))}});
+  check.equal(statementSelection.status,200,'the ordinary owned API saves the exact statement choice and matching date fields');
+  await page.locator('[data-step="5"]').click();await page.locator('#packet-preparation-content').waitFor();
+  await page.locator('#packet-prepare-next').click();await restored(page,'Print-permitted restricted statement');
+  check.equal(await page.getByText('This supporting copy is shown as images. Your original upload is unchanged.',{exact:true}).count(),2,'both bank-statement image pages are disclosed in the actual browser');
+  const statementView=(await req('GET',copyCase.route+'/packet')).json.view;
+  const statementPages=(await req('GET',copyCase.route+'/packet/preview/pages?version='+statementView.packet.preview_version)).json;
+  const section=statementPages.sections.find(section=>section.file_id===statementId);
+  check.deepEqual(section.source_pages,[1,2],'the reviewed statement includes both original pages in order');
+  check.equal(section.original_sha256,sha(statement),'review metadata binds the image copy to the exact original statement');
+  check.ok((await req('GET','/api/account/documents/'+statementId)).bytes.equals(statement),'the stored original statement stays byte-exact after image conversion');
+  check.equal(statementView.packet.letter_text,corrected,'statement image conversion preserves the consumer letter');
+  check.equal(statementView.packet.approved,false,'image conversion requires fresh consumer review and approval');
+  await page.locator('#packet-preview-reviewed').check();await page.locator('#packet-approve').click();await page.locator('#packet-download:enabled').waitFor();
+  const statementDownload=await req('GET',copyCase.route+'/packet-download'),statementPrint=await req('GET',copyCase.route+'/packet-print');
+  check.ok(statementDownload.status===200&&statementPrint.bytes.equals(statementDownload.bytes),'approved statement-image packet has identical download and print bytes');
+  fs.writeFileSync(path.join(out,'restricted-statement-packet.pdf'),statementDownload.bytes);
+  await page.screenshot({path:path.join(out,'restricted-statement-review.png'),fullPage:true});
  }finally{await copyUi.context.close();}
   return{unsupported_glyph_wording_preserved:true,unreadable_copy_replaced:true,later_raster_letter_draft_preserved:true,saved_annotation_preserved:true,native_date_cancel_preserves_all_pages:true,confirmed_date_replacement_discards_only_accepted_letter_edits:true};
 }
