@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "deploymentOrder": ["affiliate", "crp", "verify", "enable"],
+  "releases": {
+    "staging": {
+      "crp": {"sourceCommit": "UNSET", "buildId": "UNSET", "expectedPreviousBuildId": "UNSET"},
+      "affiliate": {"sourceCommit": "UNSET", "imageDigest": "UNSET", "expectedPreviousImageDigest": "UNSET"}
+    },
+    "production": {
+      "crp": {"sourceCommit": "UNSET", "buildId": "UNSET", "expectedPreviousBuildId": "UNSET"},
+      "affiliate": {"sourceCommit": "UNSET", "imageDigest": "UNSET", "expectedPreviousImageDigest": "UNSET"}
+    }
+  }
+}

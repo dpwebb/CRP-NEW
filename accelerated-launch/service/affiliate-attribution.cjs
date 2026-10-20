@@ -7,13 +7,14 @@ const opaque = value => typeof value === 'string' && /^[a-zA-Z0-9_:./-]{1,200}$/
 function create(store, options = {}) {
   const env = options.env || process.env, now = options.now || Date.now;
   const enabled = env.CRP_AFFILIATE_BINDING_ENABLED === '1';
+  if (env.CRP_AFFILIATE_BINDING_ENABLED !== undefined && !['0','1'].includes(env.CRP_AFFILIATE_BINDING_ENABLED)) throw Error('AFFILIATE_CONFIGURATION_INVALID');
   const key = env.CRP_AFFILIATE_BINDING_KEY || '';
   const origin = env.CRP_AFFILIATE_ORIGIN || (env.CRP_DEPLOYMENT_ENV === 'staging' ? 'https://affiliates-staging.creditregulatorpro.com' : 'https://affiliates.creditregulatorpro.com');
-  if (enabled && (key.length < 32 || !['https://affiliates.creditregulatorpro.com', 'https://affiliates-staging.creditregulatorpro.com'].includes(origin)
+  if (enabled && (!['production','staging'].includes(env.CRP_DEPLOYMENT_ENV) || key.length < 32 || !['https://affiliates.creditregulatorpro.com', 'https://affiliates-staging.creditregulatorpro.com'].includes(origin)
     || (env.CRP_DEPLOYMENT_ENV === 'production' && origin !== 'https://affiliates.creditregulatorpro.com')
     || (env.CRP_DEPLOYMENT_ENV === 'staging' && origin !== 'https://affiliates-staging.creditregulatorpro.com'))) throw Error('AFFILIATE_CONFIGURATION_INVALID');
   const fetcher = options.fetcher || fetch;
-  const flags = '; HttpOnly; SameSite=Lax; Path=/' + (env.CRP_DEPLOYMENT_ENV === 'production' || env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : '');
+  const flags = '; HttpOnly; SameSite=Lax; Path=/' + (['production','staging'].includes(env.CRP_DEPLOYMENT_ENV) || env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : '');
   const cookie = req => String(req.headers?.cookie || '').split(';').map(v => v.trim()).find(v => v.startsWith(COOKIE + '='))?.slice(COOKIE.length + 1);
   function verify(token) {
     if (typeof token !== 'string' || token.length > 3500) throw Error('AFFILIATE_HANDOFF_INVALID');
@@ -78,6 +79,10 @@ function create(store, options = {}) {
         if (status >= 200 && status < 300) { row.state = 'SENT'; row.accepted_at = new Date(now()).toISOString(); delete row.last_error; }
         else { row.state = ([400, 401, 403, 404, 409, 422].includes(status) || row.attempts >= 48) ? 'DEAD' : 'READY'; row.last_error = status ? 'RECEIVER_HTTP_' + status : 'RECEIVER_UNAVAILABLE'; row.next_at = now() + Math.min(3600000, 10000 * 2 ** Math.min(row.attempts, 9)); }
       });
+      const delivered = store.state().accounts.find(a => a.account_id === selected.accountId)?.affiliate_binding;
+      if (delivered?.body.eventId === selected.eventId && typeof options.log === 'function') {
+        try { options.log({event:'AFFILIATE_BINDING_DELIVERY',outcome:delivered.state,count:delivered.attempts,http_status:status}); } catch { /* Observability must not break durable delivery. */ }
+      }
       return true;
     } finally { busy = false; }
   }

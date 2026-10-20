@@ -900,7 +900,7 @@ function createService(options) {
     catch { adminUnavailable = true; }
   }
   const logger = new Logger(opts.logSink);
-  const affiliate = require('./affiliate-attribution.cjs').create(store, opts.affiliate);
+  const affiliate = require('./affiliate-attribution.cjs').create(store, { ...opts.affiliate, log: event => logger.log(event) });
   const googleSignIn = require('./auth0-google.cjs').create(store, opts.googleSignIn);
   const passwordReset = require('./password-reset.cjs').create(store, { mailer: opts.passwordResetMailer || require('./confirmation-mail.cjs').sender(), origin: opts.passwordResetOrigin, logger });
   const requestPolicy=require('./request-policy.cjs').policy();

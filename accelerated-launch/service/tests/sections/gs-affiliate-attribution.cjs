@@ -7,16 +7,22 @@ async function run(unused, check) {
   const store = new PrivateStore(root), key = 'fictional-binding-key-'.repeat(3);
   let time = Date.now(), mode = 503;
   const env = { CRP_DEPLOYMENT_ENV: 'production', CRP_AFFILIATE_BINDING_ENABLED: '1', CRP_AFFILIATE_BINDING_KEY: key };
+  const deliveryLogs = [];
   const calls = [], fetcher = async (url, options) => { calls.push({ url, ...options }); if (mode === 0) throw Error('fictional network loss'); return { status: mode }; };
   const sign = value => { const b = Buffer.from(JSON.stringify(value)).toString('base64url'); return b + '.' + crypto.createHmac('sha256', key).update(b).digest('base64url'); };
   const token = (extra = {}) => sign({ v: 1, origin: 'https://affiliates.creditregulatorpro.com', referralHandle: 'eyJ2IjoxfQ.fictionalSignature', consentRef: 'consent:fictional-explicit', issuedAt: time, expiresAt: time + 86400000, ...extra });
   const request = t => ({ method: 'GET', url: '/affiliate/referral?t=' + encodeURIComponent(t), headers: { cookie: 'crp_aff_ref=' + t } });
-  const adapter = create(store, { env, now: () => time, fetcher });
+  const adapter = create(store, { env, now: () => time, fetcher, log: record => deliveryLogs.push(record) });
   try {
     store.update(s => { s.accounts.push({ account_id: 'acc_fictional_a' }, { account_id: 'acc_fictional_b' }, { account_id: 'acc_fictional_paid' }); s.checkout_sessions.push({ account_id: 'acc_fictional_paid', state: 'COMPLETED' }); });
     check.equal(create(store, { env: {} }).capture(request(token())), null, 'default disabled captures nothing');
     assert.throws(() => create(store, { env: { ...env, CRP_AFFILIATE_ORIGIN: 'https://attacker.test' } }), /CONFIGURATION_INVALID/); check.ok(true, 'arbitrary dispatch origin refused');
     assert.throws(() => create(store, { env: { ...env, CRP_DEPLOYMENT_ENV:'staging', CRP_AFFILIATE_ORIGIN:'https://affiliates.creditregulatorpro.com' } }), /CONFIGURATION_INVALID/);check.ok(true,'staging cannot send to production');
+    for (const bad of [{...env,CRP_DEPLOYMENT_ENV:'unknown'},{...env,CRP_AFFILIATE_BINDING_ENABLED:'true'}]) assert.throws(()=>create(store,{env:bad}),/CONFIGURATION_INVALID/);
+    check.ok(true,'unknown deployment environment and misspelled switch fail closed');
+    const stage=create(store,{env:{...env,CRP_DEPLOYMENT_ENV:'staging',CRP_AFFILIATE_ORIGIN:'https://affiliates-staging.creditregulatorpro.com'}});
+    const stageToken=token({origin:'https://affiliates-staging.creditregulatorpro.com'});
+    check.ok(stage.capture(request(stageToken)).headers['Set-Cookie'].includes('; Secure'),'staging referral cookie is always Secure');stage.close();
     const valid = token(), captured = adapter.capture(request(valid));
     check.equal(captured.status, 303, 'signed consent handoff redirects without query');
     check.equal(captured.headers.Location, '/', 'no external/open redirect');
@@ -39,7 +45,7 @@ async function run(unused, check) {
     check.equal(signature, crypto.createHmac('sha256', key).update(t.slice(2) + '.').update(calls[0].body).digest('hex'), 'signature covers exact delivered raw body');
     check.equal(await adapter.drain(), false, 'backoff prevents immediate replay');
     adapter.close(); time += 120000; mode = 200;
-    const restartedStore = new PrivateStore(root), restarted = create(restartedStore, { env, now: () => time, fetcher });
+    const restartedStore = new PrivateStore(root), restarted = create(restartedStore, { env, now: () => time, fetcher, log: record => deliveryLogs.push(record) });
     await restarted.drain();
     check.equal(calls[1].body, calls[0].body, 'restart uses same event ID, binding time and body');
     check.ok(calls[1].headers['X-Affiliate-Signature'] !== calls[0].headers['X-Affiliate-Signature'], 'retry refreshes transport timestamp signature');
@@ -49,6 +55,8 @@ async function run(unused, check) {
     check.equal(fs.readFileSync(restartedStore.stateFile, 'utf8'), before, 'idle drain does not rewrite consumer store');
     mode = 401; restarted.bind(request(token()), { account_id: 'acc_fictional_b' }); await restarted.drain();
     check.equal(restartedStore.state().accounts[1].affiliate_binding.state, 'DEAD', 'bad integration credentials require reconciliation instead of retry loop');
+    check.equal(deliveryLogs.map(r=>r.outcome).join(','),'READY,SENT,DEAD','sanitized delivery monitoring distinguishes retry, acceptance and operator intervention');
+    check.ok(deliveryLogs.every(r=>Object.keys(r).sort().join(',')==='count,event,http_status,outcome'),'delivery logs contain no consumer reference, referral token, signature or secret');
     restartedStore.update(s => { s.accounts = s.accounts.filter(a => a.account_id !== 'acc_fictional_b'); });
     check.equal(restartedStore.state().accounts.some(a => a.account_id === 'acc_fictional_b'), false, 'account deletion removes its attached outbox');
     restarted.close();
