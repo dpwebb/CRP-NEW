@@ -1,6 +1,6 @@
 # Shared identification-image packet sheet
 
-Status: IMPLEMENTED_LOCALLY; FOCUSED_CHECKS_PASSED; FULL_VERIFICATION_PENDING. No staging or production change is authorized by this local work.
+Status: IMPLEMENTED_AND_VERIFIED_LOCALLY; NOT_DEPLOYED. The final verification below supersedes the initial pending checkpoint. No staging or production change is authorized by this local work.
 
 Owner requested all identification images on one packet page to save paper and improve presentation. In response to the scaling question, the owner selected "Readable fit on one page" rather than actual physical size. The layout therefore preserves image proportions without claiming a calibrated 100-percent physical copy size.
 
@@ -13,3 +13,11 @@ Focused attempt1 is preserved with its actual outcome:327passed/3failed/0skipped
 Root visually inspected the rendered fictional three-image sheet and actual1440/390browser sheet captures. All four image edges remain visible, captions stay clear of the images, the final row is centred, and the shared page remains navigable with the existing review zoom controls. Development artifacts and both receipts are retained under `accelerated-launch/service/out/identification-sheet-local/` and browser artifacts under `accelerated-launch/service/out/packet-review-mailing/`. The first layout PNG/metadata remain separately retained as `identification-sheet-r1.png` and `layout-r1.json`.
 
 The accepted attachment-validation source/full (`a349f5117d8f870d8f6e01f8758ed916faf0e72f`,19,668/0/0) and all earlier packages, failed attempts and worktrees remain unchanged. Current operational stores and unrelated `output/` are preserved. No real identification document was copied into local test fixtures. No hosted action, deployment, provider/billing change, mailing, source push or new release archive is implied.
+
+## Final local verification
+
+Executable source `8adc5c8b01cd41214a58ba2463674ddfe4ae2fa5`, manifest `3C6A0A990E579E73ABFD2F14FE0AEE86BC931A880104A90BBE194E3C3226C07A` / local build `crp-v1-3c6a0a990e579e73`, passed the fresh governed full: **19,719passed/0failed/0skipped; all189sections completed,398tested sources, no source drift**. All six changed-JavaScript syntax checks and ten release-tool suites passed. Execution record reports two fresh steps passed, zero failed/interrupted/reused. The55accepted ignored prerequisites were hash-checked before the run. All186shipped files match the manifest;182are unchanged from the prior accepted local build, exactly four changed, none added or removed. There is no new hosted acceptance or production-readiness claim.
+
+Retained verification checkout: `C:/Users/webbd/.codex/worktrees/identification-sheet-verification/CRP-NEW`. Proof root: `accelerated-launch/service/out/identification-sheet-local-20261020/`. Raw full `checks/attempts/product-verification-d7f6ee80-5014-4c6a-afa8-a80cb92164c2/outputs/full-regression.json` SHA256 `5DE62158D5798A1C3096721F0BD98A03111EEF3EB37F3A20DEF233EC7CBC5DA9`; governed `checks/verification-2774ebe3-f90d-4964-a1ca-998d4b245793.json` SHA256 `72548DCBF2001C9802A9C9F4ACB008969015876D2074608DEFA62D38C380670A`. The completion summary, execution record and shipped-source delta are retained beside the plan. The example sheet PNG is queued for opening in the current chat's Codex file panel.
+
+Source remains local on `codex/packet-attachment-validation`. Every old passing/failed proof, package and worktree remains preserved; staging and production are NOT_RUN and no hosted request or mutation was performed for this task. The original identification images were not replaced by the composed sheet. Only this documentation completion follows the accepted executable freeze: do not regenerate its manifest or repeat the passing full for this bookkeeping update.
