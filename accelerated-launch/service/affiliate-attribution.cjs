@@ -77,7 +77,9 @@ function create(store, options = {}) {
         const row = state.accounts.find(a => a.account_id === selected.accountId)?.affiliate_binding;
         if (!row || row.body.eventId !== selected.eventId) return;
         if (status >= 200 && status < 300) { row.state = 'SENT'; row.accepted_at = new Date(now()).toISOString(); delete row.last_error; }
-        else { row.state = ([400, 401, 403, 404, 409, 422].includes(status) || row.attempts >= 48) ? 'DEAD' : 'READY'; row.last_error = status ? 'RECEIVER_HTTP_' + status : 'RECEIVER_UNAVAILABLE'; row.next_at = now() + Math.min(3600000, 10000 * 2 ** Math.min(row.attempts, 9)); }
+        // A reverse proxy can temporarily lose its Docker route during a receiver restart.
+        // Its 404 is retriable within the same bounded outbox, with the same event/body.
+        else { row.state = ([400, 401, 403, 409, 422].includes(status) || row.attempts >= 48) ? 'DEAD' : 'READY'; row.last_error = status ? 'RECEIVER_HTTP_' + status : 'RECEIVER_UNAVAILABLE'; row.next_at = now() + Math.min(3600000, 10000 * 2 ** Math.min(row.attempts, 9)); }
       });
       const delivered = store.state().accounts.find(a => a.account_id === selected.accountId)?.affiliate_binding;
       if (delivered?.body.eventId === selected.eventId && typeof options.log === 'function') {
