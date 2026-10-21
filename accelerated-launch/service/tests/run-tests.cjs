@@ -21,6 +21,7 @@ const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
 const OUT_DIR = path.join(__dirname, '..', 'out');
 const SECTION_FILES = [
   'gv-mailing-internal-boundaries.cjs',
+  'gw-mailing-jurisdiction-visibility.cjs',
   'gu-packet-signature.cjs',
   'gt-mail-ops-link.cjs',
   'gs-affiliate-attribution.cjs',

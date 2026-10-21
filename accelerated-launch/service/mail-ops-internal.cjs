@@ -128,7 +128,8 @@ function create(store,env=process.env){
   }
   async function status(actor,caseId){
     const c=authorize(actor,caseId),record=records(actor,caseId).at(-1);
-    if(!record)return {simulation:false,available:true,quote:null,order:null};
+    const available=await availability(actor,caseId,c);
+    if(!record)return {simulation:false,available,quote:null,order:null};
     const packet=packets.packetView(store,actor,caseId).packet;
     const changed=packet.approved_version!==record.packet_version||!packet.approved||!packet.signature?.current;
     if(record.order_id){
@@ -139,11 +140,20 @@ function create(store,env=process.env){
       const order=orderView(await remote(c,'integration','GET',`/api/v1/orders/${record.order_id}?ownerRef=${encodeURIComponent(record.quote.snapshot.ownerRef)}`),record);update(actor,caseId,record.id,{order});
     }
     const latest=records(actor,caseId).at(-1);
-    return {simulation:false,available:true,quote:quoteView(latest),order:latest.order||null,packet_changed:packet.approved_version!==latest.packet_version||!packet.approved,checkout_url:latest.checkout_url||null,refund_status:latest.refund_status||null};
+    return {simulation:false,available,quote:quoteView(latest),order:latest.order||null,packet_changed:packet.approved_version!==latest.packet_version||!packet.approved,checkout_url:available?latest.checkout_url||null:null,refund_status:latest.refund_status||null};
+  }
+  async function availability(actor,caseId,c){
+    const owned=cases.requireOwnedCase(store,actor,caseId),view=packets.packetView(store,actor,caseId),destination=view.support?.requirements;
+    if(!destination?.postal||!destination?.bureau)return false;
+    try{
+      const result=await remote(c,'integration','GET','/api/v1/availability');
+      return Array.isArray(result.routes)&&result.routes.some(route=>route.country===owned.country&&route.bureau===destination.bureau&&route.addressRef==='crp:'+sha(destination.postal)&&Number.isInteger(route.maxPages)&&route.maxPages>0);
+    }catch{return false;}
   }
   async function quote(actor,caseId,body){
     const c=authorize(actor,caseId);exact(body,['reviewed_version']);
     return locked(actor,caseId,async()=>{
+      if(!await availability(actor,caseId,c))throw new ServiceError('MAILING_ROUTE_UNAVAILABLE');
       const prepared=current(actor,caseId,body.reviewed_version,c),history=records(actor,caseId);
       if(history.some(r=>r.confirmed_at&&!['CANCELLED','FAILED'].includes(r.order?.state)))throw new ServiceError('MAILING_ORDER_CHANGED');
       const last=history.at(-1);if(last&&!last.confirmed_at&&last.packet_hash===prepared.packetHash&&last.quote.expiresAt>Date.now())return {simulation:false,quote:quoteView(last)};
@@ -161,6 +171,7 @@ function create(store,env=process.env){
     const c=authorize(actor,caseId);exact(body,['quote_id','reviewed_version','authorize_mailing','accept_price']);
     if(body.authorize_mailing!==true||body.accept_price!==true)throw new ServiceError('MAILING_CONFIRMATION_REQUIRED');
     return locked(actor,caseId,async()=>{
+      if(!await availability(actor,caseId,c))throw new ServiceError('MAILING_ROUTE_UNAVAILABLE');
       let record=records(actor,caseId).find(r=>r.quote.id===body.quote_id);
       if(!record||record.packet_version!==body.reviewed_version)throw new ServiceError('MAILING_QUOTE_STALE');
       const packet=current(actor,caseId,body.reviewed_version,c);

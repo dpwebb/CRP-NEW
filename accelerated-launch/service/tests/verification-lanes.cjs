@@ -16,6 +16,7 @@ LANE_IDS.security.unshift('gl-inline-packet-pages');
 LANE_IDS.security.unshift('gu-packet-signature');
 LANE_IDS.security.unshift('gv-mailing-internal-boundaries');
 LANE_IDS.consumer.unshift('gv-mailing-internal-boundaries');
+LANE_IDS.consumer.unshift('gw-mailing-jurisdiction-visibility');
 LANE_IDS.consumer.unshift('gu-packet-signature');
 LANE_IDS.consumer.unshift('gl-inline-packet-pages');
 LANE_IDS.security.unshift('gn-wizard-deletion-corrections');
