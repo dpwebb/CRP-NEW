@@ -68,10 +68,10 @@ export function configuration(raw) {
       production: "https://clerk.affiliates.creditregulatorpro.com",
     };
     if (env === "local" || value.issuer !== issuers[env] ||
-        typeof value.clientId !== "string" || !/^[A-Za-z0-9_-]{8,128}$/.test(value.clientId) ||
-        typeof value.clientSecret !== "string" || value.clientSecret.length < 16 || value.clientSecret.length > 4096)
+        Object.keys(value).some(key => !["issuer", "clientId"].includes(key)) ||
+        typeof value.clientId !== "string" || !/^[A-Za-z0-9_-]{8,128}$/.test(value.clientId))
       throw Error("AFFILIATE_IDENTITY_CONFIGURATION_INVALID");
-    affiliateLogin = { issuer: value.issuer, clientId: value.clientId, clientSecret: value.clientSecret };
+    affiliateLogin = { issuer: value.issuer, clientId: value.clientId };
   }
   for (const [subject, apps] of Object.entries(bindings)) {
     if (!/^acc_[a-f0-9]{24}$/.test(subject))

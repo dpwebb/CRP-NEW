@@ -1,5 +1,11 @@
 # Family administration build
 
+## October 21 managed identity access recovered
+
+Owner reports no separate Clerk credentials. Read-only provisioning records and the existing authenticated Stripe Projects status confirm the original affiliate-identity resource belongs to admin@creditregulatorpro.com. The documented `stripe projects open clerk` management connection supplied a short-lived normal dashboard sign-in; it opened the exact existing CRP Affiliate Operations project (app_3Ks98NGqoQCZ3dixbd08ldzADbV), not the empty Google workspace. The temporary private link file was removed after use. No new Clerk application, credential rotation, role or provider grant was created. Preserve the earlier wrong-workspace checkpoint as historical; it is no longer the blocker.
+
+The deployment notes identify existing public PKCE clients, not confidential clients. Correct the broker/configuration/tests/docs to send client_id and S256 verifier without Basic authentication; reject unnecessary client secrets. Keep both native client audiences and prior callbacks. This supersedes the confidential-client assumption in the earlier candidate; preserve both frozen candidates unchanged and freeze a new successor after validation. Continue the separately authorized release and exact existing memberships; no new signups, password recovery, MFA extraction, billing or mailing actions.
+
 ## Separate hosted release authorization, October 21
 
 Owner: "Once the mailing release is complete, connect the CRP Family Admin panel to all three live apps and deploy it as a separate release."

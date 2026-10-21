@@ -78,10 +78,9 @@ export class AffiliateLogin {
     // Consume before the external exchange. An uncertain exchange is never retried.
     this.flows.delete(state);
     const settings = this.config.affiliateLogin;
-    const auth = Buffer.from(encodeURIComponent(settings.clientId) + ':' + encodeURIComponent(settings.clientSecret)).toString('base64');
     const tokens = await this.request(flow.tokenEndpoint, { method: 'POST',
-      headers: { 'content-type': 'application/x-www-form-urlencoded', authorization: 'Basic ' + auth },
-      body: new URLSearchParams({ grant_type: 'authorization_code', code: flow.code, redirect_uri: flow.redirect, code_verifier: flow.verifier }).toString() });
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ grant_type: 'authorization_code', client_id: settings.clientId, code: flow.code, redirect_uri: flow.redirect, code_verifier: flow.verifier }).toString() });
     const token = tokens.id_token;
     if (typeof token !== 'string' || token.length > 8192 || token.split('.').length !== 3) fail('AFFILIATE_IDENTITY_NOT_VERIFIED', 401);
     let claims;

@@ -5,7 +5,7 @@ import {AffiliateLogin} from '../src/affiliate-login.mjs';
 import {configuration} from '../src/config.mjs';
 
 function fixture() {
-  const settings={issuer:'https://identity.example.test',clientId:'fixture-client',clientSecret:'fictional-client-secret-only'};
+  const settings={issuer:'https://identity.example.test',clientId:'fixture-client'};
   const session={key:'primary-session-one',subject:'primary-account-one',links:{}};
   const config={origin:'https://admin.example.test',affiliateLogin:settings,bindings:{[session.subject]:{affiliate:{}}}};
   const calls=[];let claims,active=true,rejectNative=false,exchanges=0;
@@ -20,8 +20,9 @@ function fixture() {
   const broker=new AffiliateLogin(config,gateway,{now,fetcher:async(url,opts)=>{
     if(url.endsWith('/.well-known/openid-configuration'))return Response.json({issuer:settings.issuer,authorization_endpoint:settings.issuer+'/authorize',token_endpoint:settings.issuer+'/token'});
     assert.equal(url,settings.issuer+'/token');assert.equal(opts.redirect,'error');
-    assert.equal(opts.headers.authorization,'Basic '+Buffer.from('fixture-client:fictional-client-secret-only').toString('base64'));
+    assert.equal(opts.headers.authorization,undefined);
     const body=new URLSearchParams(opts.body);assert.equal(body.get('grant_type'),'authorization_code');
+    assert.equal(body.get('client_id'),settings.clientId);assert.equal(body.has('client_secret'),false);
     const challenge=createHash('sha256').update(body.get('code_verifier')).digest('base64url');assert.equal(challenge,flowUrl.searchParams.get('code_challenge'));
     assert.equal(body.get('redirect_uri'),'https://admin.example.test/auth/affiliate/callback');
     exchanges++;return Response.json({id_token:token(),access_token:'discarded-fixture-access-token'});
@@ -57,9 +58,10 @@ test('native signature/membership refusal and primary revocation prevent connect
   assert.deepEqual(await f.broker.finish(f.session),{pending:false});
   const g=fixture();await g.start();g.callback();g.revoke();await assert.rejects(g.broker.finish(g.session),/PRIMARY_REVOKED/);assert.equal(g.exchanges(),0);
 });
-test('identity configuration refuses arbitrary issuer origins and local secret configuration',()=>{
-  const raw={environment:'staging',origin:'https://admin-staging.creditregulatorpro.com',upstreams:{},affiliateLogin:{issuer:'https://gorgeous-monkfish-8241.clerk.accounts.dev',clientId:'fixture-client',clientSecret:'fixture-secret-only'}};
+test('identity configuration allows existing public PKCE clients and refuses arbitrary issuers or secrets',()=>{
+  const raw={environment:'staging',origin:'https://admin-staging.creditregulatorpro.com',upstreams:{},affiliateLogin:{issuer:'https://gorgeous-monkfish-8241.clerk.accounts.dev',clientId:'fixture-client'}};
   assert.ok(configuration(raw).affiliateLogin);
+  assert.throws(()=>configuration({...raw,affiliateLogin:{...raw.affiliateLogin,clientSecret:'unnecessary-secret'}}),/CONFIGURATION_INVALID/);
   assert.throws(()=>configuration({...raw,affiliateLogin:{...raw.affiliateLogin,issuer:'https://attacker.invalid'}}),/CONFIGURATION_INVALID/);
   assert.throws(()=>configuration({...raw,environment:'local',origin:'http://127.0.0.1:4395'}),/CONFIGURATION_INVALID/);
 });
