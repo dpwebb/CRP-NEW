@@ -1,5 +1,5 @@
 import http from "node:http";
-import { readFileSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { fileURLToPath } from "node:url";
 import { verifyRelease } from "./release.mjs";
@@ -256,7 +256,7 @@ export function createPortal(raw, options = {}) {
 }
 if (
   process.argv[1] &&
-  pathToFileURL(process.argv[1]).href === import.meta.url
+  pathToFileURL(realpathSync(process.argv[1])).href === import.meta.url
 ) {
   if (!process.env.CRP_FAMILY_CONFIG)
     throw Error(

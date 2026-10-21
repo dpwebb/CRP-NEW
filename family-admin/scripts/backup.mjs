@@ -1,5 +1,5 @@
 import {createCipheriv,createDecipheriv,randomBytes,createHash} from 'node:crypto';
-import {readFileSync,writeFileSync,existsSync,lstatSync,mkdirSync} from 'node:fs';
+import {readFileSync,writeFileSync,existsSync,lstatSync,mkdirSync,realpathSync} from 'node:fs';
 import {gzipSync,gunzipSync} from 'node:zlib';
 import {join,resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -43,7 +43,7 @@ export function recover({backup,key,destination}) {
   const journal=new Journal(join(destination,'audit'));journal.close();
   return {passed:true,release:payload.release,backupHash:hash(bytes),files:payload.files.map(({path,mode,sha256})=>({path,mode,sha256})),journalIntegrityVerified:true};
 }
-if(process.argv[1]&&pathToFileURL(resolve(process.argv[1])).href===import.meta.url){
+if(process.argv[1]&&pathToFileURL(realpathSync(process.argv[1])).href===import.meta.url){
   const [operation,context]=process.argv.slice(2),config=JSON.parse(readFileSync(context,'utf8'));
   if(!['pack','recover'].includes(operation))throw Error('Use pack or recover with a protected JSON context');
   process.stdout.write(JSON.stringify(operation==='pack'?pack(config):recover(config))+'\n');
