@@ -2580,10 +2580,10 @@ async function wirePacket(panel) {
     signatureAction({name:el('packet-signature-name').value,date:el('packet-signature-date').value,consent:true});
   };
   if(removeSignature)removeSignature.onclick=()=>signatureAction(null);
-  for(const id of ['packet-signature-name','packet-signature-date','packet-signature-consent'])if(el(id))el(id).addEventListener('input',()=>{
+  for(const id of ['packet-signature-name','packet-signature-date','packet-signature-consent'])if(el(id))el(id).oninput=()=>{
     signatureDraft=true;if(reviewed)reviewed.checked=false;
     for(const action of ['packet-approve','packet-download','packet-print'])if(el(action))el(action).disabled=true;
-  });
+  };
   if (reviewed) reviewed.onchange = () => { ensureOrigin(); if (approve) approve.disabled = !previewCurrent || edits > 0 || signatureDraft || !reviewed.checked || pv.packet.approved; };
 
   const dl = el('packet-download');
