@@ -217,7 +217,6 @@ function empty(text, button) {
   return box;
 }
 function dialog(title, description, fields, submit, submitText = "Confirm") {
-  if ($("dialog").open) $("dialog").close();
   $("dialog-title").textContent = title;
   $("dialog-description").textContent = description;
   $("dialog-error").textContent = "";
@@ -266,7 +265,10 @@ function dialog(title, description, fields, submit, submitText = "Confirm") {
     nodes.set(f.name, { input, f });
   }
   S.dialog = { submit, nodes, generation: S.generation };
-  $("dialog").showModal();
+  // Replacing an open dialog must not enqueue a close event that clears the
+  // replacement's fields and submit handler on the next browser task.
+  if (!$("dialog").open) $("dialog").showModal();
+  $("dialog-close").focus();
 }
 function closeDialog() {
   $("dialog").close();
