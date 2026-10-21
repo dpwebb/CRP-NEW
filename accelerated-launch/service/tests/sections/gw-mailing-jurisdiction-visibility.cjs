@@ -35,6 +35,17 @@ async function run(t,check){
   check.ok(!/Printing and posting country|Canada/.test(text(quote)),'consumer confirmation does not display the internal posting origin');
   check.ok(/Fictional U.S. bureau/.test(text(quote)) && /USD/.test(text(quote)),'consumer still sees the actual recipient and quoted currency');
   check.ok(quote.querySelectorAll('input').some(input=>input.id==='packet-mailing-authorize'),'exact-packet mailing authorization is retained');
+  const options=mount(async()=>({available:true,mailers:[{mailer:'POSTGRID',emergency:false},{mailer:'MANUAL',emergency:true}],quote:null,order:null}));await turn();
+  const method=options.querySelectorAll('select').find(n=>n.id==='packet-mailing-method');
+  check.equal(method.value,'POSTGRID','PostGrid is the default even while the emergency manual option is available');
+  check.ok(method.children.some(n=>n.value==='MANUAL'&&!n.disabled),'manual mailing is an explicit optional selection');
+  const emergencyOnly=mount(async()=>({available:true,mailers:[{mailer:'MANUAL',emergency:true}],quote:null,order:null}));await turn();
+  const emergencyMethod=emergencyOnly.querySelectorAll('select').find(n=>n.id==='packet-mailing-method');
+  check.equal(emergencyMethod.value,'POSTGRID','PostGrid unavailability never automatically selects manual mailing');
+  check.equal(emergencyMethod.children.find(n=>n.value==='POSTGRID').disabled,true,'an unavailable PostGrid route cannot be selected as an available service');
+  const print=mount(async()=>({available:false,quote:null,order:{id:'fictional-paid-provider-order',state:'QUEUED',payment_state:'VERIFIED',mailer:'POSTGRID',print_review:{previewAvailable:true,previewHash:'a'.repeat(64),approved:false}}}));await turn();
+  check.ok(print.querySelectorAll('button').some(n=>n.id==='packet-mailing-print-load'),'a paid provider order offers final print review even if new quotes are inactive');
+  check.ok(!print.querySelectorAll('button').some(n=>n.id==='packet-mailing-print-approve'),'print approval cannot appear before the mailing copy is loaded and opened');
   return {inactive_hidden:true,active_offered:true,existing_orders_retained:true,external_calls:0};
 }
 module.exports={id:'gw-mailing-jurisdiction-visibility',title:'Jurisdiction mailing visibility and existing-order continuity',run};

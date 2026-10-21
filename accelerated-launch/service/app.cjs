@@ -239,6 +239,8 @@ const ROUTES = Object.freeze([
   ['POST', '/api/cases/:caseId/mailing/quote', true, 'mailingQuote'],
   ['POST', '/api/cases/:caseId/mailing/confirm', true, 'mailingConfirm'],
   ['POST', '/api/cases/:caseId/mailing/cancel', true, 'mailingCancel'],
+  ['POST', '/api/cases/:caseId/mailing/print-preview', true, 'mailingPrintPreview'],
+  ['POST', '/api/cases/:caseId/mailing/approve-print', true, 'mailingApprovePrint'],
   ['GET', '/api/cases/:caseId/packet-print', true, 'packetPrint'],
   ['GET', '/api/cases/:caseId/packet/preview', true, 'packetPreview'],
   ['GET', '/api/cases/:caseId/packet/preview/pages', true, 'packetReviewPages'],
@@ -938,9 +940,10 @@ function createService(options) {
     buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || require('./confirmation-mail.cjs').sender(), adminStore, googleSignIn, mailOps),
     buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps),
     buildBillingHandlers(store, logger, pricingCurrency),
-    Object.fromEntries(['Status','Quote','Confirm','Cancel'].map(action => ['mailing' + action, async ({actor,params,body}) => ({
-      status: 200, json: { ok: true, ...await mailOps[action.toLowerCase()](actor, params.caseId, body) }
-    })])),
+    Object.fromEntries(['Status','Quote','Confirm','Cancel','PrintPreview','ApprovePrint'].map(action => ['mailing' + action, async ({actor,params,body}) => {
+      if(typeof mailOps[action.toLowerCase()]!=='function')throw new ServiceError('NOT_AUTHORIZED');
+      return {status: 200, json: { ok: true, ...await mailOps[action.toLowerCase()](actor, params.caseId, body) }};
+    }])),
     Object.fromEntries(['Packet','Refund','Catalog','Cancel'].map(action=>['mailingInternal'+action,async ({rawBody,headers,body})=>{
       if(!mailOps.fulfillment)throw new ServiceError('NOT_AUTHORIZED');
       return {status:200,json:await mailOps.fulfillment({rawBody,headers,body,operation:action.toLowerCase()})};
