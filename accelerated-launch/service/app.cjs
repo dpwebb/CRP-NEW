@@ -87,7 +87,7 @@ const STATIC_TYPES = Object.freeze({
   '.woff2': 'font/woff2',
   '.txt': 'text/plain; charset=utf-8'
 });
-const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/packet-review.js', '/style.css', '/theme.css', '/homepage.js', '/privacy.html', '/public-analytics.js', '/favicon.svg', '/brand-logo.svg', '/brand-logo.png', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/Roboto-Bold.woff2', '/OpenSans-Regular.woff2', '/OpenSans-Bold.woff2', '/story-font-license.txt']);
+const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/packet-review.js', '/packet-mailing.js', '/style.css', '/theme.css', '/homepage.js', '/privacy.html', '/public-analytics.js', '/favicon.svg', '/brand-logo.svg', '/brand-logo.png', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/Roboto-Bold.woff2', '/OpenSans-Regular.woff2', '/OpenSans-Bold.woff2', '/story-font-license.txt']);
 const STAGING_SCORE_SIMULATOR_ASSETS = Object.freeze(['/score-simulator.html', '/score-simulator.css', '/score-simulator.js']);
 const STAGING_MAILING_ASSETS = Object.freeze(['/mailing-preview.html', '/mailing-preview.css', '/mailing-preview.js']);
 const STAGING_REFERRAL_ASSETS = Object.freeze(['/referrals.html', '/referrals.css', '/referrals.js']);
@@ -230,6 +230,10 @@ const ROUTES = Object.freeze([
   ['GET', '/api/cases/:caseId/packet/reports/:fileId', true, 'packetReport'],
   ['POST', '/api/cases/:caseId/packet/approve', true, 'packetApprove'],
   ['GET', '/api/cases/:caseId/packet-download', true, 'packetDownload'],
+  ['GET', '/api/cases/:caseId/mailing', true, 'mailingStatus'],
+  ['POST', '/api/cases/:caseId/mailing/quote', true, 'mailingQuote'],
+  ['POST', '/api/cases/:caseId/mailing/confirm', true, 'mailingConfirm'],
+  ['POST', '/api/cases/:caseId/mailing/cancel', true, 'mailingCancel'],
   ['GET', '/api/cases/:caseId/packet-print', true, 'packetPrint'],
   ['GET', '/api/cases/:caseId/packet/preview', true, 'packetPreview'],
   ['GET', '/api/cases/:caseId/packet/preview/pages', true, 'packetReviewPages'],
@@ -309,6 +313,7 @@ function loadJurisdictionSurface() {
       payment_mode: payment.key_mode || null
     },
     preview_mode: process.env.CRP_DEPLOYMENT_ENV === 'staging',
+    mailing_simulation: require('./mail-ops-link.cjs').configuration().enabled,
     retention_plain: retention.policyView().plain,
     upload_limits: uploads.uploadLimits(),
     payment_actions: { cancel_unfinished_checkout: true },
@@ -908,6 +913,7 @@ function createService(options) {
   const passwordReset = require('./password-reset.cjs').create(store, { mailer: opts.passwordResetMailer || require('./confirmation-mail.cjs').sender(), origin: opts.passwordResetOrigin, logger });
   const requestPolicy=require('./request-policy.cjs').policy();
   const surface = loadJurisdictionSurface();
+  const mailOps = require('./mail-ops-link.cjs').create(store);
   surface.google_sign_in = googleSignIn.status().enabled;
   const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
   const handlers = Object.assign(
@@ -915,6 +921,9 @@ function createService(options) {
     buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || require('./confirmation-mail.cjs').sender(), adminStore, googleSignIn),
     buildCaseHandlers(store, logger, surface, pricingCurrency),
     buildBillingHandlers(store, logger, pricingCurrency),
+    Object.fromEntries(['Status','Quote','Confirm','Cancel'].map(action => ['mailing' + action, async ({actor,params,body}) => ({
+      status: 200, json: { ok: true, ...await mailOps[action.toLowerCase()](actor, params.caseId, body) }
+    })])),
     {requestPasswordReset: ({body}) => ({status:200,json:{ok:true,...passwordReset.request(body)}}),
       completePasswordReset: ({body}) => ({status:200,json:{ok:true,...passwordReset.complete(body)},headers:{'Set-Cookie':[sessionCookie('',0),`${ADMIN_COOKIE}=; HttpOnly; SameSite=Strict; Path=/api/admin/; Max-Age=0${process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : ''}`]}}),
       contactLocation: async ({req}) => {const geo=require('./pricing-location.cjs');let value=null;try{value=await(opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}const country=typeof value==='string'?value:value?.country;const rawRegion=typeof value==='object'?value?.region:null;const region=surface.regions.find(r=>r.country===country&&(r.value===rawRegion||r.value===country+'-'+rawRegion));return {status:200,json:{ok:true,country:surface.countries.some(c=>c.value===country)?country:null,region:region?.value||null,source:'IP_SUGGESTION'}};},
