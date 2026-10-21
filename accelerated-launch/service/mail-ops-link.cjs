@@ -1,5 +1,5 @@
 'use strict';
-// Local simulation producer. No provider SDK, packet bytes, contact data or payment execution is transmitted.
+// Local/staging simulation producer. No provider SDK, packet bytes, contact data or payment execution is transmitted.
 const crypto = require('node:crypto');
 const { ServiceError } = require('./errors.cjs');
 const cases = require('./cases.cjs'), packets = require('./packets.cjs'), entitlement = require('./entitlement.cjs');
@@ -8,11 +8,14 @@ const fail = code => { throw new ServiceError(code); };
 function configuration(env = process.env) {
   let origin;
   try { const url = new URL(env.CRP_MAIL_OPS_URL); if (url.protocol === 'http:' && url.hostname === '127.0.0.1' && url.port && url.pathname === '/' && !url.username && !url.password && !url.search && !url.hash) origin = url.origin; } catch {}
-  const enabled = env.CRP_MAIL_OPS_MODE === 'local-simulation' && env.CRP_DEPLOYMENT_ENV === 'local'
-    && env.CRP_PAYMENT_PROVIDER === 'test-adapter-not-a-payment' && env.CRP_ALLOW_TEST_PAYMENT_ADAPTER === '1'
+  const local = env.CRP_MAIL_OPS_MODE === 'local-simulation' && env.CRP_DEPLOYMENT_ENV === 'local'
+    && env.CRP_PAYMENT_PROVIDER === 'test-adapter-not-a-payment' && env.CRP_ALLOW_TEST_PAYMENT_ADAPTER === '1';
+  const staging = env.CRP_MAIL_OPS_MODE === 'staging-simulation' && env.CRP_DEPLOYMENT_ENV === 'staging'
+    && env.CRP_PAYMENT_PROVIDER === 'stripe' && /^sk_test_/.test(env.STRIPE_SECRET_KEY || '') && origin === 'http://127.0.0.1:4335';
+  const enabled = (local || staging)
     && /^[a-f0-9]{64}$/.test(env.CRP_MAIL_OPS_KEY || '') && /^[a-f0-9]{64}$/.test(env.CRP_MAIL_OPS_PAYMENT_KEY || '')
     && env.CRP_MAIL_OPS_KEY !== env.CRP_MAIL_OPS_PAYMENT_KEY && Boolean(origin);
-  return { enabled, origin, key: env.CRP_MAIL_OPS_KEY, paymentKey: env.CRP_MAIL_OPS_PAYMENT_KEY };
+  return { enabled, origin, source: staging ? 'CRP_STAGING_SIMULATION' : 'CRP_LOCAL_SIMULATION', key: env.CRP_MAIL_OPS_KEY, paymentKey: env.CRP_MAIL_OPS_PAYMENT_KEY };
 }
 function exact(body, keys) { if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).some(k => !keys.includes(k)) || keys.some(k => !Object.hasOwn(body, k))) fail('INVALID_REQUEST'); }
 function create(store, env = process.env) {
@@ -69,7 +72,7 @@ function create(store, env = process.env) {
     if (!destination?.postal) fail('PACKET_SUPPORT_REQUIRED');
     const ownerRef = 'crp:' + crypto.createHmac('sha256', config.key).update('owner:' + actor.account_id).digest('hex');
     return { ownerRef, file, pdfHash: sha(file.body), label: destination.label, address: destination.postal,
-      payload: { source: 'CRP_LOCAL_SIMULATION', ownerRef,
+      payload: { source: configuration(env).source, ownerRef,
         packet: { version: file.approved_version, sha256: sha(file.body), pages: file.page_count },
         recipient: { bureau: destination.bureau, country: owned.country, addressRef: 'crp:' + sha(destination.postal) }, service: 'SIMULATED_REGISTERED' } };
   }
