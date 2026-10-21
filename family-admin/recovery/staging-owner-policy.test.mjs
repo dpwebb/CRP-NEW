@@ -6,6 +6,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { randomUUID, randomBytes } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import {inventory,manifest,seal,recover} from './backup.mjs';
 import {provision, hash, TARGET, EMAIL, DATA, BUILD} from './staging-owner-policy.mjs';
 // Only native source is selected here; every test data directory is newly isolated.
@@ -80,4 +81,15 @@ test('isolated native signed-store recovery, refusal matrix, one-use MFA and nor
       assert.throws(()=>recover(encrypted,key,expected.slice(1)),/AUTHENTICATION_REFUSED/);
     } finally {fs.rmSync(snapshot,{recursive:true,force:true});}
   } finally {Date.now=realNow;admin?.close();fs.rmSync(dir,{recursive:true,force:true});}
+});
+test('Linux offline native writers retain service ownership after irreversible privilege drop', {skip:process.platform!=='linux'||process.getuid()!==0},()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'crp-native-owner-writer-'));
+  try {
+    fs.mkdirSync(path.join(dir,'admin'),{mode:0o700});fs.chmodSync(dir,0o700);
+    for(const p of [dir,path.join(dir,'admin')])fs.chownSync(p,65534,65534);
+    const source=new URL('./store-owner.mjs',import.meta.url).href;
+    const program=`import {createRequire} from 'node:module';import fs from 'node:fs';import {dropToStoreOwner} from ${JSON.stringify(source)};const require=createRequire(${JSON.stringify(path.join(native,'server.cjs'))});const {PrivateStore}=require('./private-store.cjs'),{AdminStore}=require('./admin-store.cjs');dropToStoreOwner(${JSON.stringify(dir)});const c=new PrivateStore(${JSON.stringify(dir)}),a=new AdminStore(${JSON.stringify(dir)},{consumerStore:c});a.update(s=>a.appendAudit(s,null,'ADMIN_OWNERSHIP_TEST',{}));a.close();console.log(JSON.stringify(['state.json','.head','journal/000000001.json'].map(n=>{const s=fs.statSync(${JSON.stringify(path.join(dir,'admin'))}+'/'+n);return{uid:s.uid,gid:s.gid,mode:s.mode&511};})));`;
+    const r=spawnSync(process.execPath,['--input-type=module','-e',program],{encoding:'utf8'});assert.equal(r.status,0,r.stderr);
+    assert.deepEqual(JSON.parse(r.stdout),Array.from({length:3},()=>({uid:65534,gid:65534,mode:0o600})));
+  } finally {fs.rmSync(dir,{recursive:true,force:true});}
 });
