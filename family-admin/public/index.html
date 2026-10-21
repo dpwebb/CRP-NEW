@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CRP Family · Administration</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <section id="auth" class="auth">
+      <div class="auth-brand">
+        <div class="logo">C<span>↗</span></div>
+        <p class="eyebrow">CREDIT REGULATOR PRO</p>
+        <h1>Three applications.<br />One clear view.</h1>
+        <p>
+          Support consumers, grow your partner network and keep mailing
+          operations moving.
+        </p>
+        <div class="family-pills">
+          <span>CRP</span><span>Affiliate</span><span>Mail Operations</span>
+        </div>
+      </div>
+      <main class="auth-form">
+        <p class="eyebrow">CRP FAMILY ADMIN</p>
+        <h2 id="auth-title">Welcome to your workspace</h2>
+        <p id="auth-help">
+          Sign in with your CRP administration account and authenticator.
+        </p>
+        <form id="login">
+          <label
+            >Email address<input
+              name="email"
+              type="email"
+              autocomplete="username"
+              required
+              maxlength="254" /></label
+          ><label
+            >Password<input
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              maxlength="1024" /></label
+          ><label
+            >Authenticator code<input
+              name="code"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              pattern="[0-9]{6}"
+              required
+              maxlength="6" /></label
+          ><button class="primary" type="submit">Continue securely</button>
+        </form>
+        <form id="unlock" hidden>
+          <label
+            >Fresh authenticator code<input
+              name="code"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              pattern="[0-9]{6}"
+              required
+              maxlength="6" /></label
+          ><button class="primary" type="submit">Unlock administration</button
+          ><button type="button" id="back-login">Use another account</button>
+        </form>
+        <p id="auth-error" class="error" role="alert"></p>
+      </main>
+    </section>
+    <div id="workspace" hidden>
+      <aside>
+        <a href="#overview" class="brand"
+          ><span class="logo small">C↗</span
+          ><span
+            >CRP <strong>Family</strong><small>ADMINISTRATION</small></span
+          ></a
+        >
+        <nav id="nav" aria-label="Workspace"></nav>
+        <div class="aside-foot">
+          <span class="status-dot"></span>Shared workspace<small
+            >Access follows your role.</small
+          >
+        </div>
+      </aside>
+      <div class="main-wrap">
+        <header>
+          <button
+            id="menu"
+            aria-label="Toggle navigation"
+            aria-expanded="false"
+          >
+            ☰</button
+          ><span class="breadcrumb"
+            >CRP FAMILY / <b id="crumb">Overview</b></span
+          >
+          <div class="header-right">
+            <span id="environment" class="env"></span><span id="who"></span
+            ><button id="logout">Sign out</button>
+          </div>
+        </header>
+        <main id="main" tabindex="-1">
+          <div id="demo-banner" class="notice" hidden>
+            Fictional local preview. These are simulated application records; no
+            live account, payment or mail action is connected.
+          </div>
+          <div class="heading">
+            <div>
+              <p id="eyebrow" class="eyebrow">YOUR CONNECTED WORKSPACE</p>
+              <h1 id="title">Family overview</h1>
+              <p id="description" class="muted">
+                A clear view across CRP, Affiliate and Mail Operations.
+              </p>
+            </div>
+            <div class="buttons">
+              <button id="refresh">↻ Refresh</button
+              ><button id="connections">Application access</button>
+            </div>
+          </div>
+          <p id="notice" role="status"></p>
+          <section id="content" aria-busy="false"></section>
+          <footer>CRP Family Administration <span id="observed"></span></footer>
+        </main>
+      </div>
+    </div>
+    <dialog id="dialog">
+      <form id="dialog-form">
+        <div class="dialog-head">
+          <h2 id="dialog-title"></h2>
+          <button type="button" id="dialog-close" aria-label="Close dialog">
+            ×
+          </button>
+        </div>
+        <p id="dialog-description" class="muted"></p>
+        <div id="dialog-fields"></div>
+        <p id="dialog-error" class="error" role="alert"></p>
+        <div class="buttons">
+          <button type="button" id="dialog-cancel">Cancel</button
+          ><button id="dialog-submit" class="primary" type="submit">
+            Confirm
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <noscript>JavaScript is required to use the administration panel.</noscript>
+  </body>
+</html>

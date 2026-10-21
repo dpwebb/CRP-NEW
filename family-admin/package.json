@@ -1,0 +1,15 @@
+{
+  "name": "crp-family-admin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.17"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "demo": "node test/demo.mjs",
+    "test": "node --test test/*.test.mjs",
+    "check": "node --check src/server.mjs && node --check src/gateway.mjs && node --check src/catalog.mjs && node --check src/config.mjs && node --check src/journal.mjs && node --check public/app.js"
+  }
+}
