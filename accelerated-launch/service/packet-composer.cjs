@@ -67,8 +67,10 @@ function composePacket(input) {
     });
   };
   if (input.instructions != null && (typeof input.instructions !== 'string' || !input.instructions.trim() || input.instructions.length > 6000)) throw new ServiceError('INVALID_REQUEST');
+  if(input.signature!=null && (typeof input.signature.name!=='string'||!input.signature.name.trim()||input.signature.name.length>120||/[\x00-\x1f\x7f]/.test(input.signature.name)
+    ||!/^\d{4}-\d{2}-\d{2}$/.test(input.signature.date||'')||Object.keys(input.signature).sort().join(',')!=='date,name'))throw new ServiceError('INVALID_REQUEST');
   const payload = { letter_text: input.letter_text, instructions: input.instructions || null, reports: encode(input.reports || [], 256, true),
-    documents: encode(input.documents || [], 32), version: version() };
+    ...(input.signature?{signature:input.signature}:{}),documents: encode(input.documents || [], 32), version: version() };
   const serialized = JSON.stringify(payload), key = digest(serialized), now = Date.now();
   for (const [oldKey, row] of cache) if (row.expires <= now) forget(oldKey);
   const hit = cache.get(key);

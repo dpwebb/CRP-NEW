@@ -187,7 +187,7 @@ function wrapped(text, font, size, width) {
   }
   return lines;
 }
-async function letterPages(doc, text) {
+async function letterPages(doc, text, signature) {
   text = String(text).normalize('NFC').replace(/\r\n?/g, '\n').replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, '').trim();
   if (!text || text.length > 200000) throw coded('INVALID_REQUEST');
   doc.registerFontkit(fontkit);
@@ -201,7 +201,7 @@ async function letterPages(doc, text) {
   // replaces a bureau font used by the original form's editable default appearances.
   const font = await doc.embedFont(fontBytes, { subset: false, customName: fontName });
   fonts.set(name(fontName), font.ref);
-  const width = 512, height = 692, padding = 4;
+  const width = 512, height = signature ? 580 : 692, fieldY=signature?162:50, padding = 4;
   let size = 12, lines;
   for (; size >= 10; size -= .5) { lines = wrapped(text, font, size, width - padding * 2); if (lines.length * size * 1.4 <= height - padding * 2) break; }
   if (size < 10) { size = 10; lines = wrapped(text, font, size, width - padding * 2); }
@@ -211,7 +211,7 @@ async function letterPages(doc, text) {
     let fieldName = `CRP_letter_page_${pageNumber}`;
     while (form.getFields().some(field => field.getName() === fieldName)) fieldName += '_';
     const field = form.createTextField(fieldName); field.enableMultiline(); field.setText(chunk.join('\n'));
-    field.addToPage(page, { x: 50, y: 50, width, height, borderWidth: 0, font, textColor: rgb(0, 0, 0), backgroundColor: rgb(1, 1, 1) });
+    field.addToPage(page, { x: 50, y: fieldY, width, height, borderWidth: 0, font, textColor: rgb(0, 0, 0), backgroundColor: rgb(1, 1, 1) });
     field.setFontSize(size);
     field.updateAppearances(font, () => chunk.flatMap((line, at) => [lib.beginText(), lib.setFillingRgbColor(0, 0, 0), lib.setFontAndSize(font.name, size),
       lib.moveText(padding, height - padding - size - at * size * 1.4), lib.showText(font.encodeText(line)), lib.endText()]));
@@ -219,7 +219,14 @@ async function letterPages(doc, text) {
     // through AcroForm DR. pdf-lib customName alone does not change PDFFont.name.
     field.acroField.setDefaultAppearance(`/${fontName} ${size} Tf 0 g`);
     fields.push({ name: fieldName, type: 'TEXT', section: 'letter', page: pageNumber, text: chunk.join('\n'),
-      x: 50, y: 50, width, height, page_width: 612, page_height: 792, font_size: size, min_font_size: 10 });
+      x: 50, y: fieldY, width, height, page_width: 612, page_height: 792, font_size: size, min_font_size: 10 });
+  }
+  if(signature){
+    if(typeof signature.name!=='string'||!signature.name.trim()||signature.name.length>120||/[\x00-\x1f\x7f]/.test(signature.name)||!/^\d{4}-\d{2}-\d{2}$/.test(signature.date||''))throw coded('INVALID_REQUEST');
+    const page=doc.getPage(fields.length-1),lines=wrapped('Signed by: '+signature.name,font,12,512);
+    if(lines.length>3)throw coded('INVALID_REQUEST');
+    for(let index=0;index<lines.length;index++)page.drawText(lines[index],{x:50,y:140-index*18,size:12,font});
+    page.drawText('Signature date: '+signature.date,{x:50,y:140-lines.length*18,size:12,font});
   }
   return fields;
 }
@@ -449,7 +456,7 @@ async function compose(input) {
   if ((input.reports || []).length > 256 || (input.documents || []).length > 32) throw coded('INVALID_REQUEST');
   const doc = await PDFDocument.create({ updateMetadata: false });
   doc.setCreationDate(new Date('2000-01-01T00:00:00Z')); doc.setModificationDate(new Date('2000-01-01T00:00:00Z'));
-  const fields = await letterPages(doc, input.letter_text), sections = [{ kind: 'letter', label: 'My dispute letter', start_page: 1, page_count: fields.length }];
+  const fields = await letterPages(doc, input.letter_text, input.signature), sections = [{ kind: 'letter', label: 'My dispute letter', start_page: 1, page_count: fields.length }];
   const reviewPages = fields.map(field => ({ page: field.page, kind: 'letter', page_width: field.page_width, page_height: field.page_height, annotation_available: false }));
   const noteFont = await doc.embedFont(fs.readFileSync(path.join(__dirname, 'packet-fonts', 'NotoSans-Regular.ttf')), { subset: true });
   let position = fields.length;

@@ -6,6 +6,8 @@ const cases = require('./cases.cjs'), packets = require('./packets.cjs'), entitl
 const sha = value => crypto.createHash('sha256').update(value).digest('hex');
 const fail = code => { throw new ServiceError(code); };
 function configuration(env = process.env) {
+  const internal=require('./mail-ops-internal.cjs').configuration(env);
+  if(internal.enabled)return internal;
   let origin;
   try { const url = new URL(env.CRP_MAIL_OPS_URL); if (url.protocol === 'http:' && url.hostname === '127.0.0.1' && url.port && url.pathname === '/' && !url.username && !url.password && !url.search && !url.hash) origin = url.origin; } catch {}
   const local = env.CRP_MAIL_OPS_MODE === 'local-simulation' && env.CRP_DEPLOYMENT_ENV === 'local'
@@ -19,6 +21,7 @@ function configuration(env = process.env) {
 }
 function exact(body, keys) { if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).some(k => !keys.includes(k)) || keys.some(k => !Object.hasOwn(body, k))) fail('INVALID_REQUEST'); }
 function create(store, env = process.env) {
+  if(configuration(env).internal)return require('./mail-ops-internal.cjs').create(store,env);
   const busy = new Set();
   function authorize(actor, caseId) {
     const owned = cases.requireOwnedCase(store, actor, caseId);

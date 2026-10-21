@@ -1,0 +1,55 @@
+'use strict';
+const {pdfText}=require('../packet-pdf-assertions.cjs');
+const {createHash}=require('node:crypto');
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+async function run(t,check){
+  const owner=await t.account('signed-packet@example.test'),other=await t.account('signed-other@example.test');
+  const caseId=await t.assessedCase(owner),base=`/api/cases/${caseId}`;
+  const req=(method,path,body)=>t.request(method,base+path,{token:owner.token,body});
+  let view=(await req('GET','/packet')).json.view;
+  await req('POST','/packet/select',{issue_ids:view.eligible_issues.filter(issue=>issue.eligible).map(issue=>issue.issue_id)});
+  await t.preparePostalPacket(owner,caseId);
+  view=(await req('GET','/packet')).json.view;
+  const unsignedVersion=view.packet.preview_version;
+  const unsigned=await req('GET','/packet/preview?version='+unsignedVersion);
+  check.equal(unsigned.status,200,'unsigned packet remains available');
+  check.ok(pdfText(unsigned.bytes).includes('YOUR MAILING INSTRUCTIONS'),'self-mailing retains its instruction sheet');
+  const signature={name:'Fictional Morgan Sample',date:'2026-10-21',consent:true};
+  for(const invalid of [{...signature,consent:false},{...signature,name:'\nInjected'},{...signature,date:'2026-02-30'},{...signature,method:'CERTIFIED'}])
+    check.equal((await req('POST','/packet/signature',{reviewed_version:unsignedVersion,signature:invalid})).status,400,'invalid or unconsented signature is refused');
+  check.equal((await t.request('POST',base+'/packet/signature',{token:other.token,body:{reviewed_version:unsignedVersion,signature}})).status,403,'signature is restricted to the packet owner');
+  check.equal((await req('POST','/packet/signature',{reviewed_version:'0'.repeat(64),signature})).status,409,'stale review cannot be signed');
+  let answer=await req('POST','/packet/signature',{reviewed_version:unsignedVersion,signature});
+  check.equal(answer.status,200,'owner explicitly adds a typed signature');
+  view=answer.json.view;
+  check.equal(view.packet.signature.current,true,'signature is bound to current material');
+  check.equal(view.packet.approved,false,'adding a signature requires fresh approval');
+  check.ok(view.packet.preview_version!==unsignedVersion,'signed version has a new identity');
+  check.equal((await req('GET','/packet-download')).status,409,'signed packet cannot be downloaded before approval');
+  const signedVersion=view.packet.preview_version;
+  const review=(await req('GET','/packet/preview/pages?version='+signedVersion)).json;
+  check.ok(review.editable_fields.every(field=>!field.text.includes('Signed by:')&&!field.text.includes('Signature date:')),'signature remains outside editable letter fields so saving correspondence cannot duplicate a prior signature');
+  const signed=await req('GET','/packet/preview?version='+signedVersion),text=pdfText(signed.bytes);
+  check.ok(text.includes('Signed by: Fictional Morgan Sample')&&text.includes('Signature date: 2026-10-21'),'actual PDF contains the signature and its chosen date');
+  check.equal(text.includes('YOUR MAILING INSTRUCTIONS'),false,'signed mailing artifact excludes the private instruction sheet');
+  check.equal(text.includes('Signature: ________________________'),false,'prepared blank signature line is replaced');
+  check.equal((await req('POST','/packet/approve',{reviewed_version:unsignedVersion})).status,409,'unsigned approval cannot approve new signed bytes');
+  check.equal((await req('POST','/packet/approve',{reviewed_version:signedVersion})).status,200,'owner approves the final signed version');
+  const download=await req('GET','/packet-download'),printed=await req('GET','/packet-print');
+  check.equal(hash(download.bytes),hash(signed.bytes),'download matches the reviewed signed PDF');
+  check.equal(hash(printed.bytes),hash(signed.bytes),'print matches the reviewed signed PDF');
+  const output=process.env.CRP_SIGNATURE_PROOF_DIR;
+  if(output){const fs=require('node:fs');fs.mkdirSync(output,{recursive:true});fs.writeFileSync(require('node:path').join(output,'fictional-signed-packet.pdf'),download.bytes);}
+  answer=await req('POST','/packet/letter',{letter_text:view.packet.correspondence_preview+'\nA changed request.'});
+  check.equal(answer.status,200,'owner can still edit correspondence');
+  view=answer.json.view;
+  check.equal(view.packet.signature.current,false,'material changes invalidate the signature');
+  check.equal((await req('POST','/packet/approve',{reviewed_version:view.packet.preview_version})).status,409,'changed content requires a new signature or explicit removal');
+  answer=await req('POST','/packet/signature',{reviewed_version:view.packet.preview_version,signature:null});
+  check.equal(answer.status,200,'owner can remove a signature and choose hand signing');
+  check.equal(answer.json.view.packet.signature,null,'removed signature is absent');
+  const unsignedAgain=await req('GET','/packet/preview?version='+answer.json.view.packet.preview_version);
+  check.ok(pdfText(unsignedAgain.bytes).includes('YOUR MAILING INSTRUCTIONS'),'hand-signing instructions return after explicit removal');
+  return {typed_signature:true,exact_approved_pdf:true,live_charge:false,postal_dispatch:false};
+}
+module.exports={id:'gu-packet-signature',title:'Owned signature consent and exact signed packet approval',run};

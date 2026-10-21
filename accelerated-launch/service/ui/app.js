@@ -2355,12 +2355,13 @@ function renderPacketBlock(pv) {
       <pre id="packet-preview" hidden>${esc(packet.correspondence_preview || '')}</pre>
       ${packet.preview_ready && packet.letter_preview_url ? `<div id="packet-pdf-review"><div class="packet-review-choices"></div><div id="packet-all-pages" aria-label="Complete editable dispute packet"><p role="status">Preparing all packet pages...</p></div></div>` : ''}
       <div id="packet-action-bar">${packet.approval_stale ? '<p class="note stop">The packet changed since approval; review and approve it again.</p>' : ''}<p class="evidence" id="${packet.approved ? 'packet-approved-status' : 'packet-action-help'}">${packet.approved ? 'Your packet is approved. You can print or download it.' : packet.preview_ready ? 'Check every page, tick the box below, then approve this version to enable printing and downloading.' : 'Complete your issue and document choices in the previous steps, then save and review your packet before approving.'}</p>
+      ${packet.preview_ready ? `<section class="note" aria-labelledby="packet-signature-title"><h4 id="packet-signature-title">Sign before we mail</h4><p>You can add a typed signature to your letter here. Then check every page of the signed PDF and approve it. You can also download an unsigned packet and sign it by hand.</p>${packet.signature ? `<p>${packet.signature.current ? 'Signature added' : 'Your packet changed. Add your signature again'}: ${esc(packet.signature.name)} · ${esc(packet.signature.date)}</p>` : ''}<label for="packet-signature-name">Type your full name as your signature</label><input id="packet-signature-name" maxlength="120" autocomplete="name" value=""><label for="packet-signature-date">Signature date</label><input id="packet-signature-date" type="date" value="${esc(packet.letter_date || localLetterDate())}"><label><input id="packet-signature-consent" type="checkbox">I intend this typed name to be my signature on this letter.</label><button id="packet-signature-save" class="secondary" type="button">Add signature and review signed PDF</button>${packet.signature ? '<button id="packet-signature-remove" class="secondary" type="button">Remove signature</button>' : ''}<p class="evidence">The signed PDF excludes the instruction sheet. A typed signature does not guarantee a bureau will accept a packet.</p></section>` : ''}
       <label><input id="packet-preview-reviewed" type="checkbox" ${packet.approved ? 'checked' : ''} ${(packet.preview_ready ?? Boolean(packet.selected_count && packet.correspondence_preview)) ? '' : 'disabled'}>I have checked every page of my packet</label>
       <button class="primary" id="packet-approve" disabled ${packet.approved ? 'hidden' : ''}>Approve this version</button>
       <button class="secondary" id="packet-print" ${(packet.print_available ?? packet.download_available) ? '' : 'disabled'}>Open PDF to print</button>
       <button class="secondary" id="packet-download" ${packet.download_available ? '' : 'disabled'}>Download your PDF</button>
-      ${surface?.mailing_simulation === true ? '<section id="packet-mailing-simulation" class="note" aria-label="Optional packet mailing simulation"></section>' : ''}
-      ${packet.download_available ? `<p class="note" id="packet-ready-status">The first page is instructions for you only. Remove it before mailing. Print the remaining pages, sign and date your letter, and mail them to the bureau address in your letter. Keep a copy.</p>` : ''}
+      ${surface?.mailing_simulation === true || surface?.mailing_internal === true ? '<section id="packet-mailing-simulation" class="note" aria-label="Optional packet mailing"></section>' : ''}
+      ${packet.download_available ? `<p class="note" id="packet-ready-status">${packet.signature?.current ? 'Your approved PDF includes your typed signature and excludes the instruction sheet. Keep a copy of this exact packet.' : 'The first page is instructions for you only. Remove it before mailing. Print the remaining pages, sign and date your letter, and mail them to the bureau address in your letter. Keep a copy.'}</p>` : ''}
       ${surface?.preview_mode === true && packet.download_available ? '<p class="note demo"><strong>Staging preview:</strong> See how an optional paid mailing step could look. This sample cannot take payment or mail your packet.<br><a href="/mailing-preview.html" target="_blank" rel="noopener">Review the mailing design</a></p>' : ''}
     </div></div></div></div>`;
 }
@@ -2481,7 +2482,7 @@ async function wirePacket(panel) {
       other_identity_details: el('packet-other-identity').value,
       document_dates: Object.fromEntries(document_ids.map(id => [id, el('packet-document-date-' + id).value])) };
   };
-  let edits = 0, nonDateEdits = 0;
+  let edits = 0, nonDateEdits = 0, signatureDraft = false;
   let letterEdited = false, resetLetter = false, annotationsEdited = false;
   let dateEdited = false, dateResetConfirmed = false, acceptedDate = dateInput?.value;
   let dateSnapshot = null, dateInputEdits = 0;
@@ -2558,27 +2559,45 @@ async function wirePacket(panel) {
   const approve = el('packet-approve');
   if (approve) approve.onclick = () => run(async () => {
     ensureOrigin();
-    if (!previewCurrent || edits || !el('packet-preview-reviewed').checked) throw new Error('Save and read the current packet before approving it.');
-    const captured = edits, ensureCurrent = () => { ensureOrigin(); if (captured !== edits || !previewCurrent) throw cancelledAction(); };
+    if (!previewCurrent || edits || signatureDraft || !el('packet-preview-reviewed').checked) throw new Error('Save and read the current packet before approving it.');
+    const captured = edits, ensureCurrent = () => { ensureOrigin(); if (captured !== edits || signatureDraft || !previewCurrent) throw cancelledAction(); };
     await api('POST', `/api/cases/${caseId}/packet/approve`, { reviewed_version: pv.packet.preview_version }); ensureCurrent();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
-    state.notice = 'Packet approved. Download your PDF, print it and sign where shown.';
+      state.notice = pv.packet.signature?.current ? 'Signed packet approved. You can download this exact PDF.' : 'Packet approved. Download your PDF, print it and sign where shown.';
   });
   const reviewed = el('packet-preview-reviewed');
-  if (reviewed) reviewed.onchange = () => { ensureOrigin(); if (approve) approve.disabled = !previewCurrent || edits > 0 || !reviewed.checked || pv.packet.approved; };
+  const saveSignature=el('packet-signature-save'), removeSignature=el('packet-signature-remove');
+  const signatureAction = signature => run(async () => {
+    ensureOrigin();
+    if (!previewCurrent || edits) throw Error('Save your changes and review the current packet before changing its signature.');
+    await currentRequest(ensureOrigin,'POST',`/api/cases/${caseId}/packet/signature`,{reviewed_version:pv.packet.preview_version,signature});
+    const answer=await currentRequest(ensureOrigin,'GET',`/api/cases/${caseId}`);
+    ensureOrigin();state.view=answer.view;
+    state.notice=signature ? 'Signature added. Check every page of the signed PDF, then approve this version.' : 'Signature removed. Review your packet again before approving.';
+  });
+  if(saveSignature)saveSignature.onclick=()=>{
+    if(!el('packet-signature-consent').checked){state.notice='Tick the signature consent box before adding your signature.';render();return;}
+    signatureAction({name:el('packet-signature-name').value,date:el('packet-signature-date').value,consent:true});
+  };
+  if(removeSignature)removeSignature.onclick=()=>signatureAction(null);
+  for(const id of ['packet-signature-name','packet-signature-date','packet-signature-consent'])if(el(id))el(id).addEventListener('input',()=>{
+    signatureDraft=true;if(reviewed)reviewed.checked=false;
+    for(const action of ['packet-approve','packet-download','packet-print'])if(el(action))el(action).disabled=true;
+  });
+  if (reviewed) reviewed.onchange = () => { ensureOrigin(); if (approve) approve.disabled = !previewCurrent || edits > 0 || signatureDraft || !reviewed.checked || pv.packet.approved; };
 
   const dl = el('packet-download');
   if (dl) dl.onclick = () => {
     try { ensureOrigin(); } catch { return; }
-    if (!previewCurrent || edits || !pv.packet.download_available) return;
+    if (!previewCurrent || edits || signatureDraft || !pv.packet.download_available) return;
     note(`GET /api/cases/${caseId}/packet-download -> browser download`);
-    return run(()=>retrieveFile(`/api/cases/${caseId}/packet-download`,'CRP-dispute-packet.pdf'),{redraw:false,canResume:()=>!edits&&pv.packet.download_available});
+    return run(()=>retrieveFile(`/api/cases/${caseId}/packet-download`,'CRP-dispute-packet.pdf'),{redraw:false,canResume:()=>!edits&&!signatureDraft&&pv.packet.download_available});
   };
   const print = el('packet-print');
   if (print) print.onclick = () => {
     try { ensureOrigin(); } catch { return; }
-    if (!previewCurrent || edits || !(pv.packet.print_available ?? pv.packet.download_available)) return;
-    const preview=window.open('about:blank','_blank');if(!preview){state.error='Allow this window to open so you can print your packet.';render();return;}preview.opener=null;return run(()=>retrieveFile(`/api/cases/${caseId}/packet-print`,'CRP-dispute-packet.pdf',preview),{redraw:false,canResume:()=>!edits&&(pv.packet.print_available??pv.packet.download_available)});
+    if (!previewCurrent || edits || signatureDraft || !(pv.packet.print_available ?? pv.packet.download_available)) return;
+    const preview=window.open('about:blank','_blank');if(!preview){state.error='Allow this window to open so you can print your packet.';render();return;}preview.opener=null;return run(()=>retrieveFile(`/api/cases/${caseId}/packet-print`,'CRP-dispute-packet.pdf',preview),{redraw:false,canResume:()=>!edits&&!signatureDraft&&(pv.packet.print_available??pv.packet.download_available)});
   };
 
   /* Editing the correspondence details or the wording after approval marks the visible packet changed, so the
@@ -2714,7 +2733,7 @@ async function wirePacket(panel) {
       syncLetterDisabled();
       previewCurrent = edits === 0;
       if (reviewed) reviewed.disabled = !previewCurrent;
-      if (approve) approve.disabled = !previewCurrent || !reviewed?.checked || pv.packet.approved;
+      if (approve) approve.disabled = !previewCurrent || signatureDraft || !reviewed?.checked || pv.packet.approved;
       if (dl) dl.disabled = !previewCurrent || !pv.packet.download_available;
       if (print) print.disabled = !previewCurrent || !(pv.packet.print_available ?? pv.packet.download_available);
     } catch (error) {
@@ -2742,10 +2761,10 @@ async function wirePacket(panel) {
       if (el('packet-action-help')) el('packet-action-help').textContent = 'Save your corrections and check every packet page before approving, printing or downloading.';
     }
   }
-  if (surface?.mailing_simulation === true && el('packet-mailing-simulation') && window.CRP_PACKET_MAILING) {
+  if ((surface?.mailing_simulation === true || surface?.mailing_internal === true) && el('packet-mailing-simulation') && window.CRP_PACKET_MAILING) {
     window.CRP_PACKET_MAILING.mount({ root: el('packet-mailing-simulation'), caseId,
-      version: pv.packet.approved_version, request: (method,path,body) => currentRequest(ensureOrigin,method,path,body),
-      ensure: ensureOrigin, canRequest: () => previewCurrent && edits === 0 && pv.packet.approved });
+      live:surface?.mailing_internal === true, testMode:surface?.mailing_test_mode === true, version: pv.packet.approved_version, request: (method,path,body) => currentRequest(ensureOrigin,method,path,body),
+      ensure: ensureOrigin, canRequest: () => previewCurrent && !signatureDraft && edits === 0 && pv.packet.approved });
   }
 }
 

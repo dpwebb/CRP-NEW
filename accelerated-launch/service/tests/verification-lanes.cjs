@@ -13,6 +13,10 @@ LANE_IDS.security.unshift('gh-audit-billing-lifecycle', 'gj-audit-maintenance', 
 LANE_IDS.browser.unshift('gi-audit-consumer-flow');
 LANE_IDS.consumer.unshift('gi-audit-consumer-flow', 'gk-audit-api-correctness', 'gl-remaining-consumer-flow');
 LANE_IDS.security.unshift('gl-inline-packet-pages');
+LANE_IDS.security.unshift('gu-packet-signature');
+LANE_IDS.security.unshift('gv-mailing-internal-boundaries');
+LANE_IDS.consumer.unshift('gv-mailing-internal-boundaries');
+LANE_IDS.consumer.unshift('gu-packet-signature');
 LANE_IDS.consumer.unshift('gl-inline-packet-pages');
 LANE_IDS.security.unshift('gn-wizard-deletion-corrections');
 LANE_IDS.security.unshift('go-homepage-signin-localization');

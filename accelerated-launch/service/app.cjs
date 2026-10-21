@@ -194,6 +194,10 @@ const ROUTES = Object.freeze([
      deliberately NOT entitlement-gated — they are how an account becomes entitled. */
   ['GET', '/api/policy', false, 'policy'],
   ['POST', '/api/billing/events', false, 'billingEvent'],
+  ['POST', '/api/mail-ops/internal/packet', false, 'mailingInternalPacket'],
+  ['POST', '/api/mail-ops/internal/refund', false, 'mailingInternalRefund'],
+  ['POST', '/api/mail-ops/internal/catalog', false, 'mailingInternalCatalog'],
+  ['POST', '/api/mail-ops/internal/cancel', false, 'mailingInternalCancel'],
   ['GET', '/api/billing/plans', true, 'billingPlans'],
   ['POST', '/api/billing/checkout', true, 'openCheckout'],
   ['POST', '/api/billing/confirm', true, 'confirmCheckout'],
@@ -224,6 +228,7 @@ const ROUTES = Object.freeze([
   ['POST', '/api/cases/:caseId/packet/select', true, 'packetSelect'],
   ['POST', '/api/cases/:caseId/packet/wording', true, 'packetWording'],
   ['POST', '/api/cases/:caseId/packet/letter', true, 'packetLetter'],
+  ['POST', '/api/cases/:caseId/packet/signature', true, 'packetSignature'],
   ['POST', '/api/cases/:caseId/packet/annotations', true, 'packetAnnotations'],
   ['POST', '/api/cases/:caseId/packet/correspondence', true, 'packetCorrespondence'],
   ['POST', '/api/cases/:caseId/packet/reports', true, 'packetReports'],
@@ -313,7 +318,9 @@ function loadJurisdictionSurface() {
       payment_mode: payment.key_mode || null
     },
     preview_mode: process.env.CRP_DEPLOYMENT_ENV === 'staging',
-    mailing_simulation: require('./mail-ops-link.cjs').configuration().enabled,
+    mailing_simulation: require('./mail-ops-link.cjs').configuration().enabled && !require('./mail-ops-link.cjs').configuration().internal,
+    mailing_internal: require('./mail-ops-internal.cjs').configuration().enabled,
+    mailing_test_mode: require('./mail-ops-internal.cjs').configuration().enabled && !require('./mail-ops-internal.cjs').configuration().livemode,
     retention_plain: retention.policyView().plain,
     upload_limits: uploads.uploadLimits(),
     payment_actions: { cancel_unfinished_checkout: true },
@@ -744,6 +751,14 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency) {
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
     },
 
+    packetSignature: ({ params, body, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      packets.setSignature(store, actor, params.caseId, body?.signature, body?.reviewed_version);
+      logger.log({ event: 'PACKET_SIGNATURE_RECORDED', outcome: 'OK' });
+      return { status:200, json:{ok:true,view:packets.packetView(store,actor,params.caseId)} };
+    },
+
     packetLetter: ({ params, body, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
       entitlement.requireSubscriberFeature(store, actor);
@@ -924,6 +939,10 @@ function createService(options) {
     Object.fromEntries(['Status','Quote','Confirm','Cancel'].map(action => ['mailing' + action, async ({actor,params,body}) => ({
       status: 200, json: { ok: true, ...await mailOps[action.toLowerCase()](actor, params.caseId, body) }
     })])),
+    Object.fromEntries(['Packet','Refund','Catalog','Cancel'].map(action=>['mailingInternal'+action,async ({rawBody,headers,body})=>{
+      if(!mailOps.fulfillment)throw new ServiceError('NOT_AUTHORIZED');
+      return {status:200,json:await mailOps.fulfillment({rawBody,headers,body,operation:action.toLowerCase()})};
+    }])),
     {requestPasswordReset: ({body}) => ({status:200,json:{ok:true,...passwordReset.request(body)}}),
       completePasswordReset: ({body}) => ({status:200,json:{ok:true,...passwordReset.complete(body)},headers:{'Set-Cookie':[sessionCookie('',0),`${ADMIN_COOKIE}=; HttpOnly; SameSite=Strict; Path=/api/admin/; Max-Age=0${process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : ''}`]}}),
       contactLocation: async ({req}) => {const geo=require('./pricing-location.cjs');let value=null;try{value=await(opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}const country=typeof value==='string'?value:value?.country;const rawRegion=typeof value==='object'?value?.region:null;const region=surface.regions.find(r=>r.country===country&&(r.value===rawRegion||r.value===country+'-'+rawRegion));return {status:200,json:{ok:true,country:surface.countries.some(c=>c.value===country)?country:null,region:region?.value||null,source:'IP_SUGGESTION'}};},
@@ -946,6 +965,13 @@ function createService(options) {
       }}
   );
 
+  if(mailOps.webhook){
+    const subscriptionEvent=handlers.billingEvent;
+    handlers.billingEvent=async input=>{
+      const result=await mailOps.webhook(input.rawBody,input.headers);
+      return result ? {status:200,json:{ok:true,event:result}} : subscriptionEvent(input);
+    };
+  }
   /**
    * Everything a restart must do before serving anyone: reconcile the state file, expire what has lapsed, and
    * clear what a crash left behind. Reported rather than performed silently, so the operator can see it.

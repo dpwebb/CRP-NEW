@@ -174,7 +174,7 @@ function issueContent(issue) {
   return JSON.stringify(material);
 }
 
-function canonicalVersion(packetRow, resultRow, selectedIssues) {
+function canonicalVersion(packetRow, resultRow, selectedIssues, unsigned = false) {
   const identity = reportIdentity(resultRow) || {};
   // Display order is material to the numbered letter requests.
   const ordered = selectedIssues;
@@ -186,6 +186,7 @@ function canonicalVersion(packetRow, resultRow, selectedIssues) {
     `issues:${ordered.map(issueContent).join(';')}`,
     `wording:${packetRow.wording || ''}`,
     `letter:${packetRow.letter_text || ''}`,
+    ...(!unsigned && packetRow.signature ? [`signature:${JSON.stringify(packetRow.signature)}`] : []),
     // Legacy automatic dates retain their exact approval identity. Only a new
     // consumer date choice adds material input to that identity.
     ...(packetRow.letter_date_confirmed === true ? [`letter-date:${packetRow.letter_date}`] : []),
@@ -253,6 +254,8 @@ function packetView(store, actor, caseId) {
       selected_count: packet ? (packet.selected_issue_ids || []).length : 0,
       wording: packet ? packet.wording : null,
       letter_text: packet?.letter_text || null,
+      signature: packet?.signature ? { name: packet.signature.name, date: packet.signature.date,
+        current: Boolean(row && selectedIssues.length && packet.signature.content_version === canonicalVersion(packet, row, selectedIssues, true)) } : null,
       letter_date: packet ? consumerLetter.letterDateFor(packet, row) : null,
       letter_date_confirmed: packet?.letter_date_confirmed === true,
       annotations: (packet?.annotations || []).filter(annotation => packet.report_snapshot?.copies?.some(copy =>
@@ -469,6 +472,29 @@ function setLetter(store, actor, caseId, text) {
 }
 
 /** Consumer marks are an overlay on owned report copies, never edited report facts. */
+function setSignature(store, actor, caseId, input, expectedVersion) {
+  if (typeof expectedVersion !== 'string') throw new ServiceError('INVALID_REQUEST');
+  const { packet, row, selected } = resolvePreview(store, actor, caseId, expectedVersion);
+  requireCorrespondence(packet);
+  let signature = null;
+  if (input !== null) {
+    if (!input || Object.keys(input).sort().join(',') !== 'consent,date,name' || input.consent !== true
+      || typeof input.name !== 'string' || !input.name.trim() || input.name.trim().length > 120
+      || /[\x00-\x1f\x7f]/.test(input.name) || typeof input.date !== 'string'
+      || !/^\d{4}-\d{2}-\d{2}$/.test(input.date) || !Number.isFinite(Date.parse(input.date+'T00:00:00Z'))
+      || new Date(input.date+'T00:00:00Z').toISOString().slice(0,10) !== input.date) throw new ServiceError('INVALID_REQUEST');
+    signature = { method:'TYPED_NAME', name:input.name.trim().normalize('NFC'), date:input.date,
+      consented_at:nowIso(), content_version:canonicalVersion(packet, row, selected, true) };
+  }
+  // Render before saving: unsupported characters or attachments must not leave a half-signed packet.
+  completePdf(store, actor, { ...packet, signature }, row, selected);
+  return store.update(state => {
+    const live=state.packets.find(item=>item.packet_id===packet.packet_id);
+    live.signature=signature;live.approved_version=null;live.approved_at=null;live.approved_pdf_sha256=null;live.updated_at=nowIso();
+    return live;
+  });
+}
+
 function setAnnotations(store, actor, caseId, annotations, expectedVersion) {
   const review = packetReview(store, actor, caseId, expectedVersion);
   if (!Array.isArray(annotations) || annotations.length > 128) throw new ServiceError('INVALID_REQUEST');
@@ -571,6 +597,7 @@ function approvePacket(store, actor, caseId, expectedVersion, requirePostal) {
   requirePurpose(owned.country, selected, packet.support);
   /* A usable piece of correspondence needs its necessary details before it can be approved. */
   requireCorrespondence(packet);
+  if (packet.signature && packet.signature.content_version !== canonicalVersion(packet, row, selected, true)) throw new ServiceError('PACKET_APPROVAL_STALE');
   if (requirePostal && (packet.support?.channel !== 'POSTAL' || !packet.support_snapshot?.requirements?.postal)) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   if (packet.support_snapshot?.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   if (expectedVersion != null && canonicalVersion(packet, row, selected) !== expectedVersion) throw new ServiceError('PACKET_APPROVAL_STALE');
@@ -780,6 +807,7 @@ function reportAttachmentManifest(packet) {
   return packet?.report_snapshot?.manifest || [];
 }
 function printingInstructions(packet) {
+  if (packet?.signature) return ['Check every page of your approved signed PDF.', 'Keep a copy of the exact packet you send and your mailing receipt.'];
   return [
     'The first PDF page is instructions for you only. Remove it before mailing.',
     'Check your packet, then print pages 2 onward: your letter and the included copies.',
@@ -828,6 +856,12 @@ function documentText(packet, row, selected) {
 }
 
 function completePdf(store, actor, packet, row, selected) {
+  const signed = packet.signature && packet.signature.content_version === canonicalVersion(packet, row, selected, true);
+  let letter = documentText(packet, row, selected);
+  if (signed) {
+    const marker = 'Signature: ________________________';
+    letter = letter.replace(marker, '');
+  }
   const documents = (packet.support?.document_ids || []).map(id => {
     const file = accountDocuments.getDocument(store, actor, id);
     return { bytes: file.bytes, content_type: file.document.content_type, filename: file.document.original_filename, label: file.document.document_type, file_id: id, uploaded_at: file.document.created_at };
@@ -835,7 +869,7 @@ function completePdf(store, actor, packet, row, selected) {
   const reports = (packet.report_snapshot?.copies || []).map(copy => ({ ...copy,
     filename: packet.report_snapshot.manifest?.find(item => item.file_id === copy.file_id)?.original_filename || '',
     annotations: (packet.annotations || []).filter(annotation => annotation.file_id === copy.file_id && copy.relevant_pages.includes(annotation.page)) }));
-  return composePacket({ letter_text: documentText(packet, row, selected), instructions: packet.support?.channel === 'POSTAL' ? [
+  return composePacket({ letter_text: letter, instructions: !signed && packet.support?.channel === 'POSTAL' ? [
     '1. Keep this instruction sheet for yourself. It is not part of the packet you send to the bureau.',
     '', '2. Check every remaining page. Make sure the letter, report pages and supporting copies are the ones you approved.',
     '', '3. Print pages 2 onward. Sign and date your letter where shown. If you change the letter, check the final version before sending.',
@@ -843,7 +877,7 @@ function completePdf(store, actor, packet, row, selected) {
     '', '5. Mail the packet to the bureau address shown on your letter.',
     '', '6. Keep a copy of what you sent and your mailing receipt, if you have one.'
   ].join('\n') : null,
-    reports, documents });
+    ...(signed?{signature:{name:packet.signature.name,date:packet.signature.date}}:{}),reports, documents });
 }
 
 /** The same approved PDF is opened for printing and included in the download. */
@@ -866,6 +900,7 @@ module.exports = {
   selectIssues,
   setWording,
   setLetter,
+  setSignature,
   setAnnotations,
   setCorrespondence,
   setSupport,
