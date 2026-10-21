@@ -2931,6 +2931,7 @@ function renderCase(panel) {
     <div class="obs" id="privacyInventory">Loading your stored documents and retention information…</div>
     <div class="obs">
       <h3>Deleting</h3>
+      ${surface?.mailing_internal === true ? '<p class="evidence">If you asked us to mail a packet, unfinished requests are cancelled or held before deletion. The mailing team keeps order and payment references to finish refunds or record posting that already happened. Deletion cannot recall a packet already posted.</p>' : ''}
       ${view ? `<p class="evidence"><strong>Report to delete:</strong> ${esc(deletionLabel)}</p>
       <p class="evidence">Deleting a report removes its uploaded files, saved results and packets from your account. Save any copies you need first.</p>
       <button class="danger" id="delete">Delete this report and its files</button>

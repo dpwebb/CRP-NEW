@@ -481,7 +481,7 @@ function setSignature(store, actor, caseId, input, expectedVersion) {
     if (!input || Object.keys(input).sort().join(',') !== 'consent,date,name' || input.consent !== true
       || typeof input.name !== 'string' || !input.name.trim() || input.name.trim().length > 120
       || /[\x00-\x1f\x7f]/.test(input.name) || typeof input.date !== 'string'
-      || !/^\d{4}-\d{2}-\d{2}$/.test(input.date) || !Number.isFinite(Date.parse(input.date+'T00:00:00Z'))
+      || !/^\d{4}-\d{2}-\d{2}$/.test(input.date) || Number(input.date.slice(0,4))<1 || !Number.isFinite(Date.parse(input.date+'T00:00:00Z'))
       || new Date(input.date+'T00:00:00Z').toISOString().slice(0,10) !== input.date) throw new ServiceError('INVALID_REQUEST');
     signature = { method:'TYPED_NAME', name:input.name.trim().normalize('NFC'), date:input.date,
       consented_at:nowIso(), content_version:canonicalVersion(packet, row, selected, true) };

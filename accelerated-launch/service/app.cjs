@@ -352,7 +352,7 @@ function availabilityFor(row) {
 }
 
 /** The consumer-facing handler set. Every consumer-visible string it returns came from another module. */
-function buildHandlers(store, logger, surface, pricingCurrency, registrationMailer, adminStore, googleSignIn) {
+function buildHandlers(store, logger, surface, pricingCurrency, registrationMailer, adminStore, googleSignIn, mailOps) {
   const ownerRoute = (account, token) => {
     const nextPath = adminStore && require('./admin-access.cjs').ownerSignInPath(adminStore, account, token);
     return nextPath === '/admin' ? { next_path: '/admin' } : {};
@@ -456,7 +456,8 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
         }
       };
       ensureAdministrationDeletionAllowed();
-      const result = await cases.deleteAccountSafely(store, actor, process.env, { beforeDelete: ensureAdministrationDeletionAllowed });
+      const remove=()=>cases.deleteAccountSafely(store, actor, process.env, { beforeDelete: ensureAdministrationDeletionAllowed });
+      const result = mailOps?.withDeletion ? await mailOps.withDeletion(actor,null,remove) : await remove();
       logger.log({ event: 'ACCOUNT_DELETED', outcome: 'OK', count: result.blobs_removed });
       return { status: 200, json: { ok: true, deleted: true, stored_files_removed: result.blobs_removed }, headers: { 'Set-Cookie': sessionCookie('', 0) } };
     },
@@ -544,7 +545,7 @@ function buildBillingHandlers(store, logger, pricingCurrency) {
 }
 
 /** Case, upload, evaluation, review and download handlers. */
-function buildCaseHandlers(store, logger, surface, pricingCurrency) {
+function buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps) {
   return {
     createCase: ({ body, actor }) => {
       const created = cases.createCase(store, actor, body);
@@ -576,7 +577,8 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency) {
 
     deleteCase: async ({ params, actor, body }) => {
       if (Object.keys(body || {}).some(key => key !== 'replace_dependent_letters')) throw new ServiceError('INVALID_REQUEST');
-      const removed = await cases.deleteCaseSafely(store, actor, params.caseId, process.env, body || {});
+      const remove=()=>cases.deleteCaseSafely(store, actor, params.caseId, process.env, body || {});
+      const removed = mailOps?.withDeletion ? await mailOps.withDeletion(actor,params.caseId,remove) : await remove();
       logger.log({ event: 'CASE_DELETED', outcome: 'OK', count: removed.blobs_removed });
       return { status: 200, json: { ok: true, ...removed } };
     },
@@ -933,8 +935,8 @@ function createService(options) {
   const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
   const handlers = Object.assign(
     {},
-    buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || require('./confirmation-mail.cjs').sender(), adminStore, googleSignIn),
-    buildCaseHandlers(store, logger, surface, pricingCurrency),
+    buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || require('./confirmation-mail.cjs').sender(), adminStore, googleSignIn, mailOps),
+    buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps),
     buildBillingHandlers(store, logger, pricingCurrency),
     Object.fromEntries(['Status','Quote','Confirm','Cancel'].map(action => ['mailing' + action, async ({actor,params,body}) => ({
       status: 200, json: { ok: true, ...await mailOps[action.toLowerCase()](actor, params.caseId, body) }

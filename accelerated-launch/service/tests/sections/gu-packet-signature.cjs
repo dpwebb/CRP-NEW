@@ -15,7 +15,7 @@ async function run(t,check){
   check.equal(unsigned.status,200,'unsigned packet remains available');
   check.ok(pdfText(unsigned.bytes).includes('YOUR MAILING INSTRUCTIONS'),'self-mailing retains its instruction sheet');
   const signature={name:'Fictional Morgan Sample',date:'2026-10-21',consent:true};
-  for(const invalid of [{...signature,consent:false},{...signature,name:'\nInjected'},{...signature,date:'2026-02-30'},{...signature,method:'CERTIFIED'}])
+  for(const invalid of [{...signature,consent:false},{...signature,name:'\nInjected'},{...signature,date:'2026-02-30'},{...signature,date:'0000-01-01'},{...signature,method:'CERTIFIED'}])
     check.equal((await req('POST','/packet/signature',{reviewed_version:unsignedVersion,signature:invalid})).status,400,'invalid or unconsented signature is refused');
   check.equal((await t.request('POST',base+'/packet/signature',{token:other.token,body:{reviewed_version:unsignedVersion,signature}})).status,403,'signature is restricted to the packet owner');
   check.equal((await req('POST','/packet/signature',{reviewed_version:'0'.repeat(64),signature})).status,409,'stale review cannot be signed');

@@ -23,6 +23,11 @@ async function run(t,check){
   check.ok(catalog.items.every(item=>item.address&&item.sources.length),'catalog carries address and source references for administrator review');
   let replay=false;try{await service.fulfillment({rawBody,headers,body,operation:'catalog'});}catch(error){replay=error.code==='NOT_AUTHORIZED';}check.ok(replay,'signed fulfillment requests reject nonce replay');
   let wrongPath=false;try{await service.fulfillment({rawBody,headers,body,operation:'refund'});}catch(error){wrongPath=error.code==='NOT_AUTHORIZED';}check.ok(wrongPath,'read-only catalog signatures cannot authorize refunds');
+  let finishDeletion;
+  const deleting=service.withDeletion({account_id:'fictional-deleting'},null,()=>new Promise(resolve=>{finishDeletion=resolve;}));
+  let blocked=false;try{await service.quote({account_id:'fictional-deleting'},'fictional-case',{reviewed_version:'0'.repeat(64)});}catch(error){blocked=error.code==='MAILING_ORDER_CHANGED';}
+  check.ok(blocked,'an account deletion in progress blocks a competing new mailing purchase');
+  finishDeletion('removed');check.equal(await deleting,'removed','the guarded deletion awaits its original deletion operation');
   for(const path of ['packet','refund','catalog','cancel'])check.equal((await t.request('POST','/api/mail-ops/internal/'+path,{body:{}})).status,403,'private fulfillment endpoints are unavailable without configured signed authority');
   return {external_provider_calls:0,production_mutations:0,live_charge:false,physical_dispatch:false};
 }
