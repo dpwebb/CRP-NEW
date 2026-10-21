@@ -33,7 +33,7 @@ const server = http.createServer((req, res) => {
     if (seo.discovery(pathname)) return dispatcher.handle(req, res);
     const asset = staticResponse(req, pathname);
     if (!asset) return refusal(res, 'NOT_FOUND', 404);
-    if (asset.public_homepage) return dispatcher.handle(req, res);
+    if (asset.public_homepage || asset.public_guide) return dispatcher.handle(req, res);
     if (asset.content_type.startsWith('text/html')) res.setHeader('X-Robots-Tag', 'noindex');
     const transfer = asset.content_type.startsWith('text/html') ? { payload: asset.text, headers: {} } : require('./public-transfer.cjs').representation(asset.text, asset.content_type, req.headers['accept-encoding']);
     res.writeHead(asset.status, { ...SECURITY_HEADERS, 'Content-Type': asset.content_type, 'Cache-Control': 'no-store', ...transfer.headers });

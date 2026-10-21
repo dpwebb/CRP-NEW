@@ -142,6 +142,20 @@ async function realServer(check) {
     });
     const stateFile = path.join(temp, 'private', 'state.json');
     const initialState = fs.readFileSync(stateFile);
+    const rights = require('../../credit-rights-guides.cjs');
+    const guideRoutes = Object.keys(rights.guides).map(country => rights.pathFor(country));
+    for (const route of guideRoutes) {
+      const response = await fetch(base + route, { headers: { 'Accept-Encoding': 'identity' } });
+      check.equal(response.status, 200, route + ': real server serves the rights guide');
+      check.equal(await response.text(), rights.render(rights.countryForPath(route)), route + ': real transport retains exact guide content');
+      check.equal(response.headers.get('x-robots-tag'), null, route + ': real production guide transport is indexable');
+      check.equal(response.headers.get('set-cookie'), null, route + ': guide does not create a session');
+      check.ok(!/google-analytics|googletagmanager/.test(response.headers.get('content-security-policy')), route + ': guide CSP remains Google-free');
+      const head = await fetch(base + route, { method: 'HEAD' });
+      check.equal(head.status, 200, route + ': real guide HEAD works');
+      check.equal(head.headers.get('x-robots-tag'), null, route + ': real production guide HEAD is indexable');
+      check.equal(await head.text(), '', route + ': real guide HEAD has no body');
+    }
     for (const [country, locale] of Object.entries(seo.LOCALES)) {
       const response = await fetch(base + locale.path); const html = await response.text();
       check.equal(response.status, 200, country + ': actual worker transport serves regional page');
@@ -159,7 +173,7 @@ async function realServer(check) {
     for (const route of ['/robots.txt', '/sitemap.xml']) check.equal((await fetch(base + route)).status, 200, route + ': discovery reaches real worker instead of static 404');
     const privatePage = await fetch(base + '/index.html');
     check.equal(privatePage.headers.get('content-encoding'), null, 'private application shell remains uncompressed');
-    for (const route of ['/au/', '/ca/', '/uk/', '/us/', '/story.css', '/credit-news.css', '/homepage.js', '/sitemap.xml']) {
+    for (const route of ['/au/', '/ca/', '/uk/', '/us/', '/story.css', '/credit-news.css', '/homepage.js', '/sitemap.xml', ...guideRoutes]) {
       const identity = await fetch(base + route, { headers: { 'Accept-Encoding': 'identity' } });
       const expected = Buffer.from(await identity.arrayBuffer());
       const compressed = await fetch(base + route, { headers: { 'Accept-Encoding': 'gzip' } });
