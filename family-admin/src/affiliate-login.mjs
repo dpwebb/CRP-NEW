@@ -82,15 +82,27 @@ export class AffiliateLogin {
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ grant_type: 'authorization_code', client_id: settings.clientId, code: flow.code, redirect_uri: flow.redirect, code_verifier: flow.verifier }).toString() });
     const token = tokens.id_token;
-    if (typeof token !== 'string' || token.length > 8192 || token.split('.').length !== 3) fail('AFFILIATE_IDENTITY_NOT_VERIFIED', 401);
+    const reject = reason => {
+      // Enum-only diagnostics: never log tokens, authorization codes or claims.
+      this.gateway.journal?.append('AFFILIATE_IDENTITY_REFUSED', {subject:session.subject,reason});
+      fail('AFFILIATE_IDENTITY_NOT_VERIFIED', 401);
+    };
+    if (typeof token !== 'string' || token.length > 8192 || token.split('.').length !== 3) reject('ID_TOKEN_FORMAT');
     let claims;
     try { claims = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8')); }
-    catch { fail('AFFILIATE_IDENTITY_NOT_VERIFIED', 401); }
-    if (claims.nonce !== flow.nonce || claims.iss !== settings.issuer ||
-        !(Array.isArray(claims.aud) ? claims.aud.includes(settings.clientId) && claims.azp === settings.clientId : claims.aud === settings.clientId) ||
-        !Number.isFinite(claims.exp) || claims.exp * 1000 <= this.now() ||
-        !Number.isFinite(claims.iat) || claims.iat * 1000 > this.now() + 30000 || claims.iat * 1000 < this.now() - 330000)
-      fail('AFFILIATE_IDENTITY_NOT_VERIFIED', 401);
+    catch { reject('ID_TOKEN_PAYLOAD'); }
+    if (!claims || typeof claims !== 'object' || Array.isArray(claims)) reject('ID_TOKEN_PAYLOAD');
+    if (claims.nonce !== flow.nonce) reject(typeof claims.nonce==='string'?'NONCE_MISMATCH':'NONCE_MISSING');
+    if (claims.iss !== settings.issuer) reject('ISSUER_MISMATCH');
+    const audiences=Array.isArray(claims.aud)?claims.aud:[claims.aud];
+    if (!audiences.length || audiences.some(x=>typeof x!=='string') || new Set(audiences).size!==audiences.length || !audiences.includes(settings.clientId)) reject('AUDIENCE_MISMATCH');
+    // OIDC permits an array with a single audience without azp. Multiple
+    // audiences require this client as authorized party; any supplied azp must match.
+    if ((audiences.length>1 || claims.azp!==undefined) && claims.azp!==settings.clientId) reject('AUTHORIZED_PARTY_MISMATCH');
+    if (!Number.isFinite(claims.exp) || claims.exp * 1000 <= this.now()) reject('TOKEN_EXPIRED');
+    if (!Number.isFinite(claims.iat)) reject('ISSUED_AT_INVALID');
+    if (claims.iat * 1000 > this.now() + 30000) reject('ISSUED_IN_FUTURE');
+    if (claims.iat * 1000 < this.now() - 330000) reject('ISSUED_TOO_EARLY');
     await this.gateway.connect(session, 'affiliate', { token });
     // connect passes the same token to native Affiliate /api/me for cryptographic
     // verification and exact configured subject/role checks before accepting it.

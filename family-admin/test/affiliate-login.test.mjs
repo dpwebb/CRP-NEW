@@ -8,10 +8,10 @@ function fixture() {
   const settings={issuer:'https://identity.example.test',clientId:'fixture-client'};
   const session={key:'primary-session-one',subject:'primary-account-one',links:{}};
   const config={origin:'https://admin.example.test',affiliateLogin:settings,bindings:{[session.subject]:{affiliate:{}}}};
-  const calls=[];let claims,active=true,rejectNative=false,exchanges=0;
+  const calls=[],diagnostics=[];let claims,active=true,rejectNative=false,exchanges=0;
   const now=()=>1_800_000_000_000;
   const token=()=>Buffer.from('{}').toString('base64url')+'.'+Buffer.from(JSON.stringify(claims)).toString('base64url')+'.fictional-signature';
-  const gateway={authorize:async s=>{if(!active || s!==session)throw Error('PRIMARY_REVOKED');},connect:async(s,app,body)=>{
+  const gateway={journal:{append:(event,details)=>diagnostics.push({event,...details})},authorize:async s=>{if(!active || s!==session)throw Error('PRIMARY_REVOKED');},connect:async(s,app,body)=>{
     // Contract stub only. Genuine Affiliate verifies this exact ID token with
     // its existing jose verifier and active DB membership on /api/me.
     if(rejectNative)throw Error('INVALID_NATIVE_SIGNATURE_OR_MEMBERSHIP');
@@ -28,7 +28,7 @@ function fixture() {
     exchanges++;return Response.json({id_token:token(),access_token:'discarded-fixture-access-token'});
   }});
   let flowUrl;
-  return {broker,session,calls,settings,config,now,
+  return {broker,session,calls,settings,config,now,diagnostics,
     async start(){flowUrl=new URL((await broker.start(session)).url);claims={iss:settings.issuer,aud:settings.clientId,sub:'affiliate-fixture-subject',nonce:flowUrl.searchParams.get('nonce'),iat:now()/1000,exp:now()/1000+300};return flowUrl;},
     callback(url=flowUrl){broker.callback(new URLSearchParams({state:url.searchParams.get('state'),code:'fictional-auth-code'}));},
     claims:()=>claims,revoke(){active=false;},refuseNative(){rejectNative=true;},exchanges:()=>exchanges};
@@ -40,6 +40,20 @@ test('Affiliate sign-in binds state PKCE nonce and original CRP session, then us
   assert.deepEqual(await f.broker.finish(f.session),{linked:true});assert.equal(f.calls.length,1);
   assert.equal(f.session.links.affiliate.bearer,f.calls[0].body.token);assert.equal(f.exchanges(),1);
   assert.throws(()=>f.callback(),/EXPIRED/);assert.deepEqual(await f.broker.finish(f.session),{pending:false});assert.equal(f.exchanges(),1);
+});
+test('single audience arrays and explicit authorized parties follow the OIDC contract',async()=>{
+  for(const shape of [c=>{c.aud=[c.aud];},c=>{c.azp=c.aud;},c=>{c.aud=[c.aud,'another-audience'];c.azp='fixture-client';}]){
+    const f=fixture();await f.start();shape(f.claims());f.callback();assert.deepEqual(await f.broker.finish(f.session),{linked:true});assert.equal(f.calls.length,1);
+  }
+  for(const shape of [c=>c.aud=[c.aud,'another-audience'],c=>c.azp='another-client',c=>{c.aud=[c.aud];c.azp='another-client';},c=>c.aud=[c.aud,c.aud]]){
+    const f=fixture();await f.start();shape(f.claims());f.callback();await assert.rejects(f.broker.finish(f.session),/IDENTITY_NOT_VERIFIED/);assert.equal(f.calls.length,0);assert.equal(f.exchanges(),1);
+  }
+});
+test('identity refusal diagnostics contain only an enum reason and primary subject',async()=>{
+  const f=fixture();await f.start();delete f.claims().nonce;f.callback();await assert.rejects(f.broker.finish(f.session),/IDENTITY_NOT_VERIFIED/);
+  assert.deepEqual(f.diagnostics,[{event:'AFFILIATE_IDENTITY_REFUSED',subject:f.session.subject,reason:'NONCE_MISSING'}]);
+  assert.equal(JSON.stringify(f.diagnostics).includes('id_token'),false);
+  assert.deepEqual(await f.broker.finish(f.session),{pending:false});assert.equal(f.exchanges(),1);
 });
 test('wrong state, callback issuer, duplicate callback and unrelated primary session cannot connect',async()=>{
   const f=fixture(),url=await f.start();assert.throws(()=>f.broker.callback(new URLSearchParams('state=wrong&code=x')),/EXPIRED/);
