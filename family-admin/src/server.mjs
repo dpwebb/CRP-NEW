@@ -6,6 +6,7 @@ import { verifyRelease } from "./release.mjs";
 import { configuration } from "./config.mjs";
 import { Journal } from "./journal.mjs";
 import { Gateway } from "./gateway.mjs";
+import { AffiliateLogin } from "./affiliate-login.mjs";
 const publicRoot = new URL("../public/", import.meta.url);
 const messages = {
   SESSION_REQUIRED: "Sign in to the family workspace.",
@@ -56,7 +57,8 @@ async function body(req) {
 export function createPortal(raw, options = {}) {
   const config = configuration(raw),
     journal = options.journal || new Journal(config.auditDirectory),
-    gateway = new Gateway(config, journal, options);
+    gateway = new Gateway(config, journal, options),
+    affiliateLogin = new AffiliateLogin(config, gateway, options);
   const assets = new Map(
     [
       ["/", ["index.html", "text/html; charset=utf-8"]],
@@ -114,6 +116,10 @@ export function createPortal(raw, options = {}) {
         json(res, 200, result.data, { "set-cookie": result.cookie });
         return;
       }
+      if (path === "/auth/affiliate/callback" && req.method === "GET") {
+        affiliateLogin.callback(url.searchParams);
+        res.writeHead(303, { location: "/" }); res.end(); return;
+      }
       const session = gateway.getSession(req);
       if (!["GET", "HEAD"].includes(req.method)) gateway.csrf(req, session);
       if (path === "/api/unlock" && req.method === "POST") {
@@ -121,6 +127,7 @@ export function createPortal(raw, options = {}) {
         return;
       }
       if (path === "/api/logout" && req.method === "POST") {
+        affiliateLogin.forget(session);
         await gateway.logout(session);
         json(
           res,
@@ -131,8 +138,16 @@ export function createPortal(raw, options = {}) {
         return;
       }
       if (path === "/api/session" && req.method === "GET") {
-        json(res, 200, await gateway.session(session));
+        const data = await gateway.session(session);
+        data.applications.affiliate.browserSignIn = !!config.affiliateLogin;
+        json(res, 200, data);
         return;
+      }
+      if (path === "/api/connections/affiliate/signin" && req.method === "POST") {
+        json(res, 200, await affiliateLogin.start(session)); return;
+      }
+      if (path === "/api/connections/affiliate/finish" && req.method === "POST") {
+        json(res, 200, await affiliateLogin.finish(session)); return;
       }
       if (path === "/api/audit" && req.method === "GET") {
         const principal = await gateway.authorize(session);

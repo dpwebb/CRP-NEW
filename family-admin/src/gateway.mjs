@@ -325,6 +325,7 @@ export class Gateway {
           {
             configured: !!this.config.upstreams[app],
             linked: app === "crp" || !!s.links[app],
+            ...(app === "affiliate" ? { browserSignIn: !!this.config.affiliateLogin } : {}),
             bindingConfigured: app === "crp" || !!this.binding(s, app),
             url: this.config.upstreams[app]
               ? this.config.upstreams[app] +

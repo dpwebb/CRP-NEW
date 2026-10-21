@@ -60,6 +60,19 @@ export function configuration(raw) {
     upstreams[app] = url.origin;
   }
   const bindings = structuredClone(raw.bindings || {});
+  let affiliateLogin;
+  if (raw.affiliateLogin) {
+    const value = raw.affiliateLogin;
+    const issuers = {
+      staging: "https://gorgeous-monkfish-8241.clerk.accounts.dev",
+      production: "https://clerk.affiliates.creditregulatorpro.com",
+    };
+    if (env === "local" || value.issuer !== issuers[env] ||
+        typeof value.clientId !== "string" || !/^[A-Za-z0-9_-]{8,128}$/.test(value.clientId) ||
+        typeof value.clientSecret !== "string" || value.clientSecret.length < 16 || value.clientSecret.length > 4096)
+      throw Error("AFFILIATE_IDENTITY_CONFIGURATION_INVALID");
+    affiliateLogin = { issuer: value.issuer, clientId: value.clientId, clientSecret: value.clientSecret };
+  }
   for (const [subject, apps] of Object.entries(bindings)) {
     if (!/^acc_[a-f0-9]{24}$/.test(subject))
       throw Error("INVALID_CRP_ACCOUNT_BINDING");
@@ -109,6 +122,7 @@ export function configuration(raw) {
     host: origin.host,
     upstreams,
     bindings,
+    affiliateLogin,
     auditDirectory: raw.auditDirectory,
     secure: origin.protocol === "https:",
     port:

@@ -793,6 +793,15 @@ function connectDialog(app) {
     );
     return;
   }
+  if (app === "affiliate" && status.browserSignIn) {
+    dialog("Connect Affiliate Program",
+      "Sign in with your existing Affiliate account. Your current membership will be checked before connection.",
+      [], async () => {
+        const result = await api("/api/connections/affiliate/signin", {method:"POST",body:{}});
+        location.assign(result.url);
+      }, "Continue to Affiliate sign-in");
+    return;
+  }
   dialog(
     "Connect " + labels[app],
     app === "mail"
@@ -925,6 +934,17 @@ setInterval(async () => {
     showLogin(e.message);
   }
 }, 30000);
-api("/api/session")
-  .then(unlocked)
-  .catch(() => showLogin());
+(async () => {
+  let data;
+  try { data = await api("/api/session"); } catch { showLogin(); return; }
+  S.csrf = data.csrf;
+  let message = "";
+  if (data.applications.affiliate.browserSignIn && !data.applications.affiliate.linked) {
+    try {
+      const result = await api("/api/connections/affiliate/finish", {method:"POST",body:{}});
+      if (result.linked) data = await api("/api/session");
+    } catch (e) { message = e.message; }
+  }
+  unlocked(data);
+  if (message) notice(message);
+})();
