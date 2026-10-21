@@ -30,6 +30,11 @@ async function run(t,check){
   check.ok(existing.querySelectorAll('button').some(b=>b.id==='packet-mailing-cancel'),'an existing inactive-jurisdiction request can still be canceled');
   check.ok(!existing.querySelectorAll('button').some(b=>['packet-mailing-quote','packet-mailing-confirm','packet-mailing-checkout'].includes(b.id)),'inactive jurisdiction exposes no new quote, payment or confirmation');
   check.equal(existing.children[0].textContent,'Your mailing request','existing-order heading does not advertise an inactive service');
+  const quote=mount(async()=>({available:true,order:null,quote:{quote_id:'fictional-quote',amount_minor:2200,currency:'USD',expires_at:Date.now()+600000,page_count:6,recipient_label:'Fictional U.S. bureau',recipient_address:'Fictional U.S. address',origin_country:'CA',service:'Packet printing and postal mailing'}}));await turn();
+  const text=element=>[element.textContent,...element.children.map(child=>child instanceof Element?text(child):child.textContent||'')].join(' ');
+  check.ok(!/Printing and posting country|Canada/.test(text(quote)),'consumer confirmation does not display the internal posting origin');
+  check.ok(/Fictional U.S. bureau/.test(text(quote)) && /USD/.test(text(quote)),'consumer still sees the actual recipient and quoted currency');
+  check.ok(quote.querySelectorAll('input').some(input=>input.id==='packet-mailing-authorize'),'exact-packet mailing authorization is retained');
   return {inactive_hidden:true,active_offered:true,existing_orders_retained:true,external_calls:0};
 }
 module.exports={id:'gw-mailing-jurisdiction-visibility',title:'Jurisdiction mailing visibility and existing-order continuity',run};

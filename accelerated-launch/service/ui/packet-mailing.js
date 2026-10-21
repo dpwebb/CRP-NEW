@@ -48,7 +48,6 @@
         content.append(node('h4',`${live?'Mailing total':'Sample mailing price'}: ${new Intl.NumberFormat('en',{style:'currency',currency:q.currency,currencyDisplay:'code'}).format(q.amount_minor/100)}`),
           node('p',`Recipient: ${q.recipient_label}. ${q.recipient_address}`),node('p',`${q.page_count} reviewed PDF pages. ${q.service}.${live?' Staff verify the packet and postal route before posting.':' Postal support is not verified.'}`),
           node('p',`Price expires: ${new Date(q.expires_at).toLocaleString()}.`));
-        if(live)content.append(node('p',`Printing and posting country: ${{CA:'Canada',US:'United States',GB:'United Kingdom',AU:'Australia'}[q.origin_country]||q.origin_country}.`));
         const approveLabel=node('label'),approve=node('input');approve.type='checkbox';approve.id='packet-mailing-authorize';
         approveLabel.append(approve,document.createTextNode(live?' I authorize CRP staff to print and mail this exact approved signed packet to this recipient. This authorization expires in seven days if it has not been posted.':' I authorize this simulated mailing of my approved packet to the recipient shown, at this sample price.'));
         const payLabel=node('label'),pay=node('input');pay.type='checkbox';pay.id='packet-mailing-payment';

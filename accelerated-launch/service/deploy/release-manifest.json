@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-21T12:48:52.635Z",
+  "generated_at": "2026-10-21T16:57:51.371Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 116,
-      "digest": "ACBBA84C6415BB5A19E73E89DB3CA2A6F67EAD5C900B25D80353496CB7029952",
+      "digest": "5E31F221EF43AB38E7EF25B020046E0FBFDC8105F5D28919F8ADB25DA5B734D7",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -326,7 +326,7 @@
         },
         {
           "file": "accelerated-launch/service/mail-ops-internal.cjs",
-          "sha256": "63A8E1061DA84FB97E5501574FF68A18EB98F5E386A98C66A29E3E19F64295CF"
+          "sha256": "AFBCDE27B36FF3153880D0E6D5F15FFB610EF24269909FE8B31F2878BEDAF3E2"
         },
         {
           "file": "accelerated-launch/service/mail-ops-link.cjs",
@@ -650,7 +650,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 39,
-      "digest": "FC99AE09D98DAFFAF16AACA6AF5A44059D5C824EC1DFF940CE3E13F28D6EC848",
+      "digest": "D7B484CB4AB09340F0F9B788D01DD030ECC81AC4C3E3C729377BC4F875C3EC9B",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -742,7 +742,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/packet-mailing.js",
-          "sha256": "90390EBF1DDDD5B7DEEAE1E5A4CC3D85767EBEC8AE59646847C37B8744C618BD"
+          "sha256": "9103FDCD58160A85FAB361C4E2861CCB1EE58BB1270F8FD65B3CD8BCC3D3AE66"
         },
         {
           "file": "accelerated-launch/service/ui/packet-review.js",
@@ -811,6 +811,6 @@
       ]
     }
   ],
-  "manifest_digest": "87194F036D8BDDC8ED5EC0962F23DB1909163D45AC147C6D0E8EB6E4AD12AE43",
+  "manifest_digest": "B3A033D2550776F1744307B28791783A16370DC99361F5B7B4DE6D9AB108D8B2",
   "total_file_count": 191
 }
