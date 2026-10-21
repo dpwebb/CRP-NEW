@@ -1,6 +1,8 @@
 import http from "node:http";
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
+import { verifyRelease } from "./release.mjs";
 import { configuration } from "./config.mjs";
 import { Journal } from "./journal.mjs";
 import { Gateway } from "./gateway.mjs";
@@ -100,6 +102,7 @@ export function createPortal(raw, options = {}) {
           ok: true,
           application: "crp-family-admin",
           environment: config.environment,
+          build: options.provenance || { release: "local-unfrozen" },
         });
         return;
       }
@@ -250,7 +253,8 @@ if (
         "",
       ),
     ),
-    app = createPortal(config);
+    provenance = config.environment === "local" ? undefined : verifyRelease(fileURLToPath(new URL("../", import.meta.url))),
+    app = createPortal(config, { provenance });
   app.server.listen(app.config.port, app.config.listenHost, () =>
     process.stdout.write(
       `CRP Family Admin listening on ${app.config.origin}\n`,

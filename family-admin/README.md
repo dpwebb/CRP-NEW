@@ -67,7 +67,7 @@ $env:CRP_FAMILY_CONFIG='C:\protected\crp-family-admin-staging.json'
 node src/server.mjs
 ```
 
-Hosted activation is not part of this local build. It needs a separately reviewed configuration/binding inventory, TLS/reverse-proxy setup, backups/recovery and exact-build staging acceptance before a separate guarded production deployment. No environment has been provisioned or activated by this work.
+The owner has authorized a separate staging/production release after Mail completes its release and custody handoff. The separate release requires a verified configuration/binding inventory, TLS/reverse-proxy setup, backups/recovery and exact-build staging acceptance. See [the independent deployment instructions](deploy/README.md). Hosted startup refuses changed or incomplete release files and reports exact provenance in `/health`. Preparation is not proof of deployment; current hosted acceptance is recorded in WORK.md.
 
 ## Existing application workflows retained
 

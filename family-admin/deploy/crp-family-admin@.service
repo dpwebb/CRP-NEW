@@ -1,0 +1,41 @@
+[Unit]
+Description=CRP Family Admin (%i)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=crp-family-%i
+Group=crp-family-%i
+WorkingDirectory=/opt/crp-family-admin-%i/current
+Environment=NODE_ENV=production
+Environment=CRP_FAMILY_CONFIG=/etc/crp-family-admin/%i.json
+ExecStart=/opt/crp-node/bin/node /opt/crp-family-admin-%i/current/src/server.mjs
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=45
+KillSignal=SIGTERM
+UMask=0077
+StateDirectory=crp-family-admin-%i
+StateDirectoryMode=0700
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ReadWritePaths=/var/lib/crp-family-admin-%i
+LimitNOFILE=1024
+TasksMax=64
+MemoryMax=256M
+
+[Install]
+WantedBy=multi-user.target
