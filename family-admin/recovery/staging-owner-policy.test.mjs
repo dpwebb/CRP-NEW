@@ -5,7 +5,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, randomBytes } from 'node:crypto';
+import {inventory,manifest,seal,recover} from './backup.mjs';
 import {provision, hash, TARGET, EMAIL, DATA, BUILD} from './staging-owner-policy.mjs';
 // Only native source is selected here; every test data directory is newly isolated.
 const native = process.env.CRP_RECOVERY_TEST_NATIVE_ROOT || fileURLToPath(new URL('../../accelerated-launch/service/', import.meta.url));
@@ -68,5 +69,15 @@ test('isolated native signed-store recovery, refusal matrix, one-use MFA and nor
     // A fresh intent cannot reuse the already consumed MFA counter, nor create a duplicate.
     const replay={...intent,adminStateHash:hash(admin.state()),consumerStateHash:hash(consumer.state())};
     assert.throws(()=>provision({...params,admin,intent:replay}),/MEMBERSHIP_ALREADY_EXISTS/);
+    const snapshot=fs.mkdtempSync(path.join(os.tmpdir(),'crp-recovery-backup-'));
+    try {
+      fs.cpSync(dir,path.join(snapshot,'data'),{recursive:true});
+      const entries=inventory(snapshot), expected=manifest(entries), key=randomBytes(32), encrypted=seal(entries,key);
+      const result=recover(encrypted,key,expected);assert.equal(result.nativeSignedJournalAuthenticated,true);assert.equal(result.plaintextWrittenToDisk,false);
+      const damaged=Buffer.from(encrypted);damaged[damaged.length-1]^=1;
+      assert.throws(()=>recover(damaged,key,expected),/AUTHENTICATION_REFUSED/);
+      assert.throws(()=>recover(encrypted,randomBytes(32),expected),/AUTHENTICATION_REFUSED/);
+      assert.throws(()=>recover(encrypted,key,expected.slice(1)),/AUTHENTICATION_REFUSED/);
+    } finally {fs.rmSync(snapshot,{recursive:true,force:true});}
   } finally {Date.now=realNow;admin?.close();fs.rmSync(dir,{recursive:true,force:true});}
 });
