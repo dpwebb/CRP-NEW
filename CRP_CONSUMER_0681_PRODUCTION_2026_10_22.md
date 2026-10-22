@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-**Consumer0681 promoted; final human authenticated acceptance and post-acceptance recovery/publication closure pending.**
+**Consumer0681 promoted; compatibility, pre/post recovery and source integration/publication complete. Fresh human authenticated all-three acceptance pending.**
 
 Owner authorized completing compatibility checks/recovery, promoting Consumer0681 and finishing source integration/publication while preserving unified admin access. Main obtained sole source/host custody from Mail and Affiliate. This supersedes earlier bounded Consumer deployment/publication holds; it grants no provider/payment/refund/payout/postal, consumer recovery/password/MFA or shared restart authority. Planning was already archived and was not reopened to send a notice.
 
@@ -31,3 +31,13 @@ Main integrated exact Consumer20b2 into the Family branch; service tree matches 
 Publication audit excludes `.local`, credentials, environment secrets, customer packets/stores, backups, private capsules and keys. Existing CRP GitHub repository is public; Affiliate is private. Previously absent `dpwebb/CRP-MAIL-OPS` was created private under the new publication authority. Exact remote heads/privacy verification remains required for closure. Unrelated dirty `C:/CRP-NEW` files/index/local main stay untouched with private patch preserved; publication does not include them.
 
 Private evidence: `family-admin/.local/evidence/consumer0681-*`, original immutable Consumer proof root and unique protected host operation directories. All initial setup/path/transfer/refusal records remain retained. Current-source hosted owner sign-in and final post-acceptance recovery are not inferred from prior Family sessions.
+
+## Post-deployment checkpoint and published sources
+
+Production post-promotion82HTTPS checks passed, including32fixed303redirect variants,410/no-store obsolete/withdrawn assets, anonymousJSONrefusals and preserved shared pages. Actual Chrome1440/390views of Consumer homepage, legacy-admin-to-Family navigation, Affiliate partners and Mail staff passed all8views without horizontal overflow; temporary viewport overrides were cleared and temporary test tab closed. Both public Consumer healths report0681/admin available, stagingTest and productionLive.
+
+Fresh post-deployment all-four/both-environment operation `consumer0681-post-d0ae337f-7171-400c-ac69-33fb08185716` authenticated681files/735entries. Ciphertext `375af3d5da6f69208c9ee4b438bf2fcbfd551c8c8700b0f0125089313773b128`; manifest `babcf6601ca7fe73aea8ebfceb4f7b79fc7e84377c94e50809d88166ad2fcfea`. Independent protected desktop recovery again verified all bytes, both Consumer signed journals, both Family four-file/HMAC backups, both Mail24tables and Affiliate26tables/all rows/sequences. No service was stopped or active store restored. This captures a post-deployment epoch before the pending human acceptance, not a post-sign-in claim.
+
+Published/remote-verified main heads: CRP initially`ee86fa3ca3751eb4c78364c19f489769f286947e` (followed only by this checkpoint documentation), Affiliate`aef07d7b44cb3812a08e6eef293db8563581c966`, Mail`74e471c830d6221053d5d04629f17e89f2b0c6bf`. Existing CRP visibility remains public; Affiliate and new Mail repositories are private. Affiliate changed-source CI39766792921passed; CRP/Mail have no workflow run for these pushes. Exact service/native build inputs remain accepted20b2/6467/5a1; Family44files remain unchanged. Unrelated canonical Consumer binary diff remains exact to its private pre-publication patch, with local main/index/dirty files untouched.
+
+The normal production Family sign-in page is handed to the owner in Chrome, email only prepared. Owner must enter production password/current MFA and next fresh factor for admin unlock, keeping secrets out of chat. No native Affiliate/Mail reauthentication is required. After genuine sign-in, read all three current hosted apps, check preserved administration and seal any new acceptance journal separately. Do not claim that pending check has passed, restart Family, replay promotion, or create a replacement session/credential. Main retains acceptance custody while waiting; coordinated native owners must not deploy over it. No recurring automation was created.
