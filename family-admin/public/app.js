@@ -832,7 +832,32 @@ async function load() {
       }
     } else if (S.view === "activity") {
       const result = await api("/api/audit");
-      if (generation === S.generation) root.append(table("crp", result.items));
+      if (generation !== S.generation) return;
+      const workspace = el("section", null, "panel");
+      workspace.append(el("h2", "Family workspace activity"), table("crp", result.items));
+      root.append(workspace);
+      for (const app of ["crp", "affiliate"]) {
+        if (!S.session.catalog.reads[app].includes("audit")) continue;
+        const history = el("section", null, "panel");
+        history.append(el("h2", labels[app] + " activity"));
+        root.append(history);
+        try {
+          await appView(app, "audit", history, generation);
+        } catch (error) {
+          if (generation === S.generation)
+            history.append(el("p", error.message, "error"));
+        }
+        if (generation !== S.generation) return;
+      }
+      if (S.session.catalog.reads.mail.includes("orders")) {
+        const mailing = el("section", null, "panel");
+        mailing.append(el("h2", "Mail Operations activity"),
+          el("p", "Open an order to review its mailing history, notes and provider events.", "muted"),
+          btn("Open mailing order history", () => {
+            S.view = "orders"; S.page = 1; S.query = ""; load();
+          }));
+        root.append(mailing);
+      }
     } else await appView(view.app, view.resource, root, generation);
   } catch (e) {
     if (generation === S.generation) root.replaceChildren(empty(e.message));
