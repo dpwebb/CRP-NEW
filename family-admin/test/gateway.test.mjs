@@ -382,6 +382,44 @@ test("sign-out clears gateway session and native sessions", () =>
     assert.equal(f.portal.gateway.sessions.size, 0);
     assert.equal(f.state.mailActive, false);
   }));
+test("sign-out confirms native admin lock before closing the primary session", () =>
+  run(async (f) => {
+    await f.login();
+    const fetcher = f.portal.gateway.fetcher;
+    let primaryClosed = false;
+    f.portal.gateway.fetcher = async (target, options) => {
+      const path = new URL(target).pathname;
+      if (path === "/api/admin/lock") {
+        await new Promise(resolve => setTimeout(resolve, 25));
+        if (primaryClosed)
+          return Response.json({error:{code:"SESSION_REQUIRED"}}, {status:401});
+      }
+      if (path === "/api/sessions/current" && options.method === "DELETE")
+        primaryClosed = true;
+      return fetcher(target, options);
+    };
+    assert.equal((await f.request("/api/logout", {method:"POST",body:{}})).status,200);
+    assert.equal(primaryClosed,true);
+    const event=f.portal.journal.events.at(-1);
+    assert.equal(event.event,"SIGNED_OUT");
+    assert.equal(event.upstreamSignOutConfirmed,true);
+  }));
+test("a refused admin lock still closes the primary session and records incomplete confirmation", () =>
+  run(async (f) => {
+    await f.login();
+    const fetcher=f.portal.gateway.fetcher;
+    let primaryClosed=false;
+    f.portal.gateway.fetcher=async(target,options)=>{
+      const path=new URL(target).pathname;
+      if(path==="/api/admin/lock")return Response.json({error:{code:"NOT_AUTHORIZED"}},{status:403});
+      if(path==="/api/sessions/current"&&options.method==="DELETE")primaryClosed=true;
+      return fetcher(target,options);
+    };
+    assert.equal((await f.request("/api/logout",{method:"POST",body:{}})).status,200);
+    assert.equal(primaryClosed,true);
+    assert.equal(f.portal.gateway.sessions.size,0);
+    assert.equal(f.portal.journal.events.at(-1).upstreamSignOutConfirmed,false);
+  }));
 test("audit is authenticated, durable, nonreplayable across restart and rejects modification", () => {
   const dir = mkdtempSync(join(tmpdir(), "family-audit-"));
   try {

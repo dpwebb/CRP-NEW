@@ -138,6 +138,7 @@ test('real native services accept one CRP MFA login, preserve scopes and revoke 
     assert.equal((await request('/api/apps/mail/orders')).status,403);
     observations.push({nativeAffiliateDowngradeDenied:true,nativeMailOperatorAdminEscalationDenied:true,nativeDesignationRevocationDenied:true});
     assert.equal((await request('/api/logout','POST',{})).status,200);
+    assert.equal(portal.journal.events.at(-1).upstreamSignOutConfirmed,true,'Native administration lock and primary logout must both be confirmed');
     for(const [app,url]of [['affiliate',affiliateOrigin+'/api/me'],['mail',mailOrigin+'/staff/api/session']])assert.equal((await fetch(url,{headers:{cookie:nativeCookies[app]}})).status,401);
     assert.equal(db.prepare('SELECT count(*) n FROM staff_sessions').get().n,0);
     for(const [app,url]of [['affiliate',affiliateOrigin+'/auth/logout'],['mail',mailOrigin+'/staff/api/logout']]) {

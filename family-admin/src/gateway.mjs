@@ -560,18 +560,21 @@ export class Gateway {
     if (s.logoutPromise) return s.logoutPromise;
     this.sessions.delete(s.key);
     const work = (async () => {
-      const outcomes = await Promise.allSettled([
-        this.call("crp", "/api/admin/lock", s, { method: "POST", body: {} }),
-        this.call("crp", "/api/sessions/current", s, { method: "DELETE" }),
+      // Lock administration while the primary session still authenticates it.
+      // Always attempt primary revocation, including after a failed lock.
+      const outcomes = [];
+      for (const operation of [
+        () => this.call("crp", "/api/admin/lock", s, { method: "POST", body: {} }),
+        () => this.call("crp", "/api/sessions/current", s, { method: "DELETE" }),
         ...(s.links.mail && !this.sso
           ? [
-              this.call("mail", "/staff/api/logout", s, {
+              () => this.call("mail", "/staff/api/logout", s, {
                 method: "POST",
                 body: {},
               }),
             ]
           : []),
-      ]);
+      ]) outcomes.push(...await Promise.allSettled([operation()]));
       s.links = {};
       this.journal.append("SIGNED_OUT", {
         subject: s.subject,
