@@ -12,7 +12,7 @@
     const heading=node('h3','Would you like us to mail your packet?');
     const introduction=node('p','You can still download your PDF and mail it yourself. Or try the optional mailing service below.');
     root.replaceChildren(heading,introduction,
-      node('p',live?'PostGrid is our usual printing and mailing service. After payment, check and approve its final mailing copy, including your return address and the address cover page. Staff can then submit it. Manual mailing is an emergency option only when offered. Posting and delivery records do not prove a bureau investigated or corrected your report.':'SIMULATION ONLY: no charge and nothing is printed or mailed. Prices are invented examples. Unsigned packets include an instruction sheet. Add your signature, then review and approve the signed PDF before any real mailing.'), content, message);
+      node('p',live?'PostGrid is our usual printing and mailing service. CRP staff manage the bureau mailing address. You approve your own return address and packet. After payment, check and approve the final printing copy before staff submit it. Manual mailing is an emergency option only when offered. Posting and delivery records do not prove a bureau investigated or corrected your report.':'SIMULATION ONLY: no charge and nothing is printed or mailed. Prices are invented examples. Unsigned packets include an instruction sheet. Add your signature, then review and approve the signed PDF before any real mailing.'), content, message);
     if(testMode)root.prepend(node('p','STAGING TEST ONLY: use fictional packets and Stripe test payments. No real charge or postal handoff is authorized here.'));
     function checkout(url){if(typeof url!=='string'||!/^https:\/\/checkout\.stripe\.com\//.test(url))throw Error('Secure checkout is unavailable. Refresh the order.');window.location.assign(url);}
     function checkCurrent() { ensure(); if (!canRequest()) throw Error('Save your changes, check every page and approve this packet before choosing mailing.'); }
@@ -48,7 +48,7 @@
               const link=node('a','Open and review every page of the final mailing copy');link.href=previewCache.url;link.target='_blank';link.rel='noopener';
               link.onclick=()=>{reviewedPrintHash=previewCache.hash;};content.append(link);
               const label=node('label'),checked=node('input');checked.type='checkbox';checked.id='packet-mailing-print-checked';
-              label.append(checked,document.createTextNode(' I checked every page, the recipient, my return address and the added address cover. Pages may be resized to fit the mailing paper. I apply my typed signature to this exact final copy and approve it for PostGrid to print and mail.'));content.append(label);
+              label.append(checked,document.createTextNode(' I checked every packet page and my return address on the added address cover. CRP staff manage the bureau mailing address. Pages may be resized to fit the mailing paper. I apply my typed signature to this exact final copy and approve it for PostGrid to print and mail.'));content.append(label);
               content.append(button('Approve this final mailing copy',async()=>{
                 checkCurrent();if(!checked.checked||reviewedPrintHash!==previewCache.hash)throw Error('Open the final mailing copy, review it and tick the approval box.');
                 latest=await request('POST',path+'/approve-print',{order_id:order.id,reviewed_version:version,preview_hash:previewCache.hash,approve_print:true,approve_signature:true});
@@ -69,7 +69,7 @@
       const q=latest?.quote, canConfirm=available && q && (!order || latest?.payment_pending) && (!latest?.packet_changed) && (q.expires_at>Date.now() || latest?.pending || latest?.payment_pending);
       if (canConfirm) {
         content.append(node('h4',`${live?'Mailing total':'Sample mailing price'}: ${new Intl.NumberFormat('en',{style:'currency',currency:q.currency,currencyDisplay:'code'}).format(q.amount_minor/100)}`),
-          node('p',`Recipient: ${q.recipient_label}. ${q.recipient_address}`),node('p',`${q.page_count} reviewed PDF pages. ${q.service}.${live?' Staff verify the packet and postal route before posting.':' Postal support is not verified.'}`),
+          node('p',`${live?'Bureau destination (managed by CRP)':'Recipient'}: ${q.recipient_label}. ${q.recipient_address}`),node('p',`${q.page_count} reviewed PDF pages. ${q.service}.${live?' Staff check the bureau destination and postal route before posting.':' Postal support is not verified.'}`),
           node('p',`Price expires: ${new Date(q.expires_at).toLocaleString()}.`));
         if(live&&q.return_address){const r=q.return_address;content.append(node('p',`Your return address: ${[r.firstName,r.lastName,r.addressLine1,r.addressLine2,r.city,r.provinceOrState,r.postalOrZip,r.countryCode].filter(Boolean).join(', ')}.`),
           node('p','The total includes an address cover page. Your approved source PDF stays unchanged. PostGrid receives it and the mailing addresses to prepare your final printing copy. You must check every page and approve that copy before it is submitted.'));}
