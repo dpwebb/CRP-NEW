@@ -15,7 +15,10 @@ export function pack({config,audit,key,output,release}) {
   if(!/^crp-family-[a-f0-9]{20}$/.test(release))throw Error('BACKUP_RELEASE_REQUIRED');
   // Opening the existing journal validates its HMAC chain; no events are appended.
   for(const p of [join(audit,'integrity.key'),join(audit,'audit.jsonl')])ordinary(p);
-  const journal=new Journal(audit);journal.close();
+  let journal;
+  try { journal=new Journal(audit); }
+  catch(error) { if (/AUDIT_LOCK_BUSY/.test(error.message)) throw Error('STOP_FAMILY_ADMIN_BEFORE_BACKUP'); throw error; }
+  try {
   const sso = JSON.parse(readFileSync(config, 'utf8').replace(/^\uFEFF/,'')).familySso === true;
   const backupNames = sso ? [...names, 'audit/sso-signing.pem'] : names;
   const sources=[config,join(audit,'integrity.key'),join(audit,'audit.jsonl')];
@@ -29,6 +32,7 @@ export function pack({config,audit,key,output,release}) {
   const bytes=Buffer.concat([Buffer.from('CRPFAM01'),iv,cipher.getAuthTag(),encrypted]);
   writeFileSync(output,bytes,{flag:'wx',mode:0o600});
   return {release,backupHash:hash(bytes),files:files.map(({path,mode,sha256})=>({path,mode,sha256}))};
+  } finally { journal.close(); }
 }
 export function recover({backup,key,destination}) {
   if(existsSync(destination))throw Error('RECOVERY_DESTINATION_EXISTS');

@@ -200,3 +200,6 @@ October22 gap-fix closure: 42/42 Family checks and syntax pass; native all-three
 
 STAGING-GAP-RELEASE-20261022: owner authorizes deploying all reviewed gap fixes to staging and completing every-action/four-country/three-plan simulations. Staging-only runtime updates for Consumer/Family/Affiliate/Mail with exact predecessor guards, complete encrypted recovery and data-preserving rollback. Current local gap-fix allowlist plus source freeze/manifest, new ignored operators/acceptance evidence. Preserve all previous receipts and unrelated dirty canonical work. Root alone writes/operates. Production unchanged, no source push, no live charge, no real dispatch or existing-person security operation. Exit: complete honest PASS/GAP/BLOCKED matrix, owned cleanup and fresh production preservation.
 
+
+## October 22 reboot-safe locking repair
+Owner explicitly authorizes narrow kernel-lock prevention, staging before production, preserving all data and partner/staff access. Read LOCK_RECOVERY.md. Preserve the distinct ba748 staging gap source and 9789097 production base. No native runtime/trust changes or shared reboot. New Linux lock ownership follows the open file description; no automatic legacy-lock deletion or journal repair. Hosted acceptance and encrypted recovery receipts live outside committed source.

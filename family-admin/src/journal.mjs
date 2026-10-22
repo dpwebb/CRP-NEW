@@ -13,15 +13,14 @@ import {
   realpathSync,
 } from "node:fs";
 import { resolve, join } from "node:path";
+import { acquireProcessLock } from "./process-lock.mjs";
 export const digest = (x) => createHash("sha256").update(x).digest("hex");
 export class Journal {
   constructor(directory) {
     mkdirSync(directory, { recursive: true, mode: 0o700 });
     if (lstatSync(directory).isSymbolicLink()) throw Error("AUDIT_SYMLINK");
     this.directory = realpathSync(directory);
-    this.lock = join(this.directory, "process.lock");
-    this.lockFd = openSync(this.lock, "wx", 0o600);
-    writeSync(this.lockFd, String(process.pid));
+    this.releaseLock = acquireProcessLock(this.directory);
     this.file = join(this.directory, "audit.jsonl");
     this.keyfile = join(this.directory, "integrity.key");
     this.intents = new Map();
@@ -118,10 +117,9 @@ export class Journal {
       closeSync(this.fd);
       this.fd = undefined;
     }
-    if (this.lockFd !== undefined) {
-      closeSync(this.lockFd);
-      this.lockFd = undefined;
-      unlinkSync(this.lock);
+    if (this.releaseLock) {
+      this.releaseLock();
+      this.releaseLock = undefined;
     }
   }
 }
