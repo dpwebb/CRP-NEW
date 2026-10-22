@@ -244,41 +244,10 @@ function markerRectangle(marker, width, height) {
       || box.x0 < 0 || box.y0 < 0 || box.x1 <= box.x0 || box.y1 <= box.y0 || box.x1 > width || box.y1 > height) return null;
   return { x: box.x0 / width, y: box.y0 / height, width: (box.x1 - box.x0) / width, height: (box.y1 - box.y0) / height };
 }
-function markerNotes(markers, annotations) {
-  const captionLabel = value => {
-    const caption = label(value);
-    if (!/^[A-Za-z][A-Za-z0-9_.]*$/.test(caption)) return caption;
-    const leaf = caption.split('.').pop();
-    const familiar = { closeddate: 'Date closed', openeddate: 'Date opened', dateclosed: 'Date closed', dateopened: 'Date opened',
-      firstdelinquencydate: 'First missed-payment date', lastpaymentdate: 'Last payment date', reporteddate: 'Date reported',
-      maskedidentifier: 'Account number', pastdueamount: 'Amount overdue', creditlimit: 'Credit limit' };
-    const known = familiar[leaf.replace(/_/g, '').toLowerCase()];
-    if (known) return known;
-    const words = leaf.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
-    return words.charAt(0).toUpperCase() + words.slice(1);
-  };
-  const grouped = new Map();
-  for (const marker of markers) {
-    if (!grouped.has(marker.item_number)) grouped.set(marker.item_number, []);
-    grouped.get(marker.item_number).push(marker);
-  }
-  let notes;
-  if (grouped.size > 12) notes = ['Letter items ' + [...grouped.keys()].join(', ') + '. See the numbered requests in your letter.'];
-  else notes = [...grouped].map(([number, entries]) => {
-    const captions = [...new Set(entries.map(entry => captionLabel(entry.caption)).filter(Boolean))];
-    const detail = captions.join('; ');
-    return `Item ${number}: ${detail.length > 120 ? detail.slice(0, 117) + '...' : detail || 'report entry'}`
-      + (entries.some(entry => entry.omitted_value) ? '. A marked caption has a blank value on the report.' : '.');
-  });
-  notes.push('Yellow marks identify report details for the letter. Unmarked items are explained in the letter.');
-  for (const annotation of annotations) notes.push('Your note: ' + (annotation.note || 'Please check the marked area.'));
-  return notes;
-}
-async function reportMarkup(doc, page, entry, sourcePage, noteFont) {
+async function reportMarkup(page, entry, sourcePage) {
   const geometry = sourceGeometry(page), markers = (entry.markers || []).filter(marker => marker.page === sourcePage);
   const annotations = (entry.annotations || []).filter(annotation => annotation.page === sourcePage);
   if (annotations.length && (!geometry.annotation_available || annotations.length > 4)) throw coded('INVALID_REQUEST');
-  const notes = markerNotes(markers, annotations);
   if (!markers.length && !annotations.length) return { ...geometry, annotations: [] };
   const face = fontkit.create(fs.readFileSync(path.join(__dirname, 'packet-fonts', 'NotoSans-Regular.ttf')));
   const printable = value => [...String(value)].map(char => /\s/.test(char) || face.hasGlyphForCodePoint(char.codePointAt(0)) ? char : '?').join('');
@@ -296,19 +265,9 @@ async function reportMarkup(doc, page, entry, sourcePage, noteFont) {
       width: annotation.width * width, height: annotation.height * height, color: rgb(1, .85, 0), opacity: .25,
       borderColor: rgb(.65, .45, .05), borderOpacity: .6, borderWidth: .5 });
   }
-  // Every report keeps its original print dimensions. Explanations follow on
-  // their own printable pages, so a printer never shrinks the report to fit a gutter.
-  const size = 11, leading = size * 1.4, capacity = Math.floor(600 / leading);
-  const lines = wrapped(notes.flatMap(note => [printable(note), '']).join('\n'), noteFont, size, 512), notePages = [];
-  for (let offset = 0; offset < lines.length; offset += capacity) {
-    const notePage = doc.addPage([612, 792]);
-    notePage.drawText('NOTES FOR YOUR DISPUTED REPORT DETAILS', { x: 50, y: 740, size: 15, font: noteFont, color: rgb(.13, .19, .25) });
-    notePage.drawText('Source report page ' + sourcePage + (offset ? ' - continued' : ''), { x: 50, y: 708, size, font: noteFont, color: rgb(.13, .19, .25) });
-    for (const [index, line] of lines.slice(offset, offset + capacity).entries()) if (line) notePage.drawText(line,
-      { x: 50, y: 676 - index * leading, size, font: noteFont, color: rgb(.13, .19, .25) });
-    notePages.push(notePage);
-  }
-  return { ...geometry, annotations: metadata, note_pages: notePages };
+  // Keep source dimensions and highlights without adding explanatory print pages.
+  // Notes remain available as review metadata beside their source report page.
+  return { ...geometry, annotations: metadata };
 }
 async function appendEvidence(target, entry, isReport, position, copyBudget) {
   const bytes = Buffer.isBuffer(entry.bytes) ? entry.bytes : Buffer.from(entry.bytes || '', 'base64');
@@ -458,7 +417,6 @@ async function compose(input) {
   doc.setCreationDate(new Date('2000-01-01T00:00:00Z')); doc.setModificationDate(new Date('2000-01-01T00:00:00Z'));
   const fields = await letterPages(doc, input.letter_text, input.signature), sections = [{ kind: 'letter', label: 'My dispute letter', start_page: 1, page_count: fields.length }];
   const reviewPages = fields.map(field => ({ page: field.page, kind: 'letter', page_width: field.page_width, page_height: field.page_height, annotation_available: false }));
-  const noteFont = await doc.embedFont(fs.readFileSync(path.join(__dirname, 'packet-fonts', 'NotoSans-Regular.ttf')), { subset: true });
   let position = fields.length;
   const identityImages = (input.documents || []).map((entry, index) => ({ entry, index })).filter(({ entry }) => isIdentityImage(entry));
   let identitySheetAdded = false;
@@ -478,18 +436,10 @@ async function compose(input) {
     }
     let inserted = 0;
     for (const sourcePage of pages) {
-      const page = doc.getPage(position + inserted), metadata = kind === 'report' ? await reportMarkup(doc, page, entry, sourcePage, noteFont)
+      const page = doc.getPage(position + inserted), metadata = kind === 'report' ? await reportMarkup(page, entry, sourcePage)
         : { ...sourceGeometry(page), annotation_available: false, annotations: [], ...(pages.image_copy || {}) };
-      const notePages = metadata.note_pages || []; delete metadata.note_pages;
       reviewPages.push({ page: position + inserted + 1, kind, label: label(entry.label), file_id: entry.file_id || null, source_page: sourcePage, ...metadata });
       inserted++;
-      for (let removed = 0; removed < notePages.length; removed++) doc.removePage(doc.getPageCount() - 1);
-      for (const notePage of notePages) {
-        doc.insertPage(position + inserted, notePage);
-        reviewPages.push({ page: position + inserted + 1, kind: 'report-note', label: 'Notes for report page ' + sourcePage,
-          file_id: entry.file_id || null, source_page: sourcePage, page_width: 612, page_height: 792, annotation_available: false });
-        inserted++;
-      }
     }
     sections.push({ kind, label: label(entry.label), file_id: entry.file_id || null, start_page: position + 1, page_count: inserted, source_pages: [...pages], ...(pages.image_copy || {}) }); position += inserted;
   }

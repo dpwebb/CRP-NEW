@@ -251,15 +251,13 @@ async function run(t, check) {
   let nextPhysicalPage = reportSection.start_page;
   for (const page of reportSection.source_pages) {
     const includedPage = matchingPage(download.body, pdfPages(original)[page - 1]);
-    check.equal(includedPage, nextPhysicalPage, 'each corroborated collection source follows the letter or the preceding source-specific notes in physical order');
+    check.equal(includedPage, nextPhysicalPage, 'each corroborated collection source follows the letter or the preceding source page in physical order');
     await sameRenderedPage(check, out, original, page, download.body, includedPage, 'duplicate collection report page ' + page);
     nextPhysicalPage++;
-    let noteCount = 0;
-    while (pages[nextPhysicalPage - 1]?.includes('NOTES FOR YOUR DISPUTED REPORT DETAILS')
-        && pages[nextPhysicalPage - 1].includes('Source report page ' + page)) { nextPhysicalPage++; noteCount++; }
-    check.ok(noteCount > 0, 'each selected collection source is immediately followed by its own readable evidence notes');
+
   }
-  check.equal(nextPhysicalPage, reportSection.start_page + reportSection.page_count, 'declared collection evidence span equals every actual source and adjacent note page');
+  check.equal(nextPhysicalPage, reportSection.start_page + reportSection.page_count, 'declared collection evidence span equals only the actual source pages');
+  check.ok(!text.includes('NOTES FOR YOUR DISPUTED REPORT DETAILS'), 'collection packet contains no generated explanatory notes pages');
   const editable = await PDFDocument.load(download.body);
   check.ok(editable.getForm().getFields().some(field => /^CRP_letter_page_/.test(field.getName()) && !field.isReadOnly()),
     'the complete collection packet retains an editable consumer letter');

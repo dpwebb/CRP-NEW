@@ -107,15 +107,16 @@ async function run(t, check) {
     && addressPage > passportPage, 'packet order is letter, relevant report pages, all identification, address proof, without bureau forms');
   const review = packets.packetReview(t.service.store, actor, id, ready.packet.preview_version);
   check.equal(review.sha256, crypto.createHash('sha256').update(bytes).digest('hex'), 'physical page metadata identifies the exact reviewed and approved PDF');
-  check.deepEqual(review.review_pages.map(page => page.kind), ['instructions', 'letter', 'report', 'report-note', 'document', 'document', 'document'],
-    'complete physical order is removable instructions, letter, original report, adjacent evidence notes and the three chosen copies');
-  const reportSection = review.sections.find(section => section.kind === 'report'), notes = review.review_pages.filter(page => page.kind === 'report-note');
+  check.deepEqual(review.review_pages.map(page => page.kind), ['instructions', 'letter', 'report', 'document', 'document', 'document'],
+    'complete physical order is removable instructions, letter, original report and the three chosen copies, without extra note pages');
+  const reportSection = review.sections.find(section => section.kind === 'report');
   check.deepEqual(reportSection.source_pages, [1], 'the report section retains its one actual original source page');
-  check.equal(notes[0].page, reportPage + 1, 'the source-specific evidence note immediately follows its original report page');
-  check.ok(identityPage > notes[0].page && passportPage > notes[0].page && addressPage > notes[0].page, 'identification and address copies follow the complete report evidence section');
+  check.equal(reportSection.page_count, 1, 'only the selected source page contributes to the report section count');
+  check.equal(pages.length, 6, 'directions, letter, report and three copies print as six pages');
+  check.ok(identityPage > reportPage && passportPage > reportPage && addressPage > reportPage, 'identification and address copies follow the complete report evidence section');
   check.equal(pages.length, review.sections.reduce((total, section) => total + section.page_count, 0), 'the approved PDF contains every declared physical page exactly once with no hidden form page');
   const originalReport = await PDFDocument.load(reportBytes), fullPacket = await PDFDocument.load(bytes);
-  check.deepEqual(fullPacket.getPage(reportPage - 1).getSize(), originalReport.getPage(0).getSize(), 'evidence notes do not shrink the original report print dimensions');
+  check.deepEqual(fullPacket.getPage(reportPage - 1).getSize(), originalReport.getPage(0).getSize(), 'highlights do not shrink the original report print dimensions');
   for (const [document, page, label] of [[identityBytes, identityPage, 'identification'], [passportBytes, passportPage, 'second identification'], [addressBytes, addressPage, 'address proof']]) {
     await sameRenderedPage(check, t.dataDir, document, 1, bytes, page, label);
   }

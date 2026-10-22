@@ -331,7 +331,7 @@ async function run(t,check){
    check.deepEqual(finalView.packet.annotations,savedAnnotations,'saved annotations remain exact after long-letter edits and final approval');
   check.ok(editedBytes.equals((await req('GET',finalView.packet.letter_preview_url)).bytes),'the browser downloads the exact complete packet reviewed after all inline edits');
   const normalized=require('../packet-pdf-assertions.cjs').comparableText(require('../packet-pdf-assertions.cjs').pdfText(editedBytes));
-  check.ok(normalized.includes('Fictional final-page consumer edit.')&&normalized.includes('Please compare these impossible account dates.'),'the printable packet retains the last-page edit and evidence note');
+  check.ok(normalized.includes('Fictional final-page consumer edit.')&&!normalized.includes('Please compare these impossible account dates.'),'the printable packet retains the last-page edit without printing the saved evidence note');
   const finalPrintResponse=page.waitForResponse(r=>new URL(r.url()).pathname===route+'/packet-print'),finalPopup=page.waitForEvent('popup');await page.locator('#packet-print').click();const finalPrintPage=await finalPopup;await finalPrintPage.waitForURL('blob:**');check.ok((await(await finalPrintResponse).body()).equals(editedBytes),'printing uses that same saved and approved edited PDF');await finalPrintPage.close();
   const recovery=await recoveryChecks(t,browser,a,source,check,out);
   await identificationSheetBrowser(t,browser,source,check,out);

@@ -25,8 +25,9 @@ function create(store,env=process.env){
     const raw=data===undefined?'':JSON.stringify(data),timestamp=String(Date.now()),nonce=crypto.randomUUID();
     const signature=crypto.createHmac('sha256',principal==='payment'?c.paymentKey:c.key).update(['crp-mail-v1',principal,timestamp,nonce,method,path,sha(raw)].join('\n')).digest('hex');
     try{
-      const response=await fetch(c.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(5000),headers:{'content-type':'application/json','x-mail-principal':principal,'x-mail-timestamp':timestamp,'x-mail-nonce':nonce,'x-mail-signature':signature},...(raw?{body:raw}:{})});
-      let size=0;const chunks=[];for await(const part of response.body){size+=part.length;if(size>65536)throw Error('BOUND');chunks.push(part);}
+      const printPreview=method==='GET'&&/^\/api\/v1\/orders\/[a-f0-9-]{36}\/print-preview\?ownerRef=crp%3A[a-f0-9]{64}$/.test(path);
+      const response=await fetch(c.origin+path,{method,redirect:'error',signal:AbortSignal.timeout(printPreview?60000:5000),headers:{'content-type':'application/json','x-mail-principal':principal,'x-mail-timestamp':timestamp,'x-mail-nonce':nonce,'x-mail-signature':signature},...(raw?{body:raw}:{})});
+      let size=0;const chunks=[];for await(const part of response.body){size+=part.length;if(size>(printPreview?90*1024*1024:65536))throw Error('BOUND');chunks.push(part);}
       const result=JSON.parse(Buffer.concat(chunks).toString());
       if(!response.ok){
         if(result.error==='MAILING_ROUTE_UNAVAILABLE')throw new ServiceError('MAILING_ROUTE_UNAVAILABLE');
@@ -51,10 +52,12 @@ function create(store,env=process.env){
     return {file,packetHash,label:destination.label,address:destination.postal,payload:{source:c.source,ownerRef,
       packet:{version,sha256:packetHash,pages:file.page_count,signed:true},recipient:{bureau:destination.bureau,country:owned.country,addressRef:'crp:'+sha(destination.postal)},service:'INTERNAL_POSTAL'}};
   }
-  function quoteView(record){const q=record.quote;return {simulation:false,mail_ready:true,quote_id:q.id,amount_minor:q.amountMinor,currency:q.currency,expires_at:q.expiresAt,packet_hash:record.packet_hash,packet_version:record.packet_version,page_count:q.snapshot.packet.pages,recipient_label:record.label,recipient_address:record.address,origin_country:q.snapshot.fulfillment.originCountry,service:'CRP internal printing and '+q.snapshot.fulfillment.postalService};}
+  function quoteView(record){const q=record.quote,mailer=q.snapshot.fulfillment?.mailer||'MANUAL';return {simulation:false,mail_ready:true,quote_id:q.id,amount_minor:q.amountMinor,currency:q.currency,expires_at:q.expiresAt,packet_hash:record.packet_hash,packet_version:record.packet_version,page_count:q.snapshot.packet.pages,recipient_label:record.label,recipient_address:record.address,
+    mailer,emergency_manual:q.snapshot.emergencyManual===true,return_address:q.snapshot.returnAddress||null,print_review_required:mailer==='POSTGRID',service:mailer==='POSTGRID'?'PostGrid printing and postal mailing':q.snapshot.emergencyManual===true?'Emergency manual printing and postal mailing':'Packet printing and postal mailing'};}
   function orderView(order,record){
     if(!order||order.simulated!==false||!/^[a-f0-9-]{36}$/.test(order.id)||order.ownerRef!==record.quote.snapshot.ownerRef||order.quoteId!==record.quote.id||order.packetHash!==record.packet_hash||order.snapshotHash!==record.quote.snapshotHash||order.amountMinor!==record.quote.amountMinor||order.currency!==record.quote.currency||(record.order_id&&record.order_id!==order.id))fail();
-    return {id:order.id,state:order.state,payment_state:order.paymentState,payment_hold:order.paymentHold,refund_status:order.refundStatus,amount_minor:order.amountMinor,currency:order.currency,packet_hash:order.packetHash,simulation:false};
+    return {id:order.id,state:order.state,payment_state:order.paymentState,payment_hold:order.paymentHold,refund_status:order.refundStatus,amount_minor:order.amountMinor,currency:order.currency,packet_hash:order.packetHash,simulation:false,
+      mailer:order.mailer||record.quote.snapshot.fulfillment?.mailer||'MANUAL',print_review:order.printReview||null};
   }
   function metadata(record){return {crp_service:'internal-mailing-v1',mail_order_id:record.order_id,mail_owner_ref:record.quote.snapshot.ownerRef,mail_attempt_id:record.id,packet_hash:record.packet_hash,quote_hash:record.quote.snapshotHash};}
   async function custody(c,record,phase,sessionId){return remote(c,'integration','POST',`/api/v1/orders/${record.order_id}/checkout`,{ownerRef:record.quote.snapshot.ownerRef,approvalRef:'crp:'+record.id,snapshotHash:record.quote.snapshotHash,phase,...(sessionId?{sessionId}:{})});}
@@ -128,8 +131,11 @@ function create(store,env=process.env){
   }
   async function status(actor,caseId){
     const c=authorize(actor,caseId),record=records(actor,caseId).at(-1);
-    const available=await availability(actor,caseId,c);
-    if(!record)return {simulation:false,available,quote:null,order:null};
+    const methods=await availableMethods(actor,caseId,c),available=methods.length>0;
+    const profile=require('./account-profile.cjs').getProfile?require('./account-profile.cjs').getProfile(store,actor):store.state().accounts.find(a=>a.account_id===actor.account_id)?.profile||{};
+    const country=({Canada:'CA','United States':'US','United Kingdom':'GB',Australia:'AU'})[profile.country]||(['CA','US','GB','AU'].includes(profile.country)?profile.country:'');
+    const return_address_suggestion={firstName:profile.full_name||[profile.given_name,profile.family_name].filter(Boolean).join(' '),lastName:'',addressLine1:profile.address_line1||'',addressLine2:profile.address_line2||'',city:profile.city||'',provinceOrState:profile.region||'',postalOrZip:profile.postal_code||'',countryCode:country};
+    if(!record)return {simulation:false,available,mailers:methods.map(r=>({mailer:r.mailer||'MANUAL',emergency:r.emergency===true})),default_mailer:'POSTGRID',return_address_suggestion,quote:null,order:null};
     const packet=packets.packetView(store,actor,caseId).packet;
     const changed=packet.approved_version!==record.packet_version||!packet.approved||!packet.signature?.current;
     if(record.order_id){
@@ -140,23 +146,34 @@ function create(store,env=process.env){
       const order=orderView(await remote(c,'integration','GET',`/api/v1/orders/${record.order_id}?ownerRef=${encodeURIComponent(record.quote.snapshot.ownerRef)}`),record);update(actor,caseId,record.id,{order});
     }
     const latest=records(actor,caseId).at(-1);
-    return {simulation:false,available,quote:quoteView(latest),order:latest.order||null,packet_changed:packet.approved_version!==latest.packet_version||!packet.approved,checkout_url:available?latest.checkout_url||null:null,refund_status:latest.refund_status||null};
+    return {simulation:false,available,mailers:methods.map(r=>({mailer:r.mailer||'MANUAL',emergency:r.emergency===true})),default_mailer:'POSTGRID',return_address_suggestion,quote:quoteView(latest),order:latest.order||null,packet_changed:packet.approved_version!==latest.packet_version||!packet.approved,checkout_url:available?latest.checkout_url||null:null,refund_status:latest.refund_status||null};
   }
   async function availability(actor,caseId,c){
+    return (await availableMethods(actor,caseId,c)).length>0;
+  }
+  async function availableMethods(actor,caseId,c){
     const owned=cases.requireOwnedCase(store,actor,caseId),view=packets.packetView(store,actor,caseId),destination=view.support?.requirements;
-    if(!destination?.postal||!destination?.bureau)return false;
+    if(!destination?.postal||!destination?.bureau)return [];
     try{
       const result=await remote(c,'integration','GET','/api/v1/availability');
-      return Array.isArray(result.routes)&&result.routes.some(route=>route.country===owned.country&&route.bureau===destination.bureau&&route.addressRef==='crp:'+sha(destination.postal)&&Number.isInteger(route.maxPages)&&route.maxPages>0);
-    }catch{return false;}
+      return Array.isArray(result.routes)?result.routes.filter(route=>route.country===owned.country&&route.bureau===destination.bureau&&route.addressRef==='crp:'+sha(destination.postal)&&Number.isInteger(route.maxPages)&&route.maxPages>0):[];
+    }catch{return [];}
   }
   async function quote(actor,caseId,body){
-    const c=authorize(actor,caseId);exact(body,['reviewed_version']);
+    const c=authorize(actor,caseId),legacy=Object.keys(body||{}).sort().join(',')==='reviewed_version';
+    exact(body,legacy?['reviewed_version']:['reviewed_version','mailer','return_address']);
     return locked(actor,caseId,async()=>{
-      if(!await availability(actor,caseId,c))throw new ServiceError('MAILING_ROUTE_UNAVAILABLE');
+      const methods=await availableMethods(actor,caseId,c);
+      const mailer=legacy&&!c.livemode&&methods.some(r=>(r.mailer||'MANUAL')==='MANUAL'&&!r.emergency)?'MANUAL':body.mailer||'POSTGRID';
+      if(!methods.some(r=>(r.mailer||'MANUAL')===mailer))throw new ServiceError('MAILING_ROUTE_UNAVAILABLE');
       const prepared=current(actor,caseId,body.reviewed_version,c),history=records(actor,caseId);
+      if(!legacy){
+        if(!['POSTGRID','MANUAL'].includes(mailer))throw new ServiceError('INVALID_REQUEST');
+        Object.assign(prepared.payload,{mailer,...(mailer==='MANUAL'?{emergencyManual:true}:{returnAddress:body.return_address,recipientAddress:{companyName:prepared.label,addressLine1:prepared.address,countryCode:prepared.payload.recipient.country}})});
+      }
       if(history.some(r=>r.confirmed_at&&!['CANCELLED','FAILED'].includes(r.order?.state)))throw new ServiceError('MAILING_ORDER_CHANGED');
-      const last=history.at(-1);if(last&&!last.confirmed_at&&last.packet_hash===prepared.packetHash&&last.quote.expiresAt>Date.now())return {simulation:false,quote:quoteView(last)};
+      const last=history.at(-1);if(last&&!last.confirmed_at&&last.packet_hash===prepared.packetHash&&last.quote.expiresAt>Date.now()
+        && (last.quote.snapshot.mailer||'MANUAL')===mailer && JSON.stringify(last.quote.snapshot.returnAddress)===JSON.stringify(prepared.payload.returnAddress))return {simulation:false,quote:quoteView(last)};
       if(history.length>=20)throw new ServiceError('MAILING_ORDER_CHANGED');
       const q=await remote(c,'integration','POST','/api/v1/quotes',prepared.payload);
       if(!q||q.simulated!==false||q.snapshotHash!==sha(JSON.stringify(q.snapshot))||!Number.isSafeInteger(q.amountMinor)||q.amountMinor<1||q.currency!==({CA:'CAD',US:'USD',GB:'GBP',AU:'AUD'})[prepared.payload.recipient.country]||q.expiresAt<=Date.now()||q.expiresAt>Date.now()+1800000||q.snapshot.pricing.amountMinor!==q.amountMinor||q.snapshot.pricing.currency!==q.currency||q.snapshot.quoteId!==q.id||q.snapshot.expiresAt!==q.expiresAt)fail();
@@ -167,6 +184,26 @@ function create(store,env=process.env){
       store.update(state=>{(row(actor,caseId,state).mailing_internal||=[]).push(record);});return {simulation:false,quote:quoteView(record)};
     });
   }
+  async function printpreview(actor,caseId,body){
+    const c=authorize(actor,caseId),record=records(actor,caseId).at(-1);exact(body,[]);
+    if(!record?.order_id||record.quote.snapshot.fulfillment?.mailer!=='POSTGRID')throw new ServiceError('NOT_AUTHORIZED');
+    const prepared=current(actor,caseId,record.packet_version,c);if(prepared.packetHash!==record.packet_hash)throw new ServiceError('PACKET_APPROVAL_STALE');
+    const result=await remote(c,'integration','GET',`/api/v1/orders/${record.order_id}/print-preview?ownerRef=${encodeURIComponent(record.quote.snapshot.ownerRef)}`);
+    const bytes=Buffer.from(result.pdfBase64||'','base64');
+    if(result.orderId!==record.order_id||result.packetHash!==record.packet_hash||sha(bytes)!==result.previewHash||bytes.subarray(0,5).toString()!=='%PDF-')fail();
+    return {order_id:record.order_id,packet_hash:record.packet_hash,preview_hash:result.previewHash,pdf_base64:result.pdfBase64};
+  }
+  async function approveprint(actor,caseId,body){
+    const c=authorize(actor,caseId);exact(body,['order_id','reviewed_version','preview_hash','approve_print','approve_signature']);
+    if(body.approve_print!==true||body.approve_signature!==true||!/^[a-f0-9]{64}$/.test(body.preview_hash||''))throw new ServiceError('INVALID_REQUEST');
+    return locked(actor,caseId,async()=>{
+      const record=records(actor,caseId).find(r=>r.order_id===body.order_id);if(!record||record.packet_version!==body.reviewed_version)throw new ServiceError('MAILING_ORDER_CHANGED');
+      const prepared=current(actor,caseId,body.reviewed_version,c);if(prepared.packetHash!==record.packet_hash)throw new ServiceError('PACKET_APPROVAL_STALE');
+      await remote(c,'integration','POST',`/api/v1/orders/${record.order_id}/approve-print`,{ownerRef:record.quote.snapshot.ownerRef,previewHash:body.preview_hash,snapshotHash:record.quote.snapshotHash,approvalRef:'crp:'+record.id,signatureConsent:true});
+      update(actor,caseId,record.id,{print_preview_approved_hash:body.preview_hash,print_preview_approved_at:Date.now()});
+      return status(actor,caseId);
+    });
+  }
   async function confirm(actor,caseId,body){
     const c=authorize(actor,caseId);exact(body,['quote_id','reviewed_version','authorize_mailing','accept_price']);
     if(body.authorize_mailing!==true||body.accept_price!==true)throw new ServiceError('MAILING_CONFIRMATION_REQUIRED');
@@ -174,6 +211,8 @@ function create(store,env=process.env){
       if(!await availability(actor,caseId,c))throw new ServiceError('MAILING_ROUTE_UNAVAILABLE');
       let record=records(actor,caseId).find(r=>r.quote.id===body.quote_id);
       if(!record||record.packet_version!==body.reviewed_version)throw new ServiceError('MAILING_QUOTE_STALE');
+      const methods=await availableMethods(actor,caseId,c),mailer=record.quote.snapshot.fulfillment?.mailer||'MANUAL';
+      if(!methods.some(r=>(r.mailer||'MANUAL')===mailer))throw new ServiceError('MAILING_ROUTE_UNAVAILABLE');
       const packet=current(actor,caseId,body.reviewed_version,c);
       if(packet.packetHash!==record.packet_hash||packet.address!==record.address)throw new ServiceError('MAILING_QUOTE_STALE');
       if(!record.confirmed_at){if(record.quote.expiresAt<=Date.now())throw new ServiceError('MAILING_QUOTE_STALE');update(actor,caseId,record.id,{confirmed_at:Date.now(),approval_expires_at:Date.now()+7*86400000});record=records(actor,caseId).find(r=>r.id===record.id);}
@@ -300,6 +339,6 @@ function create(store,env=process.env){
     }
     return {accepted:true,service:'internal-mailing-v1'};
   }
-  return {status,quote,confirm,cancel,fulfillment,webhook,withDeletion};
+  return {status,quote,confirm,cancel,printpreview,approveprint,fulfillment,webhook,withDeletion};
 }
 module.exports={configuration,create};
