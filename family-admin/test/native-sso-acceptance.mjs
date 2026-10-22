@@ -154,7 +154,7 @@ test('real native services accept one CRP MFA login, preserve scopes and revoke 
     assert.equal((await fetch(mailOrigin+'/staff/api/session',{headers:{cookie:standaloneCookie}})).status,200);
     assert.equal((await fetch(mailOrigin+'/staff/api/logout',{method:'POST',headers:{cookie:standaloneCookie,origin:mailOrigin,'content-type':'application/json','x-csrf-token':standaloneCsrf},body:'{}'})).status,200);
     assert.equal(db.prepare('SELECT count(*) n FROM staff_sessions').get().n,0);
-    observations.push({singlePrimaryLogin:true,nativePasswordRequests:0,mailTickets:0,globalLogoutRevokedBoth:true});
+    observations.push({singlePrimaryLogin:true,nativePasswordRequestsForGlobalSignIn:0,mailTicketsRequiredForGlobalSignIn:0,standaloneCompatibilityTickets:1,globalLogoutRevokedBoth:true});
     const evidence=fileURLToPath(new URL('../.local/evidence/',import.meta.url));
     mkdirSync(evidence,{recursive:true});writeFileSync(join(evidence,'local-native-sso-'+randomUUID()+'.json'),JSON.stringify({passed:true,fictionalOnly:true,permissionsCount:permissions.length,observations},null,2));
   } finally {
