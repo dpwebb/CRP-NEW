@@ -86,7 +86,6 @@ export const actions = {
       "Add organization",
       [
         field("name", "Name"),
-        field("status", "Status", "select:ACTIVE,DISABLED"),
       ],
     ),
     "organization.update": write(
@@ -151,7 +150,7 @@ export const actions = {
       "/api/partners/:id/activate",
       "affiliate.manage",
       "Activate accepted partner",
-      [],
+      [field('termsVersion','Current accepted agreement version')],
       { owner: true },
     ),
     "campaign.add": write(
@@ -250,6 +249,76 @@ export const actions = {
     ),
   },
 };
+// Native administrative parity. Public enrollment, partner assent/training,
+// provider webhooks and external human payment release remain native workflows.
+Object.assign(reads.crp, {
+  referrals: read('/api/admin/affiliates', 'affiliate.read'),
+  fulfillment: read('/api/admin/fulfillment', 'fulfillment.read', page),
+  grants: read('/api/admin/fulfillment-grants', 'fulfillment.grants', [...page,'org_id']),
+  settings: read('/api/admin/settings', 'overview.read'),
+  packet: { ...read('/api/admin/fulfillment/:id/packet','fulfillment.read'), format:'pdf' },
+});
+Object.assign(reads.affiliate, {
+  report: read('/api/report','affiliate.read'),
+  contacts: read('/api/contacts','affiliate.read'),
+  communications: read('/api/communications','affiliate.read'),
+  assets: read('/api/assets','affiliate.read'),
+  tickets: read('/api/tickets','affiliate.read'),
+  onboarding: read('/api/onboarding','affiliate.read'),
+  journey: read('/api/onboarding/:id','affiliate.read'),
+  evidence: read('/api/holds/evidence','affiliate.read'),
+  resources: read('/api/resources','affiliate.read',['country']),
+  creative: read('/api/campaigns/:id/creative','affiliate.read'),
+  agreement: read('/api/partners/:id/agreement','affiliate.read'),
+  program: read('/api/program','affiliate.read'),
+  qr: { ...read('/api/campaigns/:id/qr','affiliate.read'),format:'svg' },
+});
+Object.assign(reads.mail, {
+  provider: read('/staff/api/orders/:id/postgrid','fulfillment.read'),
+  packet: { ...read('/staff/api/orders/:id/packet','fulfillment.read'),format:'pdf' },
+  preview: { ...read('/staff/api/orders/:id/print-preview','fulfillment.read'),format:'pdf' },
+});
+Object.assign(actions.crp, {
+  'referral.sync':write('/api/admin/affiliates/sync','affiliate.manage','Synchronize verified referral ledger',[],{sensitive:true}),
+  'referral.enroll':write('/api/admin/affiliates/enroll','affiliate.manage','Enroll existing consumer referral account',[
+    field('account_id','CRP account ID'),field('introducer_code','Introducer code','text',false),field('org_id','Organization ID','text',false)]),
+  'referral.hold':write('/api/admin/affiliates/:id/hold','affiliate.manage','Hold consumer referral account',[field('reason','Reason','select:MANUAL_REVIEW,REFUND_REVIEW,ACCOUNT_REVIEW')]),
+  'referral.release':write('/api/admin/affiliates/:id/hold','affiliate.manage','Release consumer referral hold',[],{method:'DELETE'}),
+  'fulfillment.add':write('/api/admin/fulfillment','fulfillment.grants','Create task from consumer sharing grant',[field('grant_id','Current sharing grant ID')]),
+  'fulfillment.update':write('/api/admin/fulfillment/:id','fulfillment.prepare','Update fulfillment task',[field('status','Status','select:REVIEWED,CANCELLED')],{method:'PATCH'}),
+});
+Object.assign(actions.affiliate, {
+  'contact.add':write('/api/contacts','affiliate.manage','Record contact',[
+    field('name','Name'),field('email','Email'),field('sourceUrl','Source URL'),field('purpose','Purpose','select:recruitment,partner_service,customer_education'),field('partnerId','Partner ID','text',false)]),
+  'contact.suppress':write('/api/contacts/:id','affiliate.manage','Suppress contact',[],{method:'DELETE',owner:true}),
+  'communication.queue':write('/api/communications','affiliate.manage','Queue authorized communication',[field('contactId','Contact ID'),field('template','Template','select:invitation,activation,education,payout,followup,access_help')],{sensitive:true}),
+  'asset.publish':write('/api/assets','affiliate.manage','Publish approved campaign asset',[field('campaignId','Campaign ID'),field('template','Template','select:newsletter,banner,video_script,fictional_example')],{sensitive:true}),
+  'ticket.add':write('/api/tickets','affiliate.manage','Create partner support ticket',[field('partnerId','Partner ID'),field('question','Question','textarea')]),
+  'onboarding.start':write('/api/onboarding','affiliate.manage','Start partner onboarding',[field('contactId','Contact ID')],{owner:true,sensitive:true}),
+  'onboarding.advance':write('/api/onboarding/:id/advance','affiliate.manage','Advance onboarding checklist',[field('expectedVersion','Current version','number')],{owner:true,sensitive:true}),
+  'onboarding.review':write('/api/onboarding/:id/review','affiliate.manage','Record owner qualification review',[field('expectedVersion','Current version','number'),field('decision','Decision','select:approve,decline'),field('evidenceRef','Evidence reference')],{owner:true}),
+  'onboarding.pause':write('/api/onboarding/:id/pause','affiliate.manage','Pause or resume onboarding',[field('paused','Pause','boolean')],{owner:true,sensitive:true}),
+  'agent.run':write('/api/agent/run','affiliate.manage','Request AI operations task',[field('task','Task','textarea')],{owner:true,sensitive:true,requestId:true}),
+  'hold.add':write('/api/holds','affiliate.manage','Record evidenced commission concern',[field('id','New concern UUID'),field('partnerId','Partner ID'),field('reason','Reason','select:SELF_REFERRAL_CONCERN,SOURCE_INTEGRITY_CONCERN,ATTRIBUTION_CONFLICT'),field('evidenceAuditId','Relevant audit sequence'),field('expiresAt','Expiry (ISO date and time)')],{owner:true}),
+  'partner.destination':write('/api/partners/:id/destination','affiliate.manage','Update independently verified payee destination',[field('destinationRef','Verified destination reference'),field('verified','I independently verified this destination','boolean')],{owner:true,sensitive:true}),
+});
+const countryField=()=>field('country','Destination country','select:CA,US,GB,AU');
+const bureauField=()=>field('bureau','Bureau','select:EQUIFAX,EXPERIAN,TRANSUNION');
+Object.assign(actions.mail, {
+  'route.update':write('/staff/api/routes','fulfillment.prepare','Update evidenced mailing route',[
+    countryField(),bureauField(),field('address','Published bureau address','textarea'),field('originCountry','Origin country','select:CA,US,GB,AU'),field('enabled','Enable route','boolean'),field('service','Postal service'),field('maxPages','Maximum pages','number'),field('evidence','Supporting evidence','textarea'),field('mailer','Mailer','select:POSTGRID,MANUAL'),field('operatorCountry','Operator country','select:CA,US,GB,AU',false),field('mailingClass','Mailing class','select:first_class,registered,certified,certified_return_receipt',false),field('paperSize','Paper size','select:us_letter,a4',false),field('postgridRecipientId','Verified provider recipient ID','text',false),field('postgridRecipientHash','Verified recipient hash','text',false),field('expectedRevision','Current route revision','number')],{owner:true,sensitive:true,requestId:true}),
+  'route.emergency':write('/staff/api/manual-emergencies','fulfillment.prepare','Set explicit manual-mail emergency',[
+    countryField(),bureauField(),field('enabled','Enable emergency option','boolean'),field('expiresAt','Emergency option expires','timestamp'),field('reason','Reason','textarea')],{owner:true,sensitive:true,requestId:true}),
+  'recipient.verify':write('/staff/api/postgrid/recipient','fulfillment.prepare','Verify or review bureau recipient',[
+    countryField(),bureauField(),field('address','Published bureau address','textarea'),field('previousRequestId','Previous verification request','text',false),field('approveNormalized','Approve normalized address','boolean',false),field('confirmBureauAddress','Confirm published bureau address','boolean',false),field('bureauEvidence','Bureau address evidence','textarea',false),
+    ...[['addressLine1','Postal address line 1'],['addressLine2','Postal address line 2'],['city','City'],['provinceOrState','Province or state'],['postalOrZip','Postal code']].map(([name,label])=>({...field(name,label,'text',false),parent:'postalFields'}))],{owner:true,sensitive:true,requestId:true}),
+  'order.fulfill':write('/staff/api/orders/:id/fulfill','fulfillment.prepare','Record checked fulfillment transition',[
+    field('expectedState','Current order state'),field('action','Transition','select:PREPARE,HANDOFF,DISPATCH,DELIVER,RETURN,HOLD,RESOLVE_NOT_POSTED,RESOLVE_POSTED'),field('packetHash','Approved packet hash'),field('confirm','Type I_HAVE_CHECKED_THIS_ORDER'),field('evidence','Fulfillment evidence','textarea'),field('service','Postal service','text',false),field('tracking','Tracking reference','text',false)],{sensitive:true,requestId:true}),
+});
+for(const action of ['prepare','preview','send','reconcile','cancel'])actions.mail['provider.'+action]=write('/staff/api/orders/:id/postgrid/'+action,'fulfillment.prepare',{
+  prepare:'Prepare provider mailing',preview:'Refresh provider print preview',send:'Submit customer-authorized provider mailing',reconcile:'Reconcile uncertain provider outcome',cancel:'Cancel provider submission'
+}[action],[field('confirm','Type I_HAVE_CHECKED_THIS_ORDER')],{owner:true,sensitive:true});
+
 export function operation(app, name, writeMode = false) {
   const item = (writeMode ? actions : reads)[app]?.[name];
   if (!item)
@@ -285,8 +354,8 @@ export function actionBody(op, raw, key) {
     if ((v === undefined || v === "") && !f.required) continue;
     if (f.required && (v === undefined || v === ""))
       throw Object.assign(new Error("REQUIRED_FIELD"), { status: 400 });
-    if (f.type === "number") {
-      if (!Number.isSafeInteger(v) || v < 0 || v > 10000000)
+    if (f.type === "number" || f.type === 'timestamp') {
+      if (!Number.isSafeInteger(v) || v < 0 || v > (f.type === 'timestamp' ? 8640000000000000 : 10000000))
         throw Object.assign(new Error("INVALID_AMOUNT"), { status: 400 });
     } else if (f.type === "boolean") {
       if (typeof v !== "boolean")
@@ -306,8 +375,10 @@ export function actionBody(op, raw, key) {
       throw Object.assign(new Error("INVALID_FIELD"), { status: 400 });
     if (f.type.startsWith("select:") && !f.type.slice(7).split(",").includes(v))
       throw Object.assign(new Error("INVALID_FIELD"), { status: 400 });
-    body[f.name] = v;
+    if (f.parent) { body[f.parent] ||= {}; body[f.parent][f.name]=v; }
+    else body[f.name] = v;
   }
+  if (body.postalFields) body.postalFields.addressLine2 ??= '';
   if (op.requestId) body.requestId = key;
   return body;
 }

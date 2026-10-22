@@ -1,5 +1,17 @@
 # Independent Family Admin release
 
+## Current successor: global sign-in and administrative consolidation
+
+Read [ADMIN_MIGRATION.md](../ADMIN_MIGRATION.md) before preparing this successor. The owner authorized moving all administrative functions and single sign-in, with verification before old pages are redirected or retired. This requires separately frozen native Affiliate/Mail adapters and protected per-person public-key trust, not a portal-only update. Coordinate against Mail's completed hosted handoff. Keep the already accepted deployed package and all its recovery evidence unchanged. Do not replay old installation or identity operations.
+
+Require a new release tuple binding all three source/artifact hashes, exact predecessor service/configuration hashes, complete protected backups and independent recovery (Family SSO backup schema2 has four files). Do not enable `familySso` until native trust works in the target environment. Native trust files use `FAMILY_SSO_CONFIG_PATH`; pin the exact Family public key, issuer/audience/environment and individual roles/capabilities. Preserve provider clients, normal native identity paths and partner/operator workspaces. No new identity provider/client or broad machine-owner grant is needed.
+
+Local acceptance commands: `npm run check`, `npm test`, then set `CRP_FAMILY_CONSUMER_ROOT`, `CRP_FAMILY_MAIL_ROOT` and `CRP_FAMILY_AFFILIATE_ROOT` to the exact intended isolated consumer/native checkouts and run `npm run test:native-sso`. This starts real disposable native services and PostgreSQL/SQLite stores; it uses no hosted credentials, payments, postal dispatch or external communications. Also run native regressions and actual browser desktop/mobile checks. These tests do not substitute for the complete staging parity gate.
+
+In SSO mode privileged and sensitive changes require a fresh global factor. Normal reads and navigation never require an application login. Verify central logout and independent role/designation revocation. Redirect/retire old administration only after complete migration, staging acceptance and production verification; role-aware native redirects must leave partner/staff and API/callback paths intact.
+
+## Existing independent portal procedure
+
 Do not activate while Mail retains hosted release ownership. Obtain its final exact-build/configuration custody handoff first. Family Admin has its own immutable package, service, protected configuration, audit store, HTTPS router and rollback. Do not replace any existing app's runtime, environment, database, router or container.
 
 Commit only `family-admin/`, then run its syntax and integration tests. `node scripts/package.mjs` refuses dirty source and copies every tracked Family Admin file into a new `.local/releases/crp-family-...` directory with exact byte hashes and the source commit. No credentials/configuration/audit data are packaged. Transfer the same complete directory to the VPS and independently run `verifyRelease` before installation. Hosted startup verifies the complete installed artifact and reports its release, commit and manifest hash in `/health`.

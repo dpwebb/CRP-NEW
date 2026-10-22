@@ -1,5 +1,7 @@
 import { reads, actions } from "./catalog.mjs";
 export function configuration(raw) {
+  if (raw.familySso !== undefined && typeof raw.familySso !== 'boolean')
+    throw Error('INVALID_FAMILY_SSO_CONFIGURATION');
   if (!["local", "staging", "production"].includes(raw.environment))
     throw Error("ENVIRONMENT_REQUIRED");
   if (raw.listenHost && !["127.0.0.1", "::1"].includes(raw.listenHost))
@@ -123,6 +125,7 @@ export function configuration(raw) {
     upstreams,
     bindings,
     affiliateLogin,
+    familySso: raw.familySso === true,
     auditDirectory: raw.auditDirectory,
     secure: origin.protocol === "https:",
     port:

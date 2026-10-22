@@ -7,6 +7,7 @@ import { configuration } from "./config.mjs";
 import { Journal } from "./journal.mjs";
 import { Gateway } from "./gateway.mjs";
 import { AffiliateLogin } from "./affiliate-login.mjs";
+import { FamilySso } from './family-sso.mjs';
 const publicRoot = new URL("../public/", import.meta.url);
 const messages = {
   SESSION_REQUIRED: "Sign in to the family workspace.",
@@ -59,6 +60,7 @@ export function createPortal(raw, options = {}) {
     journal = options.journal || new Journal(config.auditDirectory),
     gateway = new Gateway(config, journal, options),
     affiliateLogin = new AffiliateLogin(config, gateway, options);
+  if (config.familySso) gateway.sso = new FamilySso(config, gateway, { now: options.now, privateKey: options.ssoPrivateKey });
   const assets = new Map(
     [
       ["/", ["index.html", "text/html; charset=utf-8"]],
@@ -83,6 +85,14 @@ export function createPortal(raw, options = {}) {
     try {
       if (req.headers.host !== config.host)
         throw Object.assign(Error("HOST_REFUSED"), { status: 403 });
+      if (req.url === '/internal/sso/introspect' && req.method === 'POST' && gateway.sso) {
+        if (!['affiliate', 'mail'].some(app => config.upstreams[app] === req.headers.origin))
+          throw Object.assign(Error('ORIGIN_REFUSED'), { status: 403 });
+        const input = await body(req);
+        if (!input || Object.keys(input).join(',') !== 'token' || typeof input.token !== 'string' || input.token.length > 16384)
+          throw Object.assign(Error('INVALID_FIELDS'), { status: 400 });
+        json(res, 200, await gateway.sso.introspect(input.token, req.headers.origin)); return;
+      }
       if (
         (req.headers.origin && req.headers.origin !== config.origin) ||
         (!["GET", "HEAD"].includes(req.method) &&
@@ -121,7 +131,17 @@ export function createPortal(raw, options = {}) {
         res.writeHead(303, { location: "/" }); res.end(); return;
       }
       const session = gateway.getSession(req);
+      if (path === '/auth/family/authorize' && req.method === 'GET' && gateway.sso) {
+        const location = await gateway.sso.authorizeHandoff(session, url.searchParams);
+        res.writeHead(303, { location }); res.end(); return;
+      }
       if (!["GET", "HEAD"].includes(req.method)) gateway.csrf(req, session);
+      const handoff = /^\/api\/sso\/handoff\/(affiliate|mail)$/.exec(path);
+      if (handoff && req.method === 'POST' && gateway.sso) {
+        json(res, 200, await gateway.sso.handoff(session, handoff[1])); return;
+      }
+      if (gateway.sso && path.startsWith('/api/connections/'))
+        throw Object.assign(Error('GLOBAL_SIGN_IN_MANAGED'), { status: 409 });
       if (path === "/api/unlock" && req.method === "POST") {
         json(res, 200, await gateway.unlock(session, await body(req)));
         return;
@@ -163,6 +183,14 @@ export function createPortal(raw, options = {}) {
             .reverse(),
         });
         return;
+      }
+      const document = /^\/api\/documents\/(crp|mail|affiliate)\/(packet|preview|qr)$/.exec(path);
+      if (document && req.method === 'GET') {
+        if ([...url.searchParams.keys()].some(k=>k!=='id') || url.searchParams.getAll('id').length!==1)
+          throw Object.assign(Error('INVALID_FIELDS'),{status:400});
+        const bytes=await gateway.document(session,document[1],document[2],url.searchParams.get('id'));
+        const svg=document[1]==='affiliate'&&document[2]==='qr', extension=svg?'svg':'pdf';
+        res.writeHead(200,{'content-type':svg?'image/svg+xml':'application/pdf','content-security-policy':"sandbox; default-src 'none'",'content-disposition':`attachment; filename="crp-${document[1]}-${document[2]}.${extension}"`});res.end(bytes);return;
       }
       let match = /^\/api\/connections\/(affiliate|mail)$/.exec(path);
       if (match && req.method === "POST") {

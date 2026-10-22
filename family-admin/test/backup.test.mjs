@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtempSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
-import {randomBytes} from 'node:crypto';
+import {randomBytes,generateKeyPairSync,createPublicKey} from 'node:crypto';
 import {Journal} from '../src/journal.mjs';
 import {pack,recover} from '../scripts/backup.mjs';
 
@@ -25,4 +25,20 @@ test('authenticated private backup recovers exact config/key/journal and refuses
     const changed=readFileSync(output);changed[changed.length-1]^=1;const bad=join(root,'tampered.enc');writeFileSync(bad,changed);
     assert.throws(()=>recover({backup:bad,key,destination:join(root,'bad-recovery')}));
   }finally{rmSync(root,{recursive:true,force:true});}
+});
+
+test('SSO backup preserves the separate signing key and refuses an absent or invalid signer',()=>{
+  const root=mkdtempSync(join(tmpdir(),'crp-family-sso-backup-'));
+  try {
+    const config=join(root,'config.json'),key=join(root,'recovery.key'),audit=join(root,'audit'),output=join(root,'backup.enc');
+    writeFileSync(config,JSON.stringify({familySso:true}),{mode:0o600});writeFileSync(key,randomBytes(32),{mode:0o600});
+    const j=new Journal(audit);j.append('SIGN_IN',{subject:'fictional-owner'});j.close();
+    const context={config,audit,key,output,release:'crp-family-'+'b'.repeat(20)};
+    assert.throws(()=>pack(context));
+    writeFileSync(join(audit,'sso-signing.pem'),'invalid',{mode:0o600});assert.throws(()=>pack(context));
+    const {privateKey}=generateKeyPairSync('ed25519');writeFileSync(join(audit,'sso-signing.pem'),privateKey.export({type:'pkcs8',format:'pem'}),{mode:0o600});
+    const packed=pack(context),destination=join(root,'recovered'),restored=recover({backup:output,key,destination});
+    assert.equal(restored.files.length,4);assert.deepEqual(restored.files,packed.files);
+    assert.equal(createPublicKey(readFileSync(join(destination,'audit/sso-signing.pem'))).export({type:'spki',format:'pem'}),createPublicKey(privateKey).export({type:'spki',format:'pem'}));
+  } finally {rmSync(root,{recursive:true,force:true});}
 });

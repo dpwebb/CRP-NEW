@@ -17,7 +17,7 @@ const run = async (fn) => {
     await f.close();
   }
 };
-const change = (body = {}, extra = {}) => ({
+  const change = (body = {termsVersion:'fixture-program-v1'}, extra = {}) => ({
   body,
   requestId: randomUUID(),
   confirmation: "local:affiliate:partner.activate",

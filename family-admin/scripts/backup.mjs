@@ -4,6 +4,7 @@ import {gzipSync,gunzipSync} from 'node:zlib';
 import {join,resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {Journal} from '../src/journal.mjs';
+import {signingKey} from '../native/family-sso-protocol.mjs';
 
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const names=['config.json','audit/integrity.key','audit/audit.jsonl'];
@@ -15,11 +16,14 @@ export function pack({config,audit,key,output,release}) {
   // Opening the existing journal validates its HMAC chain; no events are appended.
   for(const p of [join(audit,'integrity.key'),join(audit,'audit.jsonl')])ordinary(p);
   const journal=new Journal(audit);journal.close();
+  const sso = JSON.parse(readFileSync(config, 'utf8').replace(/^\uFEFF/,'')).familySso === true;
+  const backupNames = sso ? [...names, 'audit/sso-signing.pem'] : names;
   const sources=[config,join(audit,'integrity.key'),join(audit,'audit.jsonl')];
+  if (sso) { const signing = join(audit,'sso-signing.pem'); ordinary(signing); signingKey(readFileSync(signing)); sources.push(signing); }
   const files=sources.map((p,i)=>{const s=ordinary(p),bytes=readFileSync(p),mode=process.platform==='win32'?0o600:s.mode&0o777;
     if(!(i===0?[0o600,0o640]:[0o600]).includes(mode))throw Error('BACKUP_PRIVATE_MODE_REQUIRED');
-    return{path:names[i],mode,sha256:hash(bytes),data:bytes.toString('base64')};});
-  const payload=gzipSync(Buffer.from(JSON.stringify({schema:1,release,files})));
+    return{path:backupNames[i],mode,sha256:hash(bytes),data:bytes.toString('base64')};});
+  const payload=gzipSync(Buffer.from(JSON.stringify({schema:sso?2:1,release,files})));
   const iv=randomBytes(12),cipher=createCipheriv('aes-256-gcm',keyfile(key),iv);
   const encrypted=Buffer.concat([cipher.update(payload),cipher.final()]);
   const bytes=Buffer.concat([Buffer.from('CRPFAM01'),iv,cipher.getAuthTag(),encrypted]);
@@ -33,11 +37,15 @@ export function recover({backup,key,destination}) {
   const decipher=createDecipheriv('aes-256-gcm',keyfile(key),bytes.subarray(8,20));decipher.setAuthTag(bytes.subarray(20,36));
   const zipped=Buffer.concat([decipher.update(bytes.subarray(36)),decipher.final()]);
   const payload=JSON.parse(gunzipSync(zipped,{maxOutputLength:100*1024*1024}).toString('utf8'));
-  if(payload.schema!==1||!/^crp-family-[a-f0-9]{20}$/.test(payload.release)||!Array.isArray(payload.files)||
-      JSON.stringify(payload.files.map(x=>x.path))!==JSON.stringify(names))throw Error('BACKUP_CONTENT_INVALID');
+  const backupNames = payload.schema === 2 ? [...names,'audit/sso-signing.pem'] : names;
+  if(![1,2].includes(payload.schema)||!/^crp-family-[a-f0-9]{20}$/.test(payload.release)||!Array.isArray(payload.files)||
+      JSON.stringify(payload.files.map(x=>x.path))!==JSON.stringify(backupNames))throw Error('BACKUP_CONTENT_INVALID');
   for(const row of payload.files){
-    if(![0o600,0o640].includes(row.mode)||typeof row.data!=='string'||hash(Buffer.from(row.data,'base64'))!==row.sha256)throw Error('BACKUP_CONTENT_INVALID');
+    if(!(row.path==='config.json'?[0o600,0o640]:[0o600]).includes(row.mode)||typeof row.data!=='string'||hash(Buffer.from(row.data,'base64'))!==row.sha256)throw Error('BACKUP_CONTENT_INVALID');
   }
+  const configuration=JSON.parse(Buffer.from(payload.files[0].data,'base64').toString('utf8').replace(/^\uFEFF/,''));
+  if ((configuration.familySso===true) !== (payload.schema===2)) throw Error('BACKUP_CONTENT_INVALID');
+  if(payload.schema===2)signingKey(Buffer.from(payload.files[3].data,'base64'));
   mkdirSync(destination,{mode:0o700});mkdirSync(join(destination,'audit'),{mode:0o700});
   for(const row of payload.files)writeFileSync(join(destination,row.path),Buffer.from(row.data,'base64'),{flag:'wx',mode:row.mode});
   const journal=new Journal(join(destination,'audit'));journal.close();

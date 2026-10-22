@@ -3,6 +3,8 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createPortal } from "../src/server.mjs";
+import { generateKeyPairSync } from 'node:crypto';
+import { FamilySsoClient } from '../native/family-sso-client.mjs';
 export const account = "acc_" + "a".repeat(24),
   otherAccount = "acc_" + "b".repeat(24);
 export const permissions = [
@@ -223,7 +225,9 @@ function send(res, status, value, headers = {}) {
   res.writeHead(status, { "content-type": "application/json", ...headers });
   res.end(JSON.stringify(value));
 }
-export async function fixtures({ port = 0, dir, now = Date.now } = {}) {
+export async function fixtures({ port = 0, dir, now = Date.now, singleSignIn = false } = {}) {
+  const clients = {};
+  const pair = singleSignIn ? generateKeyPairSync('ed25519') : null;
   const state = {
       active: true,
       affiliateActive: true,
@@ -301,8 +305,12 @@ export async function fixtures({ port = 0, dir, now = Date.now } = {}) {
       )
         return send(res, 200, { ok: true });
       if (app === "affiliate") {
+        if(singleSignIn) {
+          try { await clients.affiliate.authenticate({method:req.method,url:req.url,headers:req.headers,body:text?body:undefined}); }
+          catch { return send(res,401,{error:'FAMILY_SSO_REFUSED'}); }
+        }
         if (
-          req.headers.authorization !== "Bearer " + affiliateToken ||
+          (!singleSignIn && req.headers.authorization !== "Bearer " + affiliateToken) ||
           !state.affiliateActive
         )
           return send(res, 401, { error: "INVALID_SESSION" });
@@ -330,8 +338,12 @@ export async function fixtures({ port = 0, dir, now = Date.now } = {}) {
         );
       }
       if (app === "mail") {
+        if(singleSignIn) {
+          try { await clients.mail.authenticate({method:req.method,url:req.url,headers:req.headers,body:text?body:undefined}); }
+          catch { return send(res,401,{error:'FAMILY_SSO_REFUSED'}); }
+        }
         if (
-          !req.headers.cookie?.includes("crp_mail_staff=fixture-mail-cookie") ||
+          (!singleSignIn && !req.headers.cookie?.includes("crp_mail_staff=fixture-mail-cookie")) ||
           !state.mailActive
         )
           return send(res, 401, { error: "STAFF_SESSION_REQUIRED" });
@@ -343,7 +355,7 @@ export async function fixtures({ port = 0, dir, now = Date.now } = {}) {
             csrfToken: "b".repeat(64),
           });
         if (
-          req.method !== "GET" &&
+          !singleSignIn && req.method !== "GET" &&
           req.headers["x-csrf-token"] !== "b".repeat(64)
         )
           return send(res, 403, { error: "CSRF_REJECTED" });
@@ -363,6 +375,7 @@ export async function fixtures({ port = 0, dir, now = Date.now } = {}) {
         return send(res, 200, { updated: true });
       }
       let resource = path.split("/").at(-1);
+      if(app==='crp'&&resource==='affiliates')resource='referrals';
       if (app === "affiliate")
         resource =
           { status: "overview", journal: "commissions", members: "team" }[
@@ -372,6 +385,7 @@ export async function fixtures({ port = 0, dir, now = Date.now } = {}) {
         resource = "order";
       if (state.beforeData) await state.beforeData(app, resource);
       let value = state.data[app][resource];
+      if(value === undefined && singleSignIn) value={items:[]};
       if (resource === "order") value = state.data.mail.orders.items[0];
       if (app === "affiliate" && resource === "export")
         value = { state: "READY_FOR_HUMAN", externalPaymentRequired: true };
@@ -387,6 +401,7 @@ export async function fixtures({ port = 0, dir, now = Date.now } = {}) {
       environment: "local",
       origin: "http://127.0.0.1:" + port,
       demo: true,
+      familySso: singleSignIn,
       upstreams,
       auditDirectory: directory,
       bindings: {
@@ -408,12 +423,15 @@ export async function fixtures({ port = 0, dir, now = Date.now } = {}) {
         },
       },
     },
-    portal = createPortal(raw, { now });
+    portal = createPortal(raw, { now, ...(pair ? {ssoPrivateKey:pair.privateKey} : {}) });
   await new Promise((r) => portal.server.listen(port, "127.0.0.1", r));
   portal.config.port = portal.server.address().port;
   portal.config.origin = "http://127.0.0.1:" + portal.config.port;
   portal.config.host = "127.0.0.1:" + portal.config.port;
   const base = portal.config.origin;
+  if(singleSignIn)for(const app of ['affiliate','mail'])clients[app]=new FamilySsoClient({app,issuer:base,audience:upstreams[app],environment:'local',publicKey:portal.gateway.sso.publicKey,now,
+    binding:sub=>portal.config.bindings[sub]?.[app],
+    resolveActor:b=>app==='affiliate'?{subject:b.subject,role:'owner'}:{role:b.role},permission:()=>null});
   let cookieHeader = "",
     csrf = "";
   const request = async (path, { method = "GET", body, headers = {} } = {}) => {

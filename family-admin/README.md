@@ -1,5 +1,7 @@
 # CRP Family Admin
 
+The deployed legacy portal is complete. The new single-sign-in and unified-admin successor is being verified locally; see [ADMIN_MIGRATION.md](ADMIN_MIGRATION.md) for coverage, trust and staged retirement gates. Individual admin pages remain available until complete acceptance.
+
 A standalone administration portal and bounded server-side gateway for CRP, Affiliate Operations and Mail Operations. This directory is an independent local build on `codex/family-admin-build`. No consumer runtime, release manifest, packet/mail release source, provider configuration or hosted data is changed.
 
 ## Run the fictional preview
@@ -32,6 +34,10 @@ The demo is labelled fictional throughout. Its three native-contract servers use
 - Distinct local/staging/production configurations, fixed permitted upstream hosts, strict portal Host/Origin/CSRF checks, request/response bounds, per-address login limits, secret-field redaction, unavailable-state handling and revoked-response withholding.
 
 ## Authentication boundary
+
+With the new explicit `familySso:true` configuration and both native adapters installed, one normal CRP MFA sign-in/unlock automatically authenticates the person's assigned Affiliate and Mail access. No separate provider login or Mail code is requested. Native permissions, dynamic bindings, scopes, global fresh-factor checks and logout remain enforced. The protected signing key is included in authenticated version-2 backup/recovery. This successor has not been activated on hosted environments. See ADMIN_MIGRATION.md.
+
+The following describes the deployed legacy mode (`familySso` absent or false):
 
 This build provides one **portal sign-in**, with explicit native application links. It does not replace the three applications' identity systems. Affiliate can use normal sign-in through its existing dedicated issuer/client when the protected `affiliateLogin` settings and exact callback are configured; its native JWT verifier and existing membership remain authoritative. The local preview also supports its fictional token link. Mail accepts an existing one-use staff code. Links expire with native access and must be reconnected. CRP credentials cannot sign someone into an unrelated Affiliate or Mail identity.
 

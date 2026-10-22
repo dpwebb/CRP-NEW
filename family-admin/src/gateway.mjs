@@ -51,7 +51,7 @@ export class Gateway {
     app,
     path,
     session,
-    { method = "GET", body, timeout = 12000 } = {},
+    { method = "GET", body, timeout = 12000, documentFormat } = {},
   ) {
     const base = this.config.upstreams[app];
     if (!base) fail("APPLICATION_NOT_CONFIGURED", 503);
@@ -62,13 +62,16 @@ export class Gateway {
       path.startsWith("//")
     )
       fail("INVALID_UPSTREAM_PATH");
+    const delegated = this.sso && app !== 'crp';
+    const proof = delegated ? await this.sso.proof(session, app, { method, path: target.pathname + target.search, body }) : null;
     const link = session?.links?.[app] || {},
       headers = { accept: "application/json", origin: base };
-    if (link.cookies)
+    if (!delegated && link.cookies)
       headers.cookie = Object.entries(link.cookies)
         .map(([k, v]) => k + "=" + v)
         .join("; ");
-    if (link.bearer) headers.authorization = "Bearer " + link.bearer;
+    if (proof) headers.authorization = 'Bearer ' + proof;
+    else if (link.bearer) headers.authorization = "Bearer " + link.bearer;
     if (link.csrf) headers["x-csrf-token"] = link.csrf;
     if (body !== undefined) headers["content-type"] = "application/json";
     let response;
@@ -89,7 +92,7 @@ export class Gateway {
         /^(crp_session|crp_admin_session|crp_mail_staff)=([A-Za-z0-9_-]*)/.exec(
           line,
         );
-      if (match) {
+      if (match && !delegated) {
         link.cookies ||= {};
         if (match[2]) link.cookies[match[1]] = match[2];
         else delete link.cookies[match[1]];
@@ -104,7 +107,7 @@ export class Gateway {
           const { done, value } = await reader.read();
           if (done) break;
           bytes += value.length;
-          if (bytes > 2 * 1024 * 1024) {
+          if (bytes > (documentFormat === 'pdf' ? 64*1024*1024 : documentFormat === 'svg' ? 65536 : 2*1024*1024)) {
             await reader.cancel();
             fail("UPSTREAM_RESPONSE_TOO_LARGE", 502);
           }
@@ -115,7 +118,15 @@ export class Gateway {
       if (e.code) throw e;
       fail("UPSTREAM_OUTCOME_UNKNOWN", 502);
     }
-    const text = Buffer.concat(chunks).toString("utf8");
+    const buffer = Buffer.concat(chunks);
+    if (documentFormat && response.ok) {
+      const type = String(response.headers.get('content-type')).toLowerCase();
+      if (documentFormat === 'pdf' ? (!type.startsWith('application/pdf') || buffer.subarray(0,5).toString() !== '%PDF-')
+        : (!type.startsWith('image/svg+xml') || !buffer.toString('utf8').includes('<svg')))
+        fail('UPSTREAM_INVALID_DOCUMENT', 502);
+      return buffer;
+    }
+    const text = buffer.toString("utf8");
     let value;
     try {
       value = JSON.parse(text);
@@ -276,6 +287,7 @@ export class Gateway {
   }
   async nativeIdentity(s, app) {
     if (app === "crp") return this.authorize(s);
+    if (this.sso && this.binding(s, app)) this.sso.claims(s, app);
     const b = this.binding(s, app),
       link = s.links[app];
     if (!b || !link) fail("APPLICATION_NOT_LINKED", 409);
@@ -292,7 +304,7 @@ export class Gateway {
       (b.role === "operator" && me.scope?.member?.id !== b.memberId)
     )
       fail("LINKED_MEMBERSHIP_CHANGED");
-    link.csrf = me.csrfToken;
+    if (!this.sso) link.csrf = me.csrfToken;
     return me;
   }
   capability(s, app, op) {
@@ -310,6 +322,18 @@ export class Gateway {
   }
   async session(s) {
     const p = await this.authorize(s);
+    const access = {};
+    if (this.sso) for (const app of ['affiliate', 'mail']) {
+      if (!this.binding(s, app) || !this.config.upstreams[app]) continue;
+      try {
+        await this.nativeIdentity(s, app);
+        access[app] = true;
+        if (!s.links[app].recorded) {
+          this.journal.append('APPLICATION_LINKED', { subject: s.subject, app, mode: 'sso' });
+          s.links[app].recorded = true;
+        }
+      } catch { access[app] = false; }
+    }
     return {
       subject: s.subject,
       email: s.email,
@@ -324,7 +348,8 @@ export class Gateway {
           app,
           {
             configured: !!this.config.upstreams[app],
-            linked: app === "crp" || !!s.links[app],
+            linked: app === "crp" || (this.sso ? access[app] === true : !!s.links[app]),
+            managedSignIn: !!this.sso,
             ...(app === "affiliate" ? { browserSignIn: !!this.config.affiliateLogin } : {}),
             bindingConfigured: app === "crp" || !!this.binding(s, app),
             url: this.config.upstreams[app]
@@ -378,6 +403,7 @@ export class Gateway {
     };
   }
   async connect(s, app, body) {
+    if (this.sso) fail('GLOBAL_SIGN_IN_MANAGED', 409);
     await this.authorize(s);
     const b = this.binding(s, app);
     if (!b || !this.config.upstreams[app]) fail("APPLICATION_BINDING_REQUIRED");
@@ -426,6 +452,7 @@ export class Gateway {
   async read(s, app, name, id, query) {
     await this.authorize(s);
     const op = operation(app, name);
+    if (op.format) fail('DOCUMENT_ENDPOINT_REQUIRED', 400);
     this.capability(s, app, op);
     await this.nativeIdentity(s, app);
     const result = await this.call(app, nativePath(op, id, query), s);
@@ -444,6 +471,16 @@ export class Gateway {
       observedAt: new Date(this.now()).toISOString(),
       data: scrub(result),
     };
+  }
+  async document(s, app, name, id) {
+    await this.authorize(s);
+    const op=operation(app,name);
+    if(!['pdf','svg'].includes(op.format))fail('DOCUMENT_NOT_ALLOWED',404);
+    this.capability(s,app,op);await this.nativeIdentity(s,app);
+    const bytes=await this.call(app,nativePath(op,id),s,{documentFormat:op.format,timeout:60000});
+    await this.authorize(s);await this.nativeIdentity(s,app);
+    this.journal.append('DOCUMENT_VIEWED',{subject:s.subject,app,resource:name,record:id,sha256:digest(bytes)});
+    return bytes;
   }
   async execute(s, app, name, input) {
     strict(input, ["id", "body", "requestId", "confirmation"]);
@@ -526,7 +563,7 @@ export class Gateway {
       const outcomes = await Promise.allSettled([
         this.call("crp", "/api/admin/lock", s, { method: "POST", body: {} }),
         this.call("crp", "/api/sessions/current", s, { method: "DELETE" }),
-        ...(s.links.mail
+        ...(s.links.mail && !this.sso
           ? [
               this.call("mail", "/staff/api/logout", s, {
                 method: "POST",

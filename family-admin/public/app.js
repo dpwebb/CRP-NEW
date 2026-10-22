@@ -8,6 +8,7 @@ const $ = (id) => document.getElementById(id),
     query: "",
     generation: 0,
     dialog: null,
+    market: 'CA',
   };
 const labels = {
   crp: "CRP Consumer",
@@ -90,6 +91,20 @@ const pages = {
   team: { label: "Team & access", icon: "♙" },
   activity: { label: "Activity log", icon: "◷" },
 };
+for (const [id,label,app,resource] of [
+  ['referrals','Consumer referral ledger','crp','referrals'],
+  ['fulfillment','Consumer sharing tasks','crp','fulfillment'],
+  ['grants','Consumer sharing grants','crp','grants'],
+  ['settings','CRP settings','crp','settings'],
+  ['report','Affiliate program report','affiliate','report'],
+  ['contacts','Affiliate contacts','affiliate','contacts'],
+  ['communications','Affiliate communications','affiliate','communications'],
+  ['assets','Campaign assets','affiliate','assets'],
+  ['tickets','Partner support','affiliate','tickets'],
+  ['onboarding','Partner onboarding','affiliate','onboarding'],
+  ['evidence','Commission concern evidence','affiliate','evidence'],
+  ['resources','Approved affiliate resources','affiliate','resources'],
+]) pages[id]={label,app,resource,icon:'≡'};
 function el(tag, text, cls) {
   const n = document.createElement(tag);
   if (text !== undefined && text !== null) n.textContent = String(text);
@@ -148,6 +163,8 @@ function showLogin(error = "") {
   $("login").hidden = false;
   $("unlock").hidden = true;
   $("auth-error").textContent = error;
+  $('auth-title').textContent='Welcome to your workspace';
+  $('auth-help').textContent='Sign in with your CRP administration account and authenticator.';
   $("content").replaceChildren();
   if ($("dialog").open) $("dialog").close();
   document.body.classList.remove("nav-open");
@@ -172,10 +189,10 @@ function renderNav() {
   nav.replaceChildren();
   for (const [group, ids] of [
     ["Workspace", ["overview"]],
-    ["CRP", ["accounts", "cases", "billing", "organizations"]],
+    ["CRP", Object.keys(pages).filter(id=>pages[id].app==='crp')],
     [
       "Affiliate",
-      ["partners", "campaigns", "commissions", "holds", "proposals"],
+      Object.keys(pages).filter(id=>pages[id].app==='affiliate'),
     ],
     ["Mail Operations", ["orders", "pricing", "routes"]],
     ["Administration", ["team", "activity"]],
@@ -217,6 +234,7 @@ function empty(text, button) {
   return box;
 }
 function dialog(title, description, fields, submit, submitText = "Confirm") {
+  $('dialog-form').autocomplete = 'off';
   $("dialog-title").textContent = title;
   $("dialog-description").textContent = description;
   $("dialog-error").textContent = "";
@@ -229,6 +247,7 @@ function dialog(title, description, fields, submit, submitText = "Confirm") {
     let input;
     if (f.type?.startsWith("select:")) {
       input = el("select");
+      if (!f.required) { const option=el('option','Not specified');option.value='';input.append(option); }
       for (const option of f.type.slice(7).split(",")) {
         const o = el("option", human(option));
         o.value = option;
@@ -241,20 +260,24 @@ function dialog(title, description, fields, submit, submitText = "Confirm") {
       input.type =
         f.type === "boolean"
           ? "checkbox"
-          : f.type === "number"
+          : f.type === 'timestamp' ? 'datetime-local' : f.type === "number"
             ? "number"
             : f.type === "password"
               ? "password"
               : "text";
     }
     input.name = f.name;
+    input.autocomplete = 'off';
+    if(f.name === 'freshCode') {
+      input.type='text';input.inputMode='numeric';input.maxLength=6;input.pattern='[0-9]{6}';input.autocomplete='one-time-code';
+    }
     if (input.type !== "checkbox") input.required = !!f.required;
     if (input.tagName === "INPUT" && input.type === "number") {
       input.min = "0";
-      input.max = "10000000";
+      input.max = f.type === 'timestamp' ? '8640000000000000' : "10000000";
       input.step = "1";
     }
-    if (f.type === "password") {
+    if (f.type === "password" && f.name !== 'freshCode') {
       input.autocomplete = "off";
       input.spellcheck = false;
     } else if (f.type !== "boolean") input.value = f.value ?? "";
@@ -287,10 +310,11 @@ $("dialog-form").onsubmit = async (e) => {
   if (!d?.submit) return;
   const values = {};
   for (const [name, { input, f }] of d.nodes) {
+    if (!f.required && (input.value === '' || (f.type === 'boolean' && !input.checked))) continue;
     values[name] =
       f.type === "boolean"
         ? input.checked
-        : f.type === "number"
+        : f.type === 'timestamp' ? new Date(input.value).getTime() : f.type === "number"
           ? Number(input.value)
           : f.type === "array"
             ? input.value
@@ -315,9 +339,15 @@ $("dialog-form").onsubmit = async (e) => {
       if (f.type === "password") input.value = "";
   }
 };
-function confirmAction(app, name, id) {
+async function confirmAction(app, name, id) {
   const action = S.session.catalog.actions[app]?.[name];
   if (!action) return;
+  let termsVersion;
+  if(app==='affiliate'&&name==='partner.activate') {
+    try { termsVersion=(await api('/api/apps/affiliate/program')).data.termsVersion;
+      if(typeof termsVersion!=='string'||!termsVersion)throw Error('Current program agreement is unavailable.');
+    }catch(error){notice(error.message);return;}
+  }
   const fields = [
     ...(action.needsId
       ? [
@@ -329,7 +359,7 @@ function confirmAction(app, name, id) {
           },
         ]
       : []),
-    ...action.fields,
+    ...action.fields.map(f=>f.name==='termsVersion'?{...f,value:termsVersion}:f),
     ...(action.requiresStepUp
       ? [
           {
@@ -385,7 +415,19 @@ function actionButtons(app, resource) {
       orders: ["note.", "order."],
       pricing: ["pricing."],
       routes: [],
+      referrals:['referral.'],
+      fulfillment:['fulfillment.'],
+      grants:['fulfillment.'],
+      contacts:['contact.','onboarding.start'],
+      communications:['communication.'],
+      assets:['asset.'],
+      tickets:['ticket.'],
+      onboarding:['onboarding.'],
+      report:['agent.'],
     }[resource] || [];
+  if (resource === 'routes') prefixes.push('route.','recipient.');
+  if (resource === 'orders') prefixes.push('provider.');
+  if (resource === 'campaigns') prefixes.push('campaign.','asset.');
   for (const [name, action] of Object.entries(list))
     if (prefixes.some((prefix) => name.startsWith(prefix)))
       box.append(btn(action.label, () => confirmAction(app, name)));
@@ -405,8 +447,24 @@ function showDetails(app, row) {
     null,
   );
   $("dialog-fields").append(el("pre", JSON.stringify(row, null, 2)));
-  const id = row.id || row.orderId || row.admin_id || row.org_id;
+  const id = row.id || row.orderId || row.admin_id || row.job_id || row.org_id || row.account_id;
   const actions = el("div", null, "record-actions");
+  const reads = S.session.catalog.reads[app];
+  for (const [view,resource,title] of [
+    ['onboarding','journey','Open onboarding checklist'],['partners','agreement','Review agreement acceptance'],
+    ['campaigns','creative','View approved campaign creative'],['orders','provider','Review provider status']
+  ]) if (id && S.view===view && reads.includes(resource)) actions.append(btn(title,async()=>{
+    try { const result=await api('/api/apps/'+app+'/'+resource+'?id='+encodeURIComponent(id));showDetails(app,result.data); }
+    catch(error){$('dialog-error').textContent=error.message;}
+  }));
+  if (id && ((app==='mail' && S.view==='orders') || (app==='crp' && S.view==='fulfillment')))
+    for (const resource of app==='mail'?['packet','preview']:['packet']) if(reads.includes(resource)) {
+      const a=el('a',resource==='preview'?'Download provider print preview':'Download authorized packet');
+      a.href='/api/documents/'+app+'/'+resource+'?id='+encodeURIComponent(id);a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
+    }
+  if (id && app==='affiliate' && S.view==='campaigns' && reads.includes('qr')) {
+    const a=el('a','Download campaign QR code');a.href='/api/documents/affiliate/qr?id='+encodeURIComponent(id);a.target='_blank';a.rel='noopener noreferrer';actions.append(a);
+  }
   if (app === "mail" && id)
     actions.append(
       btn("Open full order", async () => {
@@ -441,8 +499,12 @@ function showDetails(app, row) {
       id &&
       (
         {
-          partners: ["partner.activate"],
-          orders: ["note.add", "order.cancel", "order.assign", "order.refund"],
+          partners: ["partner.activate",'partner.destination'],
+          orders: ["note.add", "order.cancel", "order.assign", "order.refund",'order.fulfill','provider.prepare','provider.preview','provider.send','provider.reconcile','provider.cancel'],
+          referrals:['referral.hold','referral.release'],
+          fulfillment:['fulfillment.update'],
+          contacts:['contact.suppress'],
+          onboarding:['onboarding.advance','onboarding.review','onboarding.pause'],
           team: ["team.update", "team.revoke"],
           organizations: ["organization.update"],
         }[S.view] || []
@@ -517,8 +579,10 @@ async function appView(app, resource, root, generation) {
   if (!S.session.applications[app].linked) {
     root.append(
       empty(
-        `Your ${labels[app]} access is not linked to this session.`,
-        btn("Connect application", () => connectDialog(app), "primary"),
+        S.session.applications[app].managedSignIn
+          ? `Your ${labels[app]} access is unavailable. Check your assigned access or refresh the workspace.`
+          : `Your ${labels[app]} access is not linked to this session.`,
+        btn(S.session.applications[app].managedSignIn ? 'Check access' : 'Connect application', () => connectDialog(app), "primary"),
       ),
     );
     return;
@@ -526,7 +590,7 @@ async function appView(app, resource, root, generation) {
   const toolbar = el("div", null, "toolbar");
   const fields =
     ["crp", "mail"].includes(app) &&
-    !["overview", "pricing", "routes", "team"].includes(resource);
+    !["overview", "pricing", "routes", "team", 'settings','referrals'].includes(resource);
   if (fields) {
     const input = el("input");
     input.type = "search";
@@ -544,9 +608,15 @@ async function appView(app, resource, root, generation) {
     toolbar.append(form);
   }
   toolbar.append(actionButtons(app, resource));
+  if(app==='affiliate'&&resource==='resources') {
+    const select=el('select');select.setAttribute('aria-label','Resource market');
+    for(const country of ['CA','US','GB','AU']){const option=el('option',country);option.value=country;select.append(option);}
+    select.value=S.market;select.onchange=()=>{S.market=select.value;load();};toolbar.prepend(select);
+  }
   root.append(toolbar);
   const params = new URLSearchParams();
-  if (app === "crp" && !["overview"].includes(resource)) {
+  if(app==='affiliate'&&resource==='resources')params.set('country',S.market);
+  if (app === "crp" && !["overview",'settings','referrals'].includes(resource)) {
     params.set("page", S.page);
     params.set("page_size", "25");
     if (S.query) params.set("q", S.query);
@@ -588,7 +658,7 @@ async function appView(app, resource, root, generation) {
     root.append(
       el(
         "p",
-        "Route and provider changes remain in the Mail Operations workspace. Open that application to review postal evidence and customer approval.",
+        "Route changes require current postal evidence. Provider submission requires the customer's exact approved packet and authorization.",
         "table-hint",
       ),
     );
@@ -654,7 +724,7 @@ async function overview(root, generation) {
       status.linked
         ? "Checking access…"
         : status.configured
-          ? "Not linked"
+          ? status.managedSignIn ? "Access unavailable" : "Not linked"
           : "Not configured",
       "badge",
     );
@@ -662,7 +732,7 @@ async function overview(root, generation) {
     const metrics = el("div", null, "metrics");
     card.append(metrics);
     if (!status.linked) {
-      card.append(btn("Connect access", () => connectDialog(app)));
+      card.append(btn(status.managedSignIn ? 'Check access' : 'Connect access', () => connectDialog(app)));
     } else if (!S.session.catalog.reads[app].includes("overview"))
       badge.textContent = "Overview not permitted";
     else {
@@ -691,7 +761,7 @@ async function overview(root, generation) {
           card.append(el("p", error.message, "muted"));
         });
     }
-    if (S.session.demo) {
+    if (S.session.demo || status.managedSignIn) {
       card.append(
         btn("View records →", () =>
           navigate(
@@ -773,6 +843,12 @@ async function load() {
 function connectDialog(app) {
   if (app === "crp") return;
   const status = S.session.applications[app];
+  if (status.managedSignIn) {
+    dialog('Application access', status.bindingConfigured
+      ? 'Your global sign-in manages this application. Access is checked against your current role on every operation. Refresh the workspace if access has changed.'
+      : 'Your global administrator must assign your individual application access.', [], null);
+    return;
+  }
   if (!status.bindingConfigured) {
     dialog(
       "Application access",
@@ -830,7 +906,9 @@ function connectDialog(app) {
 $("connections").onclick = () => {
   dialog(
     "Your application access",
-    "Connections are specific to your account and this environment. Expired access must be reconnected.",
+    S.session.applications.affiliate.managedSignIn
+      ? 'One global sign-in manages your assigned applications in this environment. Each application checks your current permissions.'
+      : "Connections are specific to your account and this environment. Expired access must be reconnected.",
     [],
     null,
   );
@@ -848,11 +926,11 @@ $("connections").onclick = () => {
             : !s.bindingConfigured
               ? "Owner membership linking is required."
               : s.linked
-                ? "Linked for this session. Access is rechecked on every operation."
-                : "Ready to connect your existing access.",
+                ? "Access verified for this session. Access is rechecked on every operation."
+                : s.managedSignIn ? 'Access is currently unavailable. Refresh to check again.' : "Ready to connect your existing access.",
       ),
     );
-    if (app !== "crp" && s.configured && s.bindingConfigured)
+    if (app !== "crp" && !s.managedSignIn && s.configured && s.bindingConfigured)
       section.append(
         btn(s.linked ? "Disconnect" : "Connect", () => connectDialog(app)),
       );
