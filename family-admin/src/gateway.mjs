@@ -31,6 +31,7 @@ export function scrub(v) {
   return v;
 }
 const random = () => randomBytes(32).toString("base64url");
+const IDLE_MS = 15 * 60000, MAX_SESSION_MS = 8 * 60 * 60000;
 const safeEqual = (a, b) => {
   if (typeof a !== "string" || typeof b !== "string") return false;
   const left = Buffer.from(a),
@@ -146,7 +147,7 @@ export class Gateway {
     return value;
   }
   cookie(token, clear = false) {
-    return `crp_family=${clear ? "" : token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${clear ? 0 : 900}${this.config.secure ? "; Secure" : ""}`;
+    return `crp_family=${clear ? "" : token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${clear ? 0 : MAX_SESSION_MS/1000}${this.config.secure ? "; Secure" : ""}`;
   }
   getSession(req) {
     const raw = String(req.headers.cookie || "")
@@ -155,7 +156,7 @@ export class Gateway {
       .find((x) => x.startsWith("crp_family="))
       ?.slice(11);
     const session = raw && this.sessions.get(digest(raw));
-    if (!session || session.expires <= this.now()) {
+    if (!session || (session.authenticatedUntil ?? session.expires) <= this.now()) {
       if (session) void this.logout(session).catch(() => {});
       fail("SESSION_REQUIRED", 401);
     }
@@ -211,6 +212,7 @@ export class Gateway {
       csrf: random(),
       links: { crp: {} },
       expires: this.now() + 300000,
+      authenticatedUntil: this.now() + MAX_SESSION_MS,
       authorized: false,
     };
     try {
@@ -257,7 +259,7 @@ export class Gateway {
     if (value.session?.account_id !== s.subject) fail("IDENTITY_CHANGED");
     s.authorized = true;
     s.verifiedAt = this.now();
-    s.expires = this.now() + 900000;
+    s.expires = Math.min(this.now() + IDLE_MS, s.authenticatedUntil);
     this.journal.append("ADMIN_UNLOCKED", {
       subject: s.subject,
       environment: this.config.environment,
@@ -271,7 +273,9 @@ export class Gateway {
       this.sessions.get(s.key) !== s
     )
       fail("ADMIN_UNLOCK_REQUIRED", 401);
-    const v = await this.call("crp", "/api/admin/session", s);
+    let v;
+    try { v = await this.call("crp", "/api/admin/session", s); }
+    catch(error) { if(error.code === 'TWO_FACTOR_REQUIRED') { s.authorized=false; fail('ADMIN_UNLOCK_REQUIRED',401); } throw error; }
     const p = v.session || v.principal;
     if (
       p?.account_id !== s.subject ||
@@ -321,7 +325,9 @@ export class Gateway {
       fail("LINKED_PERMISSION_REQUIRED");
   }
   async session(s) {
-    const p = await this.authorize(s);
+    let p;
+    try { p = await this.authorize(s); }
+    catch(error) { if(error.code === 'ADMIN_UNLOCK_REQUIRED') return {unlockRequired:true,csrf:s.csrf,environment:this.config.environment}; throw error; }
     const access = {};
     if (this.sso) for (const app of ['affiliate', 'mail']) {
       if (!this.binding(s, app) || !this.config.upstreams[app]) continue;
@@ -343,6 +349,7 @@ export class Gateway {
       environment: this.config.environment,
       demo: this.config.demo,
       expiresAt: new Date(s.expires).toISOString(),
+      absoluteExpiresAt: new Date(s.authenticatedUntil).toISOString(),
       applications: Object.fromEntries(
         ["crp", "affiliate", "mail"].map((app) => [
           app,
@@ -481,6 +488,15 @@ export class Gateway {
     await this.authorize(s);await this.nativeIdentity(s,app);
     this.journal.append('DOCUMENT_VIEWED',{subject:s.subject,app,resource:name,record:id,sha256:digest(bytes)});
     return bytes;
+  }
+  async activity(s) {
+    await this.authorize(s);
+    const native=await this.call('crp','/api/admin/activity',s,{method:'POST',body:{}});
+    const until=Date.parse(native.expires_at);
+    if(!Number.isFinite(until)||until<=this.now()) fail('ADMIN_UNLOCK_REQUIRED',401);
+    s.expires=Math.min(until,this.now()+IDLE_MS,s.authenticatedUntil);
+    // Activity is not MFA. verifiedAt deliberately stays unchanged.
+    return {expiresAt:new Date(s.expires).toISOString(),absoluteExpiresAt:new Date(s.authenticatedUntil).toISOString()};
   }
   async execute(s, app, name, input) {
     strict(input, ["id", "body", "requestId", "confirmation"]);

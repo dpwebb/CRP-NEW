@@ -290,6 +290,7 @@ export async function fixtures({ port = 0, dir, now = Date.now, singleSignIn = f
         !req.headers.cookie?.includes("crp_admin_session=fixture-admin-cookie")
       )
         return send(res, 401, { error: { code: "TWO_FACTOR_REQUIRED" } });
+      if(app==='crp' && path==='/api/admin/activity')return send(res,200,{expires_at:new Date(now()+900000).toISOString()});
       if (app === "crp" && path === "/api/admin/session")
         return send(res, 200, {
           ok: true,

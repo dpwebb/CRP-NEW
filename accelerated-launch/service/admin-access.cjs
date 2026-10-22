@@ -3,7 +3,7 @@ const crypto=require('node:crypto'),accounts=require('./accounts.cjs'),security=
 const PERMISSIONS=Object.freeze(['overview.read','accounts.read','cases.read','billing.read','affiliate.read','affiliate.manage','fulfillment.read','fulfillment.prepare','fulfillment.grants','audit.read','team.manage','organizations.manage']);
 const OWNER_ONLY=new Set(['team.manage','organizations.manage']);
 const PARTNER_ALLOWED=new Set(['overview.read','affiliate.read','fulfillment.read','fulfillment.prepare']);
-const actors=new WeakMap();const UNLOCK_MS=15*60000;
+const actors=new WeakMap();const UNLOCK_MS=15*60000,MAX_UNLOCK_MS=8*60*60000;
 class AdminError extends Error{constructor(code,status=403){super(({TWO_FACTOR_REQUIRED:'Enter a fresh authenticator code to unlock administration.',TWO_FACTOR_INVALID:'That authenticator code did not match. Use the next current code.',ADMIN_SECURITY_REQUIRED:'Complete email verification, account setup and two-factor authentication before using administration.',ADMIN_LAST_OWNER:'Keep at least one active owner.',ADMIN_STATE_UNAVAILABLE:'Administration is temporarily unavailable.'})[code]||'That administration action is unavailable.');this.code=code;this.status=status;}}
 const fail=(code,status)=>{throw new AdminError(code,status);};
 const id=prefix=>prefix+'_'+crypto.randomBytes(12).toString('hex');
@@ -32,8 +32,18 @@ function unlock(store,actor,consumerSessionToken,input){
   const valid=store.consumerStore.update(state=>{const row=state.accounts.find(r=>r.account_id===account.account_id);return security.verifySignIn(store.consumerStore,row,input.code);});
   if(!valid){store.audit(member,'ADMIN_UNLOCK_DENIED',{reason:'TWO_FACTOR_INVALID'});fail('TWO_FACTOR_INVALID',401);}
   const token=crypto.randomBytes(32).toString('base64url'),expires=new Date(Date.now()+UNLOCK_MS).toISOString();
-  store.update(state=>{for(const row of state.unlocks)if(row.session_id===session.session_id&&!row.revoked_at)row.revoked_at=new Date().toISOString();state.unlocks.push({unlock_id:id('adm_unlock'),token_sha256:digest(token),admin_id:member.admin_id,account_id:account.account_id,session_id:session.session_id,revision:member.revision,mfa_sha256:mfaFingerprint(account),expires_at:expires,revoked_at:null});store.appendAudit(state,member,'ADMIN_UNLOCKED',{});});
+  store.update(state=>{for(const row of state.unlocks)if(row.session_id===session.session_id&&!row.revoked_at)row.revoked_at=new Date().toISOString();state.unlocks.push({unlock_id:id('adm_unlock'),token_sha256:digest(token),admin_id:member.admin_id,account_id:account.account_id,session_id:session.session_id,revision:member.revision,mfa_sha256:mfaFingerprint(account),issued_at:new Date().toISOString(),absolute_expires_at:new Date(Date.now()+MAX_UNLOCK_MS).toISOString(),expires_at:expires,revoked_at:null});store.appendAudit(state,member,'ADMIN_UNLOCKED',{});});
   return {admin_token:token,expires_at:expires};
+}
+function touch(store,actor,consumerSessionToken,adminToken){
+  principal(store,actor,consumerSessionToken,adminToken);
+  const before=store.state().unlocks.find(r=>r.token_sha256===digest(adminToken)),now=Date.now();
+  // Old unlocks have no new fields: derive their original issue time, never reset it.
+  const absolute=Date.parse(before.absolute_expires_at||new Date(Date.parse(before.expires_at)-UNLOCK_MS+MAX_UNLOCK_MS).toISOString());
+  if(!Number.isFinite(absolute)||absolute<=now)fail('TWO_FACTOR_REQUIRED',401);
+  const expires=Math.min(now+UNLOCK_MS,absolute);
+  if(expires>Date.parse(before.expires_at))store.update(state=>{const row=state.unlocks.find(r=>r.token_sha256===digest(adminToken));row.absolute_expires_at=new Date(absolute).toISOString();row.expires_at=new Date(expires).toISOString();});
+  return {expires_at:new Date(expires).toISOString(),absolute_expires_at:new Date(absolute).toISOString()};
 }
 function principal(store,actor,consumerSessionToken,adminToken){
   const {account,session}=accountSession(store,actor,consumerSessionToken),member=memberFor(store,account.account_id);
@@ -111,4 +121,4 @@ function updateMembership(store,actor,adminId,input){requireCapability(store,act
 function createOrganization(store,actor,input){requireCapability(store,actor,'organizations.manage');const name=typeof input.name==='string'?input.name.trim():'',status=input.status??'ACTIVE';if(!name||name.length>120||!['ACTIVE','DISABLED'].includes(status))fail('INVALID_REQUEST',400);return store.update(state=>{const org={org_id:id('org'),name,status,created_at:new Date().toISOString()};state.organizations.push(org);store.appendAudit(state,actor,'ADMIN_ORGANIZATION_CREATED',{org_id:org.org_id,status});return org;});}
 function updateOrganization(store,actor,orgId,input){requireCapability(store,actor,'organizations.manage');if(input.status!==undefined&&!['ACTIVE','DISABLED'].includes(input.status)||input.name!==undefined&&(typeof input.name!=='string'||!input.name.trim()||input.name.trim().length>120))fail('INVALID_REQUEST',400);return store.update(state=>{const org=state.organizations.find(r=>r.org_id===orgId);if(!org)fail('NOT_FOUND',404);if(input.name!==undefined)org.name=input.name.trim();if(input.status!==undefined){org.status=input.status;const admins=new Set(state.memberships.filter(r=>r.org_id===orgId).map(r=>r.admin_id));for(const row of state.unlocks)if(admins.has(row.admin_id)&&!row.revoked_at)row.revoked_at=new Date().toISOString();}store.appendAudit(state,actor,'ADMIN_ORGANIZATION_UPDATED',{org_id:orgId,status:org.status});return org;});}
 const addAudit=(store,actor,event,metadata)=>store.audit(actor,event,metadata);
-module.exports={AdminError,PERMISSIONS,PARTNER_ALLOWED,UNLOCK_MS,principal,unlock,lock,ownerSignInPath,requireCapability,bootstrapOwner,recoverOrphanedOwner,createMembership,updateMembership,createOrganization,updateOrganization,addAudit};
+module.exports={AdminError,PERMISSIONS,PARTNER_ALLOWED,UNLOCK_MS,MAX_UNLOCK_MS,principal,unlock,touch,lock,ownerSignInPath,requireCapability,bootstrapOwner,recoverOrphanedOwner,createMembership,updateMembership,createOrganization,updateOrganization,addAudit};

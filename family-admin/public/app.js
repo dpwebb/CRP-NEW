@@ -16,6 +16,7 @@ const labels = {
   mail: "Mail Operations",
 };
 const pages = {
+  costs:{label:'Reviewed operating costs',app:'affiliate',resource:'costs',icon:'▣'},
   overview: {
     label: "Family overview",
     icon: "◫",
@@ -148,13 +149,14 @@ async function api(path, { method = "GET", body } = {}) {
       Error(data.error?.message || "This request could not be completed."),
       { code: data.error?.code, status: r.status },
     );
-    if (["SESSION_REQUIRED", "ADMIN_UNLOCK_REQUIRED"].includes(e.code))
-      showLogin(e.message);
+    if (e.code === 'ADMIN_UNLOCK_REQUIRED') showUnlock();
+    else if (["SESSION_REQUIRED","AUTHENTICATION_REQUIRED"].includes(e.code)) showLogin(e.message);
     throw e;
   }
   return data;
 }
 function showLogin(error = "") {
+  S.locked=false;S.resumeDialog=false;S.hasWorkspace=false;
   S.session = null;
   S.csrf = null;
   S.generation++;
@@ -169,8 +171,40 @@ function showLogin(error = "") {
   if ($("dialog").open) $("dialog").close();
   document.body.classList.remove("nav-open");
 }
+function showUnlock() {
+  if(!S.session || S.locked)return;
+  S.locked=true;
+  S.generation++;
+  S.resumeDialog=$('dialog').open;
+  if(S.resumeDialog){for(const {input,f} of S.dialog.nodes.values())if(f.name==='freshCode'||f.type==='password')input.value='';$('dialog').close();}
+  $('workspace').hidden=true;$('auth').hidden=false;
+  $('login').hidden=true;$('unlock').hidden=false;
+  $('auth-title').textContent='Unlock your workspace';
+  $('auth-help').textContent='Your workspace locked after inactivity. Enter a current authenticator code to return to your page and draft.';
+  $('auth-error').textContent='';
+}
+function sessionStatus() {
+  if(!S.session || S.locked)return;
+  const remaining=Date.parse(S.session.expiresAt)-Date.now();
+  $('session-status').textContent=remaining<120000?'Your workspace will lock soon if you remain inactive. Your page and draft will be kept.':'';
+  if(remaining<=0)showUnlock();
+}
+let activityAt=0,activityPending=false;
+async function userActivity(event) {
+  if(!event.isTrusted || document.visibilityState==='hidden' || !S.session || S.locked || activityPending || Date.now()-activityAt<60000)return;
+  activityPending=true;
+  try {const update=await api('/api/activity',{method:'POST',body:{}});Object.assign(S.session,update);activityAt=Date.now();sessionStatus();}
+  catch(error){if(error.status!==401)notice('Activity could not be confirmed. Your workspace may lock; your draft will be kept.');}
+  finally{activityPending=false;}
+}
+document.addEventListener('pointerdown',userActivity,true);
+document.addEventListener('keydown',userActivity,true);
 function unlocked(session) {
+  const resuming=S.locked&&S.hasWorkspace&&S.session?.subject===session.subject&&S.session?.role===session.role&&JSON.stringify(S.session?.permissions)===JSON.stringify(session.permissions);
+  if(S.locked&&!resuming){$('content').replaceChildren();closeDialog();}
   S.session = session;
+  S.locked=false;
+  S.hasWorkspace=true;
   S.csrf = session.csrf;
   $("auth").hidden = true;
   $("workspace").hidden = false;
@@ -182,7 +216,11 @@ function unlocked(session) {
   $("who").textContent = session.email || session.role;
   $("demo-banner").hidden = !session.demo;
   renderNav();
-  navigate(S.view);
+  if(resuming) {
+    if(S.resumeDialog){S.dialog.generation=S.generation;$('dialog').showModal();}
+    S.resumeDialog=false;
+  } else navigate(S.view);
+  sessionStatus();
 }
 function renderNav() {
   const nav = $("nav");
@@ -301,6 +339,7 @@ function closeDialog() {
 $("dialog-close").onclick = closeDialog;
 $("dialog-cancel").onclick = closeDialog;
 $("dialog").addEventListener("close", () => {
+  if(S.locked||$('dialog').open)return;
   $("dialog-fields").replaceChildren();
   S.dialog = null;
 });
@@ -359,7 +398,7 @@ async function confirmAction(app, name, id) {
           },
         ]
       : []),
-    ...action.fields.map(f=>f.name==='termsVersion'?{...f,value:termsVersion}:f),
+    ...action.fields.filter(f=>!f.onlyNonProduction||S.session.environment!=='production').map(f=>f.name==='termsVersion'?{...f,value:termsVersion}:f),
     ...(action.requiresStepUp
       ? [
           {
@@ -397,6 +436,34 @@ async function confirmAction(app, name, id) {
     },
     "Confirm change",
   );
+  void recordChoices(app,name).catch(()=>{});
+}
+async function recordChoices(app,name){
+  const d=S.dialog;if(!d)return;
+  const relation={partnerId:['affiliate','partners'],contactId:['affiliate','contacts'],campaignId:['affiliate','campaigns'],grant_id:['crp','grants'],org_id:['crp','organizations'],account_id:['crp','accounts'],memberId:['mail','team'],assignee:['affiliate','team'],introducerId:['affiliate','partners'],subject:[app,'team'],reversesId:['affiliate','costs']};
+  const recordResource=name.startsWith('team.')?'team':name.startsWith('onboarding.')?'onboarding':name.startsWith('hold.')?'holds':name.startsWith('contact.')?'contacts':name.startsWith('referral.')?'referrals':name.startsWith('fulfillment.')?'fulfillment':name.startsWith('ticket.')?'tickets':name.startsWith('campaign.')?'campaigns':name.startsWith('partner.')?'partners':name.startsWith('organization.')?'organizations':name.startsWith('order.')||name.startsWith('note.')||name.startsWith('provider.')?'orders':null;
+  if(recordResource)relation.recordId=[app,recordResource];
+  for(const [field,node]of d.nodes){
+    const target=relation[field];if(!target||!S.session.catalog.reads[target[0]]?.includes(target[1]))continue;
+    const result=await api('/api/apps/'+target[0]+'/'+target[1]);if(S.dialog!==d)return;
+    const rows=items(result.data)||[];
+    const list=el('datalist');list.id='choices-'+crypto.randomUUID();node.input.setAttribute('list',list.id);
+    const records=new Map();
+    for(const row of rows){
+      if(name==='campaign.add'&&field==='partnerId'&&row.status!=='ACTIVE')continue;
+      if(field==='grant_id'&&(row.status!=='ACTIVE'||row.revoked_at))continue;
+      const id=field==='subject'||field==='assignee'?row.subject:row.id||row.grant_id||row.org_id||row.account_id||row.member_id||row.subject;
+      if(!id)continue;records.set(id,row);const option=el('option');option.value=id;option.label=[row.name||row.email||row.question||row.subject,row.country,row.status||row.state].filter(Boolean).join(' · ');list.append(option);
+    }
+    node.input.parentElement.append(list);
+    node.input.addEventListener('change',()=>{
+      const row=records.get(node.input.value);if(!row)return;
+      for(const [key,value]of Object.entries({expectedRevision:row.revision,expectedVersion:row.version,expectedState:row.state,expectedActive:row.active,expectedRole:row.role})){
+        const dest=d.nodes.get(key);if(!dest||value===undefined)continue;
+        if(dest.f.type==='boolean')dest.input.checked=value;else dest.input.value=value;
+      }
+    });
+  }
 }
 function actionButtons(app, resource) {
   const box = el("div", null, "buttons"),
@@ -424,6 +491,7 @@ function actionButtons(app, resource) {
       tickets:['ticket.'],
       onboarding:['onboarding.'],
       report:['agent.'],
+      costs:['cost.'],
     }[resource] || [];
   if (resource === 'routes') prefixes.push('route.','recipient.');
   if (resource === 'orders') prefixes.push('provider.');
@@ -450,9 +518,13 @@ function showDetails(app, row) {
   const id = row.id || row.orderId || row.admin_id || row.job_id || row.org_id || row.account_id;
   const actions = el("div", null, "record-actions");
   const reads = S.session.catalog.reads[app];
+  for(const [key,view,label]of [['partner_id','partners','Open related partner'],['campaign_id','campaigns','Open related campaign'],['account_id','accounts','Open related consumer account'],['case_id','cases','Open related case']]){
+    if(!row[key]||!reads.includes(view))continue;
+    actions.append(btn(label,async()=>{closeDialog();S.query=row[key];S.page=1;navigate(view);try{const result=await api('/api/apps/'+app+'/'+view);const related=(items(result.data)||[]).find(x=>[x.id,x.account_id,x.case_id,x.org_id].includes(row[key]));if(related&&S.view===view)showDetails(app,related);}catch(error){notice(error.message);}}));
+  }
   for (const [view,resource,title] of [
     ['onboarding','journey','Open onboarding checklist'],['partners','agreement','Review agreement acceptance'],
-    ['campaigns','creative','View approved campaign creative'],['orders','provider','Review provider status']
+    ['campaigns','creative','View approved campaign creative'],['orders','provider','Review provider status'],['tickets','ticket.history','Review ticket history']
   ]) if (id && S.view===view && reads.includes(resource)) actions.append(btn(title,async()=>{
     try { const result=await api('/api/apps/'+app+'/'+resource+'?id='+encodeURIComponent(id));showDetails(app,result.data); }
     catch(error){$('dialog-error').textContent=error.message;}
@@ -504,6 +576,8 @@ function showDetails(app, row) {
           referrals:['referral.hold','referral.release'],
           fulfillment:['fulfillment.update'],
           contacts:['contact.suppress'],
+          tickets:['ticket.update'],
+          campaigns:['campaign.retire'],
           onboarding:['onboarding.advance','onboarding.review','onboarding.pause'],
           team: ["team.update", "team.revoke"],
           organizations: ["organization.update"],
@@ -519,7 +593,7 @@ function table(app, rows) {
     t = el("table"),
     head = el("thead"),
     tr = el("tr");
-  const keys = [...new Set(rows.flatMap((row) => Object.keys(row)))]
+  const keys = S.view==='routes' ? ['country','bureau','mailer','selection','effective_available','availability_reasons','recipient_review','evidence_expires_at','postal_service'] : [...new Set(rows.flatMap((row) => Object.keys(row)))]
     .filter(
       (k) =>
         ![
@@ -613,9 +687,14 @@ async function appView(app, resource, root, generation) {
     for(const country of ['CA','US','GB','AU']){const option=el('option',country);option.value=country;select.append(option);}
     select.value=S.market;select.onchange=()=>{S.market=select.value;load();};toolbar.prepend(select);
   }
+  if(app==='affiliate'&&resource==='report'&&S.session.role==='owner'){
+    const label=el('label','Include isolated simulation records');const input=el('input');input.type='checkbox';input.checked=!!S.includeSimulation;
+    input.onchange=()=>{S.includeSimulation=input.checked;load();};label.append(input);toolbar.append(label);
+  }
   root.append(toolbar);
   const params = new URLSearchParams();
   if(app==='affiliate'&&resource==='resources')params.set('country',S.market);
+  if(app==='affiliate'&&resource==='report'&&S.includeSimulation)params.set('includeSimulation','1');
   if (app === "crp" && !["overview",'settings','referrals'].includes(resource)) {
     params.set("page", S.page);
     params.set("page_size", "25");
@@ -630,6 +709,7 @@ async function appView(app, resource, root, generation) {
   );
   if (generation !== S.generation) return;
   const rows = items(result.data);
+  if(app==='mail'&&resource==='routes')root.append(el('p','Default mailer: '+result.data.defaultMailer+'. '+result.data.availabilityScope,'table-hint'));
   if (rows) root.append(table(app, rows));
   else root.append(el("pre", JSON.stringify(result.data, null, 2)));
   if (result.data?.totals)
@@ -1034,15 +1114,20 @@ $("menu").onclick = () => {
 setInterval(async () => {
   if (!S.session) return;
   try {
-    S.session = await api("/api/session");
+    const current = await api("/api/session");
+    if(current.unlockRequired)showUnlock();
+    else {S.session=current;sessionStatus();}
   } catch (e) {
-    showLogin(e.message);
+    if(e.code==='ADMIN_UNLOCK_REQUIRED')showUnlock();
+    else if(e.status===401)showLogin(e.message);
+    else notice('Access check temporarily unavailable. Your page and draft have been kept.');
   }
 }, 30000);
 (async () => {
   let data;
   try { data = await api("/api/session"); } catch { showLogin(); return; }
   S.csrf = data.csrf;
+  if(data.unlockRequired){S.session={csrf:data.csrf};showUnlock();return;}
   let message = "";
   if (data.applications.affiliate.browserSignIn && !data.applications.affiliate.linked) {
     try {

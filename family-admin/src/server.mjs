@@ -146,6 +146,11 @@ export function createPortal(raw, options = {}) {
         json(res, 200, await gateway.unlock(session, await body(req)));
         return;
       }
+      if(path === '/api/activity' && req.method === 'POST') {
+        const input=await body(req);
+        if(!input || Object.keys(input).length)throw Object.assign(Error('INVALID_FIELDS'),{status:400});
+        json(res,200,await gateway.activity(session));return;
+      }
       if (path === "/api/logout" && req.method === "POST") {
         affiliateLogin.forget(session);
         await gateway.logout(session);
@@ -159,7 +164,7 @@ export function createPortal(raw, options = {}) {
       }
       if (path === "/api/session" && req.method === "GET") {
         const data = await gateway.session(session);
-        data.applications.affiliate.browserSignIn = !!config.affiliateLogin;
+        if(data.applications)data.applications.affiliate.browserSignIn = !!config.affiliateLogin;
         json(res, 200, data);
         return;
       }
@@ -259,7 +264,7 @@ export function createPortal(raw, options = {}) {
   });
   const reaper = setInterval(() => {
     for (const session of gateway.sessions.values())
-      if (session.expires <= gateway.now())
+      if ((session.authenticatedUntil ?? session.expires) <= gateway.now())
         void gateway.logout(session).catch(() => {});
   }, 30000);
   reaper.unref();

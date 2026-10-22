@@ -272,6 +272,7 @@ async function dispatchAdmin(options) {
   if (!pathname.startsWith('/api/admin/')) return null;
   if (pathname === '/api/admin/unlock' && method === 'POST') { fields(body, ['code']); return response(access.unlock(adminStore, actor, sessionToken, body)); }
   if (pathname === '/api/admin/lock' && method === 'POST') { fields(body, []); return response(access.lock(adminStore, actor, sessionToken, adminToken)); }
+  if (pathname === '/api/admin/activity' && method === 'POST') { fields(body, []); return response(access.touch(adminStore, actor, sessionToken, adminToken)); }
   const principal = access.principal(adminStore, actor, sessionToken, adminToken);
   if (pathname === '/api/admin/session' && method === 'GET') {
     const org = adminStore.state().organizations.find(row => row.org_id === principal.org_id);
@@ -376,7 +377,7 @@ async function dispatchAdmin(options) {
     return response({ job: { job_id: job.job_id, status: body.status }, mailing_enabled: false });
   }
   if (pathname === '/api/admin/audit' && method === 'GET') { guard(access, adminStore, principal, 'audit.read', query); return response(page(filter(adminStore.state().audit_events.slice().reverse().map(safeAudit), query, ['event', 'actor_admin_id', 'actor_account_id', 'actor_role', 'metadata.case_id', 'metadata.org_id', 'metadata.job_id', 'metadata.role', 'metadata.permission']), query)); }
-  if (pathname === '/api/admin/settings' && method === 'GET') { return response({ settings: { available_permissions: PERMISSIONS, role_options: ['owner', 'staff', 'partner'], status_options: ['ACTIVE', 'DISABLED'], hold_reasons: HOLD_REASONS, payouts_enabled: false, mailing_enabled: false, consumer_approval_required: true } }); }
+  if (pathname === '/api/admin/settings' && method === 'GET') { return response({ settings: { available_permissions: PERMISSIONS, role_options: ['owner', 'staff', 'partner'], status_options: ['ACTIVE', 'DISABLED'], hold_reasons: HOLD_REASONS, payouts_enabled: false, mailing_enabled: false, mailing_enabled_scope: 'Legacy consumer sharing tasks only. This flag does not describe the separate Mail Operations service.', mail_operations: { availability: 'CASE_SPECIFIC', source: 'Check Mail Operations current route, staffing and provider availability for the approved case.' }, consumer_approval_required: true } }); }
   return null;
 }
 module.exports = { dispatchAdmin, PERMISSIONS, HOLD_REASONS, JOB_STATUSES, currentApproval, activeGrant, approvedPdf };

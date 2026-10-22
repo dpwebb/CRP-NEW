@@ -10,9 +10,12 @@ function create(store, options = {}) {
   if (env.CRP_AFFILIATE_BINDING_ENABLED !== undefined && !['0','1'].includes(env.CRP_AFFILIATE_BINDING_ENABLED)) throw Error('AFFILIATE_CONFIGURATION_INVALID');
   const key = env.CRP_AFFILIATE_BINDING_KEY || '';
   const origin = env.CRP_AFFILIATE_ORIGIN || (env.CRP_DEPLOYMENT_ENV === 'staging' ? 'https://affiliates-staging.creditregulatorpro.com' : 'https://affiliates.creditregulatorpro.com');
-  if (enabled && (!['production','staging'].includes(env.CRP_DEPLOYMENT_ENV) || key.length < 32 || !['https://affiliates.creditregulatorpro.com', 'https://affiliates-staging.creditregulatorpro.com'].includes(origin)
+  let loopback=false;
+  if(options.allowLoopback){try{const u=new URL(origin);loopback=env.CRP_DEPLOYMENT_ENV==='local'&&u.protocol==='http:'&&u.hostname==='127.0.0.1'&&Boolean(u.port)&&u.pathname==='/'&&!u.username&&!u.password&&!u.search&&!u.hash;}catch{}if(!loopback)throw Error('AFFILIATE_CONFIGURATION_INVALID');}
+  if (enabled && !loopback && (!['production','staging'].includes(env.CRP_DEPLOYMENT_ENV) || key.length < 32 || !['https://affiliates.creditregulatorpro.com', 'https://affiliates-staging.creditregulatorpro.com'].includes(origin)
     || (env.CRP_DEPLOYMENT_ENV === 'production' && origin !== 'https://affiliates.creditregulatorpro.com')
     || (env.CRP_DEPLOYMENT_ENV === 'staging' && origin !== 'https://affiliates-staging.creditregulatorpro.com'))) throw Error('AFFILIATE_CONFIGURATION_INVALID');
+  if(enabled&&key.length<32)throw Error('AFFILIATE_CONFIGURATION_INVALID');
   const fetcher = options.fetcher || fetch;
   const flags = '; HttpOnly; SameSite=Lax; Path=/' + (['production','staging'].includes(env.CRP_DEPLOYMENT_ENV) || env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : '');
   const cookie = req => String(req.headers?.cookie || '').split(';').map(v => v.trim()).find(v => v.startsWith(COOKIE + '='))?.slice(COOKIE.length + 1);

@@ -11,6 +11,13 @@ const require = createRequire(import.meta.url),
   } = require("../../accelerated-launch/service/tests/harness.cjs"),
   security = require("../../accelerated-launch/service/signup-security.cjs"),
   access = require("../../accelerated-launch/service/admin-access.cjs");
+test('Consumer loopback referral transport requires an explicit local fixture option and cannot relax hosted origins',()=>{
+ const {create}=require('../../accelerated-launch/service/affiliate-attribution.cjs');
+ const env={CRP_AFFILIATE_BINDING_ENABLED:'1',CRP_DEPLOYMENT_ENV:'local',CRP_AFFILIATE_ORIGIN:'http://127.0.0.1:4444',CRP_AFFILIATE_BINDING_KEY:'b'.repeat(40)};
+ assert.throws(()=>create({},{env}),/AFFILIATE_CONFIGURATION_INVALID/);
+ assert.equal(create({},{env,allowLoopback:true}).enabled,true);
+ for(const change of [{CRP_DEPLOYMENT_ENV:'production'},{CRP_DEPLOYMENT_ENV:'staging'},{CRP_AFFILIATE_ORIGIN:'http://remote.example.invalid:4444'},{CRP_AFFILIATE_BINDING_KEY:'short'}])assert.throws(()=>create({},{env:{...env,...change},allowLoopback:true}),/AFFILIATE_CONFIGURATION_INVALID/);
+});
 test("real CRP HTTP authentication, MFA, scoped data and revocation through independent family gateway", async () => {
   const before = process.env.CRP_ADMIN_ENABLED,
     realNow = Date.now,
@@ -83,13 +90,24 @@ test("real CRP HTTP authentication, MFA, scoped data and revocation through inde
     r = await request("/api/apps/crp/accounts");
     assert.equal(r.status, 200, JSON.stringify(r.json));
     assert.ok(r.json.data.items.some((x) => x.account_id === actor.account_id));
+    const verifiedAt=[...p.gateway.sessions.values()][0].verifiedAt;
+    clock+=9*60000;
+    assert.equal((await request('/api/activity','POST',{})).status,200);
+    clock+=9*60000;
+    assert.equal((await request('/api/apps/crp/accounts')).status,200,'active work survives the original 15-minute deadline');
+    assert.equal([...p.gateway.sessions.values()][0].verifiedAt,verifiedAt,'activity never refreshes MFA');
+    clock+=16*60000;
+    r=await request('/api/session');assert.equal(r.json.unlockRequired,true);
+    assert.equal((await request('/api/activity','POST',{})).status,401,'idle activity cannot renew an expired unlock');
+    r=await request('/api/unlock','POST',{code:security.totp(setup.secret,clock)});
+    assert.equal(r.status,200,'unlock resumes using the original primary session');
     t.service.adminStore.update((state) => {
       state.memberships.find((x) => x.account_id === actor.account_id)
         .revision++;
     });
     r = await request("/api/apps/crp/accounts");
     assert.equal(r.status, 401);
-    assert.equal(r.json.error.code, "TWO_FACTOR_REQUIRED");
+    assert.equal(r.json.error.code, "ADMIN_UNLOCK_REQUIRED");
   } finally {
     Date.now = realNow;
     if (p) await p.close();

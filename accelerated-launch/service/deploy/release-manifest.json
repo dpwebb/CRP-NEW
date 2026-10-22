@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-22T01:57:40.165Z",
+  "generated_at": "2026-10-22T17:56:12.116Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 116,
-      "digest": "6464DF795350F70C2D5E66E8EC1BF739843B35BA83FA840ABEDAA52FF47CE28A",
+      "digest": "5C6A62F8B7A1793B337495911349A4A565F0A67306AFD5798201097DBE5F571E",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -90,11 +90,11 @@
         },
         {
           "file": "accelerated-launch/service/admin-access.cjs",
-          "sha256": "51BC89B6BB0FA77F2327B124D37E5F1A804DBC89E53D6826C3EA405334882083"
+          "sha256": "4DBC885016E52FD9C66DD0724EBD549BC793E95D794B4ACBCC1F99B93A3C5EAC"
         },
         {
           "file": "accelerated-launch/service/admin-service.cjs",
-          "sha256": "0B134B43CD23ED3BDEED2A4119EB77117C08BD4C6A7543A34D62CA97BBD8C229"
+          "sha256": "A19E8440C57FEA0D6D8C65BD76CE8AD75E9C452F785F17EC08361A128D0F3FEA"
         },
         {
           "file": "accelerated-launch/service/admin-store.cjs",
@@ -102,7 +102,7 @@
         },
         {
           "file": "accelerated-launch/service/affiliate-attribution.cjs",
-          "sha256": "E2805A9F4230DDC8D92E2D943DB0E2913311F5DC05F06D403B42DD2030BFA6E7"
+          "sha256": "7F3874CD13BCB5703D083C2D254F46ADD1F8203A0177AF5519330DCFB95E5DC9"
         },
         {
           "file": "accelerated-launch/service/app.cjs",
@@ -811,6 +811,6 @@
       ]
     }
   ],
-  "manifest_digest": "068133F19C3595378797AF18776385800F860C5CF70CEC532DB9D1402D3B1D10",
+  "manifest_digest": "4E9AED2E7910AF59C4C3F4BC3BC382BB29F2AEA03E975F5D1FC461BD7A5C1D26",
   "total_file_count": 191
 }

@@ -259,7 +259,9 @@ Object.assign(reads.crp, {
   packet: { ...read('/api/admin/fulfillment/:id/packet','fulfillment.read'), format:'pdf' },
 });
 Object.assign(reads.affiliate, {
-  report: read('/api/report','affiliate.read'),
+  costs:{...read('/api/operating-costs','affiliate.read'),owner:true},
+  'ticket.history':read('/api/tickets/:id/history','affiliate.read'),
+  report: read('/api/report','affiliate.read',['includeSimulation']),
   contacts: read('/api/contacts','affiliate.read'),
   communications: read('/api/communications','affiliate.read'),
   assets: read('/api/assets','affiliate.read'),
@@ -288,6 +290,9 @@ Object.assign(actions.crp, {
   'fulfillment.update':write('/api/admin/fulfillment/:id','fulfillment.prepare','Update fulfillment task',[field('status','Status','select:REVIEWED,CANCELLED')],{method:'PATCH'}),
 });
 Object.assign(actions.affiliate, {
+  'cost.add':write('/api/operating-costs','affiliate.manage','Record reviewed operating cost',[field('id','New cost UUID'),field('sourceRef','Unique source reference'),field('currency','Currency','select:CAD,USD,GBP,AUD'),field('amountMinor','Cost in minor units','number'),field('category','Category','select:PROCESSOR,NETWORK,PLACEMENT,AI,OTHER'),field('reversesId','Original cost UUID for exact reversal','text',false),field('evidenceRef','Reviewed receipt reference'),field('reviewed','I independently reviewed the receipt','boolean'),field('occurredAt','Source event time (ISO UTC)')],{owner:true,sensitive:true}),
+  'campaign.retire':write('/api/campaigns/:id','affiliate.manage','Retire campaign',[field('expectedActive','Campaign is currently active','boolean'),field('active','Keep campaign active (must be unchecked)','boolean'),field('reason','Retirement reason','textarea')],{method:'PATCH'}),
+  'ticket.update':write('/api/tickets/:id','affiliate.manage','Review support ticket',[field('expectedRevision','Current revision','number'),field('action','Action','select:ASSIGN,NOTE,RESOLVE,REOPEN'),field('assignee','Assigned team subject','text',false),field('note','Internal review note','textarea'),field('answer','Reviewed answer','textarea',false),field('evidenceRef','Resolution evidence reference','text',false),field('reviewed','I reviewed this resolution','boolean',false)],{method:'PATCH'}),
   'contact.add':write('/api/contacts','affiliate.manage','Record contact',[
     field('name','Name'),field('email','Email'),field('sourceUrl','Source URL'),field('purpose','Purpose','select:recruitment,partner_service,customer_education'),field('partnerId','Partner ID','text',false)]),
   'contact.suppress':write('/api/contacts/:id','affiliate.manage','Suppress contact',[],{method:'DELETE',owner:true}),
@@ -319,6 +324,7 @@ for(const action of ['prepare','preview','send','reconcile','cancel'])actions.ma
   prepare:'Prepare provider mailing',preview:'Refresh provider print preview',send:'Submit customer-authorized provider mailing',reconcile:'Reconcile uncertain provider outcome',cancel:'Cancel provider submission'
 }[action],[field('confirm','Type I_HAVE_CHECKED_THIS_ORDER')],{owner:true,sensitive:true});
 
+for(const name of ['partner.add','campaign.add'])actions.affiliate[name].fields.push({...field('simulationRunId','Isolated simulation run UUID','text',false),onlyNonProduction:true});
 export function operation(app, name, writeMode = false) {
   const item = (writeMode ? actions : reads)[app]?.[name];
   if (!item)
