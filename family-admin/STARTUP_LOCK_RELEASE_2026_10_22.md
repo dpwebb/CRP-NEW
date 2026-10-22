@@ -1,6 +1,6 @@
 # Family Admin startup-lock repair — October 22, 2026
 
-Status: production lock repair installed and stable; final fresh human production sign-in/read verification pending. This is separate from the newer staging gap release.
+Status: COMPLETE. Production lock repair is stable; fresh human production MFA/unlock and automatic all-three sign-in/read verification passed. This is separate from the newer staging gap release.
 
 ## Installed source
 
@@ -36,3 +36,9 @@ Staging accepted four-file encrypted backup SHA256 a203f3834281d36f8bfe38d629400
 First staging activation verified the wrong health response field and safely rolled source back. Second continuation compared pre-existing kernel metadata incorrectly and rolled only source back again. Both failures retained; the separately guarded third attempt passed. No failed operation replay or journal/database rollback. A later simulation-task config permission error and its narrow correction are separately recorded by that task.
 
 No native provider/role/security change, payment/refund/payout/postal action, source push or production staging-gap promotion by this repair. Affiliate partner and Mail staff paths retain native authorization.
+
+## Final production acceptance
+
+Owner completed normal production sign-in at 2026-10-22T23:50:14.696Z (20:50 Halifax) and the separate administration unlock. Consumer, Affiliate and Mail all display Access verified with no separate native login. Actual Consumer6accounts/109cases/109reports/111results, Affiliate3clicks/1binding/0payments/0commission entries and Mail0refund/reconciliation flags were read. Seven desktop1440 and seven mobile390 views (overview/accounts/commissions/orders/routes/team/activity) passed without content errors or horizontal overflow; mobile navigation closes normally and viewport was restored. Dashboard remains open for the owner.
+
+Authenticated journal confirms new SIGN_IN, ADMIN_UNLOCKED, both APPLICATION_LINKED(modeSSO) and all-three RESOURCE_VIEWED overview events. No action intent or unknown outcome was introduced. Original audit remains an exact prefix, integrity/signing keys and configuration remain unchanged. Final four-file encrypted backup SHA256 06c364d2eaa09fafe7f302ba0260182518fbc936cb0206b502385895f9f43ef0 recovered independently on VPS and protected desktop with exact payload hashes/HMAC/signing key. Production remains on the same PID376258 with zero restarts after activation. No further service restart/deployment/package rebuild is required; both immutable release manifests remain unchanged. Production Family custody is released after final read-only health/preservation checks.
