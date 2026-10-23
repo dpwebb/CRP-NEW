@@ -30,3 +30,11 @@ test('document endpoint refuses arbitrary paths, unknown formats, duplicated IDs
   const s=[...f.portal.gateway.sessions.values()][0];
   await assert.rejects(f.portal.gateway.read(s,'mail','packet','x'),/DOCUMENT_ENDPOINT_REQUIRED/);
 });
+
+test('large Studio SVG export uses its exact native authorization path; QR bound stays small',async t=>{
+ const f=await fixtures();t.after(()=>f.close());await f.login();await f.connect();const normal=f.portal.gateway.fetcher;
+ const bytes=Buffer.from('<svg xmlns="http://www.w3.org/2000/svg">'+' '.repeat(2*1024*1024)+'</svg>');
+ f.portal.gateway.fetcher=async(url,options)=>/\/api\/(studio\/requests\/fictional-ad\/download|campaigns\/fictional-campaign\/qr)$/.test(new URL(url).pathname)?new Response(bytes,{headers:{'content-type':'image/svg+xml'}}):normal(url,options);
+ const s=[...f.portal.gateway.sessions.values()][0];assert.deepEqual(await f.portal.gateway.document(s,'affiliate','studio.export','fictional-ad'),bytes);
+ await assert.rejects(f.portal.gateway.document(s,'affiliate','qr','fictional-campaign'),/UPSTREAM_RESPONSE_TOO_LARGE/);
+});

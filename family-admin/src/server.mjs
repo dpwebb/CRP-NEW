@@ -210,7 +210,7 @@ export function createPortal(raw, options = {}) {
         if (!/^[a-f0-9-]{36}$/.test(id)) throw Object.assign(Error('INVALID_FIELDS'), { status: 400 });
         json(res, 200, await gateway.operationStatus(session, id)); return;
       }
-      const document = /^\/api\/documents\/(crp|mail|affiliate)\/(packet|preview|qr)$/.exec(path);
+      const document = /^\/api\/documents\/(crp|mail|affiliate)\/(packet|preview|qr|studio\.export)$/.exec(path);
       if (document && req.method === 'GET') {
         if ([...url.searchParams.keys()].some(k=>k!=='id') || url.searchParams.getAll('id').length!==1)
           throw Object.assign(Error('INVALID_FIELDS'),{status:400});

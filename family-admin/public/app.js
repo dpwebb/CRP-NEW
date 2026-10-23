@@ -488,7 +488,7 @@ function providerCooldown(receipt) {
 async function recordChoices(app,name){
   const d=S.dialog;if(!d)return;
   const relation={partnerId:['affiliate','partners'],contactId:['affiliate','contacts'],campaignId:['affiliate','campaigns'],grant_id:['crp','grants'],org_id:['crp','organizations'],account_id:['crp','accounts'],memberId:['mail','team'],assignee:['affiliate','team'],introducerId:['affiliate','partners'],subject:[app,'team'],reversesId:['affiliate','costs']};
-  if(name==='studio.design'){relation.brandId=['affiliate','studio'];relation.messageId=['affiliate','studio'];}
+  if(['studio.design','studio.request'].includes(name)){relation.brandId=['affiliate','studio'];relation.messageId=['affiliate','studio'];if(name==='studio.request')relation.templateId=['affiliate','studio'];}
   const recordResource=name.startsWith('studio.version')?'studio':name.startsWith('studio.request')?'studio.queue':name.startsWith('team.')?'team':name.startsWith('onboarding.')?'onboarding':name.startsWith('hold.')?'holds':name.startsWith('contact.')?'contacts':name.startsWith('referral.')?'referrals':name.startsWith('fulfillment.')?'fulfillment':name.startsWith('ticket.')?'tickets':name.startsWith('campaign.')?'campaigns':name.startsWith('partner.')?'partners':name.startsWith('organization.')?'organizations':name.startsWith('order.')||name.startsWith('note.')||name.startsWith('provider.')?'orders':null;
   if(recordResource)relation.recordId=[app,recordResource];
   for(const [field,node]of d.nodes){
@@ -498,7 +498,8 @@ async function recordChoices(app,name){
     const list=el('datalist');list.id='choices-'+crypto.randomUUID();node.input.setAttribute('list',list.id);
     const records=new Map();
     for(const row of rows){
-      if(name==='studio.design'&&['brandId','messageId'].includes(field)&&(row.kind!==field.replace('Id','')||!['APPROVED','PUBLISHED'].includes(row.state)))continue;
+      if(['studio.design','studio.request'].includes(name)&&['brandId','messageId','templateId'].includes(field)&&(row.kind!==field.replace('Id','')||!(name==='studio.request'?['PUBLISHED']:['APPROVED','PUBLISHED']).includes(row.state)))continue;
+      if(name==='studio.request'&&field==='campaignId'&&!row.active)continue;
       if(name==='campaign.add'&&field==='partnerId'&&row.status!=='ACTIVE')continue;
       if(field==='grant_id'&&(row.status!=='ACTIVE'||row.revoked_at))continue;
       const id=field==='subject'||field==='assignee'?row.subject:row.id||row.admin_id||row.job_id||row.orderId||row.grant_id||row.org_id||row.account_id||row.member_id||row.subject;
@@ -552,7 +553,7 @@ function actionButtons(app, resource) {
       costs:['cost.'],
       studio:['studio.brand','studio.message','studio.template','studio.version.decision'],
       'studio.designs':['studio.design'],
-      'studio.queue':['studio.request.decision'],'studio.limits':['studio.limits'],
+      'studio.queue':['studio.request','studio.request.decision'],'studio.limits':['studio.limits'],
     }[resource] || [];
   if (resource === 'routes') prefixes.push('route.','recipient.');
   if (resource === 'orders') prefixes.push('provider.');
@@ -610,6 +611,21 @@ function showDetails(app, row) {
   const id = row.id || row.orderId || row.admin_id || row.job_id || row.org_id || row.account_id;
   const actions = el("div", null, "record-actions");
   const reads = S.session.catalog.reads[app];
+  if(app==='affiliate'&&S.view==='studioQueue'&&row.state==='READY'&&reads.includes('studio.export'))actions.append(btn('Download approved ad as PNG',async()=>{
+    try{
+      const response=await fetch('/api/documents/affiliate/studio.export?id='+encodeURIComponent(id));
+      if(!response.ok)throw Error('This ad is unavailable. Refresh to check current approval and campaign access.');
+      const svg=await response.text();if(!svg.startsWith('<svg '))throw Error('The ad could not be verified.');
+      const source=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));
+      try{const image=new Image();image.src=source;await image.decode();
+        if(image.naturalWidth!==row.width||image.naturalHeight!==row.height||row.width<100||row.height<100||row.width>2400||row.height>2400)throw Error('The ad dimensions changed. Refresh before downloading.');
+        const canvas=el('canvas');canvas.width=row.width;canvas.height=row.height;canvas.getContext('2d').drawImage(image,0,0);
+        const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw Error('PNG export is unavailable in this browser.');
+        const url=URL.createObjectURL(blob),link=el('a');link.href=url;link.download='crp-approved-'+row.id+'.png';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+        $('dialog-error').textContent='PNG downloaded. Keep the campaign link and advertising disclosure beside the image.';
+      }finally{URL.revokeObjectURL(source);}
+    }catch(error){$('dialog-error').textContent=error.message;}
+  }));
   for(const [key,view,label]of [['partner_id','partners','Open related partner'],['campaign_id','campaigns','Open related campaign'],['account_id','accounts','Open related consumer account'],['case_id','cases','Open related case']]){
     if(!row[key]||!reads.includes(view))continue;
     actions.append(btn(label,async()=>{closeDialog();S.query=row[key];S.page=1;navigate(view);try{const result=await api('/api/apps/'+app+'/'+view);const related=(items(result.data)||[]).find(x=>[x.id,x.account_id,x.case_id,x.org_id].includes(row[key]));if(related&&S.view===view)showDetails(app,related);}catch(error){notice(error.message);}}));

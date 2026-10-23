@@ -91,6 +91,13 @@ test('real native services accept one CRP MFA login, preserve scopes and revoke 
     const prices=await request('/api/apps/mail/pricing'),price=prices.data.data.items.find(x=>x.country==='CA');
     await action('mail','pricing.update',{country:'CA',expectedRevision:price.revision,firstPageMinor:price.firstPageMinor+1,additionalPageMinor:price.additionalPageMinor,reason:'Fictional unified admin acceptance'});
     const createdCampaign=await action('affiliate','campaign.add',{partnerId:partner,name:'Fictional unified campaign',country:'CA'});
+    for(const version of [brand,message,template]){
+      if(version.id!==brand.id)await action('affiliate','studio.version.decision',{expectedRevision:1,expectedHash:version.contentHash,action:'approve',reason:'Fictional export acceptance'},version.id);
+      await action('affiliate','studio.version.decision',{expectedRevision:2,expectedHash:version.contentHash,action:'publish',reason:'Fictional export acceptance only'},version.id);
+    }
+    await action('affiliate','studio.limits',{expectedRevision:1,requestsPerDay:2,downloadsPerDay:3});
+    const ad=await action('affiliate','studio.request',{campaignId:createdCampaign.id,brandId:brand.id,messageId:message.id,templateId:template.id,placement:'website',width:1200,height:1200});assert.equal(ad.state,'READY');
+    const exported=await fetch(origin+'/api/documents/affiliate/studio.export?id='+ad.id,{headers:{cookie}});assert.equal(exported.status,200);const exportedSvg=await exported.text();assert(exportedSvg.startsWith('<svg '));assert(exportedSvg.length>2*1024*1024);assert(!exportedSvg.includes('REVIEW PREVIEW'));
     const creative=await request('/api/apps/affiliate/creative?id='+createdCampaign.id);
     assert.equal(creative.status,200);assert.equal(creative.data.data.visualCollateral.status,'APPROVED');
     assert.deepEqual(creative.data.data.frames,[]);assert.equal(creative.data.data.banners.length,10);for(const banner of creative.data.data.banners){assert.match(banner.websiteHtml,/Affiliate disclosure:/);assert(banner.websiteHtml.includes(creative.data.data.referralUrl));}
