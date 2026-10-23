@@ -714,3 +714,5 @@ dialog::backdrop {
   }
 }
 .record-fields{margin:0;min-width:0}.record-field{padding:10px 0;border-bottom:1px solid var(--line,#dce3ed);min-width:0}.record-field dt{font-weight:650;color:var(--muted,#52627a);margin-bottom:4px}.record-field dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}.record-field .record-fields{padding-left:12px;border-left:2px solid #dce3ed}.record-list{padding-left:22px;margin:6px 0}.record-list>li{margin-bottom:10px}.field-empty{color:#52627a;font-style:italic}
+
+.crp-hero-logo{display:block;width:100%;max-width:420px;height:auto;object-fit:contain;margin:0 0 28px}.crp-icon{width:44px;height:44px;object-fit:contain;flex:none}.brand img{display:block}

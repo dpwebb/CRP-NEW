@@ -66,6 +66,10 @@ export function createPortal(raw, options = {}) {
   const assets = new Map(
     [
       ["/", ["index.html", "text/html; charset=utf-8"]],
+      ["/crp-app-icon.png", ["crp-app-icon.png", "image/png"]],
+      ["/crp-email-logo.png", ["crp-email-logo.png", "image/png"]],
+      ["/crp-website-logo.png", ["crp-website-logo.png", "image/png"]],
+      ["/crp-logo-with-tagline.png", ["crp-logo-with-tagline.png", "image/png"]],
       ["/app.js", ["app.js", "text/javascript; charset=utf-8"]],
       ["/style.css", ["style.css", "text/css; charset=utf-8"]],
     ].map(([url, [file, type]]) => [
