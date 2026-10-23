@@ -1,0 +1,57 @@
+{
+  "status": "OWNER_APPROVED_LOCKED",
+  "approvedOn": "2026-10-23",
+  "ownerInstruction": "Lock these logos in",
+  "scope": "Approved master artwork for Credit Regulator Pro and its family applications; placement changes are separate from this asset approval.",
+  "tagline": "Your credit report tells a story. Make sure it’s yours.",
+  "files": [
+    {
+      "file": "crp-logo-with-tagline.png",
+      "label": "Logo with tagline",
+      "use": "Tagline lockup; transparent dark artwork for light backgrounds.",
+      "originalFilename": "Credit Regulator Pro logo with tagline-4.png",
+      "sha256": "93df031c54e2c20b24a1b7151c94a19b0673c9c9032cbd99c67cad2b301b8a49",
+      "bytes": 598480,
+      "width": 1536,
+      "height": 1024,
+      "colorType": 6,
+      "preservedWithoutAlteration": true
+    },
+    {
+      "file": "crp-email-logo.png",
+      "label": "Email logo",
+      "use": "Navy wordmark for email and light backgrounds.",
+      "originalFilename": "Credit Regulator Pro email logo-2.png",
+      "sha256": "22c04a998403ffda36e34e1a4748ff1ecbaff2a4204cf1259ea5c970cd368f24",
+      "bytes": 498630,
+      "width": 1774,
+      "height": 887,
+      "colorType": 6,
+      "preservedWithoutAlteration": true
+    },
+    {
+      "file": "crp-app-icon.png",
+      "label": "App icon",
+      "use": "Silver C on navy for application icons, avatars and compact branding.",
+      "originalFilename": "Silver sculpted C on deep navy-3.png",
+      "sha256": "1a9b4e809d24ed4ec82891a27f5b7f481b63cb90fd18f580cbf05ef227c36e57",
+      "bytes": 1471961,
+      "width": 1254,
+      "height": 1254,
+      "colorType": 2,
+      "preservedWithoutAlteration": true
+    },
+    {
+      "file": "crp-website-logo.png",
+      "label": "Website logo",
+      "use": "Metallic wordmark and tagline on navy for website and large brand placements.",
+      "originalFilename": "Metallic Credit Regulator Pro website logo-1.png",
+      "sha256": "d3ad3ea41ae137af8aedf2e98b2f30bc52470545fbfb0f5f430c4b90cfb41fe7",
+      "bytes": 1404639,
+      "width": 2048,
+      "height": 768,
+      "colorType": 2,
+      "preservedWithoutAlteration": true
+    }
+  ]
+}
