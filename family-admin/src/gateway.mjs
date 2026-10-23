@@ -569,8 +569,6 @@ export class Gateway {
       fail("REQUEST_ID_REQUIRED", 400);
     if ((op.owner || op.sensitive) && this.now() - s.verifiedAt > 60000)
       fail("FRESH_FACTOR_REQUIRED", 401);
-    if (this.config.environment === 'production' && op.fields.some(f=>f.onlyNonProduction && input.body?.[f.name] !== undefined && input.body[f.name] !== ''))
-      fail('SIMULATION_REQUIRES_ISOLATED_ENVIRONMENT', 403);
     const body = actionBody(op, input.body, input.requestId),
       path = nativePath(op, input.id);
     const details = {

@@ -259,7 +259,7 @@ Object.assign(reads.crp, {
   packet: { ...read('/api/admin/fulfillment/:id/packet','fulfillment.read'), format:'pdf' },
 });
 Object.assign(reads.affiliate, {
-  costs:{...read('/api/operating-costs','affiliate.read',['includeSimulation']),owner:true},
+  costs:{...read('/api/operating-costs','affiliate.read'),owner:true},
   'ticket.history':read('/api/tickets/:id/history','affiliate.read'),
   report: read('/api/report','affiliate.read',['includeSimulation']),
   contacts: read('/api/contacts','affiliate.read'),
@@ -324,7 +324,7 @@ for(const action of ['prepare','preview','send','reconcile','cancel'])actions.ma
   prepare:'Prepare provider mailing',preview:'Refresh provider print preview',send:'Submit customer-authorized provider mailing',reconcile:'Reconcile uncertain provider outcome',cancel:'Cancel provider submission'
 }[action],[field('confirm','Type I_HAVE_CHECKED_THIS_ORDER')],{owner:true,sensitive:true,background:true});
 
-for(const name of ['partner.add','campaign.add','cost.add'])actions.affiliate[name].fields.push({...field('simulationRunId','Isolated simulation run UUID','text',false),onlyNonProduction:true});
+for(const name of ['partner.add','campaign.add'])actions.affiliate[name].fields.push({...field('simulationRunId','Isolated simulation run UUID','text',false),onlyNonProduction:true});
 export function operation(app, name, writeMode = false) {
   const item = (writeMode ? actions : reads)[app]?.[name];
   if (!item)

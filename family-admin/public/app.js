@@ -769,7 +769,7 @@ async function appView(app, resource, root, generation) {
     for(const country of ['CA','US','GB','AU']){const option=el('option',country);option.value=country;select.append(option);}
     select.value=S.market;select.onchange=()=>{S.market=select.value;load();};toolbar.prepend(select);
   }
-  if(app==='affiliate'&&['report','costs'].includes(resource)&&S.session.role==='owner'){
+  if(app==='affiliate'&&resource==='report'&&S.session.role==='owner'){
     const label=el('label','Include isolated simulation records');const input=el('input');input.type='checkbox';input.checked=!!S.includeSimulation;
     input.onchange=()=>{S.includeSimulation=input.checked;load();};label.append(input);toolbar.append(label);
   }
@@ -789,7 +789,7 @@ async function appView(app, resource, root, generation) {
   }
   const params = new URLSearchParams();
   if(app==='affiliate'&&resource==='resources')params.set('country',S.market);
-  if(app==='affiliate'&&['report','costs'].includes(resource)&&S.includeSimulation)params.set('includeSimulation','1');
+  if(app==='affiliate'&&resource==='report'&&S.includeSimulation)params.set('includeSimulation','1');
   if (app === "crp" && !["overview",'settings','referrals'].includes(resource)) {
     params.set("page", S.page);
     params.set("page_size", "25");
@@ -813,9 +813,13 @@ async function appView(app, resource, root, generation) {
     root.append(
       el(
         "p",
-        (app==='affiliate'&&resource==='costs'
-          ? 'Recorded cost totals by currency (reviewed sources only): '+result.data.totals.map(x=>`${x.currency} ${x.recorded_cost_minor} minor units (${x.entries} entries)`).join(' · ')
-          : "Verified totals by currency: " +result.data.totals.map(x=>`${x.currency} ${x.verified_paid_minor} minor units (${x.purchase_count} purchases)`).join(" · ")) ,
+        "Verified totals by currency: " +
+          result.data.totals
+            .map(
+              (x) =>
+                `${x.currency} ${x.verified_paid_minor} minor units (${x.purchase_count} purchases)`,
+            )
+            .join(" · "),
         "table-hint",
       ),
     );
