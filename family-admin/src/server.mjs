@@ -189,6 +189,14 @@ export function createPortal(raw, options = {}) {
         });
         return;
       }
+      if (path === '/api/operations' && req.method === 'GET') {
+        json(res, 200, await gateway.operationList(session)); return;
+      }
+      if (path.startsWith('/api/operations/') && req.method === 'GET') {
+        const id = path.slice('/api/operations/'.length);
+        if (!/^[a-f0-9-]{36}$/.test(id)) throw Object.assign(Error('INVALID_FIELDS'), { status: 400 });
+        json(res, 200, await gateway.operationStatus(session, id)); return;
+      }
       const document = /^\/api\/documents\/(crp|mail|affiliate)\/(packet|preview|qr)$/.exec(path);
       if (document && req.method === 'GET') {
         if ([...url.searchParams.keys()].some(k=>k!=='id') || url.searchParams.getAll('id').length!==1)
@@ -235,11 +243,9 @@ export function createPortal(raw, options = {}) {
       }
       match = /^\/api\/actions\/(crp|affiliate|mail)\/([a-z.]+)$/.exec(path);
       if (match && req.method === "POST") {
-        json(
-          res,
-          200,
-          await gateway.execute(session, match[1], match[2], await body(req)),
-        );
+        const result = await gateway.execute(session, match[1], match[2], await body(req));
+        json(res, result.status === 'PENDING' ? 202 : 200, result,
+          result.accessRemoved ? { 'set-cookie': gateway.cookie('', true) } : {});
         return;
       }
       json(res, 404, {
@@ -278,6 +284,7 @@ export function createPortal(raw, options = {}) {
     journal,
     close: async () => {
       clearInterval(reaper);
+      await Promise.allSettled([...gateway.pendingOperations.values()]);
       await Promise.allSettled(
         [...gateway.sessions.values()].map((s) => gateway.logout(s)),
       );

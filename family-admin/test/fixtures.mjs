@@ -367,13 +367,14 @@ export async function fixtures({ port = 0, dir, now = Date.now, singleSignIn = f
       }
       if (req.method !== "GET") {
         state.writes.push({ app, path, body, method: req.method });
+        if (state.beforeWrite) await state.beforeWrite(app, path, body);
         if (state.fault === "drop") {
           res.destroy();
           return;
         }
         if (state.fault === "reject")
           return send(res, 409, { error: "STATE_CHANGED" });
-        return send(res, 200, { updated: true });
+        return send(res, 200, state.writeResult || { updated: true });
       }
       let resource = path.split("/").at(-1);
       if(app==='crp'&&resource==='affiliates')resource='referrals';

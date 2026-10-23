@@ -46,6 +46,7 @@ export class Gateway {
     this.now = now;
     this.sessions = new Map();
     this.pendingLogouts = new Set();
+    this.pendingOperations = new Map();
     this.loginLimits = new Map();
   }
   async call(
@@ -202,11 +203,9 @@ export class Gateway {
     if (this.loginLimits.size > 1000)
       for (const [k, v] of this.loginLimits)
         if (v.until <= this.now()) this.loginLimits.delete(k);
-    for (const [k, v] of this.sessions)
-      if (v.expires <= this.now()) {
-        v.links = {};
-        this.sessions.delete(k);
-      }
+    for (const v of this.sessions.values())
+      if ((v.authenticatedUntil ?? v.expires) <= this.now())
+        await this.logout(v);
     if (this.sessions.size >= 200) fail("SESSION_CAPACITY", 503);
     const s = {
       csrf: random(),
@@ -542,15 +541,59 @@ export class Gateway {
         message:
           "Refresh the application record. This request was not sent again.",
       };
+    if (op.background) {
+      const work = this.performAction(s, app, name, input, op, body, path, details);
+      this.pendingOperations.set(input.requestId, work);
+      void work.finally(() => this.pendingOperations.delete(input.requestId)).catch(() => {});
+      return { status: 'PENDING', requestId: input.requestId };
+    }
+    return this.performAction(s, app, name, input, op, body, path, details);
+  }
+  async operationStatus(s, requestId) {
+    await this.authorize(s);
+    const intent = this.journal.intents.get(requestId);
+    if (!intent || intent.subject !== s.subject) fail('OPERATION_NOT_FOUND', 404);
+    this.capability(s, intent.app, operation(intent.app, intent.operation, true));
+    await this.nativeIdentity(s, intent.app);
+    return this.operationReceipt(intent);
+  }
+  async operationList(s) {
+    await this.authorize(s);
+    this.capability(s, 'mail', operation('mail', 'provider.reconcile', true));
+    await this.nativeIdentity(s, 'mail');
+    return { items: [...this.journal.intents.values()].filter(r => r.subject === s.subject
+      && r.app === 'mail' && actions.mail[r.operation]?.background).slice(-30).reverse()
+      .map(r => this.operationReceipt(r)) };
+  }
+  operationReceipt(intent) {
+    const requestId = intent.key;
+    const rows = this.journal.events.filter(r => r.key === requestId);
+    const applied = rows.some(r => r.event === 'ACTION_RESULT' && r.outcome === 'APPLIED');
+    const last = rows.at(-1);
+    const status = applied ? 'APPLIED' : this.pendingOperations.has(requestId) ? 'PENDING'
+      : last?.outcome === 'REFUSED_OR_ACCESS_CHANGED' ? 'REFUSED' : 'UNKNOWN';
+    return { status, requestId, app: intent.app, operation: intent.operation, record: intent.record,
+      ...(status === 'REFUSED' ? { code: last.code } : {}) };
+  }
+  async performAction(s, app, name, input, op, body, path, details) {
     let applied = false;
     try {
-      const result = await this.call(app, path, s, { method: op.method, body });
+      const result = await this.call(app, path, s, { method: op.method, body,
+        ...(op.background ? { timeout: 120000 } : {}) });
       applied = true;
       this.journal.append("ACTION_RESULT", {
         key: input.requestId,
         ...details,
         outcome: "APPLIED",
       });
+      // A successful self-change revokes the native unlock before a post-read.
+      // Acknowledge only the mutation, then revoke this session without returning
+      // newly unauthorized member data or touching any other person's session.
+      if (app === 'crp' && name === 'team.update' && result.member?.account_id === s.subject
+          && result.member?.admin_id === input.id) {
+        await this.logout(s);
+        return { status: 'APPLIED', requestId: input.requestId, accessRemoved: true };
+      }
       await this.authorize(s);
       await this.nativeIdentity(s, app);
       return {

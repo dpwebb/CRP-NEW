@@ -428,6 +428,15 @@ async function confirmAction(app, name, id) {
         method: "POST",
         body: { id: recordId, body, requestId: key, confirmation: confirmText },
       });
+      if (result.accessRemoved) {
+        showLogin('Your administrative access changed. This change was recorded; sign in again if access is available.');
+        return;
+      }
+      if (result.status === 'PENDING') {
+        notice('Mail operation accepted. Checking the same request; do not submit it again.');
+        void followOperation(result.requestId);
+        return;
+      }
       notice(
         result.status === "APPLIED"
           ? "Change recorded."
@@ -437,6 +446,21 @@ async function confirmAction(app, name, id) {
     "Confirm change",
   );
   void recordChoices(app,name).catch(()=>{});
+}
+async function followOperation(id) {
+  const subject = S.session?.subject;
+  for (let attempt=0; attempt<65 && S.session?.subject===subject; attempt++) {
+    try {
+      const result=await api('/api/operations/'+id);
+      if(S.session?.subject!==subject)return;
+      if(result.status==='APPLIED') { notice('Mail operation completed. Refresh the order to review its current state.'); return; }
+      if(result.status!=='PENDING') { notice(result.status==='UNKNOWN'
+        ? 'The final result is not confirmed. Refresh the order and reconcile this request before any further submission.'
+        : 'Mail operation was refused'+(result.code?' ('+result.code.replaceAll('_',' ').toLowerCase()+')':'')+'. Review the current order.'); return; }
+    } catch(error) { notice('The mail result is not confirmed. Refresh the order and reconcile before submitting again.'); return; }
+    await new Promise(resolve=>setTimeout(resolve,2000));
+  }
+  if(S.session?.subject===subject)notice('The mail result is still pending. Refresh the order and reconcile before submitting again.');
 }
 async function recordChoices(app,name){
   const d=S.dialog;if(!d)return;
@@ -452,17 +476,21 @@ async function recordChoices(app,name){
     for(const row of rows){
       if(name==='campaign.add'&&field==='partnerId'&&row.status!=='ACTIVE')continue;
       if(field==='grant_id'&&(row.status!=='ACTIVE'||row.revoked_at))continue;
-      const id=field==='subject'||field==='assignee'?row.subject:row.id||row.grant_id||row.org_id||row.account_id||row.member_id||row.subject;
+      const id=field==='subject'||field==='assignee'?row.subject:row.id||row.admin_id||row.job_id||row.orderId||row.grant_id||row.org_id||row.account_id||row.member_id||row.subject;
       if(!id)continue;records.set(id,row);const option=el('option');option.value=id;option.label=[row.name||row.email||row.question||row.subject,row.country,row.status||row.state].filter(Boolean).join(' · ');list.append(option);
     }
     node.input.parentElement.append(list);
-    node.input.addEventListener('change',()=>{
-      const row=records.get(node.input.value);if(!row)return;
+    const prefill=()=>{
+      if(S.dialog!==d)return;
+      const row=records.get(node.input.value.trim());if(!row)return;
       for(const [key,value]of Object.entries({expectedRevision:row.revision,expectedVersion:row.version,expectedState:row.state,expectedActive:row.active,expectedRole:row.role})){
         const dest=d.nodes.get(key);if(!dest||value===undefined)continue;
         if(dest.f.type==='boolean')dest.input.checked=value;else dest.input.value=value;
       }
-    });
+    };
+    node.input.addEventListener('input',prefill);
+    node.input.addEventListener('change',prefill);
+    prefill();
   }
 }
 function actionButtons(app, resource) {
@@ -692,6 +720,18 @@ async function appView(app, resource, root, generation) {
     input.onchange=()=>{S.includeSimulation=input.checked;load();};label.append(input);toolbar.append(label);
   }
   root.append(toolbar);
+  if(app==='mail' && resource==='orders' && S.session.role==='owner') {
+    const receipts=await api('/api/operations');if(generation!==S.generation)return;
+    if(receipts.items.length) {
+      const panel=el('section',null,'panel');panel.append(el('h2','Your recent mail requests'));
+      for(const receipt of receipts.items.slice(0,10)) {
+        const row=el('p',human(receipt.operation)+' · '+receipt.status+' · '+receipt.requestId+' ');
+        row.append(btn('Check request',()=>void followOperation(receipt.requestId)));panel.append(row);
+      }
+      panel.append(el('p','These receipts check the original request. An unconfirmed result requires order readback and reconciliation before another submission.'));
+      root.append(panel);
+    }
+  }
   const params = new URLSearchParams();
   if(app==='affiliate'&&resource==='resources')params.set('country',S.market);
   if(app==='affiliate'&&resource==='report'&&S.includeSimulation)params.set('includeSimulation','1');

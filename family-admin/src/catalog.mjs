@@ -322,7 +322,7 @@ Object.assign(actions.mail, {
 });
 for(const action of ['prepare','preview','send','reconcile','cancel'])actions.mail['provider.'+action]=write('/staff/api/orders/:id/postgrid/'+action,'fulfillment.prepare',{
   prepare:'Prepare provider mailing',preview:'Refresh provider print preview',send:'Submit customer-authorized provider mailing',reconcile:'Reconcile uncertain provider outcome',cancel:'Cancel provider submission'
-}[action],[field('confirm','Type I_HAVE_CHECKED_THIS_ORDER')],{owner:true,sensitive:true});
+}[action],[field('confirm','Type I_HAVE_CHECKED_THIS_ORDER')],{owner:true,sensitive:true,background:true});
 
 for(const name of ['partner.add','campaign.add'])actions.affiliate[name].fields.push({...field('simulationRunId','Isolated simulation run UUID','text',false),onlyNonProduction:true});
 export function operation(app, name, writeMode = false) {
