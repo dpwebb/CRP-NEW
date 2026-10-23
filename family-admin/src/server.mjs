@@ -167,6 +167,10 @@ export function createPortal(raw, options = {}) {
         );
         return;
       }
+      if (path === '/api/status' && req.method === 'GET') {
+        json(res, 200, gateway.status(session));
+        return;
+      }
       if (path === "/api/session" && req.method === "GET") {
         const data = await gateway.session(session);
         if(data.applications)data.applications.affiliate.browserSignIn = !!config.affiliateLogin;

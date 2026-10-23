@@ -361,6 +361,18 @@ export class Gateway {
     )
       fail("LINKED_PERMISSION_REQUIRED");
   }
+  status(s) {
+    // Passive browser polling is not user activity. Never call an upstream
+    // resolver here: resolving Consumer's session slides its idle deadline.
+    // This discloses no role/catalog/application data. Every real operation,
+    // full session read and MFA unlock still checks the native authority.
+    return {
+      unlockRequired: !s.authorized || s.expires <= this.now(),
+      reauthenticateRequired: s.primaryAuthenticationExpired === true,
+      expiresAt: new Date(s.expires).toISOString(),
+      absoluteExpiresAt: new Date(s.authenticatedUntil).toISOString(),
+    };
+  }
   async session(s) {
     const renewal = () => ({unlockRequired:true,reauthenticateRequired:true,csrf:s.csrf,environment:this.config.environment});
     if(s.primaryAuthenticationExpired)return renewal();

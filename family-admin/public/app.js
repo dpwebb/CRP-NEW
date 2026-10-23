@@ -1214,10 +1214,10 @@ $("menu").onclick = () => {
 setInterval(async () => {
   if (!S.session) return;
   try {
-    const current = await api("/api/session");
+    const current = await api("/api/status");
     if(current.reauthenticateRequired)showReauthentication();
     else if(current.unlockRequired)showUnlock();
-    else {S.session=current;sessionStatus();}
+    else {Object.assign(S.session,current);sessionStatus();}
   } catch (e) {
     if(e.code==='PRIMARY_AUTHENTICATION_REQUIRED')showReauthentication();
     else if(e.code==='ADMIN_UNLOCK_REQUIRED')showUnlock();

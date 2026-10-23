@@ -75,6 +75,7 @@ test("real CRP HTTP authentication, MFA, scoped data and revocation through inde
       if (json.csrf) csrf = json.csrf;
       return { status: r.status, json };
     }
+    assert.equal((await request('/api/status')).status,401,'passive status still requires a bound unexpired Family session');
     let r = await request("/api/login", "POST", {
       email: "family-owner@example.test",
       password: "a-long-enough-password",
@@ -101,6 +102,37 @@ test("real CRP HTTP authentication, MFA, scoped data and revocation through inde
     assert.equal((await request('/api/activity','POST',{})).status,401,'idle activity cannot renew an expired unlock');
     r=await request('/api/unlock','POST',{code:security.totp(setup.secret,clock)});
     assert.equal(r.status,200,'unlock resumes using the original primary session');
+    const beforeFullRead=t.service.store.state().sessions.filter(x=>x.account_id===actor.account_id).map(x=>x.last_seen_at);
+    clock+=61000;
+    assert.equal((await request('/api/session')).status,200);
+    assert.notDeepEqual(t.service.store.state().sessions.filter(x=>x.account_id===actor.account_id).map(x=>x.last_seen_at),beforeFullRead,'full native authorization is activity; background polls must not use this route');
+    // Exercise the real native resolver, not a fixture response: automatic
+    // status polls must stop reaching it once Family's idle lock has elapsed.
+    const subject=actor.account_id;
+    const lastSeen=t.service.store.state().sessions.filter(x=>x.account_id===subject).map(x=>x.last_seen_at);
+    for(let n=0;n<300;n++) {
+      clock+=30000;
+      const status=await request('/api/status');
+      assert.equal(status.status,200);
+      assert.equal(status.json.permissions,undefined,'passive status exposes no cached permissions');
+      assert.equal(status.json.subject,undefined);
+    }
+    const native=t.service.store.state().sessions.filter(x=>x.account_id===subject);
+    assert.deepEqual(native.map(x=>x.last_seen_at),lastSeen,'three hundred passive checks cannot slide native idle expiry');
+    assert(native.every(x=>Date.parse(x.idle_expires_at)<=clock),'native session really expired during automatic polling');
+    r=await request('/api/unlock','POST',{code:security.totp(setup.secret,clock)});
+    assert.equal(r.status,401);
+    assert.equal(r.json.error.code,'PRIMARY_AUTHENTICATION_REQUIRED');
+    const original=[...p.gateway.sessions.values()][0],originalCap=original.authenticatedUntil,originalCsrf=csrf;
+    r=await request('/api/reauthenticate','POST',{password:'a-long-enough-password',code:security.totp(setup.secret,clock)});
+    assert.equal(r.status,200);
+    assert.equal(csrf,originalCsrf);
+    assert.equal([...p.gateway.sessions.values()][0],original);
+    assert.equal(original.authenticatedUntil,originalCap);
+    assert.equal(original.authorized,false,'password/MFA reauthentication does not skip the separate administration unlock');
+    clock+=30000;
+    assert.equal((await request('/api/unlock','POST',{code:security.totp(setup.secret,clock)})).status,200);
+    assert(p.journal.events.some(x=>x.event==='PRIMARY_REAUTHENTICATED'));
     t.service.adminStore.update((state) => {
       state.memberships.find((x) => x.account_id === actor.account_id)
         .revision++;
