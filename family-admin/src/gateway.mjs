@@ -138,6 +138,11 @@ export class Gateway {
     if (!response.ok || value.ok === false) {
       const code =
         typeof value.error === "string" ? value.error : value.error?.code;
+      if(code==='POSTGRID_RATE_LIMITED'){
+        const error=Object.assign(Error(code),{code,status:429});
+        error.retryAfterSeconds=Number.isInteger(value.retryAfterSeconds)&&value.retryAfterSeconds>=1&&value.retryAfterSeconds<=3600?value.retryAfterSeconds:60;
+        error.retryAt=new Date(this.now()+error.retryAfterSeconds*1000).toISOString();throw error;
+      }
       fail(
         /^[A-Z0-9_]{1,80}$/.test(code || "") ? code : "UPSTREAM_REFUSED",
         [400, 401, 403, 404, 409, 422, 429].includes(response.status)
@@ -253,7 +258,14 @@ export class Gateway {
     strict(body, ["code"]);
     if (typeof body.code !== "string" || !/^\d{6}$/.test(body.code))
       fail("FRESH_FACTOR_REQUIRED", 400);
-    await this.call("crp", "/api/admin/unlock", s, { method: "POST", body });
+    try { await this.call("crp", "/api/admin/unlock", s, { method: "POST", body }); }
+    catch (error) {
+      if (['AUTHENTICATION_REQUIRED','SESSION_REQUIRED'].includes(error.code)) {
+        s.primaryAuthenticationExpired = true; s.authorized = false;
+        fail('PRIMARY_AUTHENTICATION_REQUIRED', 401);
+      }
+      throw error;
+    }
     const value = await this.call("crp", "/api/admin/session", s);
     if (value.session?.account_id !== s.subject) fail("IDENTITY_CHANGED");
     s.authorized = true;
@@ -265,6 +277,28 @@ export class Gateway {
     });
     return this.session(s);
   }
+  async reauthenticate(s, body) {
+    strict(body, ['password', 'code']);
+    if (!s.primaryAuthenticationExpired) fail('REAUTHENTICATION_NOT_REQUIRED', 409);
+    if (s.authenticatedUntil <= this.now()) fail('SESSION_REQUIRED', 401);
+    if (typeof body.password !== 'string' || !body.password || body.password.length > 1024 || typeof body.code !== 'string' || !/^\d{6}$/.test(body.code))
+      fail('LOGIN_FIELDS_REQUIRED', 400);
+    const renewed = { links: {crp:{}} };
+    try {
+      const value = await this.call('crp', '/api/sessions', renewed, {method:'POST', body:{email:s.email,password:body.password,code:body.code}});
+      if (value.account?.account_id !== s.subject || !renewed.links.crp.cookies?.crp_session) fail('IDENTITY_CHANGED', 403);
+      if(this.now()>=s.authenticatedUntil||this.sessions.get(s.key)!==s)fail('SESSION_REQUIRED',401);
+    } catch (error) {
+      if (renewed.links.crp.cookies?.crp_session)
+        await this.call('crp','/api/sessions/current',renewed,{method:'DELETE'}).catch(()=>{});
+      throw error;
+    }
+    s.links.crp = renewed.links.crp;
+    s.primaryAuthenticationExpired = false; s.authorized = false; s.verifiedAt = 0;
+    s.expires = Math.min(this.now()+300000,s.authenticatedUntil);
+    this.journal.append('PRIMARY_REAUTHENTICATED',{subject:s.subject,environment:this.config.environment,absoluteExpiresAt:new Date(s.authenticatedUntil).toISOString()});
+    return {csrf:s.csrf,unlockRequired:true,environment:this.config.environment,absoluteExpiresAt:new Date(s.authenticatedUntil).toISOString()};
+  }
   async authorize(s) {
     if (
       !s.authorized ||
@@ -274,7 +308,11 @@ export class Gateway {
       fail("ADMIN_UNLOCK_REQUIRED", 401);
     let v;
     try { v = await this.call("crp", "/api/admin/session", s); }
-    catch(error) { if(error.code === 'TWO_FACTOR_REQUIRED') { s.authorized=false; fail('ADMIN_UNLOCK_REQUIRED',401); } throw error; }
+    catch(error) {
+      if(error.code === 'TWO_FACTOR_REQUIRED') { s.authorized=false; fail('ADMIN_UNLOCK_REQUIRED',401); }
+      if(['AUTHENTICATION_REQUIRED','SESSION_REQUIRED'].includes(error.code)) { s.authorized=false;s.primaryAuthenticationExpired=true;fail('PRIMARY_AUTHENTICATION_REQUIRED',401); }
+      throw error;
+    }
     const p = v.session || v.principal;
     if (
       p?.account_id !== s.subject ||
@@ -324,9 +362,14 @@ export class Gateway {
       fail("LINKED_PERMISSION_REQUIRED");
   }
   async session(s) {
+    const renewal = () => ({unlockRequired:true,reauthenticateRequired:true,csrf:s.csrf,environment:this.config.environment});
+    if(s.primaryAuthenticationExpired)return renewal();
     let p;
     try { p = await this.authorize(s); }
-    catch(error) { if(error.code === 'ADMIN_UNLOCK_REQUIRED') return {unlockRequired:true,csrf:s.csrf,environment:this.config.environment}; throw error; }
+    catch(error) {
+      if(error.code === 'PRIMARY_AUTHENTICATION_REQUIRED')return renewal();
+      if(error.code === 'ADMIN_UNLOCK_REQUIRED') return {unlockRequired:true,csrf:s.csrf,environment:this.config.environment}; throw error;
+    }
     const access = {};
     if (this.sso) for (const app of ['affiliate', 'mail']) {
       if (!this.binding(s, app) || !this.config.upstreams[app]) continue;
@@ -573,7 +616,7 @@ export class Gateway {
     const status = applied ? 'APPLIED' : this.pendingOperations.has(requestId) ? 'PENDING'
       : last?.outcome === 'REFUSED_OR_ACCESS_CHANGED' ? 'REFUSED' : 'UNKNOWN';
     return { status, requestId, app: intent.app, operation: intent.operation, record: intent.record,
-      ...(status === 'REFUSED' ? { code: last.code } : {}) };
+      ...(status === 'REFUSED' ? { code: last.code,...(last.code==='POSTGRID_RATE_LIMITED'?{retryAfterSeconds:last.retryAfterSeconds,retryAt:last.retryAt}:{}) } : {}) };
   }
   async performAction(s, app, name, input, op, body, path, details) {
     let applied = false;
@@ -611,6 +654,7 @@ export class Gateway {
             ? "UNKNOWN"
             : "REFUSED_OR_ACCESS_CHANGED",
         code: e.code || "INTERNAL_ERROR",
+        ...(e.code==='POSTGRID_RATE_LIMITED'?{retryAfterSeconds:e.retryAfterSeconds,retryAt:e.retryAt}:{}),
       });
       throw e;
     }

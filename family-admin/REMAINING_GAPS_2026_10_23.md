@@ -1,0 +1,15 @@
+# Remaining-gap successor, October 23
+
+This successor addresses three local corrections after the fresh staging simulations:
+
+- G07: labelled fields, nested lists, safe external links and currency amounts replace raw JSON detail panels. Native action and document permissions are retained.
+- G17: the underlying Consumer session has a separate two-hour idle expiry. Family previously cleared the page/draft when that session expired. Normal own password and MFA may now renew only the same native subject inside the existing Family session; a separate fresh factor must unlock administration. The original CSRF and eight-hour Family absolute cap remain. Failed credentials, changed subjects, expired caps and current permission reductions fail closed. No password or factor is stored in Family.
+- G18: native Mail maps provider HTTP429 to POSTGRID_RATE_LIMITED with bounded cooldown metadata. Family journals the cooldown and exposes it in scoped original-request receipts. The UI explains when to review the current order and receipt. Neither service automatically retries mutations.
+
+The fresh hosted campaign completed twelve country/plan Sandbox purchases and eight paid provider Test lifecycles (monthly and annual in CA, US, GB and AU). All twelve assessment downloads passed; one-report packet access was correctly refused. Eight signed packet previews/44 pages and eight provider previews/52 pages were rendered and reviewed before hash-bound approvals. Every new Test letter was submitted exactly once, reconciled, cancelled and its mailing payment fully refunded. All twelve disposable accounts were deleted normally, including the native subscription safety gate. Primary fictional QA access is intentionally retained.
+
+Preserve the initial fixture-path refusal, normal API-session expiry observations, first signer-status assertion error, exact MFA preflight refusals, missing last approval-state persistence, provider cancellation refusals and independent read-only HTTP429 proof. Six cancellation refusals occurred before any native CANCEL_INTENT; after the observed provider reset, new cancellation requests completed without resubmitting any letter. Recovery is not erasure of those failures.
+
+G04/G11 still need real test-publisher identity/assent/training/publication/qualification and verified payee prerequisites. G10 needs actual complete expense receipts. G05 production data retirement is held. G12 withdrawn assets remain held. No real delivery, live charge, new bureau-layout certification or complete positive 49-by-12 coverage is inferred.
+
+This document is implementation scope, not a deployment receipt. Exact-source local/Linux/native/browser results and hosted preservation are recorded separately under output/family-gap-staging-20261022. Production remains outside this release. Activation of changed Family assets currently restarts the service and invalidates its RAM-only session map; do not silently treat a previous restart approval as a session-preserving mechanism.

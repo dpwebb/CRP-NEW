@@ -149,13 +149,16 @@ async function api(path, { method = "GET", body } = {}) {
       Error(data.error?.message || "This request could not be completed."),
       { code: data.error?.code, status: r.status },
     );
-    if (e.code === 'ADMIN_UNLOCK_REQUIRED') showUnlock();
+    if (e.code === 'PRIMARY_AUTHENTICATION_REQUIRED') showReauthentication();
+    else if (e.code === 'ADMIN_UNLOCK_REQUIRED') showUnlock();
     else if (["SESSION_REQUIRED","AUTHENTICATION_REQUIRED"].includes(e.code)) showLogin(e.message);
     throw e;
   }
   return data;
 }
 function showLogin(error = "") {
+  $('reauth').hidden=true;
+  $('reauth').reset();
   S.locked=false;S.resumeDialog=false;S.hasWorkspace=false;
   S.session = null;
   S.csrf = null;
@@ -173,6 +176,7 @@ function showLogin(error = "") {
 }
 function showUnlock() {
   if(!S.session || S.locked)return;
+  $('reauth').hidden=true;
   S.locked=true;
   S.generation++;
   S.resumeDialog=$('dialog').open;
@@ -182,6 +186,13 @@ function showUnlock() {
   $('auth-title').textContent='Unlock your workspace';
   $('auth-help').textContent='Your workspace locked after inactivity. Enter a current authenticator code to return to your page and draft.';
   $('auth-error').textContent='';
+}
+function showReauthentication() {
+  if (!S.locked) showUnlock();
+  $('workspace').hidden=true; $('auth').hidden=false;
+  $('login').hidden=true; $('unlock').hidden=true; $('reauth').hidden=false;
+  $('auth-title').textContent='Confirm your sign-in';
+  $('auth-help').textContent='Your underlying sign-in expired. Your page and draft are kept. Enter your password and authenticator, then a fresh code to unlock administration.';
 }
 function sessionStatus() {
   if(!S.session || S.locked)return;
@@ -200,6 +211,7 @@ async function userActivity(event) {
 document.addEventListener('pointerdown',userActivity,true);
 document.addEventListener('keydown',userActivity,true);
 function unlocked(session) {
+  $('reauth').hidden=true;
   const resuming=S.locked&&S.hasWorkspace&&S.session?.subject===session.subject&&S.session?.role===session.role&&JSON.stringify(S.session?.permissions)===JSON.stringify(session.permissions);
   if(S.locked&&!resuming){$('content').replaceChildren();closeDialog();}
   S.session = session;
@@ -454,6 +466,7 @@ async function followOperation(id) {
       const result=await api('/api/operations/'+id);
       if(S.session?.subject!==subject)return;
       if(result.status==='APPLIED') { notice('Mail operation completed. Refresh the order to review its current state.'); return; }
+      if(result.code==='POSTGRID_RATE_LIMITED') { notice(providerCooldown(result)); return; }
       if(result.status!=='PENDING') { notice(result.status==='UNKNOWN'
         ? 'The final result is not confirmed. Refresh the order and reconcile this request before any further submission.'
         : 'Mail operation was refused'+(result.code?' ('+result.code.replaceAll('_',' ').toLowerCase()+')':'')+'. Review the current order.'); return; }
@@ -461,6 +474,11 @@ async function followOperation(id) {
     await new Promise(resolve=>setTimeout(resolve,2000));
   }
   if(S.session?.subject===subject)notice('The mail result is still pending. Refresh the order and reconcile before submitting again.');
+}
+function providerCooldown(receipt) {
+  const at=Date.parse(receipt.retryAt||'');
+  return 'The provider request limit was reached. '+(Number.isFinite(at)?'Wait until '+new Date(at).toLocaleTimeString()+'. ':'Wait for the provider cooldown. ')+
+    'Then review the current order and this request before another action. No request will be sent automatically.';
 }
 async function recordChoices(app,name){
   const d=S.dialog;if(!d)return;
@@ -535,6 +553,37 @@ function items(value) {
   if (Array.isArray(value?.orders)) return value.orders;
   return null;
 }
+function recordFields(value) {
+  if (value === null || value === undefined) return el('span', 'Not recorded', 'field-empty');
+  if (Array.isArray(value)) {
+    if (!value.length) return el('span', 'None recorded', 'field-empty');
+    const list = el('ol', null, 'record-list');
+    for (const item of value) { const line = el('li'); line.append(recordFields(item)); list.append(line); }
+    return list;
+  }
+  if (typeof value === 'object') {
+    const fields = el('dl', null, 'record-fields');
+    for (const [key, item] of Object.entries(value)) {
+      const group = el('div', null, 'record-field'), definition = el('dd');
+      const currency = value.currency || value.currency_code;
+      if (/minor$/i.test(key) && Number.isSafeInteger(item) && /^[A-Z]{3}$/i.test(currency || '')) {
+        group.append(el('dt', human(key.replace(/_?minor$/i, ''))));
+        definition.append(el('span', new Intl.NumberFormat(undefined, {style:'currency',currency:currency.toUpperCase()}).format(item / 100)));
+      } else { group.append(el('dt', human(key))); definition.append(recordFields(item)); }
+      group.append(definition); fields.append(group);
+    }
+    if (!fields.children.length) fields.append(el('span', 'No fields recorded', 'field-empty'));
+    return fields;
+  }
+  if (typeof value === 'boolean') return el('span', value ? 'Yes' : 'No');
+  const text = String(value);
+  if (/^https?:\/\//i.test(text)) {
+    try { const url = new URL(text); if (!url.username && !url.password) {
+      const link = el('a', text); link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer'; return link;
+    } } catch {}
+  }
+  return el('span', text);
+}
 function showDetails(app, row) {
   dialog(
     "Record details",
@@ -542,7 +591,7 @@ function showDetails(app, row) {
     [],
     null,
   );
-  $("dialog-fields").append(el("pre", JSON.stringify(row, null, 2)));
+  $("dialog-fields").append(recordFields(row));
   const id = row.id || row.orderId || row.admin_id || row.job_id || row.org_id || row.account_id;
   const actions = el("div", null, "record-actions");
   const reads = S.session.catalog.reads[app];
@@ -726,6 +775,7 @@ async function appView(app, resource, root, generation) {
       const panel=el('section',null,'panel');panel.append(el('h2','Your recent mail requests'));
       for(const receipt of receipts.items.slice(0,10)) {
         const row=el('p',human(receipt.operation)+' · '+receipt.status+' · '+receipt.requestId+' ');
+        if(receipt.code==='POSTGRID_RATE_LIMITED')row.append(el('span',providerCooldown(receipt)));
         row.append(btn('Check request',()=>void followOperation(receipt.requestId)));panel.append(row);
       }
       panel.append(el('p','These receipts check the original request. An unconfirmed result requires order readback and reconciliation before another submission.'));
@@ -751,7 +801,7 @@ async function appView(app, resource, root, generation) {
   const rows = items(result.data);
   if(app==='mail'&&resource==='routes')root.append(el('p','Default mailer: '+result.data.defaultMailer+'. '+result.data.availabilityScope,'table-hint'));
   if (rows) root.append(table(app, rows));
-  else root.append(el("pre", JSON.stringify(result.data, null, 2)));
+    else root.append(recordFields(result.data));
   if (result.data?.totals)
     root.append(
       el(
@@ -1129,6 +1179,16 @@ $("unlock").onsubmit = async (e) => {
     e.submitter.disabled = false;
   }
 };
+$('reauth').onsubmit = async (e) => {
+  e.preventDefault();e.submitter.disabled=true;$('auth-error').textContent='';
+  try {
+    const f=new FormData(e.target),r=await api('/api/reauthenticate',{method:'POST',body:{password:f.get('password'),code:f.get('code')}});
+    S.csrf=r.csrf;$('reauth').hidden=true;$('unlock').hidden=false;
+    $('auth-title').textContent='Unlock administration';
+    $('auth-help').textContent='Enter the next fresh authenticator code. Your page and draft are kept.';
+  } catch(error) {$('auth-error').textContent=error.message;}
+  finally {e.target.reset();e.submitter.disabled=false;}
+};
 $("logout").onclick = async () => {
   try {
     await api("/api/logout", { method: "POST", body: {} });
@@ -1155,18 +1215,21 @@ setInterval(async () => {
   if (!S.session) return;
   try {
     const current = await api("/api/session");
-    if(current.unlockRequired)showUnlock();
+    if(current.reauthenticateRequired)showReauthentication();
+    else if(current.unlockRequired)showUnlock();
     else {S.session=current;sessionStatus();}
   } catch (e) {
-    if(e.code==='ADMIN_UNLOCK_REQUIRED')showUnlock();
+    if(e.code==='PRIMARY_AUTHENTICATION_REQUIRED')showReauthentication();
+    else if(e.code==='ADMIN_UNLOCK_REQUIRED')showUnlock();
     else if(e.status===401)showLogin(e.message);
     else notice('Access check temporarily unavailable. Your page and draft have been kept.');
   }
 }, 30000);
 (async () => {
   let data;
-  try { data = await api("/api/session"); } catch { showLogin(); return; }
+  try { data = await api("/api/session"); } catch(e) { if(e.code==='PRIMARY_AUTHENTICATION_REQUIRED')showReauthentication();else showLogin(); return; }
   S.csrf = data.csrf;
+  if(data.reauthenticateRequired){S.session={csrf:data.csrf};showReauthentication();return;}
   if(data.unlockRequired){S.session={csrf:data.csrf};showUnlock();return;}
   let message = "";
   if (data.applications.affiliate.browserSignIn && !data.applications.affiliate.linked) {

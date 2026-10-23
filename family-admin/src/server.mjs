@@ -13,6 +13,8 @@ const messages = {
   SESSION_REQUIRED: "Sign in to the family workspace.",
   ADMIN_UNLOCK_REQUIRED:
     "Unlock administration with a current authenticator code.",
+  PRIMARY_AUTHENTICATION_REQUIRED:
+    "Your underlying sign-in expired. Confirm your password and authenticator to keep your page and draft.",
   FRESH_FACTOR_REQUIRED:
     "Enter a fresh authenticator code before making this change.",
   APPLICATION_NOT_LINKED: "Connect your authorized application access first.",
@@ -145,6 +147,9 @@ export function createPortal(raw, options = {}) {
       if (path === "/api/unlock" && req.method === "POST") {
         json(res, 200, await gateway.unlock(session, await body(req)));
         return;
+      }
+      if (path === '/api/reauthenticate' && req.method === 'POST') {
+        json(res,200,await gateway.reauthenticate(session,await body(req)));return;
       }
       if(path === '/api/activity' && req.method === 'POST') {
         const input=await body(req);

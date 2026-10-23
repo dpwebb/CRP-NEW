@@ -72,3 +72,17 @@ test('record revision fills on typing, paste, delayed options and preselected ID
  input.value='ticket-owned';revision.value='';input.dispatchEvent(new Event('input'));assert.equal(revision.value,7);revision.value='';input.dispatchEvent(new Event('change'));assert.equal(revision.value,7);
  context.S.dialog=null;revision.value='';input.dispatchEvent(new Event('input'));assert.equal(revision.value,'');
 });
+
+test('throttled provider action retains an explicit cooldown receipt after restart without retry',async()=>{
+ const directory=mkdtempSync(join(tmpdir(),'family-rate-'));let f;
+ try{
+  f=await fixtures({dir:directory});await f.login();await f.connect();f.state.fault='rate';const input=request('provider.cancel');
+  assert.equal((await f.request('/api/actions/mail/provider.cancel',{method:'POST',body:input})).status,202);await done(f,input.requestId);
+  const receipt=(await f.request('/api/operations/'+input.requestId)).json;
+  assert.equal(receipt.status,'REFUSED');assert.equal(receipt.code,'POSTGRID_RATE_LIMITED');assert.equal(receipt.retryAfterSeconds,60);
+  assert(Date.parse(receipt.retryAt)>Date.now());assert.equal(f.state.writes.length,1);
+  await f.close();f=await fixtures({dir:directory});await f.login();await f.connect();
+  const restored=(await f.request('/api/operations/'+input.requestId)).json;assert.equal(restored.retryAt,receipt.retryAt);
+  assert.equal((await f.request('/api/actions/mail/provider.cancel',{method:'POST',body:input})).json.status,'ALREADY_SUBMITTED');assert.equal(f.state.writes.length,0);
+ }finally{await f?.close();rmSync(directory,{recursive:true,force:true});}
+});

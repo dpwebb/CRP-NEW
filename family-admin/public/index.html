@@ -65,7 +65,12 @@
           ><button class="primary" type="submit">Unlock administration</button
           ><button type="button" id="back-login">Use another account</button>
         </form>
-        <p id="auth-error" class="error" role="alert"></p>
+          <form id="reauth" hidden>
+            <label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="1024"></label>
+            <label>Authenticator code<input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" required maxlength="6"></label>
+            <button class="primary" type="submit">Confirm my sign-in</button>
+          </form>
+          <p id="auth-error" class="error" role="alert"></p>
       </main>
     </section>
     <div id="workspace" hidden>

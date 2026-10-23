@@ -260,10 +260,11 @@ export async function fixtures({ port = 0, dir, now = Date.now, singleSignIn = f
           body.code !== "123456"
         )
           return send(res, 401, { error: { code: "INVALID_CREDENTIALS" } });
+        state.primarySessionExpired = false;
         return send(
           res,
           200,
-          { ok: true, account: { account_id: account, email: body.email } },
+          { ok: true, account: { account_id: state.signInAccount || account, email: body.email } },
           { "set-cookie": cookie },
         );
       }
@@ -273,6 +274,8 @@ export async function fixtures({ port = 0, dir, now = Date.now, singleSignIn = f
           !state.active)
       )
         return send(res, 401, { error: { code: "SESSION_REQUIRED" } });
+      if(app==='crp' && state.primarySessionExpired)
+        return send(res,401,{error:{code:'AUTHENTICATION_REQUIRED'}});
       if (app === "crp" && path === "/api/admin/unlock") {
         if (body.code !== "654321")
           return send(res, 401, { error: { code: "TWO_FACTOR_INVALID" } });
@@ -374,6 +377,7 @@ export async function fixtures({ port = 0, dir, now = Date.now, singleSignIn = f
         }
         if (state.fault === "reject")
           return send(res, 409, { error: "STATE_CHANGED" });
+        if (state.fault === 'rate')return send(res,429,{error:'POSTGRID_RATE_LIMITED',retryAfterSeconds:60});
         return send(res, 200, state.writeResult || { updated: true });
       }
       let resource = path.split("/").at(-1);

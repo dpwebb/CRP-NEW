@@ -16,7 +16,7 @@ test('approved documents retain exact bytes and are withheld if native access is
   assert.deepEqual(await f.portal.gateway.document(s,'mail','packet','fictional-order'),bytes);
   assert(f.portal.journal.events.some(e=>e.type==='DOCUMENT_VIEWED'||e.event==='DOCUMENT_VIEWED'));
   type='text/plain';await assert.rejects(f.portal.gateway.document(s,'mail','packet','fictional-order'),/UPSTREAM_INVALID_DOCUMENT/);
-  type='application/pdf';revoke=true;await assert.rejects(f.portal.gateway.document(s,'mail','packet','fictional-order'),/SESSION_REQUIRED/);
+  type='application/pdf';revoke=true;await assert.rejects(f.portal.gateway.document(s,'mail','packet','fictional-order'),/PRIMARY_AUTHENTICATION_REQUIRED/);
 });
 
 test('document endpoint refuses arbitrary paths, unknown formats, duplicated IDs and anonymous access',async t=>{
