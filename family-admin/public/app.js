@@ -19,6 +19,7 @@ const pages = {
   studio:{label:'Affiliate Creative Studio',app:'affiliate',resource:'studio',icon:'▧'},
   studioQueue:{label:'Creative review queue',app:'affiliate',resource:'studio.queue',icon:'▧'},
   studioLimits:{label:'Creative usage limits',app:'affiliate',resource:'studio.limits',icon:'▧'},
+  studioDesigns:{label:'AI design drafts',app:'affiliate',resource:'studio.designs',icon:'▧'},
   costs:{label:'Reviewed operating costs',app:'affiliate',resource:'costs',icon:'▣'},
   overview: {
     label: "Family overview",
@@ -298,11 +299,12 @@ function dialog(title, description, fields, submit, submitText = "Confirm") {
   for (const f of fields) {
     const l = el("label", f.label);
     let input;
-    if (f.type?.startsWith("select:")) {
+    if(f.type==='reference')input=el('select');
+    else if (f.type?.startsWith("select:")) {
       input = el("select");
       if (!f.required) { const option=el('option','Not specified');option.value='';input.append(option); }
       for (const option of f.type.slice(7).split(",")) {
-        const o = el("option", human(option));
+        const o = el("option", ({'art-right-v1':'Artwork on the right','art-left-v1':'Artwork on the left',CA:'Canada',US:'United States',AU:'Australia',GB:'United Kingdom',newsletter:'Email newsletter',social:'Social media',sidebar:'Website sidebar'})[option]??human(option));
         o.value = option;
         input.append(o);
       }
@@ -454,7 +456,7 @@ async function confirmAction(app, name, id) {
       }
       notice(
         result.status === "APPLIED"
-          ? "Change recorded."
+          ? name==='studio.design'?'Design request saved. Open AI design drafts and refresh to check progress. Completed designs still need human review.':"Change recorded."
           : "This request was already submitted. Refresh the application record; it was not sent again.",
       );
     },
@@ -486,6 +488,7 @@ function providerCooldown(receipt) {
 async function recordChoices(app,name){
   const d=S.dialog;if(!d)return;
   const relation={partnerId:['affiliate','partners'],contactId:['affiliate','contacts'],campaignId:['affiliate','campaigns'],grant_id:['crp','grants'],org_id:['crp','organizations'],account_id:['crp','accounts'],memberId:['mail','team'],assignee:['affiliate','team'],introducerId:['affiliate','partners'],subject:[app,'team'],reversesId:['affiliate','costs']};
+  if(name==='studio.design'){relation.brandId=['affiliate','studio'];relation.messageId=['affiliate','studio'];}
   const recordResource=name.startsWith('studio.version')?'studio':name.startsWith('studio.request')?'studio.queue':name.startsWith('team.')?'team':name.startsWith('onboarding.')?'onboarding':name.startsWith('hold.')?'holds':name.startsWith('contact.')?'contacts':name.startsWith('referral.')?'referrals':name.startsWith('fulfillment.')?'fulfillment':name.startsWith('ticket.')?'tickets':name.startsWith('campaign.')?'campaigns':name.startsWith('partner.')?'partners':name.startsWith('organization.')?'organizations':name.startsWith('order.')||name.startsWith('note.')||name.startsWith('provider.')?'orders':null;
   if(recordResource)relation.recordId=[app,recordResource];
   for(const [field,node]of d.nodes){
@@ -495,12 +498,18 @@ async function recordChoices(app,name){
     const list=el('datalist');list.id='choices-'+crypto.randomUUID();node.input.setAttribute('list',list.id);
     const records=new Map();
     for(const row of rows){
+      if(name==='studio.design'&&['brandId','messageId'].includes(field)&&(row.kind!==field.replace('Id','')||!['APPROVED','PUBLISHED'].includes(row.state)))continue;
       if(name==='campaign.add'&&field==='partnerId'&&row.status!=='ACTIVE')continue;
       if(field==='grant_id'&&(row.status!=='ACTIVE'||row.revoked_at))continue;
       const id=field==='subject'||field==='assignee'?row.subject:row.id||row.admin_id||row.job_id||row.orderId||row.grant_id||row.org_id||row.account_id||row.member_id||row.subject;
       if(!id)continue;records.set(id,row);const option=el('option');option.value=id;option.label=[row.name||row.email||row.question||row.subject,row.country,row.status||row.state].filter(Boolean).join(' · ');list.append(option);
     }
     node.input.parentElement.append(list);
+    if(node.input.tagName==='SELECT'){
+      const placeholder=el('option',records.size?'Choose an approved option':'No approved options yet');placeholder.value='';node.input.replaceChildren(placeholder);
+      for(const [id,row]of records){const option=el('option',row.kind==='message'?row.spec?.headline||row.name:row.name);option.value=id;node.input.append(option);}
+      if(!records.size)node.input.parentElement.append(el('span','Approve a CRP brand and message in Affiliate Creative Studio first.'));
+    }
     const prefill=()=>{
       if(S.dialog!==d)return;
       const row=records.get(node.input.value.trim());if(!row)return;
@@ -542,6 +551,7 @@ function actionButtons(app, resource) {
       report:['agent.'],
       costs:['cost.'],
       studio:['studio.brand','studio.message','studio.template','studio.version.decision'],
+      'studio.designs':['studio.design'],
       'studio.queue':['studio.request.decision'],'studio.limits':['studio.limits'],
     }[resource] || [];
   if (resource === 'routes') prefixes.push('route.','recipient.');
@@ -804,6 +814,12 @@ async function appView(app, resource, root, generation) {
   );
   if (generation !== S.generation) return;
   const rows = items(result.data);
+  if(resource==='studio.designs'){
+    const capability=(await api('/api/apps/affiliate/studio.designer')).data;if(generation!==S.generation)return;
+    root.append(el('p',capability.enabled?'Choose an approved brand and message, then create original artwork. CRP adds the exact logo and text. Open Affiliate Creative Studio to preview a completed draft before reviewing it.':'AI design is not enabled in this environment. Existing approved banners and design previews still work.','table-hint'));
+    root.append(studioDesignJobs(rows??[]));
+    $('observed').textContent='Checked '+new Date(result.observedAt).toLocaleTimeString();return;
+  }
   if(app==='mail'&&resource==='routes')root.append(el('p','Default mailer: '+result.data.defaultMailer+'. '+result.data.availabilityScope,'table-hint'));
   if(resource==='studio')root.append(studioReviewTools(rows??[]));
   if(['studio','studio.queue','studio.limits'].includes(resource))root.append(el('p','New designs and messages require human approval before publication. Pausing or retiring a version disables its hosted creatives; downloaded copies cannot be recalled. Monetary budget is zero.','table-hint'));
@@ -1256,4 +1272,18 @@ function studioReviewTools(versions){
  const output=el('div'),go=el('button','Preview for review');go.type='submit';form.append(go);box.append(form,output);
  form.onsubmit=async event=>{event.preventDefault();go.disabled=true;try{const query=new URLSearchParams(Object.entries(fields).map(([k,v])=>[k,v.value]));const result=await api('/api/apps/affiliate/studio.preview?'+query);const svg=result.data.svg;if(typeof svg!=='string'||!svg.startsWith('<svg '))throw Error('Preview unavailable');const image=el('img');image.alt='Creative design review — not approved for publication';image.style.maxWidth='100%';image.style.height='auto';const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));image.onload=image.onerror=()=>URL.revokeObjectURL(url);image.src=url;output.replaceChildren(image,el('p','Component hashes: '+result.data.hashes.join(' · '),'studio-review-hashes'));}catch(error){output.textContent=error.message;}finally{go.disabled=false;}};
  return box;
+}
+
+function studioDesignJobs(rows){
+ const box=el('section',null,'studio-design-jobs');
+ if(!rows.length){box.append(el('h2','Your first AI design'),el('p','Create an AI design using an approved CRP brand and message. Review the resulting artwork before making it available to partners.'));return box;}
+ for(const row of rows){
+   const card=el('section',null,'panel');
+   const state=row.result?'Draft ready for review':({READY:'Waiting to start',RUNNING:'Creating artwork',DONE:'Completed',DEAD:'Could not start',UNKNOWN:'Needs reconciliation'})[row.state]??'Check request';
+   card.append(el('h2',row.name),el('p',state));
+   if(row.result)card.append(el('p','Open Affiliate Creative Studio, choose this design and preview it. AI-generated artwork is not approved automatically.'));
+   if(row.state==='UNKNOWN'&&!row.result)card.append(el('p','The result could not be confirmed. Do not send this request again until it has been reconciled.'));
+   if(row.last_error&&row.state!=='UNKNOWN')card.append(el('p',row.last_error==='DESIGN_APPROVED_COPY_REQUIRED'?'Choose a currently approved brand and message.':row.last_error==='DESIGN_AI_DISABLED'?'AI design is paused in this environment.':'The design was not completed. Review the request details before any further action.'));
+   const details=el('details'),summary=el('summary','Technical details');details.append(summary,recordFields({request:row.id,state:row.state,error:row.last_error,result:row.result}));card.append(details);box.append(card);
+ }return box;
 }

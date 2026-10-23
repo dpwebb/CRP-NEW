@@ -54,3 +54,6 @@ Redirects and deletion are deliberately absent until these gates pass. A healthy
 
 ## Creative Studio integration — October 23
 Owner-approved successor: Affiliate partner Studio remains in the existing Affiliate site; its library/review/publishing controls are exposed through Family Admin using native role-scoped API boundaries. Implementation only; no redirect, deployment or source publication authority. Editable designs remain draft pending explicit human review. See the native CREATIVE_STUDIO.md contract.
+# Local AI graphic designer successor — October 23
+
+Existing Affiliate Creative Studio gains an AI design drafts view through native `/api/studio/designs` and `/api/studio/designer`. Native owner membership, fresh global factor, confirmation and durable request ID govern creation. The model generates decorative artwork; exact CRP logo and approved advertising copy are composed afterward. Drafts require the existing human image/revision/hash review and explicit publication. This does not create a fourth app or authorize deployment. Cost reporting stays postponed. Narrow Studio-preview JSON response bound increases to16MiB for the embedded immutable logo and bounded8MiB artwork; ordinary responses remain2MiB.

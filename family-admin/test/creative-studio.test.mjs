@@ -5,6 +5,11 @@ test('Studio actions remain native, owner-scoped and bounded with fresh-factor d
  for(const [name,op]of Object.entries(actions.affiliate).filter(([k])=>k.startsWith('studio.'))){assert.match(name,/^[a-z.]+$/);assert(op.owner&&op.sensitive,name);assert(op.path.startsWith('/api/studio/'));}
  for(const name of Object.keys(reads.affiliate).filter(k=>k.startsWith('studio')))assert.match(name,/^[a-z.]+$/);
  assert.equal(reads.affiliate.studio.path,'/api/studio/library');
+ assert.equal(reads.affiliate['studio.designs'].path,'/api/studio/designs');
+ assert(actions.affiliate['studio.design'].requestId);
+ const design=actionBody(actions.affiliate['studio.design'],{name:'Draft',brandId:'brand',messageId:'message',style:'editorial',composition:'art-left-v1',country:'CA',placement:'website',width:1200,height:1200},'fixed-request-id');
+ assert.equal(design.requestId,'fixed-request-id');
+ assert.throws(()=>actionBody(actions.affiliate['studio.design'],{...design,prompt:'arbitrary prompt'}),/INVALID_FIELDS/);
  assert.throws(()=>nativePath(reads.affiliate['studio.preview'],null,{url:'https://evil.invalid'}),/INVALID_QUERY/);
  assert.throws(()=>actionBody(actions.affiliate['studio.message'],{name:'a',headline:'b',body:'c',cta:'d',logo:'upload'}),/INVALID_FIELDS/);
  assert.equal(actionBody(actions.affiliate['studio.template'],{name:'draft',layout:'stacked-v1',countries:['CA'],placements:['website'],sizes:['600x900'],allowCustom:false,minWidth:600,maxWidth:1200,minHeight:900,maxHeight:1600}).allowCustom,false);

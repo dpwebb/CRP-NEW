@@ -109,7 +109,7 @@ export class Gateway {
           const { done, value } = await reader.read();
           if (done) break;
           bytes += value.length;
-          if (bytes > (documentFormat === 'pdf' ? 64*1024*1024 : documentFormat === 'svg' ? 65536 : path.startsWith('/api/studio/preview?') ? 3*1024*1024 : 2*1024*1024)) {
+          if (bytes > (documentFormat === 'pdf' ? 64*1024*1024 : documentFormat === 'svg' ? 65536 : path.startsWith('/api/studio/preview?') ? 16*1024*1024 : 2*1024*1024)) {
             await reader.cancel();
             fail("UPSTREAM_RESPONSE_TOO_LARGE", 502);
           }
