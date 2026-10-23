@@ -78,6 +78,14 @@ test('real native services accept one CRP MFA login, preserve scopes and revoke 
       const result=await request('/api/actions/'+app+'/'+name,'POST',{body,id,requestId:randomUUID(),confirmation:'local:'+app+':'+name});
       assert.equal(result.status,200,JSON.stringify(result.data));assert.equal(result.data.status,'APPLIED');return result.data.data;
     };
+    const {studioProposals}=await native(affiliateRoot,'src/creative-studio.mjs');
+    const message=await action('affiliate','studio.message',{name:'Fictional native message',headline:studioProposals.message.headline,body:studioProposals.message.body,cta:studioProposals.message.cta});
+    const template=await action('affiliate','studio.template',{name:'Fictional native design',...studioProposals.template});
+    const brand=brandResult.data.data;
+    for(const resource of ['studio.queue','studio.limits'])assert.equal((await request('/api/apps/affiliate/'+resource)).status,200,resource);
+    const studioPreview=await request('/api/apps/affiliate/studio.preview?'+new URLSearchParams({brandId:brand.id,messageId:message.id,templateId:template.id,width:1200,height:1200}));
+    assert.equal(studioPreview.status,200,JSON.stringify(studioPreview.data).slice(0,400));assert(studioPreview.data.data.svg.includes('REVIEW PREVIEW'));assert(studioPreview.data.data.svg.length>2*1024*1024,'Full exact PNG preview crosses ordinary JSON bound only through the explicit Studio route');
+    await action('affiliate','studio.version.decision',{expectedRevision:1,expectedHash:brand.contentHash,action:'approve',reason:'Fictional human-only acceptance'},brand.id);
     await action('crp','organization.add',{name:'Fictional unified administration'});
     const designation=await action('mail','team.add',{name:'Fictional designated operator',country:'CA',kind:'individual'});
     const prices=await request('/api/apps/mail/pricing'),price=prices.data.data.items.find(x=>x.country==='CA');

@@ -17,8 +17,8 @@ const labels = {
 };
 const pages = {
   studio:{label:'Affiliate Creative Studio',app:'affiliate',resource:'studio',icon:'▧'},
-  studioQueue:{label:'Creative review queue',app:'affiliate',resource:'studioQueue',icon:'▧'},
-  studioLimits:{label:'Creative usage limits',app:'affiliate',resource:'studioLimits',icon:'▧'},
+  studioQueue:{label:'Creative review queue',app:'affiliate',resource:'studio.queue',icon:'▧'},
+  studioLimits:{label:'Creative usage limits',app:'affiliate',resource:'studio.limits',icon:'▧'},
   costs:{label:'Reviewed operating costs',app:'affiliate',resource:'costs',icon:'▣'},
   overview: {
     label: "Family overview",
@@ -486,7 +486,7 @@ function providerCooldown(receipt) {
 async function recordChoices(app,name){
   const d=S.dialog;if(!d)return;
   const relation={partnerId:['affiliate','partners'],contactId:['affiliate','contacts'],campaignId:['affiliate','campaigns'],grant_id:['crp','grants'],org_id:['crp','organizations'],account_id:['crp','accounts'],memberId:['mail','team'],assignee:['affiliate','team'],introducerId:['affiliate','partners'],subject:[app,'team'],reversesId:['affiliate','costs']};
-  const recordResource=name.startsWith('studio.version')?'studio':name.startsWith('studio.request')?'studioQueue':name.startsWith('team.')?'team':name.startsWith('onboarding.')?'onboarding':name.startsWith('hold.')?'holds':name.startsWith('contact.')?'contacts':name.startsWith('referral.')?'referrals':name.startsWith('fulfillment.')?'fulfillment':name.startsWith('ticket.')?'tickets':name.startsWith('campaign.')?'campaigns':name.startsWith('partner.')?'partners':name.startsWith('organization.')?'organizations':name.startsWith('order.')||name.startsWith('note.')||name.startsWith('provider.')?'orders':null;
+  const recordResource=name.startsWith('studio.version')?'studio':name.startsWith('studio.request')?'studio.queue':name.startsWith('team.')?'team':name.startsWith('onboarding.')?'onboarding':name.startsWith('hold.')?'holds':name.startsWith('contact.')?'contacts':name.startsWith('referral.')?'referrals':name.startsWith('fulfillment.')?'fulfillment':name.startsWith('ticket.')?'tickets':name.startsWith('campaign.')?'campaigns':name.startsWith('partner.')?'partners':name.startsWith('organization.')?'organizations':name.startsWith('order.')||name.startsWith('note.')||name.startsWith('provider.')?'orders':null;
   if(recordResource)relation.recordId=[app,recordResource];
   for(const [field,node]of d.nodes){
     const target=relation[field];if(!target||!S.session.catalog.reads[target[0]]?.includes(target[1]))continue;
@@ -541,8 +541,8 @@ function actionButtons(app, resource) {
       onboarding:['onboarding.'],
       report:['agent.'],
       costs:['cost.'],
-      studio:['studio.brand','studio.message','studio.template','studio.versionDecision'],
-      studioQueue:['studio.requestDecision'],studioLimits:['studio.limits'],
+      studio:['studio.brand','studio.message','studio.template','studio.version.decision'],
+      'studio.queue':['studio.request.decision'],'studio.limits':['studio.limits'],
     }[resource] || [];
   if (resource === 'routes') prefixes.push('route.','recipient.');
   if (resource === 'orders') prefixes.push('provider.');
@@ -806,7 +806,7 @@ async function appView(app, resource, root, generation) {
   const rows = items(result.data);
   if(app==='mail'&&resource==='routes')root.append(el('p','Default mailer: '+result.data.defaultMailer+'. '+result.data.availabilityScope,'table-hint'));
   if(resource==='studio')root.append(studioReviewTools(rows??[]));
-  if(['studio','studioQueue','studioLimits'].includes(resource))root.append(el('p','New designs and messages require human approval before publication. Pausing or retiring a version disables its hosted creatives; downloaded copies cannot be recalled. Monetary budget is zero.','table-hint'));
+  if(['studio','studio.queue','studio.limits'].includes(resource))root.append(el('p','New designs and messages require human approval before publication. Pausing or retiring a version disables its hosted creatives; downloaded copies cannot be recalled. Monetary budget is zero.','table-hint'));
   if (rows) root.append(table(app, rows));
     else root.append(recordFields(result.data));
   if (result.data?.totals)
@@ -1252,8 +1252,8 @@ setInterval(async () => {
 function studioReviewTools(versions){
  const box=el('section',null,'panel');box.append(el('h2','Review a proposed design'),el('p','Choose the exact brand, message and design versions, then inspect the proposed size before approving their hashes. This preview is not approved advertising.'));
  const form=el('form'),fields={};
- for(const [key,label,value] of [['brandId','Brand version ID',''],['messageId','Message version ID',''],['templateId','Design version ID',''],['width','Width in pixels','600'],['height','Height in pixels','900']]){const l=el('label',label),input=el(['width','height'].includes(key)?'input':'select');input.required=true;if(input.tagName==='SELECT'){for(const v of versions.filter(x=>x.kind===key.replace('Id',''))){const option=el('option',v.name+' · '+v.state+' · '+v.content_hash.slice(0,12));option.value=v.id;input.append(option);}}else {input.value=value;input.type='number';input.min=100;input.max=2400;}l.append(input);form.append(l);fields[key]=input;}
+ for(const [key,label,value] of [['brandId','Brand version ID',''],['messageId','Message version ID',''],['templateId','Design version ID',''],['width','Width in pixels','1200'],['height','Height in pixels','1200']]){const l=el('label',label),input=el(['width','height'].includes(key)?'input':'select');input.required=true;if(input.tagName==='SELECT'){for(const v of versions.filter(x=>x.kind===key.replace('Id',''))){const option=el('option',v.name+' · '+v.state+' · '+v.content_hash.slice(0,12));option.value=v.id;input.append(option);}}else {input.value=value;input.type='number';input.min=100;input.max=2400;}l.append(input);form.append(l);fields[key]=input;}
  const output=el('div'),go=el('button','Preview for review');go.type='submit';form.append(go);box.append(form,output);
- form.onsubmit=async event=>{event.preventDefault();go.disabled=true;try{const query=new URLSearchParams(Object.entries(fields).map(([k,v])=>[k,v.value]));const result=await api('/api/apps/affiliate/studioPreview?'+query);const svg=result.data.svg;if(typeof svg!=='string'||!svg.startsWith('<svg '))throw Error('Preview unavailable');const image=el('img');image.alt='Creative design review — not approved for publication';image.style.maxWidth='100%';image.style.height='auto';const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));image.onload=image.onerror=()=>URL.revokeObjectURL(url);image.src=url;output.replaceChildren(image,el('p','Component hashes: '+result.data.hashes.join(' · ')));}catch(error){output.textContent=error.message;}finally{go.disabled=false;}};
+ form.onsubmit=async event=>{event.preventDefault();go.disabled=true;try{const query=new URLSearchParams(Object.entries(fields).map(([k,v])=>[k,v.value]));const result=await api('/api/apps/affiliate/studio.preview?'+query);const svg=result.data.svg;if(typeof svg!=='string'||!svg.startsWith('<svg '))throw Error('Preview unavailable');const image=el('img');image.alt='Creative design review — not approved for publication';image.style.maxWidth='100%';image.style.height='auto';const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));image.onload=image.onerror=()=>URL.revokeObjectURL(url);image.src=url;output.replaceChildren(image,el('p','Component hashes: '+result.data.hashes.join(' · ')));}catch(error){output.textContent=error.message;}finally{go.disabled=false;}};
  return box;
 }
