@@ -719,3 +719,4 @@ dialog::backdrop {
 
 /* Owner requests the transparent website logo centered in its section. */
 .auth-brand .crp-hero-logo{align-self:center;margin-left:auto;margin-right:auto}
+.studio-review-hashes{overflow-wrap:anywhere;word-break:break-word}
