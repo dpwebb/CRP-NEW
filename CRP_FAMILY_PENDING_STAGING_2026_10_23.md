@@ -1,3 +1,19 @@
+# Creative Studio staging release completed — October23
+
+Status: **DEPLOYED_AND_VERIFIED_ON_STAGING_FOR_OWNER_REVIEW**. Production is unchanged; all new cost work is postponed.
+
+Creative Studio is inside the existing Affiliate site, with review/library/publication controls in the existing unified admin panel. It is not a fourth family application. Affiliate frozen source952f41dac43b680689d75af701c9bdccaddf328e/image9a35bdd1f4f385a9633b844d8f0d3b87fe33e6b44c41eabbab31b75813d36ec1 and Familya427945caa749d7b286b927dfddda2747a06dbd3/crp-family-8d39c40f833912a34ae0/manifest67ba97c2e2819dbf4b40e395cec3c1556dbcac92e112427f6bda6566f22a1ba7 are deployed. Accepted Consumer2ee8/6c7276 and Maild456/1edd sources remain installed.
+
+Final Linux115/115 Affiliate,57/57 Family and1/1 genuine native three-app SSO checks pass. Actual hosted normal password/MFA plus separate fresh global unlock verifies all three apps without Affiliate/Mail sign-in; real authorized lists return25Consumer accounts on the current page,2campaigns and20Mail orders.60HTTPS checks pass; deployed owner preview passes desktop and390px mobile. Three versioned brand/message/design proposals remain DRAFT, zero published and zero requests; usage and monetary defaults remain zero. Owner review is available at https://admin-staging.creditregulatorpro.com/ under Affiliate Creative Studio. New editable designs are not implicitly approved by source deployment.
+
+Authenticated whole stopped snapshots independently recover on VPS and desktop: pre573files/27PostgreSQL tables, post574files/30tables, accepted585files/30tables and both sequences; Family HMAC/key/config and final read-journal prefix recovery pass. Additive migration008 preserves all existing rows and sequences. Deferred007 is absent. Final preservation verifies all47other staging accounts and Consumer business collections exact, only the owned QA’s normal two_factor_last_counter plus sessions qualified; Affiliate30tables/2sequences exact to accepted backup, Mail business/other runtime rows exact with worker presence/heartbeat qualified. All protected provider/SSO configuration and production runtime/data remain preserved. No active database restore, source push, live charge, payout or mailing occurred.
+
+Retain every source/package/refusal, old Windows shared-process full-suite interruption and failed fixture/setup/public-smoke attempts. Final source-qualified Linux suites and actual hosted checks supply acceptance; no complete Windows Affiliate full-suite PASS is claimed. Earlier natural-native-expiry gates remain failed/unobserved. Cost50f/77c/schema007 and Family4d/c57 form/audit work remain separate and deferred. Unrelated dirty canonical Consumer and historical mailing-preview worktrees are preserved, not blanket-promoted.
+
+Safe report: family-admin/.local/evidence/family-studio-14ab16bc-e56f-42d4-9883-9dd63250c434/report.html and report.json. Complete operation/recovery custody remains in the protected matching qa-private directory and /opt/crp-family-admin-operations/family-studio-14ab16bc-e56f-42d4-9883-9dd63250c434. Documentation closure must not regenerate the accepted package or repeat an operator.
+
+## Historical work order and controlling steering
+
 # Family pending-work integration and staging release — October23
 
 Owner directs: finish Creative Studio, merge pending work across the three-application family, and confirm safe deployment to staging. This authorizes one coordinated staging-only successor; production remains unchanged. Family Admin is the existing administration surface, not a fourth family member. Main alone coordinates serial changes. Mail/Affiliate/cost chats supplied read-only inventories and relinquished competing work.
