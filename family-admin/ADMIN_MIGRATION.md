@@ -51,3 +51,6 @@ Privileged and sensitive changes require a fresh global factor. This is a step-u
 6. Only after the full parity and access evidence is accepted, activate role-aware redirects for old administrative entry points. `/admin` can redirect to the matching environment's Family origin. Affiliate `/` and Mail `/staff` are shared with partners/operators: redirect authenticated administrators only; preserve partner/staff paths and normal authentication. Do not redirect APIs, webhooks, OAuth callbacks or customer pages. Keep a tested rollback before later deleting retired admin-only assets.
 
 Redirects and deletion are deliberately absent until these gates pass. A healthy public URL, fixture browser screenshot or representative local test cannot authorize claiming that all hosted workflows are verified.
+
+## Creative Studio integration — October 23
+Owner-approved successor: Affiliate partner Studio remains in the existing Affiliate site; its library/review/publishing controls are exposed through Family Admin using native role-scoped API boundaries. Implementation only; no redirect, deployment or source publication authority. Editable designs remain draft pending explicit human review. See the native CREATIVE_STUDIO.md contract.

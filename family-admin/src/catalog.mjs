@@ -259,7 +259,7 @@ Object.assign(reads.crp, {
   packet: { ...read('/api/admin/fulfillment/:id/packet','fulfillment.read'), format:'pdf' },
 });
 Object.assign(reads.affiliate, {
-  costs:{...read('/api/operating-costs','affiliate.read'),owner:true},
+  costs:{...read('/api/operating-costs','affiliate.read',['includeSimulation']),owner:true},
   'ticket.history':read('/api/tickets/:id/history','affiliate.read'),
   report: read('/api/report','affiliate.read',['includeSimulation']),
   contacts: read('/api/contacts','affiliate.read'),
@@ -324,7 +324,7 @@ for(const action of ['prepare','preview','send','reconcile','cancel'])actions.ma
   prepare:'Prepare provider mailing',preview:'Refresh provider print preview',send:'Submit customer-authorized provider mailing',reconcile:'Reconcile uncertain provider outcome',cancel:'Cancel provider submission'
 }[action],[field('confirm','Type I_HAVE_CHECKED_THIS_ORDER')],{owner:true,sensitive:true,background:true});
 
-for(const name of ['partner.add','campaign.add'])actions.affiliate[name].fields.push({...field('simulationRunId','Isolated simulation run UUID','text',false),onlyNonProduction:true});
+for(const name of ['partner.add','campaign.add','cost.add'])actions.affiliate[name].fields.push({...field('simulationRunId','Isolated simulation run UUID','text',false),onlyNonProduction:true});
 export function operation(app, name, writeMode = false) {
   const item = (writeMode ? actions : reads)[app]?.[name];
   if (!item)
@@ -389,3 +389,18 @@ export function actionBody(op, raw, key) {
   return body;
 }
 export const requestId = () => randomUUID();
+
+// Controlled Creative Studio stays inside Affiliate; all administration uses native APIs.
+reads.affiliate.studio=read('/api/studio/library','affiliate.read');
+reads.affiliate.studioQueue=read('/api/studio/requests','affiliate.read');
+reads.affiliate.studioLimits=read('/api/studio/limits','affiliate.read');
+reads.affiliate.studioProposals=read('/api/studio/proposals','affiliate.read');
+reads.affiliate.studioPreview=read('/api/studio/preview','affiliate.read',['brandId','messageId','templateId','width','height']);
+Object.assign(actions.affiliate,{
+ 'studio.brand':write('/api/studio/brands','affiliate.manage','Propose brand version',[field('name','Version name')],{owner:true,sensitive:true}),
+ 'studio.message':write('/api/studio/messages','affiliate.manage','Propose message version',[field('name','Version name'),field('headline','Headline'),field('body','Product message','textarea'),field('cta','Call to action')],{owner:true,sensitive:true}),
+ 'studio.template':write('/api/studio/templates','affiliate.manage','Propose design version',[field('name','Version name'),field('layout','Design','select:stacked-v1,wide-v1'),field('countries','Permitted countries (CA,US,AU,GB)','array'),field('placements','Permitted placements (website,sidebar,newsletter,social)','array'),field('sizes','Approved sizes (for example 600x900)','array'),field('allowCustom','Allow any readable custom size within these bounds','boolean'),...['minWidth','maxWidth','minHeight','maxHeight'].map(k=>field(k,k.replace(/([A-Z])/g,' $1'),'number'))],{owner:true,sensitive:true}),
+ 'studio.versionDecision':write('/api/studio/library/:id/decision','affiliate.manage','Review or change version publication',[field('expectedRevision','Current revision','number'),field('expectedHash','Exact content hash'),field('action','Decision','select:approve,reject,publish,pause,retire'),field('reason','Review reason','textarea')],{owner:true,sensitive:true}),
+ 'studio.requestDecision':write('/api/studio/requests/:id/decision','affiliate.manage','Review creative request',[field('expectedRevision','Current revision','number'),field('action','Decision','select:approve,reject'),field('reason','Review reason','textarea')],{owner:true,sensitive:true}),
+ 'studio.limits':write('/api/studio/limits','affiliate.manage','Set Studio daily usage limits',[field('expectedRevision','Current revision','number'),field('requestsPerDay','Requests per partner per day','number'),field('downloadsPerDay','Downloads per partner per day','number')],{owner:true,sensitive:true}),
+});

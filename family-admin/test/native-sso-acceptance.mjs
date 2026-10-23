@@ -63,6 +63,10 @@ test('real native services accept one CRP MFA login, preserve scopes and revoke 
     };
     let r=await request('/api/login','POST',{email:'fictional-global-owner@example.test',password:'a-long-enough-password',code:security.totp(setup.secret,clock)});assert.equal(r.status,200,JSON.stringify(r.data));
     clock+=30000;r=await request('/api/unlock','POST',{code:security.totp(setup.secret,clock)});assert.equal(r.status,200,JSON.stringify(r.data));
+    // Actual Family delegation is accepted for human-only Studio actions, with no native login.
+    const brandResult=await request('/api/actions/affiliate/studio.brand','POST',{body:{name:'Fictional native Studio brand'},requestId:randomUUID(),confirmation:'local:affiliate:studio.brand'});
+    assert.equal(brandResult.status,200,JSON.stringify(brandResult.data));
+    const studioLibrary=await request('/api/apps/affiliate/studio');assert.equal(studioLibrary.status,200);assert.equal(studioLibrary.data.data[0].state,'DRAFT');
     for(const app of ['crp','affiliate','mail']){
       if(!r.data.applications[app].linked)await portal.gateway.nativeIdentity([...portal.gateway.sessions.values()][0],app);
       assert.equal(r.data.applications[app].linked,true,app+' automatic native access');
@@ -80,10 +84,10 @@ test('real native services accept one CRP MFA login, preserve scopes and revoke 
     await action('mail','pricing.update',{country:'CA',expectedRevision:price.revision,firstPageMinor:price.firstPageMinor+1,additionalPageMinor:price.additionalPageMinor,reason:'Fictional unified admin acceptance'});
     const createdCampaign=await action('affiliate','campaign.add',{partnerId:partner,name:'Fictional unified campaign',country:'CA'});
     const creative=await request('/api/apps/affiliate/creative?id='+createdCampaign.id);
-    assert.equal(creative.status,200);assert.equal(creative.data.data.visualCollateral.status,'WITHDRAWN');
-    assert.deepEqual(creative.data.data.frames,[]);assert.deepEqual(creative.data.data.banners,[]);
-    assert.equal(creative.data.data.publishing.imageUrl,null);
-    observations.push({withdrawnCollateralPreserved:true,legacyPathRefusals:24});
+    assert.equal(creative.status,200);assert.equal(creative.data.data.visualCollateral.status,'APPROVED');
+    assert.deepEqual(creative.data.data.frames,[]);assert.equal(creative.data.data.banners.length,10);for(const banner of creative.data.data.banners){assert.match(banner.websiteHtml,/Affiliate disclosure:/);assert(banner.websiteHtml.includes(creative.data.data.referralUrl));}
+    assert.match(creative.data.data.publishing.imageUrl,/approved-banners-2026-10-23/);
+    observations.push({withdrawnLegacyPathsPreserved:true,approvedReplacementBanners:10,legacyPathRefusals:24});
     await action('affiliate','contact.add',{name:'Fictional support contact',email:'fictional-contact@example.test',sourceUrl:'https://example.test/consent',purpose:'partner_service',partnerId:partner});
     observations.push({nativeAdministrativeWrites:['CRP organization','Mail designation','Mail versioned price','Affiliate campaign','Affiliate contact'],fictionalOnly:true});
     // Native nonce and one-use callback run over real HTTP redirects; no provider sign-in.

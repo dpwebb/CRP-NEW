@@ -109,7 +109,7 @@ export class Gateway {
           const { done, value } = await reader.read();
           if (done) break;
           bytes += value.length;
-          if (bytes > (documentFormat === 'pdf' ? 64*1024*1024 : documentFormat === 'svg' ? 65536 : 2*1024*1024)) {
+          if (bytes > (documentFormat === 'pdf' ? 64*1024*1024 : documentFormat === 'svg' ? 65536 : path.startsWith('/api/studio/preview?') ? 3*1024*1024 : 2*1024*1024)) {
             await reader.cancel();
             fail("UPSTREAM_RESPONSE_TOO_LARGE", 502);
           }
@@ -569,6 +569,8 @@ export class Gateway {
       fail("REQUEST_ID_REQUIRED", 400);
     if ((op.owner || op.sensitive) && this.now() - s.verifiedAt > 60000)
       fail("FRESH_FACTOR_REQUIRED", 401);
+    if (this.config.environment === 'production' && op.fields.some(f=>f.onlyNonProduction && input.body?.[f.name] !== undefined && input.body[f.name] !== ''))
+      fail('SIMULATION_REQUIRES_ISOLATED_ENVIRONMENT', 403);
     const body = actionBody(op, input.body, input.requestId),
       path = nativePath(op, input.id);
     const details = {

@@ -84,7 +84,7 @@ export function createPortal(raw, options = {}) {
     res.setHeader("x-frame-options", "DENY");
     res.setHeader(
       "content-security-policy",
-      "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+      "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
     );
     if (config.secure)
       res.setHeader("strict-transport-security", "max-age=31536000");
