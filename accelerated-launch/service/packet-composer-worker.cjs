@@ -201,32 +201,41 @@ async function letterPages(doc, text, signature) {
   // replaces a bureau font used by the original form's editable default appearances.
   const font = await doc.embedFont(fontBytes, { subset: false, customName: fontName });
   fonts.set(name(fontName), font.ref);
-  const width = 512, height = signature ? 580 : 692, fieldY=signature?162:50, padding = 4;
+  let signatureLines = [];
+  if (signature) {
+    if(typeof signature.name!=='string'||!signature.name.trim()||signature.name.length>120||/[\x00-\x1f\x7f]/.test(signature.name)||!/^\d{4}-\d{2}-\d{2}$/.test(signature.date||''))throw coded('INVALID_REQUEST');
+    signatureLines = wrapped('Signed by: ' + signature.name, font, 12, 512);
+    if (signatureLines.length > 3) throw coded('INVALID_REQUEST');
+  }
+  const signatureSpace = signature ? (signatureLines.length + 1) * 18 + 16 : 0;
+  const width = 512, height = 692 - signatureSpace, fieldY = 50 + signatureSpace, padding = 4;
   let size = 12, lines;
   for (; size >= 10; size -= .5) { lines = wrapped(text, font, size, width - padding * 2); if (lines.length * size * 1.4 <= height - padding * 2) break; }
   if (size < 10) { size = 10; lines = wrapped(text, font, size, width - padding * 2); }
-  const capacity = Math.floor((height - padding * 2) / (size * 1.4)), fields = [];
+  let capacity = Math.floor((height - padding * 2) / (size * 1.4));
+  while (lines.length > capacity && lines.length % capacity > 0 && lines.length % capacity < 4 && capacity > 8) capacity--;
+  const fields = [];
   for (let offset = 0, pageNumber = 1; offset < lines.length; offset += capacity, pageNumber++) {
     const chunk = lines.slice(offset, offset + capacity), page = doc.insertPage(pageNumber - 1, [612, 792]);
     let fieldName = `CRP_letter_page_${pageNumber}`;
     while (form.getFields().some(field => field.getName() === fieldName)) fieldName += '_';
     const field = form.createTextField(fieldName); field.enableMultiline(); field.setText(chunk.join('\n'));
-    field.addToPage(page, { x: 50, y: fieldY, width, height, borderWidth: 0, font, textColor: rgb(0, 0, 0), backgroundColor: rgb(1, 1, 1) });
+    const bodyHeight=signature && offset+capacity>=lines.length ? Math.min(height,chunk.length*size*1.4+padding*2) : height;
+    const bodyY=fieldY+height-bodyHeight;
+    field.addToPage(page, { x: 50, y: bodyY, width, height:bodyHeight, borderWidth: 0, font, textColor: rgb(0, 0, 0), backgroundColor: rgb(1, 1, 1) });
     field.setFontSize(size);
     field.updateAppearances(font, () => chunk.flatMap((line, at) => [lib.beginText(), lib.setFillingRgbColor(0, 0, 0), lib.setFontAndSize(font.name, size),
-      lib.moveText(padding, height - padding - size - at * size * 1.4), lib.showText(font.encodeText(line)), lib.endText()]));
+      lib.moveText(padding, bodyHeight - padding - size - at * size * 1.4), lib.showText(font.encodeText(line)), lib.endText()]));
     // The appearance has its own local font resource; edits resolve this separate alias
     // through AcroForm DR. pdf-lib customName alone does not change PDFFont.name.
     field.acroField.setDefaultAppearance(`/${fontName} ${size} Tf 0 g`);
     fields.push({ name: fieldName, type: 'TEXT', section: 'letter', page: pageNumber, text: chunk.join('\n'),
-      x: 50, y: fieldY, width, height, page_width: 612, page_height: 792, font_size: size, min_font_size: 10 });
+      x: 50, y: bodyY, width, height:bodyHeight, page_width: 612, page_height: 792, font_size: size, min_font_size: 10 });
   }
-  if(signature){
-    if(typeof signature.name!=='string'||!signature.name.trim()||signature.name.length>120||/[\x00-\x1f\x7f]/.test(signature.name)||!/^\d{4}-\d{2}-\d{2}$/.test(signature.date||''))throw coded('INVALID_REQUEST');
-    const page=doc.getPage(fields.length-1),lines=wrapped('Signed by: '+signature.name,font,12,512);
-    if(lines.length>3)throw coded('INVALID_REQUEST');
-    for(let index=0;index<lines.length;index++)page.drawText(lines[index],{x:50,y:140-index*18,size:12,font});
-    page.drawText('Signature date: '+signature.date,{x:50,y:140-lines.length*18,size:12,font});
+  if (signature) {
+    const page = doc.getPage(fields.length - 1), top = fields.at(-1).y - 22;
+    signatureLines.forEach((line, index) => page.drawText(line, {x:50,y:top-index*18,size:12,font}));
+    page.drawText('Signature date: ' + signature.date, {x:50,y:top-signatureLines.length*18,size:12,font});
   }
   return fields;
 }
@@ -327,6 +336,9 @@ async function appendEvidence(target, entry, isReport, position, copyBudget) {
     const scale = Math.min(512 / image.width, 692 / image.height), width = image.width * scale, height = image.height * scale;
     page.drawImage(image, { x: (612 - width) / 2, y: (792 - height) / 2, width, height }); pages = [1];
   } else throw coded('INVALID_REQUEST');
+  if (!isReport && entry.rotation) for (let at=0;at<pages.length;at++) {
+    const page=target.getPage(position+at); page.setRotation(lib.degrees((page.getRotation().angle+entry.rotation)%360));
+  }
   return pages;
 }
 function isIdentityImage(entry) {
@@ -343,7 +355,8 @@ async function appendIdentitySheet(doc, entries, position) {
     try {
       const image = String(entry.content_type).toLowerCase().split(';')[0].trim() === 'image/png' ? await doc.embedPng(bytes) : await doc.embedJpg(bytes);
       if (![image.width, image.height].every(n => Number.isFinite(n) && n > 0)) throw new Error('IMAGE');
-      images.push({ entry, image, bytes });
+      const rotation = entry.rotation || 0, sideways = rotation === 90 || rotation === 270;
+      images.push({ entry, image, bytes, rotation, displayWidth: sideways ? image.height : image.width, displayHeight: sideways ? image.width : image.height });
     } catch {
       throw Object.assign(coded('PACKET_ATTACHMENT_UNREADABLE'), { attachment: { kind: 'document', index, reason: 'UNREADABLE' } });
     }
@@ -367,7 +380,7 @@ async function appendIdentitySheet(doc, entries, position) {
     let offset = 0;
     const groups = sizes.map(count => {
       const entries = images.slice(offset, offset+count); offset += count;
-      const ratios = entries.map(({image}) => columns ? image.height/image.width : image.width/image.height), ratio = ratios.reduce((n,r)=>n+r,0);
+      const ratios = entries.map(({displayWidth,displayHeight}) => columns ? displayHeight/displayWidth : displayWidth/displayHeight), ratio = ratios.reduce((n,r)=>n+r,0);
       return { entries, ratios, ratio, factor: Math.min(...ratios.map(r=>Math.min(1,r))),
         cap: (columns ? bounds.height-count*captionSpace-(count-1)*gap : bounds.width-(count-1)*gap)/ratio };
     });
@@ -399,12 +412,14 @@ async function appendIdentitySheet(doc, entries, position) {
   const page = doc.insertPage(position, [best.pageWidth, best.pageHeight]), heading = await doc.embedFont(lib.StandardFonts.HelveticaBold), caption = await doc.embedFont(lib.StandardFonts.Helvetica);
   page.drawText('Identification copies', { x: 36, y: best.pageHeight-42, size: 18, font: heading, color: rgb(.1, .2, .3) });
   page.drawText('Selected identification images - complete copies, fitted proportionally', { x: 36, y: best.pageHeight-62, size: 9, font: caption, color: rgb(.25, .3, .35) });
-  const sources = images.map(({ entry, image, bytes }, at) => {
+  const sources = images.map(({ entry, image, bytes, rotation }, at) => {
     const placement = best.placements[at];
     page.drawText('Copy ' + (at + 1), { x: placement.caption_x, y: placement.caption_y, size: 10, font: heading, color: rgb(.2, .25, .3) });
-    page.drawImage(image, { x: placement.x, y: placement.y, width: placement.width, height: placement.height });
+    const {x,y,width,height} = placement, sideways = rotation === 90 || rotation === 270;
+    page.drawImage(image, {x:x+([90,180].includes(rotation)?width:0), y:y+([180,270].includes(rotation)?height:0),
+      width:sideways?height:width,height:sideways?width:height,rotate:lib.degrees(rotation)});
     return { file_id: entry.file_id || null, filename: entry.filename || '', source_page: 1, original_sha256: digest(bytes),
-      image_width: image.width, image_height: image.height, x: placement.x, y: placement.y, width: placement.width, height: placement.height };
+      rotation, image_width: image.width, image_height: image.height, x: placement.x, y: placement.y, width: placement.width, height: placement.height };
   });
   page.drawText('Check that every copy is complete and readable before printing.', { x: 36, y: 26, size: 9, font: caption, color: rgb(.25, .3, .35) });
   return { grouped_identification: true, sources, file_ids: sources.map(source => source.file_id), page_width: best.pageWidth, page_height: best.pageHeight };

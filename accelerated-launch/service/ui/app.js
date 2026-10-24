@@ -324,7 +324,7 @@ function renewalAttentionBlock(inResults = false) {
   return `<div class="note" role="status">An earlier subscription can still renew. Cancel renewal before starting another subscription. One-report purchases stay available.${inResults ? '<br><button class="secondary" id="renewal-plans">Cancel renewal in Plans</button>' : ''}</div>`;
 }
 function planName(code) { return ({ report_once: 'One report', monthly: 'Monthly subscription', annual: 'Yearly subscription' })[code] || 'Subscription'; }
-function paymentSentence(pay) { return pay?.is_a_working_payment ? 'You pay only after choosing a plan and completing checkout.' : 'Payments are unavailable right now.'; }
+function paymentSentence(pay) { return pay?.is_a_working_payment ? 'New purchases use checkout. A yearly upgrade uses your saved payment method after you review and confirm its amount.' : 'Payments are unavailable right now.'; }
 function access() {
   const ent = state.entitlement || null;
   const pay = state.payment || null;
@@ -1622,6 +1622,11 @@ function checkoutReturnContext() {
   if (typeof location === 'undefined' || !location.search) return null;
   const params = new URLSearchParams(location.search.replace(/^\?/, '').split('?')[0]);
   const caseId = params.get('report'), planCode = params.get('plan');
+  if (['complete', 'cancelled'].includes(params.get('mailing')) && /^case_[a-f0-9]{24}$/.test(caseId || '')
+    && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(params.get('mail_order') || '')
+    && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(params.get('mail_attempt') || '')) {
+    return { caseId, mailing: true, orderId: params.get('mail_order'), attemptId: params.get('mail_attempt'), cancelled: params.get('mailing') === 'cancelled' };
+  }
   return params.get('checkout') === 'return' && /^case_[a-f0-9]{24}$/.test(caseId || '') && ['report_once', 'monthly', 'annual'].includes(planCode)
     ? { caseId, planCode, cancelled: params.get('checkout_cancelled') === '1' } : null;
 }
@@ -1634,6 +1639,19 @@ async function restoreCheckoutReport(context) {
     const [data, access] = await Promise.all([api('GET', '/api/cases/' + encodeURIComponent(context.caseId)), api('GET', '/api/entitlement')]);
     ensureCurrent();
     if (!data.view || data.view.case?.case_id !== context.caseId) throw new Error('Report unavailable');
+    if (context.mailing) {
+      const mailing = await api('GET', '/api/cases/' + encodeURIComponent(context.caseId) + '/mailing');
+      ensureCurrent();
+      if (mailing.attempt_id !== context.attemptId || mailing.order?.id !== context.orderId) throw new Error('Mailing request unavailable');
+      state.caseId = context.caseId; state.view = data.view;
+      state.entitlement = access.entitlement || null; state.payment = access.payment || null;
+      state.step = STEP.REVIEW; state.checkoutReturn = null; state.error = null;
+      state.notice = mailing.order.payment_state === 'REFUNDED' ? 'Your mailing request is refunded. See its status below.'
+        : mailing.order.payment_state === 'VERIFIED' ? 'Your mailing payment is confirmed. See the next step below.'
+          : context.cancelled ? 'Payment was not completed. Check your mailing request below before trying again.'
+            : 'We are checking your mailing payment. Refresh its status below before starting another payment.';
+      return;
+    }
     state.caseId = context.caseId; state.view = data.view;
     state.entitlement = access.entitlement || null; state.payment = access.payment || null; state.upgrade_credit = access.upgrade_credit || null;
     state.upgrade_quotes = access.upgrade_quotes || null;
@@ -2257,10 +2275,11 @@ function packetSupportingDocuments(pv) {
     ${needsContact || needsCopies ? '<button class="secondary" id="packet-account-details">Add missing contact details or copies</button>' : ''}
     ${missing.length || repair ? `<ul class="note" id="packet-missing-items">${[...missing, ...(repair ? [repair.message, 'Choose a readable replacement for the affected copy.'] : [])].map(item => `<li>${esc(item)}</li>`).join('')}</ul>` : '<p>Your details and copies are ready.</p>'}
     <details><summary>Bureau instructions</summary><div id="packet-bureau-checklist">${bureauChecklist(req)}</div></details>
-    <h4 ${needsCopies ? '' : 'hidden'}>Choose the missing copies</h4>
-    ${documents.map(doc => `<div ${needsCopies || (needsDate && selected.has(doc.file_id) && dateRequired(doc)) ? '' : 'hidden'}><label ${needsCopies ? '' : 'hidden'}><input type="checkbox" data-packet-document="${esc(doc.file_id)}" ${selected.has(doc.file_id) ? 'checked' : ''}>${esc(doc.original_filename)} — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)}</label>
-    <div ${needsDate && dateRequired(doc) ? '' : 'hidden'}><label for="packet-document-date-${doc.file_id}">Date on ${esc(doc.original_filename)}</label><input id="packet-document-date-${doc.file_id}" type="date" value="${esc(settings.document_dates?.[doc.file_id] || '')}"></div></div>`).join('') || '<p class="evidence">No account documents uploaded yet.</p>'}
-    <label ${needsCopies && req?.country === 'CA' && req?.bureau === 'EQUIFAX' && !settings.identity_shows_address ? '' : 'hidden'}><input id="packet-id-address" type="checkbox" ${settings.identity_shows_address ? 'checked' : ''}>My selected identification shows my current address</label>
+    <h4>Included documents</h4><p class="evidence">Choose only the copies you need. Check that each copy is complete, upright, readable and current. We have not checked expiry dates.</p>
+    ${documents.map(doc => `<div><label><input type="checkbox" data-packet-document="${esc(doc.file_id)}" ${selected.has(doc.file_id) ? 'checked' : ''}>${esc(doc.original_filename)} — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)}</label>
+    <div ${dateRequired(doc) ? '' : 'hidden'}><label for="packet-document-date-${doc.file_id}">Date on ${esc(doc.original_filename)}</label><input id="packet-document-date-${doc.file_id}" type="date" value="${esc(settings.document_dates?.[doc.file_id] || '')}"></div>
+    ${['image/png','image/jpeg'].includes(doc.content_type) ? `<label>Rotate printed copy of ${esc(doc.original_filename)}<select data-packet-rotation="${esc(doc.file_id)}">${[0,90,180,270].map(angle=>`<option value="${angle}" ${(settings.document_rotations?.[doc.file_id] || 0) === angle ? 'selected' : ''}>${angle === 0 ? 'Keep original direction' : angle + '° counterclockwise'}</option>`).join('')}</select></label>` : ''}</div>`).join('') || '<p class="evidence">No account documents uploaded yet.</p>'}
+    <label ${req?.country === 'CA' && req?.bureau === 'EQUIFAX' ? '' : 'hidden'}><input id="packet-id-address" type="checkbox" ${settings.identity_shows_address ? 'checked' : ''}>My selected identification shows my current address</label>
     <div id="packet-us-identity" ${missing.some(item => /SSN/.test(item)) ? '' : 'hidden'}><label for="packet-identity-reference">Social Security number for bureau correspondence</label>
     <input id="packet-identity-reference" type="password" autocomplete="off" maxlength="20" value="${esc(settings.identity_reference || '')}">
     <label><input id="packet-no-ssn" type="checkbox" ${settings.no_ssn_issued ? 'checked' : ''}>I have never been issued an SSN</label></div>
@@ -2355,7 +2374,7 @@ function renderPacketBlock(pv) {
       <pre id="packet-preview" hidden>${esc(packet.correspondence_preview || '')}</pre>
       ${packet.preview_ready && packet.letter_preview_url ? `<div id="packet-pdf-review"><div class="packet-review-choices"></div><div id="packet-all-pages" aria-label="Complete editable dispute packet"><p role="status">Preparing all packet pages...</p></div></div>` : ''}
       <div id="packet-action-bar">${packet.approval_stale ? '<p class="note stop">The packet changed since approval; review and approve it again.</p>' : ''}<p class="evidence" id="${packet.approved ? 'packet-approved-status' : 'packet-action-help'}">${packet.approved ? 'Your packet is approved. You can print or download it.' : packet.preview_ready ? 'Check every page, tick the box below, then approve this version to enable printing and downloading.' : 'Complete your issue and document choices in the previous steps, then save and review your packet before approving.'}</p>
-      ${packet.preview_ready ? `<section class="note" aria-labelledby="packet-signature-title"><h4 id="packet-signature-title">Sign before we mail</h4><p>You can add a typed signature to your letter here. Then check every page of the signed PDF and approve it. You can also download an unsigned packet and sign it by hand.</p>${packet.signature ? `<p>${packet.signature.current ? 'Signature added' : 'Your packet changed. Add your signature again'}: ${esc(packet.signature.name)} · ${esc(packet.signature.date)}</p>` : ''}<label for="packet-signature-name">Type your full name as your signature</label><input id="packet-signature-name" maxlength="120" autocomplete="name" value=""><label for="packet-signature-date">Signature date</label><input id="packet-signature-date" type="date" value="${esc(packet.letter_date || localLetterDate())}"><label><input id="packet-signature-consent" type="checkbox">I intend this typed name to be my signature on this letter.</label><button id="packet-signature-save" class="secondary" type="button">Add signature and review signed PDF</button>${packet.signature ? '<button id="packet-signature-remove" class="secondary" type="button">Remove signature</button>' : ''}<p class="evidence">The signed PDF excludes the instruction sheet. A typed signature does not guarantee a bureau will accept a packet.</p></section>` : ''}
+      ${packet.preview_ready ? `<section class="note" aria-labelledby="packet-signature-title"><h4 id="packet-signature-title">Sign before we mail</h4><p>You can add a typed signature to your letter here. Then check every page of the signed PDF and approve it. You can also download an unsigned packet and sign it by hand.</p>${packet.signature ? `<p>${packet.signature.current ? 'Signature added' : 'Your packet changed. Add your signature again'}: ${esc(packet.signature.name)} · ${esc(packet.signature.date)}</p>` : ''}<label for="packet-signature-name">Type your full name as your signature</label><input id="packet-signature-name" maxlength="120" autocomplete="name" value=""><label for="packet-signature-date">Signature date</label><input id="packet-signature-date" type="date" value="${esc(packet.letter_date || localLetterDate())}"><label><input id="packet-signature-consent" type="checkbox">I intend this typed name to be my signature on this letter.</label><button id="packet-signature-save" class="secondary" type="button">Add signature and review signed PDF</button>${packet.signature ? '<button id="packet-signature-remove" class="secondary" type="button">Remove signature</button>' : ''}<p id="packet-signature-help" class="evidence" role="status">Wait for every packet page to load before adding a signature.</p><p class="evidence">The signed PDF excludes the instruction sheet. A typed signature does not guarantee a bureau will accept a packet.</p></section>` : ''}
       <label><input id="packet-preview-reviewed" type="checkbox" ${packet.approved ? 'checked' : ''} ${(packet.preview_ready ?? Boolean(packet.selected_count && packet.correspondence_preview)) ? '' : 'disabled'}>I have checked every page of my packet</label>
       <button class="primary" id="packet-approve" disabled ${packet.approved ? 'hidden' : ''}>Approve this version</button>
       <button class="secondary" id="packet-print" ${(packet.print_available ?? packet.download_available) ? '' : 'disabled'}>Open PDF to print</button>
@@ -2480,6 +2499,7 @@ async function wirePacket(panel) {
       ...Object.fromEntries(['verification_requested', 'copies_confirmed'].filter(key => typeof pv.support?.settings?.[key] === 'boolean').map(key => [key, pv.support.settings[key]])),
       identity_reference: el('packet-identity-reference').value, no_ssn_issued: el('packet-no-ssn').checked,
       other_identity_details: el('packet-other-identity').value,
+      document_rotations: Object.fromEntries([...panel.querySelectorAll('[data-packet-rotation]')].filter(node=>document_ids.includes(node.getAttribute('data-packet-rotation')) && Number(node.value)!==0).map(node=>[node.getAttribute('data-packet-rotation'),Number(node.value)])),
       document_dates: Object.fromEntries(document_ids.map(id => [id, el('packet-document-date-' + id).value])) };
   };
   let edits = 0, nonDateEdits = 0, signatureDraft = false;
@@ -2552,7 +2572,8 @@ async function wirePacket(panel) {
   if (save) save.onclick = () => run(async () => {
     const ensureCurrent = await persistSelection();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
-    state.notice = 'Packet saved. Check your letter and every page in the PDF.';
+    const packet = await currentRequest(ensureCurrent, 'GET', `/api/cases/${caseId}/packet`);
+    state.notice = packet.view?.packet?.preview_ready ? 'Packet saved. Loading your pages for review.' : 'Your draft is saved. Complete the missing items in Prepare before reviewing the PDF.';
     render();
   }, {redraw:false});
 
@@ -2576,7 +2597,7 @@ async function wirePacket(panel) {
     state.notice=signature ? 'Signature added. Check every page of the signed PDF, then approve this version.' : 'Signature removed. Review your packet again before approving.';
   });
   if(saveSignature)saveSignature.onclick=()=>{
-    if(!el('packet-signature-consent').checked){state.notice='Tick the signature consent box before adding your signature.';render();return;}
+    if(!el('packet-signature-consent').checked){el('packet-signature-help').textContent='Tick the signature consent box before adding your signature.';el('packet-signature-consent').focus();return;}
     signatureAction({name:el('packet-signature-name').value,date:el('packet-signature-date').value,consent:true});
   };
   if(removeSignature)removeSignature.onclick=()=>signatureAction(null);
@@ -2609,7 +2630,7 @@ async function wirePacket(panel) {
     previewCurrent = false;
     state.notice = null;
     for (const id of ['consumer-notice', 'packet-approved-status', 'packet-ready-status']) if (el(id)) el(id).hidden = true;
-    for (const id of ['packet-download', 'packet-print', 'packet-approve', 'packet-preview-reviewed']) if (el(id)) el(id).disabled = true;
+    for (const id of ['packet-download', 'packet-print', 'packet-approve', 'packet-preview-reviewed', 'packet-signature-save', 'packet-signature-remove']) if (el(id)) el(id).disabled = true;
     if (reviewed) reviewed.checked = false;
     if (approve) approve.hidden = false;
     if (el('packet-preview-status')) el('packet-preview-status').textContent = 'Your packet changed. Select Save and review packet to read the new version.';
@@ -2718,12 +2739,12 @@ async function wirePacket(panel) {
     return refreshChecklist();
   };
   for (const id of ['packet-identity-reference', 'packet-other-identity']) if (el(id)) el(id).oninput = markChanged;
-  for (const node of panel.querySelectorAll('[data-packet-document], [id^="packet-document-date-"]')) node.onchange = refreshChecklist;
+  for (const node of panel.querySelectorAll('[data-packet-document], [data-packet-rotation], [id^="packet-document-date-"]')) node.onchange = refreshChecklist;
   for (const node of panel.querySelectorAll('[data-check-issue]')) node.onchange = refreshChecklist;
   for (const node of panel.querySelectorAll('[data-packet-report]')) node.onchange = markChanged;
   if (pv.support?.suggested_purpose && !pv.support.settings && pv.support.suggested_purpose !== pv.support.requirements?.purpose) refreshChecklist();
   if (pdfReview && pv.packet?.preview_ready && !choosing && !preparing) {
-    for (const node of [reviewed, approve, dl, print]) if (node) node.disabled = true;
+    for (const node of [reviewed, approve, dl, print, saveSignature, removeSignature]) if (node) node.disabled = true;
     try {
       packetReviewController = window.CRP_PACKET_REVIEW.mount({root:el('packet-all-pages'),caseId,version:pv.packet.preview_version,
         ensure:ensureOrigin,request:path=>currentRequest(ensureOrigin,'GET',path),letter:pv.packet.correspondence_preview,
@@ -2732,6 +2753,8 @@ async function wirePacket(panel) {
       await packetReviewController.ready; ensureOrigin();
       syncLetterDisabled();
       previewCurrent = edits === 0;
+      for (const node of [saveSignature, removeSignature]) if (node) node.disabled = !previewCurrent;
+      if (el('packet-signature-help')) el('packet-signature-help').textContent = previewCurrent ? 'Pages are ready. Type your name, check the consent box, then add your signature.' : 'Save your changes and review the new pages before signing.';
       if (reviewed) reviewed.disabled = !previewCurrent;
       if (approve) approve.disabled = !previewCurrent || signatureDraft || !reviewed?.checked || pv.packet.approved;
       if (dl) dl.disabled = !previewCurrent || !pv.packet.download_available;
@@ -3195,6 +3218,7 @@ function renderBillingView(data) {
     const allowed = canChoosePlan(p.plan_code);
     return `<article class="plan-card${current ? ' current-plan' : ''}">
       <span class="pill">${current ? 'CURRENT PLAN' : p.plan_code === 'report_once' ? 'ONE REPORT' : 'SUBSCRIPTION'}</span>
+      ${current ? '<p class="evidence">This is your existing subscription rate. Prices for new plans may be different.</p>' : ''}
       <h3>${esc(planName(p.plan_code))}</h3>
       <p class="plan-price">${esc(allowed && quote ? money(quote.first_invoice_cents, quote.currency) : p.amount_display)}${allowed && quote ? '<small>today</small>' : ''}</p>
       <p class="evidence">${esc(intervalLabel(p.interval))}</p>

@@ -235,7 +235,8 @@ function unlocked(session) {
   if(resuming) {
     if(S.resumeDialog){S.dialog.generation=S.generation;$('dialog').showModal();}
     S.resumeDialog=false;
-  } else navigate(S.view);
+    if (requestedView() !== S.view) navigate(requestedView(), {replace:true});
+  } else navigate(requestedView(), {replace:true});
   sessionStatus();
 }
 function renderNav() {
@@ -270,11 +271,23 @@ function renderNav() {
     }
   }
 }
-function navigate(view) {
-  if (!pages[view]) view = "overview";
-  const target = pages[view];
-  if (target.app && !S.session?.catalog.reads[target.app]?.includes(target.resource))
-    view = "overview";
+function requestedView() {
+  try { return decodeURIComponent(location.hash.slice(1)) || 'overview'; } catch { return 'overview'; }
+}
+function permittedView(view) {
+  if (!pages[view]) return 'overview';
+  const target=pages[view];
+  if (target.app && !S.session?.catalog?.reads[target.app]?.includes(target.resource)) return 'overview';
+  if (view==='activity' && !S.session?.permissions?.includes('audit.read')) return 'overview';
+  return view;
+}
+window.addEventListener('hashchange', () => {
+  if (S.session && S.hasWorkspace && !S.locked) navigate(requestedView(), {fromHistory:true});
+});
+function navigate(view, {replace=false,fromHistory=false}={}) {
+  view=permittedView(view);
+  const hash='#'+view;
+  if (location.hash!==hash) history[replace||fromHistory?'replaceState':'pushState'](null,'',hash);
   S.view = view;
   notice("");
   window.scrollTo({ top: 0, behavior: "instant" });
@@ -322,9 +335,12 @@ function dialog(title, description, fields, submit, submitText = "Confirm") {
             ? "number"
             : f.type === "password"
               ? "password"
-              : "text";
+              : f.type === "url" ? "url" : "text";
     }
     input.name = f.name;
+    if (f.pattern) input.pattern=f.pattern;
+    if (f.maxLength) input.maxLength=f.maxLength;
+    if (f.hint) { const hint=el('span',f.hint,'field-hint');l.append(hint); }
     input.autocomplete = 'off';
     if(f.name === 'freshCode') {
       input.type='text';input.inputMode='numeric';input.maxLength=6;input.pattern='[0-9]{6}';input.autocomplete='one-time-code';
@@ -525,6 +541,12 @@ async function recordChoices(app,name){
     node.input.addEventListener('input',prefill);
     node.input.addEventListener('change',prefill);
     prefill();
+    if(node.input.tagName==='INPUT' && records.size) {
+      const label=el('span','Choose '+(node.f?.label||field)),select=el('select');select.setAttribute('aria-label','Choose '+(node.f?.label||field));
+      const placeholder=el('option','Choose a named record');placeholder.value='';select.append(placeholder);
+      for(const [id,row]of records){const option=el('option',[row.name||row.email||row.question||row.subject||'Record',row.country,row.status||row.state,id.slice(0,8)].filter(Boolean).join(' · '));option.value=id;select.append(option);}
+      select.value=node.input.value.trim();select.onchange=()=>{node.input.value=select.value;prefill();};label.append(select);node.input.parentElement.prepend(label);
+    }
   }
 }
 function actionButtons(app, resource) {
@@ -572,6 +594,10 @@ function items(value) {
   if (Array.isArray(value?.orders)) return value.orders;
   return null;
 }
+function isDateField(key,value) {
+  return /(?:_at|At|_date|Date|_until|Until)$/.test(key) && (typeof value==='string' && /^(?:\d{4}-\d{2}-\d{2}|\d{13}$)/.test(value) || Number.isSafeInteger(value) && value>=946684800000 && value<8640000000000000);
+}
+function displayDate(value) { const date=new Date(typeof value==='string'&&/^\d{13}$/.test(value)?Number(value):value);return Number.isFinite(date.getTime())?date.toLocaleString():String(value); }
 function recordFields(value) {
   if (value === null || value === undefined) return el('span', 'Not recorded', 'field-empty');
   if (Array.isArray(value)) {
@@ -585,7 +611,8 @@ function recordFields(value) {
     for (const [key, item] of Object.entries(value)) {
       const group = el('div', null, 'record-field'), definition = el('dd');
       const currency = value.currency || value.currency_code;
-      if (/minor$/i.test(key) && Number.isSafeInteger(item) && /^[A-Z]{3}$/i.test(currency || '')) {
+      if (isDateField(key,item)) { group.append(el('dt',human(key)));definition.append(el('span',displayDate(item))); }
+      else if (/minor$/i.test(key) && Number.isSafeInteger(item) && /^[A-Z]{3}$/i.test(currency || '')) {
         group.append(el('dt', human(key.replace(/_?minor$/i, ''))));
         definition.append(el('span', new Intl.NumberFormat(undefined, {style:'currency',currency:currency.toUpperCase()}).format(item / 100)));
       } else { group.append(el('dt', human(key))); definition.append(recordFields(item)); }
@@ -729,6 +756,7 @@ function table(app, rows) {
       let value = row[key];
       const td = el("td");
       if (value === null || value === undefined) td.textContent = "—";
+      else if (isDateField(key,value)) td.textContent=displayDate(value);
       else if (typeof value === "object")
         td.textContent = Array.isArray(value)
           ? value.join(", ")
@@ -759,6 +787,18 @@ function table(app, rows) {
   t.append(body);
   wrap.append(t);
   return wrap;
+}
+function resourceCards(data) {
+  const box=el('section',null,'resource-cards');
+  const guide=el('article',null,'panel');guide.append(el('h2','Partner resources'),el('p','Choose your market. Use current approved material and keep the affiliate disclosure beside your campaign link.'));
+  const link=el('a','Open partner knowledge base');link.href=S.session.environment==='production'?'https://affiliates.creditregulatorpro.com/knowledge':'https://affiliates-staging.creditregulatorpro.com/knowledge';link.target='_blank';link.rel='noopener noreferrer';guide.append(link);box.append(guide);
+  for (const [key,value] of Object.entries(data||{})) {
+    const card=el('article',null,'panel');card.append(el('h3',human(key)));
+    if (typeof value==='string')card.append(recordFields(value));
+    else { const details=el('details');details.append(el('summary','View '+human(key).toLowerCase()),recordFields(value));card.append(details); }
+    box.append(card);
+  }
+  return box;
 }
 async function appView(app, resource, root, generation) {
   if (!S.session.applications[app].linked) {
@@ -843,6 +883,7 @@ async function appView(app, resource, root, generation) {
   if(resource==='studio')root.append(studioReviewTools(rows??[]));
   if(['studio','studio.queue','studio.limits'].includes(resource))root.append(el('p','New designs and messages require human approval before publication. Pausing or retiring a version disables its hosted creatives; downloaded copies cannot be recalled. Monetary budget is zero.','table-hint'));
   if (rows) root.append(table(app, rows));
+    else if(app==='affiliate'&&resource==='resources')root.append(resourceCards(result.data));
     else root.append(recordFields(result.data));
   if (result.data?.totals)
     root.append(
@@ -852,7 +893,7 @@ async function appView(app, resource, root, generation) {
           result.data.totals
             .map(
               (x) =>
-                `${x.currency} ${x.verified_paid_minor} minor units (${x.purchase_count} purchases)`,
+                `${new Intl.NumberFormat(undefined,{style:'currency',currency:x.currency}).format(Number(x.verified_paid_minor)/100)} (${x.purchase_count} purchases)`,
             )
             .join(" · "),
         "table-hint",

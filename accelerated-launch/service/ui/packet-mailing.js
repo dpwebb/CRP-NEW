@@ -19,7 +19,14 @@
     async function action(fn) {
       if (busy) return; busy = true; message.textContent = '';
       for (const button of content.querySelectorAll('button')) button.disabled = true;
-      try { await fn(); ensure(); if(typeof latest?.available==='boolean')available=latest.available; render(); }
+      try {
+        await fn(); ensure();
+        // Mutation responses need not contain route availability or mailer choices.
+        // Read the complete owned status instead of turning missing fields into an outage.
+        if(live && typeof latest?.available!=='boolean'){latest=await request('GET',path);ensure();}
+        if(typeof latest?.available==='boolean')available=latest.available;
+        render();
+      }
       catch (error) { if (!error.cancelled && root.isConnected) { if(live){try{latest=await request('GET',path);available=latest.available===true;ensure();render();}catch{available=false;if(!latest?.order)root.hidden=true;}} message.textContent = error.message || 'Mailing could not be loaded. Please try again.'; } }
       finally { busy = false; for (const button of content.querySelectorAll('button')) button.disabled = false; }
     }
@@ -33,7 +40,8 @@
       if (latest?.packet_changed) content.append(node('p','This request belongs to an earlier packet version. Review the current packet before requesting another mailing.'));
       const order = latest?.order;
       if (order) {
-        if(live&&order.mailer==='POSTGRID'){
+        const terminal=['CANCELLED','FAILED','RETURNED','DELIVERED'].includes(order.state);
+        if(live&&order.mailer==='POSTGRID'&&!terminal){
           const review=order.print_review;
           if(review?.returnAddress){const r=review.returnAddress;content.append(node('p',`${review.addressStandardized?'PostGrid standardized your return address. Check it carefully:':'Return address on the final copy:'} ${[r.firstName,r.lastName,r.addressLine1,r.addressLine2,r.city,r.provinceOrState,r.postalOrZip,r.countryCode].filter(Boolean).join(', ')}.`));}
           content.append(node('p',review?.approved?'You approved the PostGrid mailing copy.':'The mailing will stay on hold until you approve the final PostGrid mailing copy.'));

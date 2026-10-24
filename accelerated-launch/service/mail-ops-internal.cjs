@@ -56,14 +56,14 @@ function create(store,env=process.env){
     mailer,emergency_manual:q.snapshot.emergencyManual===true,return_address:q.snapshot.returnAddress||null,print_review_required:mailer==='POSTGRID',service:mailer==='POSTGRID'?'PostGrid printing and postal mailing':q.snapshot.emergencyManual===true?'Emergency manual printing and postal mailing':'Packet printing and postal mailing'};}
   function orderView(order,record){
     if(!order||order.simulated!==false||!/^[a-f0-9-]{36}$/.test(order.id)||order.ownerRef!==record.quote.snapshot.ownerRef||order.quoteId!==record.quote.id||order.packetHash!==record.packet_hash||order.snapshotHash!==record.quote.snapshotHash||order.amountMinor!==record.quote.amountMinor||order.currency!==record.quote.currency||(record.order_id&&record.order_id!==order.id))fail();
-    return {id:order.id,state:order.state,payment_state:order.paymentState,payment_hold:order.paymentHold,refund_status:order.refundStatus,amount_minor:order.amountMinor,currency:order.currency,packet_hash:order.packetHash,simulation:false,
+    return {id:order.id,state:order.state,payment_state:order.paymentState,payment_hold:order.paymentHold,refund_status:order.refundStatus,refunds:order.refunds||[],amount_minor:order.amountMinor,currency:order.currency,packet_hash:order.packetHash,simulation:false,
       mailer:order.mailer||record.quote.snapshot.fulfillment?.mailer||'MANUAL',print_review:order.printReview||null};
   }
   function metadata(record){return {crp_service:'internal-mailing-v1',mail_order_id:record.order_id,mail_owner_ref:record.quote.snapshot.ownerRef,mail_attempt_id:record.id,packet_hash:record.packet_hash,quote_hash:record.quote.snapshotHash};}
   async function custody(c,record,phase,sessionId){return remote(c,'integration','POST',`/api/v1/orders/${record.order_id}/checkout`,{ownerRef:record.quote.snapshot.ownerRef,approvalRef:'crp:'+record.id,snapshotHash:record.quote.snapshotHash,phase,...(sessionId?{sessionId}:{})});}
   async function refundStatus(c,record,refund){
-    if(refund.payment_intent!==record.payment_ref||refund.amount!==record.quote.amountMinor||refund.currency!==record.quote.currency.toLowerCase()||!/^re_[A-Za-z0-9]+$/.test(refund.id||'')||!['pending','requires_action','succeeded','failed','canceled'].includes(refund.status))fail();
-    await remote(c,'payment','POST','/api/v1/payments',{eventId:'refund-state:'+refund.id+':'+refund.status,orderId:record.order_id,paymentRef:record.payment_ref,amountMinor:record.quote.amountMinor,currency:record.quote.currency,type:'STRIPE_REFUND_STATUS',livemode:c.livemode,refundRef:refund.id,refundStatus:refund.status});
+    if(refund.payment_intent!==record.payment_ref||!Number.isInteger(refund.amount)||refund.amount<=0||refund.amount>record.quote.amountMinor||refund.currency!==record.quote.currency.toLowerCase()||!/^re_[A-Za-z0-9]+$/.test(refund.id||'')||!['pending','requires_action','succeeded','failed','canceled'].includes(refund.status))fail();
+    await remote(c,'payment','POST','/api/v1/payments',{eventId:'refund-state-v2:'+refund.id+':'+refund.status,orderId:record.order_id,paymentRef:record.payment_ref,amountMinor:record.quote.amountMinor,currency:record.quote.currency,type:'STRIPE_REFUND_STATUS',livemode:c.livemode,refundRef:refund.id,refundStatus:refund.status,refundAmountMinor:refund.amount});
   }
   async function checkFunding(record,c){
     if(!record.payment_ref)fail();
@@ -72,9 +72,24 @@ function create(store,env=process.env){
     const charge=await provider('GET','/v1/charges/'+payment.latest_charge);
     if(charge.payment_intent!==record.payment_ref||charge.livemode!==c.livemode||charge.amount!==record.quote.amountMinor||charge.currency!==record.quote.currency.toLowerCase()||charge.paid!==true)fail();
     if(charge.amount_refunded>0||charge.disputed===true||charge.refunded===true){
-      const type=charge.amount_refunded===record.quote.amountMinor?'STRIPE_REFUNDED':'STRIPE_HOLD';
+      // Hold first: a failed or incomplete provider read must never leave the
+      // packet eligible for posting while its money is being reconciled.
+      await remote(c,'payment','POST','/api/v1/payments',{eventId:'refund-review:'+charge.id+':'+charge.amount_refunded+':'+Boolean(charge.disputed),orderId:record.order_id,paymentRef:record.payment_ref,amountMinor:record.quote.amountMinor,currency:record.quote.currency,type:'STRIPE_HOLD',livemode:c.livemode});
+      const refunds=[],seen=new Set();let after='';
+      for(let page=0;page<10;page++){
+        const list=await provider('GET','/v1/refunds?charge='+encodeURIComponent(charge.id)+'&limit=100'+(after?'&starting_after='+encodeURIComponent(after):''));
+        if(!Array.isArray(list.data)||typeof list.has_more!=='boolean'||list.data.length>100)fail();
+        for(const refund of list.data){if(seen.has(refund.id)||refund.charge&&refund.charge!==charge.id)fail();seen.add(refund.id);refunds.push(refund);}
+        if(!list.has_more)break;
+        if(!list.data.length||page===9)fail();after=list.data.at(-1).id;
+      }
+      for(const refund of refunds)await refundStatus(c,record,refund);
+      const total=refunds.filter(r=>r.status==='succeeded').reduce((sum,r)=>sum+r.amount,0);
+      if(total>charge.amount_refunded)fail();
+      const type=total===record.quote.amountMinor&&charge.amount_refunded===record.quote.amountMinor?'STRIPE_REFUNDED':'STRIPE_HOLD';
       const order=orderView(await remote(c,'payment','POST','/api/v1/payments',{eventId:type.toLowerCase()+':'+charge.id,orderId:record.order_id,paymentRef:record.payment_ref,amountMinor:record.quote.amountMinor,currency:record.quote.currency,type,livemode:c.livemode}),record);
-      update({account_id:record.account_id},record.case_id,record.id,{order,...(type==='STRIPE_REFUNDED'?{refund_status:'succeeded'}:{})});
+      const whole=refunds.find(r=>r.status==='succeeded'&&r.amount===record.quote.amountMinor);
+      update({account_id:record.account_id},record.case_id,record.id,{order,external_refunds:refunds.map(r=>({id:r.id,amount_minor:r.amount,currency:r.currency,status:r.status})),...(whole?{refund_id:whole.id}:{}),...(type==='STRIPE_REFUNDED'?{refund_status:'succeeded'}:{})});
       return false;
     }
     return true;
@@ -146,7 +161,7 @@ function create(store,env=process.env){
       const order=orderView(await remote(c,'integration','GET',`/api/v1/orders/${record.order_id}?ownerRef=${encodeURIComponent(record.quote.snapshot.ownerRef)}`),record);update(actor,caseId,record.id,{order});
     }
     const latest=records(actor,caseId).at(-1);
-    return {simulation:false,available,mailers:methods.map(r=>({mailer:r.mailer||'MANUAL',emergency:r.emergency===true})),default_mailer:'POSTGRID',return_address_suggestion,quote:quoteView(latest),order:latest.order||null,packet_changed:packet.approved_version!==latest.packet_version||!packet.approved,checkout_url:available?latest.checkout_url||null:null,refund_status:latest.refund_status||null};
+    return {simulation:false,available,attempt_id:latest.id,mailers:methods.map(r=>({mailer:r.mailer||'MANUAL',emergency:r.emergency===true})),default_mailer:'POSTGRID',return_address_suggestion,quote:quoteView(latest),order:latest.order||null,packet_changed:packet.approved_version!==latest.packet_version||!packet.approved,checkout_url:available?latest.checkout_url||null:null,refund_status:latest.refund_status||null};
   }
   async function availability(actor,caseId,c){
     return (await availableMethods(actor,caseId,c)).length>0;
@@ -225,7 +240,8 @@ function create(store,env=process.env){
       if(!record.checkout_session){
         // Persist intent before the provider call. Reuse this exact idempotency key after uncertain outcomes.
         if(Date.now()-record.checkout_started_at>23*3600000)throw new ServiceError('MAILING_ORDER_CHANGED');
-        const meta=metadata(record),session=await provider('POST','/v1/checkout/sessions',{mode:'payment',client_reference_id:record.id,success_url:c.consumerOrigin+'/index.html?mailing=complete',cancel_url:c.consumerOrigin+'/index.html?mailing=cancelled',
+        const returnContext='&report='+encodeURIComponent(caseId)+'&mail_order='+encodeURIComponent(record.order_id)+'&mail_attempt='+encodeURIComponent(record.id);
+        const meta=metadata(record),session=await provider('POST','/v1/checkout/sessions',{mode:'payment',client_reference_id:record.id,success_url:c.consumerOrigin+'/index.html?mailing=complete'+returnContext,cancel_url:c.consumerOrigin+'/index.html?mailing=cancelled'+returnContext,
           metadata:meta,payment_intent_data:{metadata:meta},line_items:[{quantity:1,price_data:{currency:record.quote.currency.toLowerCase(),unit_amount:record.quote.amountMinor,product_data:{name:'CRP packet printing and postal mailing'}}}]},'crp-mail-checkout:'+record.id);
         if(!/^cs_(test_|live_)?[A-Za-z0-9]+$/.test(session.id||'')||session.livemode!==c.livemode||session.mode!=='payment'||session.amount_total!==record.quote.amountMinor||session.currency!==record.quote.currency.toLowerCase()||Object.entries(meta).some(([key,value])=>session.metadata?.[key]!==value)||!/^https:\/\/checkout\.stripe\.com\//.test(session.url||''))fail();
         await custody(c,record,'SESSION',session.id);

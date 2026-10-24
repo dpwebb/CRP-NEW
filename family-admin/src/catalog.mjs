@@ -140,9 +140,9 @@ export const actions = {
       "Add partner application",
       [
         field("name", "Organization name"),
-        field("code", "Partner code"),
+        {...field('code','Partner code'),pattern:'[A-Za-z0-9_-]{3,32}',maxLength:32,hint:'Use 3-32 letters, numbers, underscores or hyphens. Saved codes use uppercase.'},
         field("country", "Country", "select:CA,US,GB,AU"),
-        field("trafficSource", "Traffic source URL"),
+        field("trafficSource", "Publication website (https://)", "url"),
         field("introducerId", "Introducer ID", "text", false),
       ],
     ),

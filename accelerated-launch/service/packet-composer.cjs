@@ -45,6 +45,7 @@ function composePacket(input) {
     if (!Array.isArray(entries) || entries.length > limit) throw new ServiceError('INVALID_REQUEST');
     return entries.map(entry => {
       if (!entry || !(Buffer.isBuffer(entry.bytes) || entry.bytes instanceof Uint8Array) || !entry.bytes.length) throw new ServiceError('INVALID_REQUEST');
+      if (entry.rotation != null && (![0,90,180,270].includes(entry.rotation) || isReport || !['image/png','image/jpeg'].includes(entry.content_type))) throw new ServiceError('INVALID_REQUEST');
       const bytes = Buffer.from(entry.bytes);
       total += bytes.length;
       if (total > MAX_BYTES) throw new ServiceError('INVALID_REQUEST');
@@ -63,7 +64,7 @@ function composePacket(input) {
           || typeof annotation.note !== 'string' || annotation.note.length > 200)) throw new ServiceError('INVALID_REQUEST');
       return { bytes: bytes.toString('base64'), content_type: entry.content_type, relevant_pages: entry.relevant_pages,
         label: typeof entry.label === 'string' ? entry.label.slice(0, 300) : '', filename: typeof entry.filename === 'string' ? entry.filename.slice(0, 300) : '',
-        file_id: entry.file_id || null, uploaded_at: typeof entry.uploaded_at === 'string' ? entry.uploaded_at.slice(0,40) : '', markers, annotations };
+        file_id: entry.file_id || null, ...(entry.rotation ? {rotation:entry.rotation} : {}), uploaded_at: typeof entry.uploaded_at === 'string' ? entry.uploaded_at.slice(0,40) : '', markers, annotations };
     });
   };
   if (input.instructions != null && (typeof input.instructions !== 'string' || !input.instructions.trim() || input.instructions.length > 6000)) throw new ServiceError('INVALID_REQUEST');
