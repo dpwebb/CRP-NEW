@@ -128,6 +128,12 @@ function note(line) {
   el('activity').textContent = state.activity.join('\n');
 }
 
+const openedDocumentUrls = new Set();
+function revokePrivateDocumentUrls(){
+  for(const url of openedDocumentUrls)URL.revokeObjectURL(url);
+  openedDocumentUrls.clear();
+  if(document.dispatchEvent&&typeof Event==='function')document.dispatchEvent(new Event('crp-session-expired'));
+}
 async function api(method, path, body) {
   if (method === 'GET' && state.pricingCurrency && ['/api/pricing', '/api/billing/plans', '/api/entitlement'].includes(path)) path += '?currency=' + encodeURIComponent(state.pricingCurrency);
   const activityDone=activityStart(operationLabel(path));
@@ -149,6 +155,13 @@ async function api(method, path, body) {
     error.status = res.status;
     error.code = data.error && data.error.code ? data.error.code : null;
     error.detail = data.error?.detail || null;
+    if (res.status === 401 && error.code === 'AUTHENTICATION_REQUIRED' && state.account) {
+      clearClientAccountForRecovery();
+      state.step = STEP.ACCOUNT; state.notice = null;
+      state.error = 'Your session expired. Sign in to continue with your saved report.';
+      if (typeof location !== 'undefined') location.hash = '#signin';
+      render(); error.cancelled = true;
+    }
     throw error;
   }
   return data;
@@ -212,9 +225,10 @@ async function retrieveFile(url, filename, previewWindow=null) {
     const bytes=await response.blob();ensure();
     const disposition=response.headers.get('content-disposition')||'',matched=/filename="?([^";]+)"?/i.exec(disposition);if(matched)filename=matched[1].replace(/[\\/\r\n]/g,'_');
     const objectUrl=URL.createObjectURL(bytes);
+    openedDocumentUrls.add(objectUrl);
     if(previewWindow){previewWindow.location.replace(objectUrl);}
     else {const link=document.createElement('a');link.href=objectUrl;link.download=filename;link.click();}
-    setTimeout(()=>URL.revokeObjectURL(objectUrl),60000);
+    setTimeout(()=>{URL.revokeObjectURL(objectUrl);openedDocumentUrls.delete(objectUrl);},60000);
   } catch(error){previewWindow?.close?.();throw error;}
 }
 if(document.addEventListener)document.addEventListener('click',event=>{
@@ -357,6 +371,7 @@ async function refreshAccess() {
     state.upgrade_credit = data.upgrade_credit || null;
     state.upgrade_quotes = data.upgrade_quotes || null;
     rememberPendingCheckout(data);
+    settleAccessNotice(data.entitlement);
   } catch (error) {
     if (error.cancelled) throw error;
     ensureAccount();
@@ -621,7 +636,7 @@ function renderAccount(panel) {
     state.accountProfile = data.profile || null; state.accountDocuments = [];
     state.accountSecurity = data; state.packetReturn = null; state.recoveryKey = data.recovery_key || null;
     state.checkoutReturn = null;
-    if(data.signup_complete===false){state.step=STEP.ACCOUNT;state.notice=data.confirmation_sent?'Check your email for a code from support@creditregulatorpro.com.':'Your account is saved, but we could not send the confirmation email. Please try Send a new code.';return;}
+    if(data.signup_complete===false){state.step=STEP.ACCOUNT;state.notice=data.confirmation_transport==='CAPTURED'?'Your confirmation code is in the staging test inbox. Nothing was emailed.':data.confirmation_sent?'Check your email for a code from support@creditregulatorpro.com.':'Your account is saved, but we could not send the confirmation email. Please try Send a new code.';return;}
     await refreshAccess();
     state.step = 1;
     state.notice = 'Account created and signed in.';
@@ -677,16 +692,26 @@ function wireTwoFactor() {
 function wireNewRecoveryKey() {
   if(el('create-recovery-key'))el('create-recovery-key').onclick=()=>run(async()=>{const ensure=accountContext(),password=el('security-password').value;const data=await api('POST','/api/account/recovery-key',{password,code:el('security-code')?.value||''});ensure();state.recoveryKey=data.recovery_key;state.accountSecurity=await api('GET','/api/account/security');});
 }
+function stagingTestMailAvailable(){return surface?.preview_mode===true&&/@example\.test$/i.test(state.account?.email||'');}
+function confirmationInstruction(){return stagingTestMailAvailable()?'Your fictional confirmation code is saved in the test inbox below. Nothing was emailed.':'Enter the six-digit code sent from support@creditregulatorpro.com. Check your spam folder too.';}
+function attachStagingInbox(panel){
+  if(!stagingTestMailAvailable())return;
+  const section=document.createElement('section'),button=document.createElement('button'),messages=document.createElement('pre');
+  button.type='button';button.className='secondary';button.textContent='Open staging test inbox';
+  messages.style.whiteSpace='pre-wrap';messages.textContent='CAPTURE ONLY. Fictional test messages are saved here for one hour. Nothing is delivered by email.';
+  button.onclick=async()=>{const ensure=accountContext();button.disabled=true;try{const result=await currentRequest(ensure,'GET','/api/testing/inbox');messages.textContent='CAPTURED — no external email delivery.\n\n'+(result.items.map(m=>m.text).join('\n\n---\n\n')||'No current captured messages.');}catch(error){if(!error.cancelled)messages.textContent=error.message;}finally{button.disabled=false;}};
+  section.append(button,messages);panel.append(section);
+}
 function renderSignupSecurity(panel) {
   const security=state.accountSecurity||{},ready=security.email_verified&&security.recovery_key_saved&&(!state.wantTwoFactor||security.two_factor_enabled);
   panel.innerHTML=`${notices(true)}<h1>Finish securing your account</h1><p class="lede">Confirm your email and save your recovery key before you upload a report.</p>
-    <section class="signup-security-card"><h2>1. Confirm your email <span class="security-required">Required</span></h2><p>${esc(state.account.email)}</p>${security.email_verified?'<p class="security-complete">Email confirmed</p>':'<p>Enter the six-digit code sent from support@creditregulatorpro.com. Check your spam folder too.</p><label for="email-confirmation-code">Email confirmation code</label><input id="email-confirmation-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><button id="confirm-signup-email" class="primary">Confirm my email</button><button id="resend-signup-email" class="secondary">Send a new code</button>'}</section>
+    <section class="signup-security-card"><h2>1. Confirm your email <span class="security-required">Required</span></h2><p>${esc(state.account.email)}</p>${security.email_verified?'<p class="security-complete">Email confirmed</p>':'<p>'+esc(confirmationInstruction())+'</p><label for="email-confirmation-code">Email confirmation code</label><input id="email-confirmation-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><button id="confirm-signup-email" class="primary">Confirm my email</button><button id="resend-signup-email" class="secondary">Send a new code</button>'}</section>
     <section class="signup-security-card"><h2>2. Save your recovery key <span class="security-required">Required</span></h2>${security.recovery_key_saved?'<p class="security-complete">Recovery key saved</p>':state.recoveryKey?recoveryKeyBlock():`<p>The key is shown only when issued. If you left signup before saving it, use your password to make a new key.</p><label for="security-password">Current password</label><input id="security-password" type="password" autocomplete="current-password">${security.two_factor_enabled?'<label for="security-code">Authenticator code</label><input id="security-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6">':''}<button class="secondary" id="create-recovery-key">Create a new recovery key</button>`}</section>
     <section class="signup-security-card"><h2>3. Two-factor authentication <span class="auth-optional">Optional</span></h2><p>An authenticator app adds a second check when you sign in. Your recovery key can help if you lose access to the app.</p><label><input id="signup-enable-two-factor" type="checkbox" ${state.wantTwoFactor||security.two_factor_enabled?'checked':''} ${security.two_factor_enabled?'disabled':''}>Use an authenticator app</label>${state.wantTwoFactor?twoFactorFields():''}</section>
     <button id="finish-signup" class="primary" ${ready?'':'disabled'}>Finish signup and continue</button><button id="signup-signout" class="secondary">Sign out</button>`;
-  wireRecoveryKey();wireNewRecoveryKey();wireTwoFactor();
+  wireRecoveryKey();wireNewRecoveryKey();wireTwoFactor();attachStagingInbox(panel);
   if(el('confirm-signup-email'))el('confirm-signup-email').onclick=()=>run(async()=>{const ensure=accountContext(),code=el('email-confirmation-code').value,confirmed=await api('POST','/api/account/confirm-email',{code});ensure();state.accountSecurity={...security,...confirmed};state.notice='Email confirmed.';});
-  if(el('resend-signup-email'))el('resend-signup-email').onclick=()=>run(async()=>{await api('POST','/api/account/resend-confirmation',{});state.notice='A new confirmation code was sent from support@creditregulatorpro.com.';});
+  if(el('resend-signup-email'))el('resend-signup-email').onclick=()=>run(async()=>{const result=await api('POST','/api/account/resend-confirmation',{});state.notice=result.confirmation_transport==='CAPTURED'?'A new code was saved in the staging test inbox. Nothing was emailed.':'A new confirmation code was sent from support@creditregulatorpro.com.';});
   el('signup-enable-two-factor').onchange=()=>{state.wantTwoFactor=el('signup-enable-two-factor').checked;state.twoFactorSetup=null;render();};
   el('finish-signup').onclick=()=>run(async()=>{const ensure=accountContext(),result=await api('POST','/api/account/finish-signup',{enable_two_factor:state.wantTwoFactor});ensure();state.accountSecurity={...security,...result};state.recoveryKey=null;state.twoFactorSetup=null;await refreshAccess();state.step=STEP.JURISDICTION;state.notice='Your account is ready.';});
   el('signup-signout').onclick=()=>run(async()=>{await api('DELETE','/api/sessions/current');accountEpoch++;state.account=null;state.accountSecurity=null;state.recoveryKey=null;state.twoFactorSetup=null;state.securityMode=false;state.step=STEP.ACCOUNT;});
@@ -696,7 +721,7 @@ function renderSecuritySettings(panel) {
   if (state.accountSecurity?.google_connected) {
     panel.innerHTML += '<h2>Google sign-in</h2><p>Google is connected to your CRP account. To disconnect it, enter your current password above and your authenticator code if enabled. This signs you out of CRP on all devices. Your password and recovery key will still work.</p><button id="disconnect-google" class="secondary">Disconnect Google and sign out</button>';
   }
-  wireRecoveryKey();wireNewRecoveryKey();wireTwoFactor();
+  wireRecoveryKey();wireNewRecoveryKey();wireTwoFactor();attachStagingInbox(panel);
   el('security-back').onclick=()=>{state.securityMode=false;render();};
   if (el('disconnect-google')) el('disconnect-google').onclick = () => run(async () => {
     const ensure = accountContext();
@@ -774,6 +799,7 @@ function renderEmailRecoveryRequest(panel) {
   el('recovery-back').onclick = recoverySignIn;
 }
 function clearClientAccountForRecovery() {
+  revokePrivateDocumentUrls();
   cancelSignInAttempt();state.signInInvitation=null;
   accountEpoch++; accountOperationSequence++; assessmentOperationSequence++; checkoutReturnSequence++;
   state.account = null; state.accountProfile = null; state.accountDocuments = []; state.cases = []; state.caseId = null;
@@ -942,12 +968,13 @@ function renderAccountDetails(panel) {
     const answer = await api('GET', `/api/cases/${returning.caseId}`); ensureReturn();
     state.view = answer.view; state.packetReturn = null;
     state.step = answer.view.result_id === returning.resultId ? (returning.step ?? STEP.REVIEW) : STEP.RESULTS;
-    state.notice = state.step !== STEP.RESULTS ? 'Your saved packet is ready. Review your updated details.' : 'Your report has a newer result. Review it before preparing a packet.';
+    state.notice = state.step !== STEP.RESULTS ? 'Your details are saved. Check your document choices and any missing items before reviewing.' : 'Your report has a newer result. Review it before preparing a packet.';
   });
   el('signout').onclick = () => run(async () => {
     accountEpoch++;
     const ensure = accountContext();
     await currentRequest(ensure, 'DELETE', '/api/sessions/current');
+    revokePrivateDocumentUrls();
     state.account = null;
     state.accountProfile = null;
     state.accountDocuments = [];
@@ -2272,10 +2299,10 @@ function packetSupportingDocuments(pv) {
     <div class="row" ${bureau && req ? 'hidden' : ''}><div><label for="packet-bureau">Bureau</label><select id="packet-bureau"><option value="">Choose bureau</option>${(view.catalog || []).map(row => `<option value="${row.id}" ${row.id === bureau ? 'selected' : ''}>${esc(row.label)}</option>`).join('')}</select></div>
     <div><label for="packet-purpose">What you are correcting</label><select id="packet-purpose">${[['ACCOUNT', 'Account information'], ['PUBLIC_RECORD', 'Collections or public records'], ['PERSONAL', 'Personal information'], ['NEW_ADDRESS', 'Add a new address']].map(([value, label]) => `<option value="${value}" ${(settings.purpose || view.suggested_purpose || 'ACCOUNT') === value ? 'selected' : ''}>${label}</option>`).join('')}</select></div></div>
     <p class="evidence">Your saved contact details and ${selected.size} document ${selected.size === 1 ? 'copy are' : 'copies are'} included.</p>
-    ${needsContact || needsCopies ? '<button class="secondary" id="packet-account-details">Add missing contact details or copies</button>' : ''}
+    <button class="secondary" id="packet-account-details">${needsContact || needsCopies ? 'Add missing contact details or copies' : 'Add or replace contact details and documents'}</button>
     ${missing.length || repair ? `<ul class="note" id="packet-missing-items">${[...missing, ...(repair ? [repair.message, 'Choose a readable replacement for the affected copy.'] : [])].map(item => `<li>${esc(item)}</li>`).join('')}</ul>` : '<p>Your details and copies are ready.</p>'}
     <details><summary>Bureau instructions</summary><div id="packet-bureau-checklist">${bureauChecklist(req)}</div></details>
-    <h4>Included documents</h4><p class="evidence">Choose only the copies you need. Check that each copy is complete, upright, readable and current. We have not checked expiry dates.</p>
+    <h4>Included documents</h4><p class="evidence">Choose only the copies you need. Check that each copy is complete, upright, readable and current. We have not checked expiry dates. Check names, addresses and any expiry date against the bureau instructions. Keep your originals.</p>
     ${documents.map(doc => `<div><label><input type="checkbox" data-packet-document="${esc(doc.file_id)}" ${selected.has(doc.file_id) ? 'checked' : ''}>${esc(doc.original_filename)} — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)}</label>
     <div ${dateRequired(doc) ? '' : 'hidden'}><label for="packet-document-date-${doc.file_id}">Date on ${esc(doc.original_filename)}</label><input id="packet-document-date-${doc.file_id}" type="date" value="${esc(settings.document_dates?.[doc.file_id] || '')}"></div>
     ${['image/png','image/jpeg'].includes(doc.content_type) ? `<label>Rotate printed copy of ${esc(doc.original_filename)}<select data-packet-rotation="${esc(doc.file_id)}">${[0,90,180,270].map(angle=>`<option value="${angle}" ${(settings.document_rotations?.[doc.file_id] || 0) === angle ? 'selected' : ''}>${angle === 0 ? 'Keep original direction' : angle + '° counterclockwise'}</option>`).join('')}</select></label>` : ''}</div>`).join('') || '<p class="evidence">No account documents uploaded yet.</p>'}
@@ -2423,11 +2450,8 @@ async function wirePacket(panel) {
   const preparing = state.step === STEP.PREPARE;
   if (preparing && !pv.packet?.preview_ready && pv.packet?.selected_count && pv.packet.assessment_current !== false) {
     const settings = packetSupportDefaults(pv);
-    if ((pv.support?.missing || []).some(item => /Select.*(?:identification|proof-of-address)|selected document.*changed or removed/i.test(item))) {
-      const available = (pv.support?.documents || []).filter(doc => ['IDENTITY', 'ADDRESS'].includes(doc.document_type)).map(doc => doc.file_id);
-      settings.document_ids = [...new Set([...settings.document_ids, ...available])].slice(0, 8);
-      settings.document_dates = packetDocumentDates(settings, pv).document_dates;
-    }
+    // Only an unset initial checklist receives defaults. Saved empty choices
+    // are an explicit exclusion and must never repopulate from the account.
     if (!pv.support?.settings || JSON.stringify(settings) !== JSON.stringify(pv.support.settings)) {
       try { pv = (await currentRequest(ensureOrigin, 'POST', `/api/cases/${caseId}/packet/support`, { support: settings })).view; }
       catch (error) { if (!error.cancelled) block.textContent = error.message; return; }
@@ -2751,6 +2775,7 @@ async function wirePacket(panel) {
         annotations:pv.packet.annotations || [],letterDisabled:()=>dateResetConfirmed,
         changed:kind=>{if(kind==='letter'){letterEdited=true;resetLetter=false;updateDateCopy();}else annotationsEdited=true;markChanged();}});
       await packetReviewController.ready; ensureOrigin();
+      settlePacketLoadingNotice(true);
       syncLetterDisabled();
       previewCurrent = edits === 0;
       for (const node of [saveSignature, removeSignature]) if (node) node.disabled = !previewCurrent;
@@ -2762,6 +2787,7 @@ async function wirePacket(panel) {
     } catch (error) {
       if (error.cancelled) return;
       try { ensureOrigin(); } catch { return; }
+      settlePacketLoadingNotice(false);
       previewCurrent = false;
       state.packetRepair = { caseId, message: error.message || 'A packet page could not be shown.' };
       // Keep consumer drafts recoverable even when PDF composition or a later page
@@ -3169,11 +3195,25 @@ function renderBilling(panel) {
   });
 }
 
+function setVisibleNotice(text){
+  state.notice=text;const notice=el('consumer-notice');
+  if(notice){notice.hidden=!text;if(text)notice.textContent=text;}
+}
+function settleAccessNotice(ent){
+  const requested='Your yearly upgrade was requested. We will confirm your payment before changing your access.';
+  const confirmed='Your yearly plan is active. Your payment is confirmed.';
+  if(state.notice===requested&&ent?.entitled&&ent.plan_code==='annual')setVisibleNotice(confirmed);
+  else if(state.notice===confirmed&&ent&&(!ent.entitled||ent.plan_code!=='annual'))setVisibleNotice(null);
+}
+function settlePacketLoadingNotice(ready){
+  if(state.notice==='Packet saved. Loading your pages for review.')setVisibleNotice(ready?'Your packet pages are ready. Check every page before approving.':null);
+}
 function renderBillingView(data) {
   const box = el('billingView');
   if (!box) return;
   const ent = data.entitlement || {};
   const pay = data.payment || {};
+  settleAccessNotice(data.entitlement);
   const credit = data.upgrade_credit || {};
   const plansList = (data.plan_catalog && data.plan_catalog.plans) || [];
   state.billing = data;
@@ -3193,7 +3233,7 @@ function renderBillingView(data) {
   const renewalConfirmed = Object.prototype.hasOwnProperty.call(ent, 'renewal_status')
     ? ent.renewal_status === 'CANCELLATION_CONFIRMED' : Boolean(ent.cancel_at_period_end);
   const renewalLine = renewalConfirmed
-    ? 'Renewal is cancelled. Your paid access follows the date shown above.'
+    ? ent.entitled && accessDeadline(ent) ? 'Renewal is cancelled. Your paid access follows the date shown above.' : 'Renewal is cancelled. No future renewal charge is scheduled.'
     : renewalRecorded
       ? ent.entitled && ent.access_via === 'SUBSCRIPTION' && !ent.cancel_at_period_end
         ? `Your subscription renews automatically ${ent.plan_code === 'annual' ? 'each year' : 'each month'}. Cancel renewal to stop future charges.`
@@ -3240,7 +3280,7 @@ function renderBillingView(data) {
     ${subscriptionBenefits('Keep going with a subscription')}
     ${checkingPayment ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p class="upgrade-credit-total">${creditLine}</p><p>Pay only the difference today. Credit never changes your regular renewal price.</p></div><h3>Plans and prices</h3>${currencyChoice()}
     <p class="evidence">Prices use your IP location. Choose CAD, USD, AUD or GBP before paying. Other or unknown locations see US prices. These are fixed prices, with no exchange-rate pricing.</p>
-    <p class="evidence">A one-time purchase does not renew. Cancelling a subscription stops the next charge. Your access lasts until the date shown above.</p>
+    <p class="evidence">A one-time purchase does not renew. Cancelling a subscription stops the next charge.${ent.entitled && accessDeadline(ent) ? ' Your access lasts until the date shown above.' : ''}</p>
     <div class="purchase-plan-grid">${planCards}</div>`}
     <p class="evidence">${esc(paymentSentence(pay))}</p>
     ${checkingPayment ? '' : '<p class="evidence">Checkout confirms your final price before you pay.</p>'}`;

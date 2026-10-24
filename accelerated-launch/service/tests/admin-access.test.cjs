@@ -197,6 +197,33 @@ async function run(onCheck) {
       const child = spawnSync(process.execPath, ['-e', "const {AdminStore}=require(process.argv[1]);try{new AdminStore(process.argv[2]);process.exit(2)}catch(e){console.log(e.code);process.exit(e.code==='ADMIN_STORE_ALREADY_HAS_WRITER'?0:3)}", path.resolve(__dirname, '../admin-store.cjs'), consumer.dataDir], {encoding: 'utf8'});
       assert.equal(child.status, 0, child.stderr); assert.match(child.stdout, /ADMIN_STORE_ALREADY_HAS_WRITER/);
     });
+    check('legacy live claims and malformed identity fail closed without removing evidence', () => {
+      const dir = directory(), original = open(dir);
+      const claim = JSON.parse(fs.readFileSync(original.lockFile, 'utf8'));
+      original.close();
+      const file = path.join(dir, 'admin', 'writers', 'legacy.json');
+      fs.writeFileSync(file, JSON.stringify({pid:process.pid,token:claim.token}));
+      refuses(() => new AdminStore(dir), 'ADMIN_STORE_ALREADY_HAS_WRITER');
+      assert.equal(fs.existsSync(file), true);
+      fs.writeFileSync(file, JSON.stringify({...claim,identity:{boot:'invalid',start:'0'}}));
+      refuses(() => new AdminStore(dir), 'ADMIN_STATE_UNAVAILABLE');
+      assert.equal(fs.existsSync(file), true);
+    });
+    if (process.platform === 'linux') check('reused PID identity is stale while signed journal and old claim remain intact', () => {
+      const dir = directory(), original = open(dir);
+      original.audit({}, 'ADMIN_TEST', {});
+      const before = JSON.stringify(original.state());
+      const claim = JSON.parse(fs.readFileSync(original.lockFile, 'utf8'));
+      assert.match(claim.identity.start, /^\d+$/);
+      original.close();
+      const file = path.join(dir, 'admin', 'writers', 'old-process.json');
+      const bytes = JSON.stringify({...claim,identity:{...claim.identity,start:'0'}});
+      fs.writeFileSync(file, bytes);
+      const successor = open(dir);
+      assert.equal(JSON.stringify(successor.state()), before);
+      assert.equal(fs.readFileSync(file, 'utf8'), bytes);
+      refuses(() => new AdminStore(dir), 'ADMIN_STORE_ALREADY_HAS_WRITER');
+    });
     check('stale materialized state cannot resurrect revoked grants', () => {
       fs.writeFileSync(path.join(admin.dataDir, 'state.json'), '{broken or old cache');
       assert.equal(admin.state().grants[0].status, 'REVOKED');

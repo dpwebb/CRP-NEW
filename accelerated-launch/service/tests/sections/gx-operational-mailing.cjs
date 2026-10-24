@@ -62,6 +62,53 @@ async function run(unused,check){
   check.equal(root.textContent.includes('currently unavailable'),false,'missing mutation fields do not invent a route outage');
   check.equal(root.textContent.includes('stay on hold until'),false,'cancelled/refunded order has no pending print-approval instruction');
   check.equal(root.textContent.includes('Payment: refunded'),true,'terminal payment result remains visible');
+  const revoked=[],expired=consumer(()=>({}));
+  expired.context.URL={revokeObjectURL:url=>revoked.push(url)};
+  expired.context.location.search=`?mailing=complete&report=${caseId}&mail_order=${orderId}&mail_attempt=${attemptId}`;
+  expired.context.fetch=async()=>({ok:false,status:401,json:async()=>({error:{code:'AUTHENTICATION_REQUIRED',message:'Sign in to continue.'}})});
+  expired.evaluate('state.caseId="'+caseId+'";state.view={private:true};state.entitlement={entitled:true};openedDocumentUrls.add("blob:fictional");');
+  let authError;try{await expired.evaluate('api("GET","/api/cases")');}catch(e){authError=e;}
+  check.equal(authError?.cancelled,true,'expired private request cancels its stale caller');
+  check.equal(expired.evaluate('state.account'),null,'confirmed authentication expiry clears signed-in identity');
+  check.equal(expired.evaluate('state.view'),null,'confirmed authentication expiry removes private report panel');
+  check.equal(expired.evaluate('state.entitlement'),null,'old paid status cannot remain after authentication expiry');
+  check.equal(expired.context.location.hash,'#signin','expiry exposes direct normal sign-in route');
+  check.equal(expired.context.location.search.includes(orderId),true,'expiry retains exact closed order context');
+  check.equal(revoked[0],'blob:fictional','expiry revokes previously opened protected document URL');
+  const notices=consumer(()=>({}));
+  notices.evaluate('state.notice="Your yearly upgrade was requested. We will confirm your payment before changing your access.";settleAccessNotice({entitled:true,plan_code:"annual"});');
+  check.equal(notices.evaluate('state.notice'),'Your yearly plan is active. Your payment is confirmed.','verified annual access replaces the old upgrade-request notice');
+  notices.evaluate('settleAccessNotice({entitled:false});');check.equal(notices.evaluate('state.notice'),null,'refunded or ended access removes a stale yearly-active notice');
+  notices.evaluate('state.notice="Packet saved. Loading your pages for review.";settlePacketLoadingNotice(true);');check.equal(notices.evaluate('state.notice').includes('pages are ready'),true,'completed packet loading replaces its loading notice');
+  notices.evaluate('state.notice="Packet saved. Loading your pages for review.";settlePacketLoadingNotice(false);');check.equal(notices.evaluate('state.notice'),null,'failed packet loading removes its stale loading success notice');
+  for(const [review,text]of [[null,'prepare the draft'],[{state:'DRAFT_PREPARED'},'waiting for the print preview'],[{previewAvailable:true},'review and approve'],[{previewAvailable:true,approved:true},'waiting for staff to submit']]){
+    const r=new Element('section');let writes=0;
+    context.window.CRP_PACKET_MAILING.mount({root:r,caseId,live:true,version:'v1',ensure(){},canRequest:()=>true,request:async(method)=>{if(method!=='GET')writes++;return {available:true,order:{id:orderId,state:'QUEUED',payment_state:'VERIFIED',mailer:'POSTGRID',print_review:review}};}});
+    await tick();await tick();check.equal(r.textContent.includes(text),true,'queued status explains exact provider review substate');check.equal(writes,0,'status display never advances provider operation');
+    if(review?.approved)check.equal(r.querySelectorAll('button').some(b=>b.id==='packet-mailing-print-load'),false,'already approved copy does not invite another approval');
+  }
+  const refunded=new Element('section');
+  context.window.CRP_PACKET_MAILING.mount({root:refunded,caseId,live:true,version:'v1',ensure(){},canRequest:()=>true,request:async()=>({available:false,order:{id:orderId,state:'CANCELLED',payment_state:'REFUNDED',payment_hold:true,amount_minor:930,currency:'CAD',refunds:[{id:'re_fictional',status:'succeeded'}]}})});
+  await tick();await tick();check.equal(refunded.textContent.includes('staff review'),false,'full refund hides an internal posting hold from the payment next step');
+  check.equal(/Refunded CAD\s*9\.30/.test(refunded.textContent),true,'full refund shows ordinary exact currency amount');
+  check.equal(refunded.textContent.includes('re_fictional'),true,'full refund exposes its own successful reference');
+  const partial=new Element('section');
+  context.window.CRP_PACKET_MAILING.mount({root:partial,caseId,live:true,version:'v1',ensure(){},canRequest:()=>true,request:async()=>({available:false,order:{id:orderId,state:'CANCELLED',payment_state:'VERIFIED',amount_minor:930,currency:'CAD',refunds:[{id:'re_partial',amountMinor:230,currency:'CAD',status:'succeeded'},{id:'re_pending',amountMinor:700,currency:'CAD',status:'pending'}]}})});
+  await tick();await tick();check.equal(/Refunded CAD\s*2\.30 so far/.test(partial.textContent),true,'partial summary uses only successful native ledger rows');check.equal(partial.textContent.includes('No further payment action'),false,'partial refund does not claim complete financial closure');
+  check.equal(partial.textContent.includes('re_pending'),false,'unconfirmed provider refund is not labelled a successful reference');
+  const reviewRoot=new Element('section');let approved=false,previewPosts=0,approvalPosts=0;
+  context.window.CRP_PACKET_MAILING.mount({root:reviewRoot,caseId,live:true,version:'v1',ensure(){},canRequest:()=>true,request:async(method,url)=>{
+    if(url.endsWith('/print-preview')){previewPosts++;return {order_id:orderId,preview_hash:'fictional-preview-hash',pdf_base64:Buffer.from('%PDF-1.4 fictional unit bytes').toString('base64')};}
+    if(url.endsWith('/approve-print')){approvalPosts++;approved=true;}
+    return {available:true,order:{id:orderId,state:'QUEUED',payment_state:'VERIFIED',mailer:'POSTGRID',print_review:{previewAvailable:true,previewHash:'fictional-preview-hash',approved}}};
+  }});await tick();await tick();
+  reviewRoot.querySelectorAll('button').find(n=>n.id==='packet-mailing-print-load').onclick();await tick();await tick();
+  const approve=reviewRoot.querySelectorAll('button').find(n=>n.id==='packet-mailing-print-approve'),checked=reviewRoot.querySelectorAll('input').find(n=>n.id==='packet-mailing-print-checked');
+  check.equal(approve.disabled,true,'final approval stays disabled after asynchronous load until review prerequisites hold');
+  reviewRoot.querySelectorAll('a')[0].onclick();check.equal(approve.disabled,true,'opening the copy alone does not supply review consent');
+  checked.checked=true;checked.onchange();check.equal(approve.disabled,false,'opening exact copy and explicit check enables approval');
+  approve.onclick();await tick();await tick();check.equal(approvalPosts,1,'one enabled approval submits once');check.equal(previewPosts,1,'approval does not fetch or prepare another provider copy');
+  check.equal(reviewRoot.querySelectorAll('button').some(n=>n.id==='packet-mailing-print-approve'),false,'successful approval does not invite repeated approval');
   return {fictional_only:true,external_calls:0,return_writes:0,provider_proof:false};
 }
 module.exports={id:'gx-operational-mailing',title:'Operational mailing return binds owned state and terminal status remains truthful',run};

@@ -1,6 +1,11 @@
 'use strict';
 (() => {
   const node = (tag, text) => { const value = document.createElement(tag); if (text !== undefined) value.textContent = text; return value; };
+  const previewUrls = new Set();
+  document.addEventListener?.('crp-session-expired', () => {
+    for (const url of previewUrls) URL.revokeObjectURL(url);
+    previewUrls.clear();
+  });
   const states = { AWAITING_PAYMENT:'Waiting for simulated payment', QUEUED:'Queued for simulated mailing', SUBMITTING:'Simulating submission', ACCEPTED:'Simulated provider acceptance', DISPATCHED:'Simulated dispatch', DELIVERED:'Simulated delivery', RETURNED:'Simulated return', UNKNOWN:'Uncertain result — held for review', FAILED:'Simulated submission failed', CANCELLED:'Cancelled' };
   function mount({ root, caseId, version, request, ensure, canRequest, live=false, testMode=false }) {
     const labels=live?{AWAITING_PAYMENT:'Waiting for payment',QUEUED:'Waiting for staff preparation',ACCEPTED:'Prepared by staff',SUBMITTING:'Postal handoff in progress',DISPATCHED:'Posted - recorded by staff',DELIVERED:'Delivery recorded by staff',RETURNED:'Return recorded by staff',UNKNOWN:'Held for staff review',FAILED:'Unable to proceed',CANCELLED:'Cancelled'}:states;
@@ -28,7 +33,7 @@
         render();
       }
       catch (error) { if (!error.cancelled && root.isConnected) { if(live){try{latest=await request('GET',path);available=latest.available===true;ensure();render();}catch{available=false;if(!latest?.order)root.hidden=true;}} message.textContent = error.message || 'Mailing could not be loaded. Please try again.'; } }
-      finally { busy = false; for (const button of content.querySelectorAll('button')) button.disabled = false; }
+      finally { busy = false; for (const button of content.querySelectorAll('button')) button.disabled = button.prerequisiteDisabled === true; }
     }
     function button(text, fn, id) { const value = node('button',text); value.type = 'button'; value.className = 'secondary'; if(id)value.id=id; value.onclick=()=>action(fn); return value; }
     function render() {
@@ -45,29 +50,48 @@
           const review=order.print_review;
           if(review?.returnAddress){const r=review.returnAddress;content.append(node('p',`${review.addressStandardized?'PostGrid standardized your return address. Check it carefully:':'Return address on the final copy:'} ${[r.firstName,r.lastName,r.addressLine1,r.addressLine2,r.city,r.provinceOrState,r.postalOrZip,r.countryCode].filter(Boolean).join(', ')}.`));}
           content.append(node('p',review?.approved?'You approved the PostGrid mailing copy.':'The mailing will stay on hold until you approve the final PostGrid mailing copy.'));
-          if(review?.previewAvailable&&order.state==='QUEUED'){
+          if(review?.previewAvailable&&order.state==='QUEUED'&&!review.approved){
             content.append(button('Load final mailing copy',async()=>{
               const result=await request('POST',path+'/print-preview',{});
-              if(previewCache?.url)URL.revokeObjectURL(previewCache.url);
+              if(previewCache?.url){URL.revokeObjectURL(previewCache.url);previewUrls.delete(previewCache.url);}
               const binary=atob(result.pdf_base64),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
               previewCache={orderId:result.order_id,hash:result.preview_hash,url:URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}))};reviewedPrintHash=null;
+              previewUrls.add(previewCache.url);
             },'packet-mailing-print-load'));
             if(previewCache?.orderId===order.id&&previewCache.hash===review.previewHash){
               const link=node('a','Open and review every page of the final mailing copy');link.href=previewCache.url;link.target='_blank';link.rel='noopener';
-              link.onclick=()=>{reviewedPrintHash=previewCache.hash;};content.append(link);
+              link.onclick=()=>{reviewedPrintHash=previewCache.hash;refreshApproval();};content.append(link);
               const label=node('label'),checked=node('input');checked.type='checkbox';checked.id='packet-mailing-print-checked';
               label.append(checked,document.createTextNode(' I checked every packet page and my return address on the added address cover. CRP staff manage the bureau mailing address. Pages may be resized to fit the mailing paper. I apply my typed signature to this exact final copy and approve it for PostGrid to print and mail.'));content.append(label);
-              content.append(button('Approve this final mailing copy',async()=>{
+              const approvalButton=button('Approve this final mailing copy',async()=>{
                 checkCurrent();if(!checked.checked||reviewedPrintHash!==previewCache.hash)throw Error('Open the final mailing copy, review it and tick the approval box.');
                 latest=await request('POST',path+'/approve-print',{order_id:order.id,reviewed_version:version,preview_hash:previewCache.hash,approve_print:true,approve_signature:true});
-              },'packet-mailing-print-approve'));
+              },'packet-mailing-print-approve');
+              const refreshApproval=()=>{approvalButton.prerequisiteDisabled=!checked.checked||reviewedPrintHash!==previewCache.hash;approvalButton.disabled=busy||approvalButton.prerequisiteDisabled;};
+              checked.onchange=refreshApproval;refreshApproval();content.append(approvalButton);
+              content.append(node('p','Open the final copy and check every page, then tick the review box to enable approval.'));
             }
           }
         }
-        if(live && order.payment_hold)content.append(node('p','Your payment needs staff review. Further posting is held.'));
+        if(live && order.payment_hold && order.payment_state!=='REFUNDED')content.append(node('p','Your payment needs staff review. Further posting is held.'));
         if(live && (latest.refund_status||order.refund_status))content.append(node('p',`Refund status: ${latest.refund_status||order.refund_status}.`));
-        const title = node('p',`Mailing status: ${labels[order.state] || order.state}`); title.id='packet-mailing-status'; content.append(title);
-        content.append(node('p',`Request reference: ${order.id}. Payment: ${order.payment_state === 'VERIFIED' ? (live?'verified':'simulated — no charge') : order.payment_state.toLowerCase()}.`));
+        let status=labels[order.state] || order.state;
+        if(live && order.state==='QUEUED' && order.mailer==='POSTGRID'){
+          const review=order.print_review;
+          status=review?.approved?'Approved by you — waiting for staff to submit':review?.previewAvailable?'Final printing copy ready — review and approve':review?.state==='DRAFT_PREPARED'?'Staff prepared the draft — waiting for the print preview':'Waiting for staff to prepare the draft';
+        }
+        const title = node('p',`Mailing status: ${status}`); title.id='packet-mailing-status'; content.append(title);
+        content.append(node('p',`Request reference: ${order.id}. Payment: ${order.payment_state === 'VERIFIED' ? (live?'verified':'simulated — no charge') : order.payment_state.toLowerCase().replaceAll('_',' ')}.`));
+        const successfulRefunds=(order.refunds||[]).filter(r=>r.status==='succeeded');
+        if(live && order.payment_state==='REFUNDED'){
+          const amount=Number.isSafeInteger(order.amount_minor)&&/^[A-Z]{3}$/.test(order.currency||'')?new Intl.NumberFormat('en',{style:'currency',currency:order.currency,currencyDisplay:'code'}).format(order.amount_minor/100):null;
+          content.append(node('p',amount?`Refunded ${amount}. No further payment action is needed.`:'Your payment was refunded. No further payment action is needed.'));
+        }
+        else if(live&&successfulRefunds.length&&/^[A-Z]{3}$/.test(order.currency||'')&&successfulRefunds.every(r=>r.currency===order.currency&&Number.isSafeInteger(r.amountMinor)&&r.amountMinor>0)){
+          const total=successfulRefunds.reduce((sum,r)=>sum+r.amountMinor,0);
+          if(Number.isSafeInteger(total))content.append(node('p',`Refunded ${new Intl.NumberFormat('en',{style:'currency',currency:order.currency,currencyDisplay:'code'}).format(total/100)} so far.`));
+        }
+        if(live&&successfulRefunds.length)content.append(node('p',`Refund ${successfulRefunds.length===1?'reference':'references'}: ${successfulRefunds.map(r=>r.id).join(', ')}.`));
         if (order.state === 'UNKNOWN') content.append(node('p','Keep this request held for staff review. Do not send another request for the same packet.'));
         if (['CANCELLED','FAILED','RETURNED'].includes(order.state) && order.payment_state === 'VERIFIED') content.append(node('p',live?'Your payment is marked for staff refund review. A cancellation or return does not itself confirm a refund.':'The simulated payment remains marked for staff refund review. No actual money was charged.'));
         if(live && available && order.state==='AWAITING_PAYMENT' && !latest?.packet_changed && latest?.checkout_url)content.append(button('Continue to secure payment',async()=>checkout(latest.checkout_url),'packet-mailing-checkout'));

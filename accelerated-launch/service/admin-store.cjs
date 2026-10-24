@@ -32,6 +32,27 @@ function safeDirectory(dir) {
   fs.mkdirSync(dir, {recursive: true, mode: 0o700});
   syncDirectory(path.dirname(dir));
 }
+function processIdentity(pid) {
+  if (process.platform !== 'linux') return null;
+  // PID alone is not ownership: Linux can reuse it for another process/thread.
+  // Unknown process identity must never make a live writer appear stale.
+  try {
+    const boot = fs.readFileSync('/proc/sys/kernel/random/boot_id', 'utf8').trim();
+    const stat = fs.readFileSync(`/proc/${pid}/stat`, 'utf8');
+    const start = stat.slice(stat.lastIndexOf(')') + 2).split(/\s+/)[19];
+    if (!/^[a-f0-9-]{36}$/.test(boot) || !/^\d+$/.test(start || '')) throw error();
+    return {boot, start};
+  } catch {throw error('ADMIN_WRITER_IDENTITY_UNAVAILABLE');}
+}
+function writerAlive(row) {
+  if (!isProcessAlive(row.pid)) return false;
+  if (row.identity === undefined || row.identity === null) return true; // conservative legacy/non-Linux
+  if (!row.identity || typeof row.identity !== 'object' ||
+      Object.keys(row.identity).sort().join(',') !== 'boot,start' ||
+      !/^[a-f0-9-]{36}$/.test(row.identity.boot || '') || !/^\d+$/.test(row.identity.start || '')) throw error();
+  const current = processIdentity(row.pid);
+  return !current || (row.identity.boot === current.boot && row.identity.start === current.start);
+}
 class AdminStore {
   constructor(consumerDataDir, {consumerStore} = {}) {
     const parent = assertOutsideRepository(path.resolve(consumerDataDir));
@@ -43,13 +64,13 @@ class AdminStore {
     this.metrics = {journal_reads: 0, journal_bytes: 0, cache_reads: 0};
     this.lockToken = crypto.randomUUID(); this.lockFile = path.join(this.lockDir, process.pid + '-' + this.lockToken + '.json');
     // Publish before examining contenders: simultaneous claimants cannot both win.
-    atomicNew(this.lockFile, JSON.stringify({pid: process.pid, token: this.lockToken}));
+    atomicNew(this.lockFile, JSON.stringify({pid: process.pid, token: this.lockToken, identity: processIdentity(process.pid)}));
     try {
       for (const name of fs.readdirSync(this.lockDir).filter(n => n.endsWith('.json') && path.join(this.lockDir, n) !== this.lockFile)) {
         let row; try {row = JSON.parse(fs.readFileSync(path.join(this.lockDir, name), 'utf8'));}
         catch (e) {if (e.code === 'ENOENT') continue; throw error();}
         if (!Number.isInteger(row.pid) || row.pid < 1 || typeof row.token !== 'string') throw error();
-        if (isProcessAlive(row.pid)) throw error('ADMIN_STORE_ALREADY_HAS_WRITER');
+        if (writerAlive(row)) throw error('ADMIN_STORE_ALREADY_HAS_WRITER');
       }
       this.keyFile = path.join(this.dataDir, '.integrity-key');
       if (!fs.existsSync(this.keyFile)) {

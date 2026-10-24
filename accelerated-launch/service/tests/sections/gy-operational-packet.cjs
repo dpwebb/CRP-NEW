@@ -37,6 +37,17 @@ async function run(t,check){
  check.ok(html.includes('Included documents')&&html.includes('data-packet-document="'+id+'" checked'),'complete preparation still offers selected copy controls');
  check.ok(html.includes('data-packet-rotation="'+id+'"')&&html.includes('value="90" selected'),'saved rotation is visible for review');
  check.ok(html.includes('We have not checked expiry dates.'),'review avoids claiming automated expiry verification');
+ check.ok(html.includes('id="packet-account-details"'),'ready packet still provides add or replace document route');
+ context.fixture.support.settings={...settings,document_ids:[],identity_reference:'',other_identity_details:'',document_dates:{}};context.fixture.support.selected_document_ids=[];
+ context.fixture.support.missing=['Select identification and proof-of-address documents.'];
+ context.fixture.packet={selected_count:1,preview_ready:false,assessment_current:true};context.fixture.eligible_issues=[];
+ context.fixture.support.documents[0].document_type='IDENTITY';
+ context.calls=[];context.block={innerHTML:''};context.panel={querySelector:()=>context.block};
+ vm.runInContext('state.account={account_id:"fictional-empty"};state.caseId="case_empty";state.view={};state.step=STEP.PREPARE;renderPacketBlock=()=>"fictional render";api=async(method,path,body)=>{calls.push({method,path,body});return {view:fixture};};',context);
+ for(let i=0;i<2;i++)await vm.runInContext('wirePacket(panel)',context);
+ check.equal(context.calls.filter(c=>c.method==='POST').length,0,'returning to saved explicit empty selection never autosaves all account documents');
+ check.equal(vm.runInContext('packetSupportDefaults(fixture).document_ids.length',context),0,'explicit exclusions survive repeated preparation');
+ check.equal(vm.runInContext('packetSupportingDocuments(fixture)',context).includes('data-packet-document="'+id+'" checked'),false,'excluded copy remains visibly unchecked');
  const proof=process.env.CRP_OPERATIONAL_PACKET_PROOF_DIR;if(proof){fs.mkdirSync(proof,{recursive:true});fs.writeFileSync(path.join(proof,'fictional-long-signed.pdf'),signed.bytes);packets.forEach((p,i)=>fs.writeFileSync(path.join(proof,'fictional-rotation-'+i*90+'.pdf'),p.bytes));}
  return {fictional_only:true,external_calls:0,provider_proof:false};
 }

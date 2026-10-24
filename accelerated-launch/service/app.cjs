@@ -158,6 +158,7 @@ const ROUTES = Object.freeze([
   ['DELETE', '/api/sessions/current', false, 'signOut'],
   ['GET', '/api/session', true, 'sessionInfo'],
   ['GET', '/api/account/security', true, 'accountSecurity'],
+  ['GET', '/api/testing/inbox', true, 'stagingInbox'],
   ['DELETE', '/api/account/google-identity', true, 'disconnectGoogle'],
   ['POST', '/api/account/confirm-email', true, 'confirmEmail'],
   ['POST', '/api/account/resend-confirmation', true, 'resendConfirmation'],
@@ -354,7 +355,7 @@ function availabilityFor(row) {
 }
 
 /** The consumer-facing handler set. Every consumer-visible string it returns came from another module. */
-function buildHandlers(store, logger, surface, pricingCurrency, registrationMailer, adminStore, googleSignIn, mailOps) {
+function buildHandlers(store, logger, surface, pricingCurrency, registrationMailer, adminStore, googleSignIn, mailOps, testMailbox) {
   const ownerRoute = (account, token) => {
     const nextPath = adminStore && require('./admin-access.cjs').ownerSignInPath(adminStore, account, token);
     return nextPath === '/admin' ? { next_path: '/admin' } : {};
@@ -381,7 +382,7 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
       logger.log({ event: 'ACCOUNT_CREATED', outcome: 'OK' });
       return {
         status: 201,
-        json: { ok: true, account: created.account, profile: accountProfile.getProfile(store, created.account), signed_in: true, recovery_key: created.recovery_key, confirmation_sent, ...accounts.securityView(store,created.account) },
+        json: { ok: true, account: created.account, profile: accountProfile.getProfile(store, created.account), signed_in: true, recovery_key: created.recovery_key, confirmation_sent, confirmation_transport:confirmation_sent&&registrationMailer.captureFor?.(created.account.email)?'CAPTURED':confirmation_sent?'ACCEPTED':'UNAVAILABLE', ...accounts.securityView(store,created.account) },
         headers: { 'Set-Cookie': sessionCookie(created.token, 86400) }
       };
     },
@@ -401,7 +402,8 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
     sessionInfo: ({ actor, req }) => ({ status: 200, json: { ok: true, account: actor, signed_in: true, ...accounts.securityView(store,actor), ...ownerRoute(actor, sessionToken(req)) } }),
 
     confirmEmail: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').confirmEmail(store,actor,body)}}),
-    resendConfirmation: async ({actor}) => ({status:200,json:{ok:true,...await require('./signup-security.cjs').sendConfirmation(store,actor,registrationMailer)}}),
+    resendConfirmation: async ({actor}) => ({status:200,json:{ok:true,...await require('./signup-security.cjs').sendConfirmation(store,actor,registrationMailer),confirmation_transport:registrationMailer.captureFor?.(actor.email)?'CAPTURED':'ACCEPTED'}}),
+    stagingInbox: ({actor}) => ({status:200,json:{ok:true,...testMailbox.inbox(actor)}}),
     confirmRecoveryKey: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').confirmRecovery(store,actor,body)}}),
     finishSignup: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').finish(store,actor,body)}}),
     setupTwoFactor: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').beginTwoFactor(store,actor,body)}}),
@@ -460,6 +462,7 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
       ensureAdministrationDeletionAllowed();
       const remove=()=>cases.deleteAccountSafely(store, actor, process.env, { beforeDelete: ensureAdministrationDeletionAllowed });
       const result = mailOps?.withDeletion ? await mailOps.withDeletion(actor,null,remove) : await remove();
+      try{testMailbox.remove(actor);}catch{logger.log({event:'TEST_INBOX_CLEANUP_PENDING',outcome:'UNAVAILABLE',count:1});}
       logger.log({ event: 'ACCOUNT_DELETED', outcome: 'OK', count: result.blobs_removed });
       return { status: 200, json: { ok: true, deleted: true, stored_files_removed: result.blobs_removed }, headers: { 'Set-Cookie': sessionCookie('', 0) } };
     },
@@ -929,7 +932,8 @@ function createService(options) {
   const logger = new Logger(opts.logSink);
   const affiliate = require('./affiliate-attribution.cjs').create(store, { ...opts.affiliate, log: event => logger.log(event) });
   const googleSignIn = require('./auth0-google.cjs').create(store, opts.googleSignIn);
-  const passwordReset = require('./password-reset.cjs').create(store, { mailer: opts.passwordResetMailer || require('./confirmation-mail.cjs').sender(), origin: opts.passwordResetOrigin, logger });
+  const testMailbox = require('./staging-test-mail.cjs').create(store);
+  const passwordReset = require('./password-reset.cjs').create(store, { mailer: opts.passwordResetMailer || testMailbox.wrap(require('./confirmation-mail.cjs').sender()), origin: opts.passwordResetOrigin, logger });
   const requestPolicy=require('./request-policy.cjs').policy();
   const surface = loadJurisdictionSurface();
   const mailOps = require('./mail-ops-link.cjs').create(store);
@@ -937,7 +941,7 @@ function createService(options) {
   const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
   const handlers = Object.assign(
     {},
-    buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || require('./confirmation-mail.cjs').sender(), adminStore, googleSignIn, mailOps),
+    buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || testMailbox.wrap(require('./confirmation-mail.cjs').sender()), adminStore, googleSignIn, mailOps, testMailbox),
     buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps),
     buildBillingHandlers(store, logger, pricingCurrency),
     Object.fromEntries(['Status','Quote','Confirm','Cancel','PrintPreview','ApprovePrint'].map(action => ['mailing' + action, async ({actor,params,body}) => {
@@ -992,6 +996,9 @@ function createService(options) {
       plain: 'Lapsed sessions and purchases were expired, and bytes a crash left behind were cleared. No report was read, moved or transmitted.'
     });
     logger.log({ event: 'SERVICE_STARTUP_RECOVERY', outcome: 'OK', count: recovery.orphan_blobs_removed });
+    // Counts only: never emit private row IDs, tokens, filenames or digests.
+    for(const [field,event] of [['expired_sessions_removed','STARTUP_SESSIONS_EXPIRED'],['entitlements_swept','STARTUP_ACCESS_TRANSITIONS'],['partial_blobs_removed','STARTUP_PARTIALS_REMOVED']])
+      logger.log({event,outcome:'OK',count:recovery[field]});
     return report;
   }
 
@@ -1082,7 +1089,7 @@ function createService(options) {
       }
 
       const actor = matched.auth ? accounts.resolveSession(store, sessionToken(req)) : null;
-      if(actor&&!['sessionInfo','accountSecurity','confirmEmail','resendConfirmation','confirmRecoveryKey','finishSignup','setupTwoFactor','confirmTwoFactor','disableTwoFactor','issueRecoveryKey','deleteAccount','contactLocation'].includes(matched.name)) require('./signup-security.cjs').requireReady(store,actor);
+      if(actor&&!['sessionInfo','accountSecurity','stagingInbox','confirmEmail','resendConfirmation','confirmRecoveryKey','finishSignup','setupTwoFactor','confirmTwoFactor','disableTwoFactor','issueRecoveryKey','deleteAccount','contactLocation'].includes(matched.name)) require('./signup-security.cjs').requireReady(store,actor);
       const body = req.method === 'GET' || req.method === 'HEAD' ? {} : await readRequestBody(req);
       const outcome = await handlers[matched.name]({
         req,
