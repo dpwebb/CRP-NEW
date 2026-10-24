@@ -172,11 +172,20 @@ function defaultResources(form, doc) {
 }
 function wrapped(text, font, size, width) {
   const lines = [];
+  // Repeated paragraphs reuse identical font measurements. Keep this cache local
+  // to the same font/size and bounded; line breaks and glyph shaping stay exact.
+  const widths = new Map();
+  const measuredWidth = value => {
+    if (widths.has(value)) return widths.get(value);
+    const measured = font.widthOfTextAtSize(value, size);
+    if (widths.size < 32768) widths.set(value, measured);
+    return measured;
+  };
   for (const paragraph of text.split('\n')) {
     if (!paragraph) { lines.push(''); continue; }
     let line = '';
     for (const char of paragraph) {
-      if (line && font.widthOfTextAtSize(line + char, size) > width) {
+      if (line && measuredWidth(line + char) > width) {
         const breakAt = line.lastIndexOf(' ');
         if (breakAt > 0) { lines.push(line.slice(0, breakAt)); line = line.slice(breakAt + 1); }
         else { lines.push(line); line = ''; }
@@ -210,8 +219,14 @@ async function letterPages(doc, text, signature) {
   const signatureSpace = signature ? (signatureLines.length + 1) * 18 + 16 : 0;
   const width = 512, height = 692 - signatureSpace, fieldY = 50 + signatureSpace, padding = 4;
   let size = 12, lines;
-  for (; size >= 10; size -= .5) { lines = wrapped(text, font, size, width - padding * 2); if (lines.length * size * 1.4 <= height - padding * 2) break; }
-  if (size < 10) { size = 10; lines = wrapped(text, font, size, width - padding * 2); }
+  // Each explicit paragraph consumes at least one line. If even that lower
+  // bound cannot fit at 10 points, every larger trial would also paginate.
+  if (text.split('\n').length * 10 * 1.4 > height - padding * 2) {
+    size = 10; lines = wrapped(text, font, size, width - padding * 2);
+  } else {
+    for (; size >= 10; size -= .5) { lines = wrapped(text, font, size, width - padding * 2); if (lines.length * size * 1.4 <= height - padding * 2) break; }
+    if (size < 10) { size = 10; lines = wrapped(text, font, size, width - padding * 2); }
+  }
   let capacity = Math.floor((height - padding * 2) / (size * 1.4));
   while (lines.length > capacity && lines.length % capacity > 0 && lines.length % capacity < 4 && capacity > 8) capacity--;
   const fields = [];

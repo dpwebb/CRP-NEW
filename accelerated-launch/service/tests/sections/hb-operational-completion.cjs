@@ -1,6 +1,13 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 async function run(t,check){
+ const wrapped=require('../../packet-composer-worker.cjs').wrapped;let widthCalls=0;
+ const font={widthOfTextAtSize(value,size){widthCalls++;return Array.from(value).length*size;}};
+ const repeated=Array.from({length:100},()=> 'AB CD EF').join('\n');
+ check.equal(JSON.stringify(wrapped(repeated,font,1,5)),JSON.stringify(Array.from({length:100},()=>['AB','CD EF']).flat()),'repeated paragraphs keep exact word wrapping');
+ check.ok(widthCalls<30,'identical font widths are measured once instead of for every repeated paragraph');
+ check.equal(JSON.stringify(wrapped('AB CD EF',font,2,8)),JSON.stringify(['AB','CD','EF']),'a different font size uses independent measurements');
+ check.equal(JSON.stringify(wrapped('AB\n\nCD',font,1,5)),JSON.stringify(['AB','','CD']),'measurement reuse preserves blank paragraphs');
  const navSource=fs.readFileSync(path.join(__dirname,'../../ui/app.js'),'utf8'),scope={state:{step:'billing',error:'Choose a report',notice:'Earlier saved notice'},STEP:{BILLING:'billing'},visibleStep:v=>v,signInChallenge:null,packetLeave:null,el:()=>null,render(){},focusStepHeading(){}};vm.createContext(scope);vm.runInContext(navSource.slice(navSource.indexOf('function navigateStep('),navSource.indexOf('function banner(')),scope);vm.runInContext("navigateStep('history')",scope);check.equal(scope.state.error,null,'changing tasks clears the previous panel validation error');check.equal(scope.state.notice,null,'changing tasks clears the previous panel success notice');scope.state.error='Current validation';vm.runInContext("navigateStep('history')",scope);check.equal(scope.state.error,'Current validation','staying on the same task retains its current validation');
 
  const source=fs.readFileSync(path.join(__dirname,'../../ui/app.js'),'utf8'),nodes=new Map();
