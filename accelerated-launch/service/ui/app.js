@@ -324,7 +324,7 @@ function renewalAttentionBlock(inResults = false) {
   return `<div class="note" role="status">An earlier subscription can still renew. Cancel renewal before starting another subscription. One-report purchases stay available.${inResults ? '<br><button class="secondary" id="renewal-plans">Cancel renewal in Plans</button>' : ''}</div>`;
 }
 function planName(code) { return ({ report_once: 'One report', monthly: 'Monthly subscription', annual: 'Yearly subscription' })[code] || 'Subscription'; }
-function paymentSentence(pay) { return pay?.is_a_working_payment ? 'New purchases use checkout. A yearly upgrade uses your saved payment method after you review and confirm its amount.' : 'Payments are unavailable right now.'; }
+function paymentSentence(pay) { return pay?.is_a_working_payment ? 'For new purchases, you pay after choosing a plan and completing checkout. A yearly upgrade uses your saved payment method after you review and confirm its amount.' : 'Payments are unavailable right now.'; }
 function access() {
   const ent = state.entitlement || null;
   const pay = state.payment || null;
