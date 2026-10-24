@@ -315,7 +315,8 @@ async function run(t,check){
   check.ok((await page.locator('#packet-ready-status').innerText()).includes('Remove it before mailing'),'the visible ready message reinforces removal');
   const before=sha(bytes);await page.locator('[data-step="5"]').click();await page.locator('#packet-preparation-content').waitFor();
   check.equal(await page.locator('#packet-verification-requested,#packet-copies-confirmed').count(),0,'Prepare has no repeated identity or copy-quality confirmations');
-  check.equal(await page.locator('#packet-account-details:visible').count(),0,'complete saved contact details and copies do not prompt another Account or upload detour');
+  check.equal(await page.locator('#packet-account-details:visible').count(),1,'complete preparation keeps the optional contact and document replacement route available');
+  check.equal(await page.locator('#packet-prepare-next').isEnabled(),true,'complete saved contact details and copies allow continuing without another Account or upload detour');
   check.ok(await page.locator('[data-packet-document]:visible').count()>0,'complete saved document copies stay visible for optional review without reselection');
   await page.locator('#packet-prepare-next').click();await page.locator('#packet-approved-status').waitFor();check.equal(sha((await req('GET',route+'/packet-download')).bytes),before,'unchanged backward/forward navigation preserves approval and bytes');
   await page.locator('#packet-download:enabled').waitFor();

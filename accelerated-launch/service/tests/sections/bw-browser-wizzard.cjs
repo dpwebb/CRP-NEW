@@ -191,6 +191,8 @@ async function run(service, check) {
     check.equal(await page.locator('#packet-channel').count(), 0, 'the consumer packet has a mail-only path with no submission-method selector');
     check.equal(await page.locator('#packet-verification-requested, #packet-copies-confirmed, #review').count(), 0, 'the revised flow has no repeated identity, copy-quality or assessment acknowledgement');
     if (withDocuments) {
+      // Choose the fictional copies explicitly: returning to Prepare must preserve an empty saved selection.
+      for (const document of await page.locator('[data-packet-document]:visible').all()) await document.check();
       for (const date of await page.locator('[id^="packet-document-date-"]:visible').all()) await date.fill(new Date().toISOString().slice(0, 10));
     }
     if (await page.locator('#packet-identity-reference:visible').count()) await page.locator('#packet-identity-reference').fill('000000000');

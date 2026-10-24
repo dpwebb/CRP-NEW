@@ -28,8 +28,10 @@ function ownerSignInPath(store,actor,consumerSessionToken){
 }
 function unlock(store,actor,consumerSessionToken,input){
   const {account,session}=accountSession(store,actor,consumerSessionToken),member=memberFor(store,account.account_id);
-  if(!input?.code)fail('TWO_FACTOR_REQUIRED',401);
-  const valid=store.consumerStore.update(state=>{const row=state.accounts.find(r=>r.account_id===account.account_id);return security.verifySignIn(store.consumerStore,row,input.code);});
+  // The server-recorded MFA proof belongs to this live login and current enrolled secret.
+  // Legacy sessions may complete administration sign-in with a code once.
+  const valid=input?.code ? store.consumerStore.update(state=>{const row=state.accounts.find(r=>r.account_id===account.account_id);return security.verifySignIn(store.consumerStore,row,input.code);}) : accounts.loginMfaVerified(store.consumerStore,actor,consumerSessionToken);
+  if(!valid&&!input?.code)fail('TWO_FACTOR_REQUIRED',401);
   if(!valid){store.audit(member,'ADMIN_UNLOCK_DENIED',{reason:'TWO_FACTOR_INVALID'});fail('TWO_FACTOR_INVALID',401);}
   const token=crypto.randomBytes(32).toString('base64url'),expires=new Date(Date.now()+UNLOCK_MS).toISOString();
   store.update(state=>{for(const row of state.unlocks)if(row.session_id===session.session_id&&!row.revoked_at)row.revoked_at=new Date().toISOString();state.unlocks.push({unlock_id:id('adm_unlock'),token_sha256:digest(token),admin_id:member.admin_id,account_id:account.account_id,session_id:session.session_id,revision:member.revision,mfa_sha256:mfaFingerprint(account),issued_at:new Date().toISOString(),absolute_expires_at:new Date(Date.now()+MAX_UNLOCK_MS).toISOString(),expires_at:expires,revoked_at:null});store.appendAudit(state,member,'ADMIN_UNLOCKED',{});});

@@ -74,7 +74,7 @@
     if (!response.ok || data.ok === false) {
       const error = new Error(data.error?.message || (response.status === 403 ? 'Your account does not have access to this action.' : `This request could not be completed (${response.status}).`));
       error.status = response.status; error.code = data.error?.code || ''; error.data = data;
-      if (response.status === 401 && !sessionCheck && error.code === 'TWO_FACTOR_REQUIRED') showUnlock();
+      if (response.status === 401 && !sessionCheck && error.code === 'TWO_FACTOR_REQUIRED') showLogin('Your administration session has ended. Sign in to continue.');
       else if (response.status === 401 && !sessionCheck && error.code !== 'TWO_FACTOR_INVALID') showLogin('Your session has ended. Sign in to continue.');
       throw error;
     }
@@ -451,9 +451,14 @@
   }
   async function checkSession() {
     $('auth-checking').hidden = false; $('login-form').hidden = true; $('access-message').hidden = true; $('stepup-form').hidden = true; $('retry-session').hidden = false;
-    try { const data = await api('GET', '/api/admin/session', undefined, { sessionCheck: true }); enterWorkspace(data.session || data.principal); }
+    try {
+      let data;
+      try { data = await api('GET', '/api/admin/session', undefined, { sessionCheck: true }); }
+      catch(error) { if(error.code!=='TWO_FACTOR_REQUIRED')throw error;await api('POST','/api/admin/unlock',{}, {sessionCheck:true});data=await api('GET','/api/admin/session',undefined,{sessionCheck:true}); }
+      enterWorkspace(data.session || data.principal);
+    }
     catch (error) {
-      if (error.code === 'TWO_FACTOR_REQUIRED') showUnlock();
+      if (error.code === 'TWO_FACTOR_REQUIRED') showLogin('Sign in with your password and authenticator to open administration.');
       else if (error.code === 'ADMIN_SECURITY_REQUIRED') showAccess('Complete your CRP account setup, verify your email and enable two-step sign-in before opening administration. You can manage these in your CRP account.');
       else if (error.status === 401) showLogin();
       else if (error.code === 'NOT_AUTHORIZED' || error.status === 403) showAccess('This account does not have an active administration role. Ask your workspace owner to check your access.');
@@ -476,7 +481,7 @@
   $('editor-form').addEventListener('submit', async (event) => { event.preventDefault(); if (!state.dialog) return; setBusy($('editor-form'), true); showError('editor-error', ''); try { await state.dialog(Object.fromEntries(new FormData($('editor-form')))); } catch (error) { showError('editor-error', error.message); } finally { setBusy($('editor-form'), false); } });
   $('login-form').addEventListener('submit', async (event) => {
     event.preventDefault(); showError('login-error', ''); setBusy($('login-form'), true);
-    try { await api('POST', '/api/sessions', { email: $('login-email').value.trim(), password: $('login-password').value, code: $('login-code').value.trim() }, { sessionCheck: true }); $('login-password').value = ''; $('login-code').value = ''; await checkSession(); }
+    try { await api('POST', '/api/sessions', { email: $('login-email').value.trim(), password: $('login-password').value, code: $('login-code').value.trim() }, { sessionCheck: true }); $('login-password').value = ''; $('login-code').value = ''; await api('POST', '/api/admin/unlock', {}, { sessionCheck: true }); await checkSession(); }
     catch (error) { showError('login-error', error.message); if (error.code === 'TWO_FACTOR_REQUIRED' || error.code === 'TWO_FACTOR_INVALID') { $('login-otp-field').hidden = false; $('login-code').required = true; $('login-code').focus(); } }
     finally { setBusy($('login-form'), false); }
   });

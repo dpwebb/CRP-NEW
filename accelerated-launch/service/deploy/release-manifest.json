@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-24T15:38:22.524Z",
+  "generated_at": "2026-10-24T16:34:46.711Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 117,
-      "digest": "DD913465491C8A8132136BF4CC64A8EE5DF7440487721E3BC6882011A7C797A7",
+      "digest": "5859FD1B229543B95FA288B41176B26B35B1F6A6935D2ED1C148EF4F905569FB",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -86,11 +86,11 @@
         },
         {
           "file": "accelerated-launch/service/accounts.cjs",
-          "sha256": "037A3415167C89B76D09A33C4B238490A66229FDBB6ADE25A3C1BB5A4DF4E8C1"
+          "sha256": "D70DD5F0874F91BD5C5D14A27BE3535603FAA142E9F81CF746AB8F3AD2433BE2"
         },
         {
           "file": "accelerated-launch/service/admin-access.cjs",
-          "sha256": "4DBC885016E52FD9C66DD0724EBD549BC793E95D794B4ACBCC1F99B93A3C5EAC"
+          "sha256": "3C1879351BCB55968F4C9FA14527D374D4B23046131CF8A49B2A0484DBAB3EE1"
         },
         {
           "file": "accelerated-launch/service/admin-service.cjs",
@@ -106,7 +106,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "1A1879DB92557F4BBDACDDF4091081D8B3F709730645580D00B3A9BAF4FA00EB"
+          "sha256": "AF6CC20778FB0C355CFAB0C14F50F06F03B485C48191FD769F695682C472F733"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -506,7 +506,7 @@
         },
         {
           "file": "accelerated-launch/service/signup-security.cjs",
-          "sha256": "517505E2F7B9BC14F0D927AC6D5B584D5E550223007E877E9A6A62DC7DBB5B33"
+          "sha256": "4AF1D235ACFCB6740FCBE80732102022D21FEFD2B9EBD7062C12553CF65692A3"
         },
         {
           "file": "accelerated-launch/service/staging-test-mail.cjs",
@@ -654,7 +654,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 39,
-      "digest": "68C637690351F23B65D3FB76B0A7C61E643525A2CAA6BB82A547754FA7767BBB",
+      "digest": "A30D8CA7D760FD8D1F2BE2F740F5CB147A2DC580C6DC7882D3FE95968C941453",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -690,11 +690,11 @@
         },
         {
           "file": "accelerated-launch/service/ui/admin.js",
-          "sha256": "AED579302CEF934B3EF7DE54C77991B1D9A2B2A7347969F89B1911CB31B6C549"
+          "sha256": "E8D58490214FAC01394DFC569232AC47E47BBDADB903AAAA3F90FA3FE84ABE9F"
         },
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "C19954219AE97BC166AAFD4B4007779933AF6FA55DBE21011F9F0BEB055550E7"
+          "sha256": "692B9EAF3845439741159388C732012BD711ABF3FF0C5B8EB6EBB67A08957BCA"
         },
         {
           "file": "accelerated-launch/service/ui/brand-logo.png",
@@ -815,6 +815,6 @@
       ]
     }
   ],
-  "manifest_digest": "2E0F266605158407CE04078C86FE33A20EEAF9F0DB50CAA4346EF8E8A77F2EF3",
+  "manifest_digest": "ED285DED17DBDFCE5E77B11A0EC7CAA9AC32B38FE960EDC161D59D24FEDF8CDE",
   "total_file_count": 192
 }

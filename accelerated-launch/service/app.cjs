@@ -356,6 +356,11 @@ function availabilityFor(row) {
 
 /** The consumer-facing handler set. Every consumer-visible string it returns came from another module. */
 function buildHandlers(store, logger, surface, pricingCurrency, registrationMailer, adminStore, googleSignIn, mailOps, testMailbox) {
+  const loginFactor = (actor, req) => {
+    const account=store.state().accounts.find(a=>a.account_id===actor.account_id);
+    if(account?.two_factor_secret && !accounts.loginMfaVerified(store,actor,sessionToken(req))) throw new ServiceError('AUTHENTICATION_REQUIRED');
+    return Boolean(account?.two_factor_secret);
+  };
   const ownerRoute = (account, token) => {
     const nextPath = adminStore && require('./admin-access.cjs').ownerSignInPath(adminStore, account, token);
     return nextPath === '/admin' ? { next_path: '/admin' } : {};
@@ -407,13 +412,13 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
     confirmRecoveryKey: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').confirmRecovery(store,actor,body)}}),
     finishSignup: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').finish(store,actor,body)}}),
     setupTwoFactor: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').beginTwoFactor(store,actor,body)}}),
-    confirmTwoFactor: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').confirmTwoFactor(store,actor,body)}}),
-    disableTwoFactor: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').disableTwoFactor(store,actor,body)}}),
+    confirmTwoFactor: ({actor,body,req}) => {const view=require('./signup-security.cjs').confirmTwoFactor(store,actor,body);accounts.markLoginMfaVerified(store,actor,sessionToken(req));return {status:200,json:{ok:true,...view}};},
+    disableTwoFactor: ({actor,body,req}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').disableTwoFactor(store,actor,body,loginFactor(actor,req))}}),
     accountSecurity: ({ actor }) => ({ status: 200, json: { ok: true, ...accounts.securityView(store, actor) } }),
-    disconnectGoogle: ({ actor, body }) => ({ status: 200, json: { ok: true, ...accounts.disconnectGoogle(store, actor, body) },
+    disconnectGoogle: ({ actor, body, req }) => ({ status: 200, json: { ok: true, ...accounts.disconnectGoogle(store, actor, body,loginFactor(actor,req)) },
       headers: { 'Set-Cookie': [sessionCookie('', 0), `${ADMIN_COOKIE}=; HttpOnly; SameSite=Strict; Path=/api/admin/; Max-Age=0${process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : ''}`] } }),
-    issueRecoveryKey: ({ actor, body }) => {
-      const issued = accounts.issueRecoveryKey(store, actor, body);
+    issueRecoveryKey: ({ actor, body, req }) => {
+      const issued = accounts.issueRecoveryKey(store, actor, body,loginFactor(actor,req));
       logger.log({ event: 'RECOVERY_KEY_ISSUED', outcome: 'OK' });
       return { status: 200, json: { ok: true, ...issued } };
     },

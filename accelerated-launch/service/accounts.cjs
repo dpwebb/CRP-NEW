@@ -219,7 +219,7 @@ function securityView(store, actor) {
   return require('./signup-security.cjs').view(store, actor);
 }
 
-function issueRecoveryKey(store, actor, input) {
+function issueRecoveryKey(store, actor, input, loginVerified = false) {
   const account = store.state().accounts.find(a => a.account_id === actor.account_id);
   if (!account) throw new ServiceError('AUTHENTICATION_REQUIRED');
   if (!input || typeof input.password !== 'string' || input.password.length > 1024) throw new ServiceError('INVALID_CREDENTIALS');
@@ -229,7 +229,7 @@ function issueRecoveryKey(store, actor, input) {
     const checked = checkCredentials(state, account.email, input.password);
     if (checked.refuse) return checked;
     const owned = checked.account;
-    if (owned.two_factor_secret && !require('./signup-security.cjs').verifySignIn(store, owned, input.code)) return { refuse: 'TWO_FACTOR_INVALID' };
+    if (owned.two_factor_secret && !loginVerified && !require('./signup-security.cjs').verifySignIn(store, owned, input.code)) return { refuse: 'TWO_FACTOR_INVALID' };
     owned.recovery_key_digest = recoveryDigest(key);
     delete owned.password_reset;
     owned.recovery_key_created_at = nowIso();
@@ -293,6 +293,7 @@ function signIn(store, input) {
     if (account.two_factor_secret && !input?.code) return { refuse: 'TWO_FACTOR_REQUIRED' };
     if (!require('./signup-security.cjs').verifySignIn(store, account, input?.code)) return { refuse: 'TWO_FACTOR_INVALID' };
     session.row.account_id = account.account_id;
+    if (account.two_factor_secret) { session.row.mfa_verified_at = new Date(Date.now()).toISOString(); session.row.mfa_sha256 = crypto.createHash('sha256').update(JSON.stringify(account.two_factor_secret)).digest('hex'); }
     state.sessions.push(session.row);
     trimSessions(state, account.account_id);
     return { account: { account_id: account.account_id, email: account.email } };
@@ -365,6 +366,7 @@ function signInWithGoogle(store, identity, input = {}) {
       account.external_identities = [...(account.external_identities || []), { provider: 'auth0_google', issuer: identity.issuer, subject: identity.subject, linked_at: nowIso() }];
     }
     session.row.account_id = account.account_id;
+    if (account.two_factor_secret) { session.row.mfa_verified_at = new Date(Date.now()).toISOString(); session.row.mfa_sha256 = crypto.createHash('sha256').update(JSON.stringify(account.two_factor_secret)).digest('hex'); }
     state.sessions.push(session.row); trimSessions(state, account.account_id);
     return { account: { account_id: account.account_id, email: account.email }, ...(key ? { recovery_key: key } : {}) };
   });
@@ -372,15 +374,15 @@ function signInWithGoogle(store, identity, input = {}) {
   return { ...outcome, token: session.token };
 }
 
-function disconnectGoogle(store, actor, input = {}) {
+function disconnectGoogle(store, actor, input = {}, loginVerified = false) {
   if (typeof input.password !== 'string' || input.password.length > 1024) throw new ServiceError('INVALID_CREDENTIALS');
   const outcome = store.update(state => {
     const current = state.accounts.find(a => a.account_id === actor.account_id);
     if (!current) return { refuse: 'AUTHENTICATION_REQUIRED' };
     const checked = checkCredentials(state, current.email, input.password);
     if (checked.refuse) return checked;
-    if (current.two_factor_secret && !input.code) return { refuse: 'TWO_FACTOR_REQUIRED' };
-    if (!require('./signup-security.cjs').verifySignIn(store, current, input.code)) return { refuse: 'TWO_FACTOR_INVALID' };
+    if (current.two_factor_secret && !loginVerified && !input.code) return { refuse: 'TWO_FACTOR_REQUIRED' };
+    if (!loginVerified && !require('./signup-security.cjs').verifySignIn(store, current, input.code)) return { refuse: 'TWO_FACTOR_INVALID' };
     current.external_identities = (current.external_identities || []).filter(i => i.provider !== 'auth0_google');
     if (!current.external_identities.length) delete current.external_identities;
     // Every earlier consumer session, including one opened through Google, expires.
@@ -395,6 +397,19 @@ function disconnectGoogle(store, actor, input = {}) {
  * Resolve a bearer token to its account. Unknown, expired, destroyed and absent tokens are one refusal: a
  * caller cannot tell a lapsed session from a forged one, and neither one works.
  */
+function markLoginMfaVerified(store, actor, token) {
+  resolveSession(store, token);
+  store.update(state=>{const session=state.sessions.find(s=>s.token_sha256===tokenDigest(token)&&s.account_id===actor.account_id),account=state.accounts.find(a=>a.account_id===actor.account_id);
+    if(!session||!account?.two_factor_secret)throw new ServiceError('AUTHENTICATION_REQUIRED');
+    session.mfa_verified_at=new Date(Date.now()).toISOString();session.mfa_sha256=crypto.createHash('sha256').update(JSON.stringify(account.two_factor_secret)).digest('hex');return true;});
+}
+
+function loginMfaVerified(store, actor, token) {
+  const state = store.state(), session = state.sessions.find(s => s.token_sha256 === tokenDigest(token || '') && s.account_id === actor?.account_id);
+  const account = state.accounts.find(a => a.account_id === actor?.account_id);
+  return Boolean(session && account?.two_factor_secret && !sessionExpired(session, Date.now()) && Number.isFinite(Date.parse(session.mfa_verified_at)) && Date.parse(session.mfa_verified_at) <= Date.now() && session.mfa_sha256 === crypto.createHash('sha256').update(JSON.stringify(account.two_factor_secret)).digest('hex'));
+}
+
 function resolveSession(store, token) {
   if (typeof token !== 'string' || !token) throw new ServiceError('AUTHENTICATION_REQUIRED');
   const digest = tokenDigest(token);
@@ -441,6 +456,7 @@ function signOutEverywhere(store, accountId) {
 }
 
 module.exports = {
+  loginMfaVerified, markLoginMfaVerified,
   disconnectGoogle,
   signInWithGoogle,
   verifyAccountPassword,
