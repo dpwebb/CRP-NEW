@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-24T21:28:24.045Z",
+  "generated_at": "2026-10-24T21:55:32.320Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 117,
-      "digest": "2BDA13EFCFA32D4E94F953508CDA39C0D3677D655EFFDF4DDC48102972656BCB",
+      "digest": "424EC88D266951DB36F1D27527277257B66D813FA22B38B7DA4624D0FB84835F",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -354,7 +354,7 @@
         },
         {
           "file": "accelerated-launch/service/packet-composer-worker.cjs",
-          "sha256": "0B9E9FF24456143797F5439C0538E2FBF5E4803F17F3C0A1F6038946BC6810EF"
+          "sha256": "7FE41CC61B8E0B78C08F9806DE144E23A0E2F60843BB854779F91B7E7F3258DD"
         },
         {
           "file": "accelerated-launch/service/packet-composer.cjs",
@@ -815,6 +815,6 @@
       ]
     }
   ],
-  "manifest_digest": "1191137C53B6F63A611C85702860B91260744CF92009132C9DF29973A034C95D",
+  "manifest_digest": "0098F80E1EE6C0B8B5EA02AB9290792174E5D6A5B708E6B220CDFDAC9D2022DA",
   "total_file_count": 192
 }

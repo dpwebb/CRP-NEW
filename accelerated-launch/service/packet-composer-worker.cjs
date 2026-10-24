@@ -172,20 +172,11 @@ function defaultResources(form, doc) {
 }
 function wrapped(text, font, size, width) {
   const lines = [];
-  // Repeated paragraphs reuse identical font measurements. Keep this cache local
-  // to the same font/size and bounded; line breaks and glyph shaping stay exact.
-  const widths = new Map();
-  const measuredWidth = value => {
-    if (widths.has(value)) return widths.get(value);
-    const measured = font.widthOfTextAtSize(value, size);
-    if (widths.size < 32768) widths.set(value, measured);
-    return measured;
-  };
   for (const paragraph of text.split('\n')) {
     if (!paragraph) { lines.push(''); continue; }
     let line = '';
     for (const char of paragraph) {
-      if (line && measuredWidth(line + char) > width) {
+      if (line && font.widthOfTextAtSize(line + char, size) > width) {
         const breakAt = line.lastIndexOf(' ');
         if (breakAt > 0) { lines.push(line.slice(0, breakAt)); line = line.slice(breakAt + 1); }
         else { lines.push(line); line = ''; }
