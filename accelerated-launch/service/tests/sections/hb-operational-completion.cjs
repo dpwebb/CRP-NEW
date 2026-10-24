@@ -1,6 +1,8 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 async function run(t,check){
+ const navSource=fs.readFileSync(path.join(__dirname,'../../ui/app.js'),'utf8'),scope={state:{step:'billing',error:'Choose a report',notice:'Earlier saved notice'},STEP:{BILLING:'billing'},visibleStep:v=>v,signInChallenge:null,packetLeave:null,el:()=>null,render(){},focusStepHeading(){}};vm.createContext(scope);vm.runInContext(navSource.slice(navSource.indexOf('function navigateStep('),navSource.indexOf('function banner(')),scope);vm.runInContext("navigateStep('history')",scope);check.equal(scope.state.error,null,'changing tasks clears the previous panel validation error');check.equal(scope.state.notice,null,'changing tasks clears the previous panel success notice');scope.state.error='Current validation';vm.runInContext("navigateStep('history')",scope);check.equal(scope.state.error,'Current validation','staying on the same task retains its current validation');
+
  const source=fs.readFileSync(path.join(__dirname,'../../ui/app.js'),'utf8'),nodes=new Map();
  const node=id=>{if(!nodes.has(id))nodes.set(id,{innerHTML:'',textContent:'',value:'',focus(){}});return nodes.get(id);};
  const ctx={console,URLSearchParams,Map,Set,Date,JSON,Object,Array,Number,String,Error,setTimeout,clearTimeout,document:{getElementById:node},navigator:{clipboard:{}},location:{search:'',hash:''}};ctx.window=ctx;vm.createContext(ctx);vm.runInContext(source.slice(0,source.indexOf('/* ------------------------------------------------------------------ bootstrap */')),ctx);ctx.panel={innerHTML:''};ctx.transitions=[];

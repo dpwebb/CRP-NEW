@@ -1113,7 +1113,7 @@ function createService(options) {
         sendText(res, outcome.status, outcome.text, outcome.content_type, outcome.headers);
         return;
       }
-      if (outcome.status < 300 && ['createAccount', 'finishGoogleSignIn', 'finishSignup', 'sessionInfo'].includes(matched.name)) {
+      if (outcome.status < 300 && ['createAccount', 'signIn', 'finishGoogleSignIn', 'finishSignup', 'sessionInfo'].includes(matched.name)) {
         try {
           const clear = affiliate.bind(req, actor || outcome.json?.account);
           if (clear) { outcome.headers ||= {}; outcome.headers['Set-Cookie'] = [...[].concat(outcome.headers['Set-Cookie'] || []), clear]; }

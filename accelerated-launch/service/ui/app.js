@@ -292,7 +292,7 @@ function navigateStep(step) {
     });
   }
   if (step !== STEP.BILLING) state.upgrade_confirmation = null;
-  if (step !== state.step) state.notice = null;
+  if (step !== state.step) { state.notice = null; state.error = null; }
   state.step = step; render();
   focusStepHeading();
 }
@@ -2726,7 +2726,7 @@ async function wirePacket(panel) {
   const accountDetails = el('packet-account-details');
   packetLeave = step => run(async () => {
     ensureOrigin();
-    if (step !== state.step) state.notice = null;
+    if (step !== state.step) { state.notice = null; state.error = null; }
     if (assessmentStale && [STEP.CHOOSE, STEP.PREPARE, STEP.REVIEW].includes(step)) {
       step = STEP.RESULTS;
       state.notice = 'Your report has a newer assessment. Check its issues and choose your disputes again.';

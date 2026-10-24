@@ -181,7 +181,8 @@ async function check(p, out, options={}) {
   return {...result,verification_file:file};
 }
 function readVerification(file){const raw=read(file);if(raw.receipt_file){if(hash(raw.receipt_file)!==raw.sha256)throw Error('Verification pointer mismatch');return {file:raw.receipt_file,value:read(raw.receipt_file)};}return {file,value:raw};}
-function environmentIdentity(){return sha(JSON.stringify(Object.entries(process.env).sort(([a],[b])=>a.localeCompare(b))));}
+// The dispatcher nonce identifies a command, not a tested runtime input. Every other environment field stays bound.
+function environmentIdentity(){return sha(JSON.stringify(Object.entries(process.env).filter(([key])=>key!=='CODEX_TOOL_CALL_ID').sort(([a],[b])=>a.localeCompare(b))));}
 function verifyBinding(binding){
   if(environmentIdentity()!==binding.environment_sha256)throw Error('Verification environment changed');
   for(const row of [...binding.files,...binding.external_files,...binding.binaries])if(hash(row.path)!==row.sha256)throw Error('Verification input changed: '+row.path);
@@ -515,5 +516,5 @@ async function main() {
   else if(command==='attest') {const r=attest(read(args[0]),path.resolve(args[1]),path.resolve(args[2]),args[3]||'provider');console.log(JSON.stringify({original_build:r.original_receipt.build_id,unchanged_dependencies:r.unchanged_dependencies.length,configuration_reuse:r.configuration_reuse}));}
   else throw Error('Usage: release-workflow.cjs prepare|plan BASE [BASELINE] [PLAN] | preflight PLAN [PROFILE_JSON] | check PLAN OUTPUT [PROFILE_JSON] | record OUTPUT | attest PLAN ORIGINAL_RECEIPT OUTPUT [provider|packet|product] | package PLAN VERIFICATION OUTPUT | continuity PLAN VERIFICATION PACKAGE OUTPUT | assemble PACKAGE PRODUCT_PROOF EVIDENCE_ROOT OUTPUT [FDT_TEMPLATE] | smoke URL BUILD RECEIPT [PACKAGE] | activate staging|production PACKAGE EXPECTED_PREVIOUS ACCEPTANCE_OR_DASH OUTPUT | rollback TARGET EXPECTED_CURRENT OUTPUT');
 }
-module.exports={classify,baselineValid,manifestValid,plan,frozen,sourceFrozen,sectionCatalog,contentImpact,prepareInputs,verifyBinding,check,readVerification,packageCandidate,smoke,familyEntryContract,renderedHomepage,acceptance,prepareAcceptanceProof,preparePromotionProof,validateProductProof,validateFdtProof,assembleProductProof,attest};
+module.exports={environmentIdentity,classify,baselineValid,manifestValid,plan,frozen,sourceFrozen,sectionCatalog,contentImpact,prepareInputs,verifyBinding,check,readVerification,packageCandidate,smoke,familyEntryContract,renderedHomepage,acceptance,prepareAcceptanceProof,preparePromotionProof,validateProductProof,validateFdtProof,assembleProductProof,attest};
 if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});

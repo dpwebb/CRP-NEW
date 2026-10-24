@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-24T19:37:26.478Z",
+  "generated_at": "2026-10-24T20:47:36.312Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 117,
-      "digest": "AE3158B9247F92F57C437B27A4846E2567DB667C193104D498EE144B1A599608",
+      "digest": "B3DD9FCDF8CA5099ACA3707C3F27272A43F14ED9A79865059C24D4F12F57BCA0",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -106,7 +106,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "5D77B4CBFC37A4333FDF59F57D55C759BAC3E41AE2E1E11A9D769F15E89CC334"
+          "sha256": "3ECBDF301D98370EC9AC13966CF9DB8F66B3A60B067322101F81DA4953A13EE7"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -654,7 +654,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 39,
-      "digest": "757B926EFAD2A0DACCFF6F26A77AA45FA9A151B637B4D44B925A1CE219090F48",
+      "digest": "D21FB89256172191550721CD22E3B3C2EA8F0C0A7CD5128AB76A826EEFE7F361",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -694,7 +694,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "8EF21F3938D197579E6E9421014E1BAC5660AEEC4819AB4BC05183FFC085A644"
+          "sha256": "30FBCF8BEC6ADE320ED32AF27B3E2A4EEDB87C006364E3539554DD671B6AE0C0"
         },
         {
           "file": "accelerated-launch/service/ui/brand-logo.png",
@@ -815,6 +815,6 @@
       ]
     }
   ],
-  "manifest_digest": "4048E21626A1E1E5DFE6EBACDFE350F4D11E749146C11D1A0F3F1EFB4C113229",
+  "manifest_digest": "E34D03EAAA5784BE27EA00154DD20C8CAE197699843264CF238DD66C5739978B",
   "total_file_count": 192
 }
