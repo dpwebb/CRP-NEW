@@ -16,6 +16,7 @@ function create(store, options = {}) {
     || (env.CRP_DEPLOYMENT_ENV === 'production' && origin !== 'https://affiliates.creditregulatorpro.com')
     || (env.CRP_DEPLOYMENT_ENV === 'staging' && origin !== 'https://affiliates-staging.creditregulatorpro.com'))) throw Error('AFFILIATE_CONFIGURATION_INVALID');
   if(enabled&&key.length<32)throw Error('AFFILIATE_CONFIGURATION_INVALID');
+  const stagingScope = env.CRP_DEPLOYMENT_ENV === 'staging' && origin === 'https://affiliates-staging.creditregulatorpro.com' && key.length >= 32;
   const fetcher = options.fetcher || fetch;
   const flags = '; HttpOnly; SameSite=Lax; Path=/' + (['production','staging'].includes(env.CRP_DEPLOYMENT_ENV) || env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : '');
   const cookie = req => String(req.headers?.cookie || '').split(';').map(v => v.trim()).find(v => v.startsWith(COOKIE + '='))?.slice(COOKIE.length + 1);
@@ -26,14 +27,16 @@ function create(store, options = {}) {
     const expected = crypto.createHmac('sha256', key).update(body).digest(), actual = Buffer.from(mac, 'base64url');
     if (actual.length !== expected.length || !crypto.timingSafeEqual(actual, expected)) throw Error('AFFILIATE_HANDOFF_INVALID');
     const value = JSON.parse(Buffer.from(body, 'base64url').toString());
-    if (Object.keys(value).sort().join(',') !== 'consentRef,expiresAt,issuedAt,origin,referralHandle,v' || value.v !== 1 || value.origin !== origin
+    const simulation=value.v===2&&stagingScope&&Object.keys(value).sort().join(',')==='consentRef,consumerEmails,expiresAt,issuedAt,origin,referralHandle,simulationId,v'&&typeof value.simulationId==='string'&&/^[0-9a-f-]{36}$/.test(value.simulationId)&&Array.isArray(value.consumerEmails)&&value.consumerEmails.length>=1&&value.consumerEmails.length<=4&&value.consumerEmails.every(s=>typeof s==='string'&&/^[^\s@]+@example\.test$/.test(s))&&value.expiresAt-value.issuedAt<=86400000;
+    const ordinary=enabled&&value.v===1&&Object.keys(value).sort().join(',')==='consentRef,expiresAt,issuedAt,origin,referralHandle,v';
+    if ((!ordinary&&!simulation) || value.origin !== origin
       || !opaque(value.consentRef) || typeof value.referralHandle !== 'string' || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(value.referralHandle) || value.referralHandle.length > 2000
       || !Number.isSafeInteger(value.issuedAt) || !Number.isSafeInteger(value.expiresAt) || value.issuedAt > now() + 300000
       || value.expiresAt <= now() || value.expiresAt <= value.issuedAt || value.expiresAt - value.issuedAt > 90 * DAY) throw Error('AFFILIATE_HANDOFF_INVALID');
     return value;
   }
   function capture(req) {
-    if (!enabled || req.method !== 'GET') return null;
+    if ((!enabled&&!stagingScope) || req.method !== 'GET') return null;
     const url = new URL(req.url, 'http://localhost');
     if (url.pathname !== '/affiliate/referral') return null;
     try {
@@ -42,14 +45,15 @@ function create(store, options = {}) {
     } catch { return { status: 303, headers: { Location: '/' } }; }
   }
   function bind(req, actor) {
-    if (!enabled || !actor?.account_id) return null;
+    if ((!enabled&&!stagingScope) || !actor?.account_id) return null;
     let value; try { value = verify(cookie(req)); } catch { return null; }
     // Local atomic persistence only. A downstream outage cannot delay signup.
     store.update(state => {
       const account = state.accounts.find(a => a.account_id === actor.account_id);
+      if (value.v===2&&(!account||!value.consumerEmails.includes(String(account.email||'').toLowerCase())||!Number.isFinite(Date.parse(account.created_at))||Date.parse(account.created_at)<value.issuedAt-300000)) return;
       if (!account || account.affiliate_binding || state.checkout_sessions.some(c => c.account_id === account.account_id && c.state === 'COMPLETED')) return;
       const boundAt = new Date(now()).toISOString();
-      account.affiliate_binding = { state: 'READY', attempts: 0, next_at: now(), body: { version: 1, eventId: 'binding:' + crypto.randomUUID(), binding: {
+      account.affiliate_binding = { ...(value.v===2?{simulationId:value.simulationId}:{}), state: 'READY', attempts: 0, next_at: now(), body: { version: 1, eventId: 'binding:' + crypto.randomUUID(), binding: {
         consumerRef: account.account_id, referralHandle: value.referralHandle, consentRef: value.consentRef, boundAt
       } } };
     });
@@ -57,13 +61,13 @@ function create(store, options = {}) {
   }
   let busy = false, stopped = false, timer;
   async function drain() {
-    if (!enabled || busy || stopped) return false;
+    if ((!enabled&&!stagingScope) || busy || stopped) return false;
     busy = true;
     try {
-      if (!store.state().accounts.some(a => a.affiliate_binding && ['READY', 'SENDING'].includes(a.affiliate_binding.state) && a.affiliate_binding.next_at <= now())) return false;
+      if (!store.state().accounts.some(a => a.affiliate_binding && (enabled||(stagingScope&&a.affiliate_binding.simulationId)) && ['READY', 'SENDING'].includes(a.affiliate_binding.state) && a.affiliate_binding.next_at <= now())) return false;
       let selected;
       store.update(state => {
-        const account = state.accounts.find(a => a.affiliate_binding && ['READY', 'SENDING'].includes(a.affiliate_binding.state) && a.affiliate_binding.next_at <= now());
+        const account = state.accounts.find(a => a.affiliate_binding && (enabled||(stagingScope&&a.affiliate_binding.simulationId)) && ['READY', 'SENDING'].includes(a.affiliate_binding.state) && a.affiliate_binding.next_at <= now());
         if (!account) return;
         const row = account.affiliate_binding;
         row.state = 'SENDING'; row.attempts++; row.next_at = now() + 60000;
@@ -91,7 +95,7 @@ function create(store, options = {}) {
       return true;
     } finally { busy = false; }
   }
-  function start() { if (enabled && !timer) { timer = setInterval(() => { void drain().catch(() => {}); }, 30000); timer.unref(); } }
+  function start() { if ((enabled||stagingScope) && !timer) { timer = setInterval(() => { void drain().catch(() => {}); }, 30000); timer.unref(); } }
   function close() { stopped = true; clearInterval(timer); }
   return { enabled, capture, bind, drain, start, close };
 }

@@ -935,6 +935,7 @@ function createService(options) {
     catch { adminUnavailable = true; }
   }
   const logger = new Logger(opts.logSink);
+  store.retentionObserver = record => logger.log(record);
   const affiliate = require('./affiliate-attribution.cjs').create(store, { ...opts.affiliate, log: event => logger.log(event) });
   const googleSignIn = require('./auth0-google.cjs').create(store, opts.googleSignIn);
   const testMailbox = require('./staging-test-mail.cjs').create(store);

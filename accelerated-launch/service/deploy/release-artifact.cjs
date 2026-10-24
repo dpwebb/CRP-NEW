@@ -69,10 +69,17 @@ function committedRows(root,head,rows) {
   }
   return rows.length;
 }
+function windowsPathPreflight(out,files,platform=process.platform) {
+  if(platform!=='win32')return;
+  const attempt='attempt-00000000-0000-4000-8000-000000000000';
+  if(files.some(file=>path.resolve(out,attempt,'source',file).length>=260))throw Error('Package output path is too long for Windows tar. Choose a shorter dedicated output directory before packaging.');
+}
 function packageArtifact({root,manifest,head,verificationFile,out,sourceSnapshot,capturedDependencies=[]}) {
   manifestValid(manifest);
   if(!/^[a-f0-9]{40}$/.test(head))throw Error('Invalid committed package source');
   const rows=manifest.groups.flatMap(g=>g.files);
+  const inputs=[...rows.map(row=>row.file),...Object.keys(sourceSnapshot).filter(file=>sourceSnapshot[file]!==null),'source-inventory.json','deployment-provenance.json','release-manifest.json'];
+  windowsPathPreflight(out,inputs);
   verifyFiles(root,rows);committedRows(root,head,rows);
   const receiptFile=path.join(out,'package-receipt.json');
   if(fs.existsSync(receiptFile)){
@@ -133,4 +140,4 @@ function loadArtifact(packageFile) {
   }
   return {receipt,manifest,sourceRoot,packageRoot:path.dirname(manifestFile)};
 }
-module.exports={manifestValid,verifyFiles,assertArchive,committedRows,packageArtifact,loadArtifact,safe};
+module.exports={manifestValid,verifyFiles,assertArchive,committedRows,packageArtifact,loadArtifact,safe,windowsPathPreflight};

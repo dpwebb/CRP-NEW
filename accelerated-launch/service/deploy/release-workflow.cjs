@@ -190,7 +190,7 @@ function verifyBinding(binding){
 function prepareInputs(p,options={}){
   if(process.env.CRP_RELEASE_INPUTS_TEST_MODULE || process.env.CRP_RELEASE_WORKFLOW_MODULE)throw Error('Release checks refuse alternate test-module overrides; standalone tooling development tests may use them');
   const root=p.workspace_root||ROOT,catalog=sectionCatalog(root),product=p.risk.full_regression_required || p.risk.mode==='PRESENTATION',sections=p.risk.full_regression_required?catalog.map(r=>r.id):p.selected_sections;
-  const deploy='accelerated-launch/service/deploy/',toolNames=['release-workflow.test.cjs','release-inputs.test.cjs','release-execution.test.cjs','release-artifact.test.cjs','release-continuity.test.cjs','release-proof-adapter.test.cjs','release-transfer.test.cjs','release-acceptance.test.cjs','release-host-probe.test.cjs','release-evidence-validator.test.cjs'].filter(f=>fs.existsSync(inside(root,deploy+f)));
+  const deploy='accelerated-launch/service/deploy/',toolNames=['release-public-contract.test.cjs','release-workflow.test.cjs','release-inputs.test.cjs','release-execution.test.cjs','release-artifact.test.cjs','release-continuity.test.cjs','release-proof-adapter.test.cjs','release-transfer.test.cjs','release-acceptance.test.cjs','release-host-probe.test.cjs','release-evidence-validator.test.cjs'].filter(f=>fs.existsSync(inside(root,deploy+f)));
   const profileFile=options.profileFile?path.resolve(options.profileFile):null,profile=profileFile?read(profileFile):null;
   const partialFreshProfile = profile?.complete === false && profile?.reuse_product === false;
   if(profile && (profile.schema!==1 || (profile.complete!==true && !partialFreshProfile) || !profile.reviewed_by || !Array.isArray(profile.files) || !Array.isArray(profile.commands) || !Array.isArray(profile.external_files) || JSON.stringify([...profile.selected_sections||[]].sort())!==JSON.stringify([...sections].sort())))throw Error('Invalid reviewed input profile or selection');
@@ -226,6 +226,23 @@ function packageCandidate(p, verificationFile, out) {
   sourceFrozen(p);
   return receipt;
 }
+async function familyEntryContract(base, fetcher=fetch) {
+  const origin=base.hostname==='staging.creditregulatorpro.com'?'https://admin-staging.creditregulatorpro.com':base.hostname==='creditregulatorpro.com'?'https://admin.creditregulatorpro.com':null;
+  if(!origin)return null;
+  const entry=await fetcher(new URL('/admin',base),{redirect:'manual',signal:AbortSignal.timeout(15000)});
+  if(entry.status===200)return null;
+  if(entry.status!==303 || entry.headers.get('location')!==origin+'/')throw Error('Unexpected administration entry contract');
+  const response=await fetcher(origin+'/health',{redirect:'manual',signal:AbortSignal.timeout(15000)});
+  if(!response.ok)throw Error('Family entry health unavailable');
+  const health=await response.json();
+  if(health.ok!==true || health.application!=='crp-family-admin' || health.environment!==(base.hostname.startsWith('staging.')?'staging':'production') || !/^crp-family-[a-f0-9]+$/.test(health.build?.release||''))throw Error('Family entry health identity mismatch');
+  return {origin,release:health.build.release,retired:['admin.js','admin.css']};
+}
+function renderedHomepage(sourceRoot,manifest,home) {
+  artifact.verifyFiles(sourceRoot,manifest.groups.flatMap(group=>group.files));
+  const renderer=inside(sourceRoot,'accelerated-launch/service/public-seo.cjs'),template=inside(sourceRoot,'accelerated-launch/service/ui/landing.html');
+  return require(renderer).render(fs.readFileSync(template,'utf8'),home,null);
+}
 async function smoke(url, build, manifest, out, options = {}) {
   manifestValid(manifest);
   if(build!=='crp-v1-'+manifest.manifest_digest.slice(0,16).toLowerCase())throw Error('Smoke build does not match the artifact manifest');
@@ -240,9 +257,21 @@ async function smoke(url, build, manifest, out, options = {}) {
   const adminEnabled = options.adminEnabled ?? false;
   if (typeof adminEnabled !== 'boolean') throw Error('Explicit boolean admin feature expectation required');
   if (hasAdministration && (h.administration_enabled !== adminEnabled || adminEnabled && h.administration_available !== true)) throw Error('Hosted administration feature state mismatch');
+  const entry=adminEnabled?await familyEntryContract(base):null;
+  const home=assets.files.some(row=>path.basename(row.file)==='landing.html')?await (await fetch(new URL('/api/homepage',base),{signal:AbortSignal.timeout(15000)})).json():null;
   const checks=await Promise.all(assets.files.map(async f=>{
     const asset=path.basename(f.file);
-    const res=await fetch(new URL('/'+asset,base),{signal:AbortSignal.timeout(15000)});
+    const res=await fetch(new URL('/'+asset,base),{redirect:'manual',signal:AbortSignal.timeout(15000)});
+    if(entry && (entry.retired.includes(asset) || asset==='admin.html')) {
+      const expected=asset==='admin.html'?303:410;
+      if(res.status!==expected || expected===303 && res.headers.get('location')!==entry.origin+'/')throw Error('Preserved Family administration route mismatch: '+asset);
+      return {file:f.file,passed:true,status:res.status,expected:expected===303?'Verified Family portal redirect':'Retired native administration asset',family_release:entry.release};
+    }
+    if(asset==='landing.html') {
+      const expected=renderedHomepage(options.sourceRoot||ROOT,manifest,home),bytes=Buffer.from(await res.arrayBuffer());
+      if(!res.ok || !bytes.equals(Buffer.from(expected)))throw Error('Hosted rendered homepage mismatch');
+      return {file:f.file,passed:true,sha256:sha(bytes),expected:'Exact frozen SEO renderer and actual public homepage model'};
+    }
     if (adminAssets.test(asset) && !adminEnabled) {
       if (res.status !== 404) throw Error('Disabled administration asset unexpectedly exposed: ' + asset);
       return { file: f.file, passed: true, status: 404, expected: 'Administration explicitly disabled' };
@@ -255,7 +284,11 @@ async function smoke(url, build, manifest, out, options = {}) {
     return {file:f.file,passed:true,sha256:f.sha256};
   }));
   if (hasAdministration) for (const [alias, file] of [['/admin','admin.html'],['/partner-access','partner-access.html']]) {
-    const response = await fetch(new URL(alias,base),{signal:AbortSignal.timeout(15000)});
+    const response = await fetch(new URL(alias,base),{redirect:'manual',signal:AbortSignal.timeout(15000)});
+    if(entry && alias==='/admin') {
+      if(response.status!==303 || response.headers.get('location')!==entry.origin+'/')throw Error('Family entry alias mismatch');
+      checks.push({route:alias,passed:true,status:303,expected:'Verified Family portal redirect'});continue;
+    }
     const row = assets.files.find(f => path.basename(f.file) === file);
     if (!row || (!adminEnabled && response.status !== 404) || (adminEnabled && (!response.ok || sha(Buffer.from(await response.arrayBuffer())) !== row.sha256.toUpperCase()))) throw Error('Administration entry route mismatch: ' + alias);
     checks.push({route:alias,passed:true,status:response.status,expected:adminEnabled?'Exact committed asset':'Administration explicitly disabled'});
@@ -375,6 +408,7 @@ async function activate(target, packageFile, previous, acceptanceFile, out, opti
   if(r.build_id===previous)throw Error('Candidate is already the expected current build; no redeployment required');
   if(!candidate.sourceRoot)throw Error('Activation requires a frozen schema-2 source artifact; retain older receipts as historical proof');
   const sourceRoot=candidate.sourceRoot,evidenceRoot=target==='production'?evidenceRootFor(acceptanceFile):null;
+  options={...options,sourceRoot};
   if(target==='production')acceptance(read(acceptanceFile),r.build_id,{measurementFile:path.join(path.dirname(acceptanceFile),'measurements.json'),evidenceRoot,sourceRoot,packageReceipt:r});
   fs.mkdirSync(out,{recursive:true});
   const completed=path.join(out,'activation.json');
@@ -472,7 +506,7 @@ async function main() {
   else if(command==='preflight'){const p=read(args[0]);frozen(p);const r=prepareInputs(p,{profileFile:args[1]});console.log(JSON.stringify({...r.preflight,product_reuse:r.productReuse?'REVIEWED_COMPLETE_INPUT_PROFILE':'DISABLED_WITHOUT_COMPLETE_INPUT_PROFILE'}));}
   else if(command==='check') {const r=await check(read(args[0]),path.resolve(args[1]),{profileFile:args[2]});console.log(JSON.stringify({mode:r.mode,syntax_checks:r.syntax_checks,workflow_tests:r.workflow_tests,product_regression:r.product_regression,current_tests:r.current_tests,duration_ms:r.duration_ms,resumed_steps:r.resumed_steps,avoided_invocations:r.avoided_invocations,verification_file:r.verification_file}));}
   else if(command==='package') console.log(JSON.stringify(packageCandidate(read(args[0]),path.resolve(args[1]),path.resolve(args[2]))));
-  else if(command==='smoke') {if(args[4] && !['admin-enabled','admin-disabled'].includes(args[4]))throw Error('Unknown administration feature expectation');const candidate=args[3]?artifact.loadArtifact(path.resolve(args[3])):null;const r=await smoke(args[0],args[1],candidate?candidate.manifest:read(path.join(__dirname,'release-manifest.json')),path.resolve(args[2]),{adminEnabled:args[4]==='admin-enabled'});console.log(JSON.stringify({build_id:r.build_id,host:r.host,checks:r.checks.length+1,passed:r.passed}));}
+  else if(command==='smoke') {if(args[4] && !['admin-enabled','admin-disabled'].includes(args[4]))throw Error('Unknown administration feature expectation');const candidate=args[3]?artifact.loadArtifact(path.resolve(args[3])):null;const r=await smoke(args[0],args[1],candidate?candidate.manifest:read(path.join(__dirname,'release-manifest.json')),path.resolve(args[2]),{adminEnabled:args[4]==='admin-enabled',sourceRoot:candidate?.sourceRoot||ROOT});console.log(JSON.stringify({build_id:r.build_id,host:r.host,checks:r.checks.length+1,passed:r.passed}));}
   else if(command==='continuity') {const p=read(args[0]),candidate=artifact.loadArtifact(path.resolve(args[2])),v=readVerification(path.resolve(args[1]));const result=require('./release-continuity.cjs').buildComposite({root:p.workspace_root||ROOT,plan:p,baselineFile:p.baseline.file,focusedFile:v.value.product_receipt?.receipt_file||null,toolsVerificationFile:v.file,candidate:candidate.receipt,outputDirectory:path.resolve(args[3])});console.log(JSON.stringify({kind:result.kind,proof_file:result.proofFile}));}
   else if(command==='assemble')console.log(JSON.stringify(assembleProductProof(path.resolve(args[0]),path.resolve(args[1]),path.resolve(args[2]),path.resolve(args[3]),args[4]?path.resolve(args[4]):null)));
   else if(command==='record')console.log(JSON.stringify(execution.readRecord(path.resolve(args[0]))));
@@ -481,5 +515,5 @@ async function main() {
   else if(command==='attest') {const r=attest(read(args[0]),path.resolve(args[1]),path.resolve(args[2]),args[3]||'provider');console.log(JSON.stringify({original_build:r.original_receipt.build_id,unchanged_dependencies:r.unchanged_dependencies.length,configuration_reuse:r.configuration_reuse}));}
   else throw Error('Usage: release-workflow.cjs prepare|plan BASE [BASELINE] [PLAN] | preflight PLAN [PROFILE_JSON] | check PLAN OUTPUT [PROFILE_JSON] | record OUTPUT | attest PLAN ORIGINAL_RECEIPT OUTPUT [provider|packet|product] | package PLAN VERIFICATION OUTPUT | continuity PLAN VERIFICATION PACKAGE OUTPUT | assemble PACKAGE PRODUCT_PROOF EVIDENCE_ROOT OUTPUT [FDT_TEMPLATE] | smoke URL BUILD RECEIPT [PACKAGE] | activate staging|production PACKAGE EXPECTED_PREVIOUS ACCEPTANCE_OR_DASH OUTPUT | rollback TARGET EXPECTED_CURRENT OUTPUT');
 }
-module.exports={classify,baselineValid,manifestValid,plan,frozen,sourceFrozen,sectionCatalog,contentImpact,prepareInputs,verifyBinding,check,readVerification,packageCandidate,smoke,acceptance,prepareAcceptanceProof,preparePromotionProof,validateProductProof,validateFdtProof,assembleProductProof,attest};
+module.exports={classify,baselineValid,manifestValid,plan,frozen,sourceFrozen,sectionCatalog,contentImpact,prepareInputs,verifyBinding,check,readVerification,packageCandidate,smoke,familyEntryContract,renderedHomepage,acceptance,prepareAcceptanceProof,preparePromotionProof,validateProductProof,validateFdtProof,assembleProductProof,attest};
 if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});

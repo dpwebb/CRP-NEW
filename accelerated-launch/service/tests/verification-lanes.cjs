@@ -17,7 +17,7 @@ LANE_IDS.security.unshift('gu-packet-signature');
 LANE_IDS.security.unshift('gv-mailing-internal-boundaries');
 LANE_IDS.security.unshift('gy-operational-packet');
 LANE_IDS.security.unshift('gz-staging-test-mail');
-LANE_IDS.security.unshift('ha-login-only-mfa');
+LANE_IDS.security.unshift('ha-login-only-mfa','hb-operational-completion');
 LANE_IDS.consumer.unshift('gz-staging-test-mail');
 LANE_IDS.consumer.unshift('gy-operational-packet');
 LANE_IDS.security.unshift('gx-operational-mailing');

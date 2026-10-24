@@ -292,6 +292,7 @@ function navigateStep(step) {
     });
   }
   if (step !== STEP.BILLING) state.upgrade_confirmation = null;
+  if (step !== state.step) state.notice = null;
   state.step = step; render();
   focusStepHeading();
 }
@@ -2725,6 +2726,7 @@ async function wirePacket(panel) {
   const accountDetails = el('packet-account-details');
   packetLeave = step => run(async () => {
     ensureOrigin();
+    if (step !== state.step) state.notice = null;
     if (assessmentStale && [STEP.CHOOSE, STEP.PREPARE, STEP.REVIEW].includes(step)) {
       step = STEP.RESULTS;
       state.notice = 'Your report has a newer assessment. Check its issues and choose your disputes again.';
@@ -2953,9 +2955,18 @@ function renderHistory(panel) {
       }, { redraw: false });
       el('cmp-left').onchange = el('cmp-right').onchange = () => { if (el('comparison')) el('comparison').textContent = 'Choose Compare these two reports to update the comparison.'; };
     }
-  }).catch(() => {
+  }).catch((error) => {
     try { ensureHistory(); } catch { return; }
-    if (state.step === STEP.HISTORY && el('history-body')) el('history-body').textContent = 'Your report history could not be loaded. Open this page again to retry.';
+    const block = el('history-body');
+    if (state.step !== STEP.HISTORY || !block) return;
+    if (error.code === 'SUBSCRIPTION_REQUIRED' || error.status === 402) {
+      block.innerHTML = '<div class="note"><h2>Report history and comparison need a subscription</h2><p>Your uploaded files are still saved. Use Upload report to open a saved report. Choose a subscription to use report history and compare results.</p><button id="history-saved-files">Open my saved reports</button> <button id="history-plans" class="primary">See plans</button></div>';
+      el('history-saved-files').onclick = () => { state.savedReportsAutoLoad = true; navigateStep(STEP.JURISDICTION); };
+      el('history-plans').onclick = () => navigateStep(STEP.BILLING);
+      return;
+    }
+    block.innerHTML = '<p>Your report history could not be loaded. Try again.</p><button id="history-retry">Try again</button>';
+    el('history-retry').onclick = () => navigateStep(STEP.HISTORY);
   });
 }
 
