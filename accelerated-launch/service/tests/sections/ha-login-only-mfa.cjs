@@ -21,6 +21,13 @@ async function run(unused,check){
   check.equal('admin_token' in unlock.json,false,'administrative bearer proof stays out of response JSON');
   const admin=/crp_admin_session=([^;]+)/.exec(unlock.setCookie)[1];
   check.equal((await t.request('GET','/api/admin/session',{token,headers:{'x-crp-admin-session':admin}})).status,200,'native role and active administrative session still authorize reads');
+  const row=t.service.store.state().sessions.find(s=>s.token_sha256===accounts.tokenDigest(token)),verifiedAt=row.mfa_verified_at;
+  const adminRow=t.service.adminStore.state().unlocks.find(s=>s.token_sha256===require('node:crypto').createHash('sha256').update(admin).digest('hex'));
+  check.equal(Date.parse(adminRow.absolute_expires_at),Date.parse(verifiedAt)+access.MAX_UNLOCK_MS,'admin absolute cutoff is bound to the original verified login');
+  t.service.store.update(s=>{s.sessions.find(r=>r.session_id===row.session_id).mfa_verified_at=new Date(Date.now()-access.MAX_UNLOCK_MS-1).toISOString();});
+  check.equal((await t.request('GET','/api/session',{token})).status,200,'ordinary primary session can remain active after the shorter admin cutoff');
+  check.equal((await t.request('POST','/api/admin/unlock',{token,body:{}})).status,401,'an active Consumer cookie cannot silently extend the eight-hour admin login');
+  t.service.store.update(s=>{s.sessions.find(r=>r.session_id===row.session_id).mfa_verified_at=verifiedAt;});
   check.equal((await t.request('POST','/api/account/recovery-key',{token:owner.token,body:{password,loginVerified:true}})).status,401,'browser cannot supply a trusted MFA flag');
   check.equal((await t.request('POST','/api/account/recovery-key',{token,body:{password}})).status,200,'security action uses password and verified login without an action code');
   check.equal((await t.request('POST','/api/account/2fa/disable',{token,body:{password}})).status,200,'turning off MFA uses the current password and login proof');
