@@ -7,6 +7,14 @@ const lib=require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLttAAAAABJRU5ErkJggg==','base64');
 async function run(t,check){
+ const Module=require('node:module'),filename=path.resolve(__dirname,'../../packet-composer.cjs');
+ for(const failure of [{error:Object.assign(Error('private fixture diagnostic'),{code:'ETIMEDOUT'})},{status:0,stdout:'private invalid response'},{status:1,stdout:JSON.stringify({error:'SERVICE_STATE_UNAVAILABLE'})},{status:0,stdout:JSON.stringify({bytes:'broken',version:'wrong',sha256:'wrong',page_count:1})}]){
+  const isolated=new Module(filename,module);isolated.filename=filename;isolated.paths=Module._nodeModulePaths(path.dirname(filename));isolated.require=name=>name==='node:child_process'?{spawnSync:()=>failure}:Module.prototype.require.call(isolated,name);isolated._compile(fs.readFileSync(filename,'utf8'),filename);
+  const input={letter_text:'Fictional packet render failure'},before=JSON.stringify(input);let refusal;try{isolated.exports.composePacket(input);}catch(error){refusal=error;}
+  check.equal(refusal?.code,'PACKET_RENDER_UNAVAILABLE','worker failure is identified as an unavailable packet render');check.equal(refusal?.status,503,'render refusal stays a service failure');
+  check.ok(/packet/.test(refusal?.message)&&!/private|fixture diagnostic|invalid response/.test(refusal?.message),'render refusal gives safe plain language without private worker output');check.equal(JSON.stringify(input),before,'failed render does not alter supplied choices');
+ }
+
  const id='a'.repeat(32),settings={bureau:'EQUIFAX',channel:'POSTAL',purpose:'ACCOUNT',document_ids:[id],use_account_profile:true,no_ssn_issued:false,identity_shows_address:true};
  check.equal('document_rotations' in support.normalize(settings,'CA'),false,'old packets retain material shape without an empty rotation map');
  check.equal('document_rotations' in support.normalize({...settings,document_rotations:{[id]:0}},'CA'),false,'no-op rotation has no new material');

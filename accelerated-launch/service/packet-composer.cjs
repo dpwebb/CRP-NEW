@@ -81,11 +81,11 @@ function composePacket(input) {
     windowsHide: true, env: { ...process.env, NODE_OPTIONS: '' }, stdio: ['pipe', 'pipe', 'pipe']
   });
   // Do not expose worker diagnostics or private packet contents in errors/logs.
-  if (child.error) throw new ServiceError('SERVICE_STATE_UNAVAILABLE');
+  if (child.error) throw new ServiceError('PACKET_RENDER_UNAVAILABLE');
   let result;
-  try { result = JSON.parse(child.stdout); } catch { throw new ServiceError('SERVICE_STATE_UNAVAILABLE'); }
+  try { result = JSON.parse(child.stdout); } catch { throw new ServiceError('PACKET_RENDER_UNAVAILABLE'); }
   if (child.status !== 0 || result.error) {
-    const error = new ServiceError(['PACKET_ATTACHMENT_UNREADABLE', 'SERVICE_STATE_UNAVAILABLE'].includes(result.error) ? result.error : 'INVALID_REQUEST');
+    const error = new ServiceError(result.error === 'SERVICE_STATE_UNAVAILABLE' ? 'PACKET_RENDER_UNAVAILABLE' : result.error === 'PACKET_ATTACHMENT_UNREADABLE' ? result.error : 'INVALID_REQUEST');
     const failure = result.attachment;
     const entries = failure?.kind === 'report' ? payload.reports : failure?.kind === 'document' ? payload.documents : null;
     const entry = Number.isSafeInteger(failure?.index) && failure.index >= 0 ? entries?.[failure.index] : null;
@@ -101,7 +101,7 @@ function composePacket(input) {
     throw error;
   }
   const bytes = Buffer.from(result.bytes || '', 'base64');
-  if (bytes.subarray(0, 5).toString('ascii') !== '%PDF-' || result.version !== payload.version || result.sha256 !== digest(bytes) || !Number.isSafeInteger(result.page_count) || result.page_count < 1) throw new ServiceError('SERVICE_STATE_UNAVAILABLE');
+  if (bytes.subarray(0, 5).toString('ascii') !== '%PDF-' || result.version !== payload.version || result.sha256 !== digest(bytes) || !Number.isSafeInteger(result.page_count) || result.page_count < 1) throw new ServiceError('PACKET_RENDER_UNAVAILABLE');
   const composed = { bytes, sha256: result.sha256, page_count: result.page_count, sections: result.sections,
     editable_fields: result.editable_fields, review_pages: result.review_pages, version: result.version };
   if (bytes.length <= CACHE_LIMIT) {
