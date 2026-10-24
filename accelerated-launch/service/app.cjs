@@ -578,7 +578,8 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps) {
       return { status: 200, json: { ok: true, cases: rows } };
     },
 
-    getCase: ({ params, actor }) => ({ status: 200, json: { ok: true, view: journey.caseView(store, actor, params.caseId) } }),
+    getCase: ({ params, actor }) => ({ status: 200, json: { ok: true, view: journey.caseView(store, actor, params.caseId),
+      checkout_return: require('./checkout-return-status.cjs').forCase(store, actor, params.caseId) } }),
 
     setCaseStatus: ({ params, body, actor }) => ({
       status: 200,

@@ -404,8 +404,8 @@ function notices(accessible = false) {
   if (state.error) parts.push(`<div class="note stop"${accessible ? ' role="alert"' : ''}><span class="err">Please check:</span> ${esc(state.error)}</div>`);
   if (state.notice) parts.push(`<div class="note" id="consumer-notice"${accessible ? ' role="status"' : ''}>${esc(state.notice)}</div>`);
   if (state.checkoutReturn && state.account && (!state.caseId || state.checkoutReturn.caseId === state.caseId)) {
-    const pending = state.checkoutReturn.status === 'pending';
-    parts.push(`<div class="note${pending ? '' : ' stop'}">${pending ? 'Your payment has not been confirmed yet. Check again before starting another checkout.' : 'We could not open your saved report. Try again, or select a saved report below.'}<br><button class="secondary" id="checkout-return-retry">${pending ? 'Check payment' : 'Try again'}</button></div>`);
+    const pending = state.checkoutReturn.status === 'pending', unmatched = state.checkoutReturn.status === 'unavailable';
+    parts.push(`<div class="note${pending ? '' : ' stop'}">${pending ? 'Your payment has not been confirmed yet. Check again before starting another checkout.' : unmatched ? 'We could not match this return link to one payment. Check your plan or try again.' : 'We could not open your saved report. Try again, or select a saved report below.'}<br><button class="secondary" id="checkout-return-retry">${pending ? 'Check payment' : unmatched ? 'Check payment status' : 'Try again'}</button></div>`);
   }
   return parts.join('');
 }
@@ -1689,8 +1689,17 @@ async function restoreCheckoutReport(context) {
     const confirmed = context.planCode === 'report_once' ? data.view.assessment_access?.complete_assessment
       : data.view.assessment_access?.dispute_packet && (context.planCode !== 'annual'
         || access.entitlement?.entitled && access.entitlement.plan_code === 'annual');
-    state.checkoutReturn = confirmed || context.cancelled ? null : { ...context, status: 'pending' };
-    state.notice = confirmed ? (context.planCode === 'report_once' ? 'Your full assessment is ready.' : 'Your report is ready. Choose what you want to dispute.')
+    const paymentReturn = data.checkout_return?.[context.planCode];
+    const terminal = ['REFUNDED', 'REVERSED', 'CANCELLED'].includes(paymentReturn?.status);
+    const unmatched = ['NONE', 'AMBIGUOUS', 'UNAVAILABLE'].includes(paymentReturn?.status);
+    state.checkoutReturn = terminal || confirmed || context.cancelled || paymentReturn?.status === 'PAID' ? null
+      : { ...context, status: unmatched ? 'unavailable' : 'pending' };
+    state.notice = paymentReturn?.status === 'REFUNDED'
+      ? `Your earlier payment of ${money(paymentReturn.refunded_cents, paymentReturn.currency)} was refunded. Check Plans for your current access.`
+      : paymentReturn?.status === 'REVERSED' ? 'Your earlier payment is no longer active. Check Plans for your current access.'
+      : paymentReturn?.status === 'CANCELLED' ? 'This checkout was cancelled or ended. You can choose a plan when you are ready.'
+      : confirmed ? (context.planCode === 'report_once' ? 'Your full assessment is ready.' : 'Your report is ready. Choose what you want to dispute.')
+      : paymentReturn?.status === 'PAID' ? 'Your earlier payment was confirmed. Check Plans for your current access.'
       : context.cancelled ? 'Checkout cancelled. You can choose a plan when you are ready.' : null;
     state.error = null;
   } catch (error) {
