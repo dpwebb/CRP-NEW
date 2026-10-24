@@ -349,6 +349,9 @@ export class Gateway {
     return me;
   }
   capability(s, app, op) {
+    if (this.config.creativeStudio === false && app === 'affiliate' &&
+        /^\/api\/studio(?:\/|$)/.test(op.path))
+      fail('FEATURE_UNAVAILABLE', 404);
     const p = s.principal;
     if (
       !p?.permissions.includes(op.permission) ||

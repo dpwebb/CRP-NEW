@@ -1,5 +1,7 @@
 import { reads, actions } from "./catalog.mjs";
 export function configuration(raw) {
+  if (raw.creativeStudio !== undefined && typeof raw.creativeStudio !== 'boolean')
+    throw Error('INVALID_CREATIVE_STUDIO_CONFIGURATION');
   if (raw.familySso !== undefined && typeof raw.familySso !== 'boolean')
     throw Error('INVALID_FAMILY_SSO_CONFIGURATION');
   if (!["local", "staging", "production"].includes(raw.environment))
@@ -126,6 +128,7 @@ export function configuration(raw) {
     bindings,
     affiliateLogin,
     familySso: raw.familySso === true,
+    creativeStudio: raw.creativeStudio !== false,
     auditDirectory: raw.auditDirectory,
     secure: origin.protocol === "https:",
     port:

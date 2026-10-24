@@ -272,6 +272,9 @@ function renderNav() {
 }
 function navigate(view) {
   if (!pages[view]) view = "overview";
+  const target = pages[view];
+  if (target.app && !S.session?.catalog.reads[target.app]?.includes(target.resource))
+    view = "overview";
   S.view = view;
   notice("");
   window.scrollTo({ top: 0, behavior: "instant" });
