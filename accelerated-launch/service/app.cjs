@@ -242,6 +242,8 @@ const ROUTES = Object.freeze([
   ['POST', '/api/cases/:caseId/mailing/cancel', true, 'mailingCancel'],
   ['POST', '/api/cases/:caseId/mailing/print-preview', true, 'mailingPrintPreview'],
   ['GET', '/api/cases/:caseId/mailing/print-preview/:orderId/:previewHash', true, 'mailingPrintPdf'],
+  ['GET', '/api/cases/:caseId/mailing/print-preview/:orderId/:previewHash/pages', true, 'mailingPrintPages'],
+  ['GET', '/api/cases/:caseId/mailing/print-preview/:orderId/:previewHash/pages/:pageNumber', true, 'mailingPrintPage'],
   ['POST', '/api/cases/:caseId/mailing/approve-print', true, 'mailingApprovePrint'],
   ['GET', '/api/cases/:caseId/packet-print', true, 'packetPrint'],
   ['GET', '/api/cases/:caseId/packet/preview', true, 'packetPreview'],
@@ -947,25 +949,43 @@ function createService(options) {
   const mailOps = require('./mail-ops-link.cjs').create(store);
   surface.google_sign_in = googleSignIn.status().enabled;
   const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
+  const mailingPreviewActor=({actor,req,params})=>{
+    const currentActor=accounts.resolveSession(store,sessionToken(req));
+    if(currentActor.account_id!==actor.account_id)throw new ServiceError('NOT_AUTHORIZED');
+    cases.requireOwnedCase(store,currentActor,params.caseId);
+    require('./signup-security.cjs').requireReady(store,currentActor);
+    entitlement.requireSubscriberFeature(store,currentActor);return currentActor;
+  };
+  const exactMailingPreview=async context=>{
+    const {params}=context;
+    if(!/^[a-f0-9-]{36}$/.test(params.orderId)||!/^[a-f0-9]{64}$/.test(params.previewHash))throw new ServiceError('INVALID_REQUEST');
+    if(typeof mailOps.printpreview!=='function')throw new ServiceError('NOT_AUTHORIZED');
+    const preview=await mailOps.printpreview(mailingPreviewActor(context),params.caseId,{});
+    mailingPreviewActor(context);
+    if(preview.order_id!==params.orderId||preview.preview_hash!==params.previewHash)throw new ServiceError('MAILING_ORDER_CHANGED');
+    return {preview,body:Buffer.from(preview.pdf_base64,'base64')};
+  };
+  const mailingPreviewHeaders=hash=>({'Cache-Control':'private, no-store','X-CRP-Preview-Hash':hash});
   const handlers = Object.assign(
     {},
     buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || testMailbox.wrap(require('./confirmation-mail.cjs').sender()), adminStore, googleSignIn, mailOps, testMailbox),
     buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps),
     buildBillingHandlers(store, logger, pricingCurrency),
-    {mailingPrintPdf: async ({actor, params, req}) => {
-      if (!/^[a-f0-9-]{36}$/.test(params.orderId) || !/^[a-f0-9]{64}$/.test(params.previewHash)) throw new ServiceError('INVALID_REQUEST');
-      if (typeof mailOps.printpreview !== 'function') throw new ServiceError('NOT_AUTHORIZED');
-      const preview = await mailOps.printpreview(actor, params.caseId, {});
-      // A PDF opened in another tab retains cookie authentication and the exact reviewed identity.
-      const currentActor = accounts.resolveSession(store, sessionToken(req));
-      if (currentActor.account_id !== actor.account_id) throw new ServiceError('NOT_AUTHORIZED');
-      require('./signup-security.cjs').requireReady(store, currentActor);
-      entitlement.requireSubscriberFeature(store, currentActor);
-      if (preview.order_id !== params.orderId || preview.preview_hash !== params.previewHash) throw new ServiceError('MAILING_ORDER_CHANGED');
-      return {status:200, text:Buffer.from(preview.pdf_base64, 'base64'), content_type:'application/pdf', headers:{
-        'Content-Disposition':`inline; filename="final-mailing-copy-${params.orderId}.pdf"`,
-        'Cache-Control':'private, no-store', 'X-CRP-Preview-Hash':preview.preview_hash
-      }};
+    {mailingPrintPdf: async context => {
+      const {preview,body}=await exactMailingPreview(context);
+      return {status:200,text:body,content_type:'application/pdf',headers:{...mailingPreviewHeaders(preview.preview_hash),
+        'Content-Disposition':`inline; filename="final-mailing-copy-${context.params.orderId}.pdf"`}};
+    },mailingPrintPages:async context=>{
+      const {preview,body}=await exactMailingPreview(context);
+      const count=await require('./packet-page-renderer.cjs').pageCount(body);
+      await exactMailingPreview(context);
+      return {status:200,json:{ok:true,order_id:preview.order_id,preview_hash:preview.preview_hash,page_count:count},headers:mailingPreviewHeaders(preview.preview_hash)};
+    },mailingPrintPage:async context=>{
+      if(!/^[1-9]\d{0,2}$/.test(context.params.pageNumber))throw new ServiceError('INVALID_REQUEST');
+      const {preview,body}=await exactMailingPreview(context),renderer=require('./packet-page-renderer.cjs');
+      const count=await renderer.pageCount(body),image=await renderer.renderPage({body,page_count:count},Number(context.params.pageNumber));
+      await exactMailingPreview(context);
+      return {status:200,text:image,content_type:'image/png',headers:mailingPreviewHeaders(preview.preview_hash)};
     }},
     Object.fromEntries(['Status','Quote','Confirm','Cancel','PrintPreview','ApprovePrint'].map(action => ['mailing' + action, async ({actor,params,body}) => {
       if(typeof mailOps[action.toLowerCase()]!=='function')throw new ServiceError('NOT_AUTHORIZED');

@@ -4,7 +4,7 @@
   const states = { AWAITING_PAYMENT:'Waiting for simulated payment', QUEUED:'Queued for simulated mailing', SUBMITTING:'Simulating submission', ACCEPTED:'Simulated provider acceptance', DISPATCHED:'Simulated dispatch', DELIVERED:'Simulated delivery', RETURNED:'Simulated return', UNKNOWN:'Uncertain result — held for review', FAILED:'Simulated submission failed', CANCELLED:'Cancelled' };
   function mount({ root, caseId, version, request, ensure, canRequest, live=false, testMode=false }) {
     const labels=live?{AWAITING_PAYMENT:'Waiting for payment',QUEUED:'Waiting for staff preparation',ACCEPTED:'Prepared by staff',SUBMITTING:'Postal handoff in progress',DISPATCHED:'Posted - recorded by staff',DELIVERED:'Delivery recorded by staff',RETURNED:'Return recorded by staff',UNKNOWN:'Held for staff review',FAILED:'Unable to proceed',CANCELLED:'Cancelled'}:states;
-    let latest = null, busy = false, available = !live, chosenMailer='POSTGRID',returnDraft=null,previewCache=null,reviewedPrintHash=null;
+    let latest = null, busy = false, available = !live, chosenMailer='POSTGRID',returnDraft=null,previewCache=null,reviewedPrintHash=null,renderSequence=0;
     root.hidden = true;
     const path = `/api/cases/${caseId}/mailing`;
     const message = node('p'); message.setAttribute('role','status');
@@ -32,6 +32,7 @@
     }
     function button(text, fn, id) { const value = node('button',text); value.type = 'button'; value.className = 'secondary'; if(id)value.id=id; value.onclick=()=>action(fn); return value; }
     function render() {
+      const renderId=++renderSequence;reviewedPrintHash=null;
       content.replaceChildren();
       root.hidden=live&&!available&&!latest?.order;
       if(root.hidden)return;
@@ -49,20 +50,53 @@
             content.append(button('Load final mailing copy',async()=>{
               const result=await request('POST',path+'/print-preview',{});
               if(!/^[a-f0-9-]{36}$/.test(result.order_id||'')||!/^[a-f0-9]{64}$/.test(result.preview_hash||''))throw Error('Refresh the mailing status before reviewing this copy.');
-              previewCache={orderId:result.order_id,hash:result.preview_hash,url:path+'/print-preview/'+encodeURIComponent(result.order_id)+'/'+result.preview_hash};reviewedPrintHash=null;
+              const url=path+'/print-preview/'+encodeURIComponent(result.order_id)+'/'+result.preview_hash,info=await request('GET',url+'/pages');
+              if(info.order_id!==result.order_id||info.preview_hash!==result.preview_hash||!Number.isSafeInteger(info.page_count)||info.page_count<1||info.page_count>400)throw Error('We could not load the complete final copy. Refresh the mailing status and try again.');
+              previewCache={orderId:result.order_id,hash:result.preview_hash,url,pageCount:info.page_count};reviewedPrintHash=null;
             },'packet-mailing-print-load'));
             if(previewCache?.orderId===order.id&&previewCache.hash===review.previewHash){
-              const link=node('a','Open and review every page of the final mailing copy');link.href=previewCache.url;link.target='_blank';link.rel='noopener';
-              link.onclick=()=>{reviewedPrintHash=previewCache.hash;refreshApproval();};content.append(link);
+              const count=previewCache.pageCount,toolbar=node('div');toolbar.className='packet-page-toolbar';
+              toolbar.append(node('strong',`${count} pages in your final mailing copy`));
+              const jumpLabel=node('label','Go to final-copy page '),jump=node('select'),zoomLabel=node('label','Final-copy page size '),zoom=node('select');
+              jump.id='packet-mailing-page-jump';zoom.id='packet-mailing-page-zoom';
+              for(let page=1;page<=count;page++){const option=node('option',page===1?'1: Address cover':`${page}: Final copy page ${page}`);option.value=String(page);jump.append(option);}
+              for(const[value,text]of [['100','Fit to screen'],['readable','Full size for reading'],['150','150%'],['200','200%']]){const option=node('option',text);option.value=value;zoom.append(option);}
+              jumpLabel.append(jump);zoomLabel.append(zoom);toolbar.append(jumpLabel,zoomLabel);
+              const link=node('a','Open the final PDF in a new tab (optional)');link.href=previewCache.url;link.target='_blank';link.rel='noopener';
+              link.onclick=()=>refreshApproval();toolbar.append(link);content.append(toolbar);
+              content.append(node('p','Read every page below. Check your return address on the address cover. You can enlarge the pages before approving.'));
+              const pageStatus=node('p',`Loading final-copy page 1 of ${count}...`);pageStatus.id='packet-mailing-page-status';pageStatus.setAttribute('role','status');content.append(pageStatus);
+              const pages=node('div');pages.className='packet-page-list';pages.setAttribute('aria-label','Complete final mailing copy');content.append(pages);
+              const sheets=new Map(),images=[];
+              for(let page=1;page<=count;page++){
+                const sheet=node('section');sheet.className='packet-page';sheet.id='mailing-copy-sheet-'+page;sheet.setAttribute('aria-label',`Final mailing copy page ${page} of ${count}`);
+                sheet.append(node('h4',`Page ${page} of ${count} - ${page===1?'Address cover':'Final mailing copy'}`));
+                const scroll=node('div'),paper=node('div'),img=node('img');scroll.className='packet-sheet-scroll';paper.className='packet-sheet';img.className='packet-page-image';img.style.height='auto';img.alt=`Final mailing copy - page ${page}`;
+                paper.append(img);scroll.append(paper);sheet.append(scroll);pages.append(sheet);sheets.set(page,sheet);images.push({img,paper,page});
+              }
+              jump.onchange=()=>{ensure();sheets.get(Number(jump.value))?.scrollIntoView({block:'start',behavior:'instant'});};
+              zoom.onchange=()=>{ensure();for(const{paper}of images)paper.style.width=zoom.value==='readable'?'max(100%, 960px)':zoom.value+'%';};
               const label=node('label'),checked=node('input');checked.type='checkbox';checked.id='packet-mailing-print-checked';
+              checked.disabled=true;
               label.append(checked,document.createTextNode(' I checked every packet page and my return address on the added address cover. CRP staff manage the bureau mailing address. Pages may be resized to fit the mailing paper. I apply my typed signature to this exact final copy and approve it for PostGrid to print and mail.'));content.append(label);
               const approvalButton=button('Approve this final mailing copy',async()=>{
-                checkCurrent();if(!checked.checked||reviewedPrintHash!==previewCache.hash)throw Error('Open the final mailing copy, review it and tick the approval box.');
+                checkCurrent();if(!checked.checked||reviewedPrintHash!==previewCache.hash||renderId!==renderSequence)throw Error('Wait for every final-copy page, review it and tick the approval box.');
                 latest=await request('POST',path+'/approve-print',{order_id:order.id,reviewed_version:version,preview_hash:previewCache.hash,approve_print:true,approve_signature:true});
               },'packet-mailing-print-approve');
-              const refreshApproval=()=>{approvalButton.prerequisiteDisabled=!checked.checked||reviewedPrintHash!==previewCache.hash;approvalButton.disabled=busy||approvalButton.prerequisiteDisabled;};
+              const refreshApproval=()=>{approvalButton.prerequisiteDisabled=!checked.checked||reviewedPrintHash!==previewCache.hash||renderId!==renderSequence||!canRequest();approvalButton.disabled=busy||approvalButton.prerequisiteDisabled;};
               checked.onchange=refreshApproval;refreshApproval();content.append(approvalButton);
-              content.append(node('p','Open the final copy and check every page, then tick the review box to enable approval.'));
+              content.append(node('p','Wait for every page to load. Check the final copy, then tick the review box to enable approval.'));
+              const current=()=>{ensure();if(!root.isConnected||renderId!==renderSequence||latest?.order?.id!==order.id||latest.order.state!=='QUEUED'||latest.packet_changed||previewCache?.hash!==review.previewHash)throw Object.assign(new Error('Final-copy view closed.'),{cancelled:true});checkCurrent();};
+              (async()=>{
+                try{
+                  for(const{img,page}of images){
+                    current();
+                    await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(Error('We could not show every final-copy page. Refresh the mailing status and load the copy again.'));img.src=previewCache.url+'/pages/'+page;});current();
+                    pageStatus.textContent=page===count?`All ${count} final-copy pages are ready to review.`:`Loading final-copy page ${page+1} of ${count}...`;
+                  }
+                  current();reviewedPrintHash=previewCache.hash;checked.checked=false;checked.disabled=false;refreshApproval();
+                }catch(error){if(error.cancelled||renderId!==renderSequence||!root.isConnected)return;reviewedPrintHash=null;checked.checked=false;checked.disabled=true;pageStatus.textContent=error.message||'The complete final copy could not be shown.';refreshApproval();}
+              })();
             }
           }
         }

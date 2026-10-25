@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-25T03:56:19.310Z",
+  "generated_at": "2026-10-25T04:30:20.621Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 118,
-      "digest": "92560C92D61658E67E7766B8182FEB5BDAEF9FC639C5B208988E3A2ABC36DB25",
+      "digest": "E8435A03B52EDA86637175FF46CBAEA782426F153FE52D3AC2A4ED5AEEAC9CC2",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -106,7 +106,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "6205BFB85C1A5DF5D06BDEF9EB66F87BC6CAC425931ED3575C8A0E9EEBA6B919"
+          "sha256": "A13A2E86E6C821422228C0B6BCDDD445E02825A6791137870B89751C3FC6D706"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -366,7 +366,7 @@
         },
         {
           "file": "accelerated-launch/service/packet-page-renderer.cjs",
-          "sha256": "0A794BF13FE65ACE6AF1003AA8CEC4ACA07930F9EA5B4E80973C9274D4AC614E"
+          "sha256": "4371946CA07554488C714C3CE9BEDE57AECB37405F46B0F0BB2209E779BCBA18"
         },
         {
           "file": "accelerated-launch/service/packet-pdf.cjs",
@@ -658,7 +658,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 39,
-      "digest": "BA167753F45D1198F0C35ADE62EBF502CA33A6BCCF0AD754B836BDA5F58A0EF7",
+      "digest": "F93BF1367AAAEB5951A6D1C21CB23E42EF3F7FC82E3E2CE8A2B841F8F6D00182",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -750,7 +750,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/packet-mailing.js",
-          "sha256": "85073790504702A7B360867CB0BAA951404EC0E5F1A97B27A634A34401550E66"
+          "sha256": "DB2007277E93F657EF3EFB3FD4EEDCC29205E16E5439427A15AEAC753C0967F9"
         },
         {
           "file": "accelerated-launch/service/ui/packet-review.js",
@@ -819,6 +819,6 @@
       ]
     }
   ],
-  "manifest_digest": "F17C360D15035D4895F5A8ECDF2F6C75AB4659BF20DDF53DBDBEBC8BF3C4FFD9",
+  "manifest_digest": "E2084558545D401E101116D40D5452D16D3470C617C52976A0347F6736EC1D9F",
   "total_file_count": 193
 }

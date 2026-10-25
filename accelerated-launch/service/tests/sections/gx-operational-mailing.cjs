@@ -15,7 +15,7 @@ function consumer(responder){
   return {context,evaluate,calls,listeners};
 }
 class Element{
-  constructor(tag,text=''){this.tagName=tag;this.children=[];this.text=text;this.isConnected=true;this.value='';}
+  constructor(tag,text=''){this.tagName=tag;this.children=[];this.text=text;this.isConnected=true;this.value='';this.style={};}
   append(...nodes){this.children.push(...nodes);}
   setAttribute(name,value){this[name]=value;}
   getAttribute(name){return this[name]??null;}
@@ -101,6 +101,7 @@ async function run(unused,check){
   const reviewRoot=new Element('section');let approved=false,previewPosts=0,approvalPosts=0;
   context.window.CRP_PACKET_MAILING.mount({root:reviewRoot,caseId,live:true,version:'v1',ensure(){},canRequest:()=>true,request:async(method,url)=>{
     if(url.endsWith('/print-preview')){previewPosts++;return {order_id:orderId,preview_hash:'a'.repeat(64),pdf_base64:Buffer.from('%PDF-1.4 fictional unit bytes').toString('base64')};}
+    if(url.endsWith('/pages'))return {order_id:orderId,preview_hash:'a'.repeat(64),page_count:3};
     if(url.endsWith('/approve-print')){approvalPosts++;approved=true;}
     return {available:true,order:{id:orderId,state:'QUEUED',payment_state:'VERIFIED',mailer:'POSTGRID',print_review:{previewAvailable:true,previewHash:'a'.repeat(64),approved}}};
   }});await tick();await tick();
@@ -129,9 +130,53 @@ async function run(unused,check){
     await tick();await tick();
   }
   reviewRoot.querySelectorAll('a')[0].onclick();check.equal(approve.disabled,true,'opening the copy alone does not supply review consent');
-  checked.checked=true;checked.onchange();check.equal(approve.disabled,false,'opening exact copy and explicit check enables approval');
+  checked.checked=true;checked.onchange();check.equal(approve.disabled,true,'a review check cannot bypass final-copy image loading');
+  check.equal(checked.disabled,true,'review consent stays disabled while a final-copy page is missing');
+  const images=reviewRoot.querySelectorAll('img');check.equal(images.length,3,'all declared physical final-copy pages have their own review image');
+  for(const [index,img]of images.entries()){
+    check.equal(img.src,reviewRoot.querySelectorAll('a')[0].href+'/pages/'+(index+1),'serial image requests retain the exact owned order/hash/page URL');
+    img.onload();await tick();
+    if(index<images.length-1)check.equal(approve.disabled,true,'partial final-copy loading cannot enable approval');
+  }
+  check.equal(checked.disabled,false,'every final-copy image must load before consent becomes available');
+  check.equal(checked.checked,false,'early or restored consent is reset after all pages finish');
+  check.equal(approve.disabled,true,'all pages loaded still requires a fresh explicit review check');
+  checked.checked=true;checked.onchange();check.equal(approve.disabled,false,'all exact-copy pages and fresh explicit consent enable approval');
   approve.onclick();await tick();await tick();check.equal(approvalPosts,1,'one enabled approval submits once');check.equal(previewPosts,1,'approval does not fetch or prepare another provider copy');
   check.equal(reviewRoot.querySelectorAll('button').some(n=>n.id==='packet-mailing-print-approve'),false,'successful approval does not invite repeated approval');
+  async function inlineFixture(metadata={}){
+    const r=new Element('section'),state={hash:'a'.repeat(64),live:true,writes:0};
+    context.window.CRP_PACKET_MAILING.mount({root:r,caseId,live:true,version:'v1',ensure(){if(!state.live)throw Object.assign(Error('Signed out'),{cancelled:true});},canRequest:()=>true,request:async(method,url)=>{
+      if(url.endsWith('/print-preview'))return {order_id:orderId,preview_hash:state.hash};
+      if(url.endsWith('/pages'))return {order_id:orderId,preview_hash:state.hash,page_count:2,...metadata};
+      if(method==='POST')state.writes++;
+      return {available:true,order:{id:orderId,state:'QUEUED',payment_state:'VERIFIED',mailer:'POSTGRID',print_review:{previewAvailable:true,previewHash:state.hash,approved:false}}};
+    }});await tick();await tick();
+    await r.querySelectorAll('button').find(n=>n.id==='packet-mailing-print-load').onclick();await tick();
+    return {root:r,state};
+  }
+  const failed=await inlineFixture(),failedImages=failed.root.querySelectorAll('img');failedImages[0].onload();await tick();failedImages[1].onerror();await tick();
+  check.equal(failed.root.querySelectorAll('input').find(n=>n.id==='packet-mailing-print-checked').disabled,true,'a failed final-copy image keeps consent unavailable');
+  check.equal(failed.root.querySelectorAll('button').find(n=>n.id==='packet-mailing-print-approve').disabled,true,'a later image failure cannot leave final approval enabled');
+  check.equal(failed.root.textContent.includes('could not show every final-copy page'),true,'incomplete review gives a clear refresh/load recovery instruction');
+  check.equal(failed.state.writes,0,'an image failure never submits approval or mailing');
+  const refreshed=await inlineFixture(),oldImage=refreshed.root.querySelectorAll('img')[0];
+  await refreshed.root.querySelectorAll('button').find(n=>n.id==='packet-mailing-refresh').onclick();await tick();oldImage.onload();await tick();
+  check.equal(refreshed.root.querySelectorAll('input').find(n=>n.id==='packet-mailing-print-checked').disabled,true,'a late image from a previous render cannot complete the new review');
+  check.equal(refreshed.root.querySelectorAll('button').find(n=>n.id==='packet-mailing-print-approve').disabled,true,'refresh resets the current every-page approval gate');
+  const changed=await inlineFixture(),changedImage=changed.root.querySelectorAll('img')[0];changed.state.hash='b'.repeat(64);
+  await changed.root.querySelectorAll('button').find(n=>n.id==='packet-mailing-refresh').onclick();await tick();changedImage.onload();await tick();
+  check.equal(changed.root.querySelectorAll('img').length,0,'a changed preview hash removes every old final-copy page');
+  check.equal(changed.root.querySelectorAll('button').some(n=>n.id==='packet-mailing-print-approve'),false,'a stale preview cannot offer approval for a changed final copy');
+  const closed=await inlineFixture();closed.root.isConnected=false;closed.root.querySelectorAll('img')[0].onload();await tick();
+  check.equal(closed.root.querySelectorAll('input').find(n=>n.id==='packet-mailing-print-checked').disabled,true,'a closed final-copy view never completes consent');
+  const signedOut=await inlineFixture();signedOut.state.live=false;signedOut.root.querySelectorAll('img')[0].onload();await tick();
+  check.equal(signedOut.root.querySelectorAll('button').find(n=>n.id==='packet-mailing-print-approve').disabled,true,'account expiry during page loading cannot enable approval');
+  for(const invalid of [{page_count:401},{preview_hash:'b'.repeat(64)}]){
+    const bad=await inlineFixture(invalid);
+    check.equal(bad.root.querySelectorAll('img').length,0,'invalid or mismatched final-copy metadata creates no review pages');
+    check.equal(bad.root.querySelectorAll('button').some(n=>n.id==='packet-mailing-print-approve'),false,'invalid metadata cannot expose a final approval action');
+  }
   return {fictional_only:true,external_calls:0,return_writes:0,provider_proof:false};
 }
 module.exports={id:'gx-operational-mailing',title:'Operational mailing return binds owned state and terminal status remains truthful',run};

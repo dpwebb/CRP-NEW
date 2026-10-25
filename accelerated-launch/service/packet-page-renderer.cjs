@@ -6,9 +6,35 @@ const crypto = require('node:crypto');
 const { ServiceError } = require('./errors.cjs');
 const cache = new Map();
 const pending = new Map();
+const pageCounts = new Map();
 const MAX_IMAGE_BYTES = 12 * 1024 * 1024, CACHE_BYTES = 24 * 1024 * 1024;
 let cachedBytes = 0, active = 0;
 function drop(key) { const row = cache.get(key); if (row) { clearTimeout(row.timer); cachedBytes -= row.bytes.length; row.bytes.fill(0); cache.delete(key); } }
+async function pageCount(body) {
+  if (!Buffer.isBuffer(body) || body.length > 64 * 1024 * 1024 || body.subarray(0,5).toString() !== '%PDF-') throw new ServiceError('INVALID_REQUEST');
+  const key = 'count:' + crypto.createHash('sha256').update(body).digest('hex');
+  if (pageCounts.has(key)) return pageCounts.get(key).count;
+  if (pending.has(key)) return pending.get(key);
+  if (active >= 4) throw new ServiceError('SERVICE_STATE_UNAVAILABLE');
+  active++;
+  try {
+    const counting = new Promise((resolve,reject) => {
+      const child = spawn('pdfinfo', ['-'], {windowsHide:true, env:{...process.env,LC_ALL:'C'}, stdio:['pipe','pipe','pipe']});
+      let chunks=[],length=0,done=false;
+      const finish=(error,count)=>{if(done)return;done=true;clearTimeout(timer);chunks=[];error?reject(error):resolve(count);};
+      const refuse=()=>{child.kill();finish(new ServiceError('SERVICE_STATE_UNAVAILABLE'));};
+      const timer=setTimeout(refuse,15000);
+      child.on('error',refuse);child.stdin.on('error',refuse);child.stderr.on('data',()=>{});
+      child.stdout.on('data',chunk=>{length+=chunk.length;if(length>65536)refuse();else chunks.push(chunk);});
+      child.on('close',code=>{const matches=[...Buffer.concat(chunks).toString('utf8').matchAll(/^Pages:[ \t]+(\d+)[ \t]*\r?$/gm)],count=matches.length===1?Number(matches[0][1]):NaN;if(code!==0||!Number.isSafeInteger(count)||count<1||count>400)finish(new ServiceError('SERVICE_STATE_UNAVAILABLE'));else finish(null,count);});
+      child.stdin.end(body);
+    });
+    pending.set(key,counting);
+    const count=await counting;
+    while(pageCounts.size>=24){const old=pageCounts.keys().next().value;clearTimeout(pageCounts.get(old).timer);pageCounts.delete(old);}
+    const timer=setTimeout(()=>pageCounts.delete(key),60000);timer.unref();pageCounts.set(key,{count,timer});return count;
+  } finally {pending.delete(key);active--;}
+}
 async function renderPage(pdf, page) {
   if (!pdf || !Buffer.isBuffer(pdf.body) || pdf.body.length > 64 * 1024 * 1024 || !Number.isSafeInteger(page) || page < 1 || page > pdf.page_count) throw new ServiceError('INVALID_REQUEST');
   const key = crypto.createHash('sha256').update(pdf.body).digest('hex') + ':' + page;
@@ -47,4 +73,4 @@ async function renderPage(pdf, page) {
     return Buffer.from(bytes);
   } finally { pending.delete(key); active--; }
 }
-module.exports = { renderPage };
+module.exports = { renderPage, pageCount };
