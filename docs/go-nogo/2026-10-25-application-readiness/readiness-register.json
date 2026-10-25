@@ -1,0 +1,158 @@
+{
+  "schema": "crp-current-application-readiness-register-v1",
+  "recorded_at_utc": "2026-10-25T21:08:55.694906+00:00",
+  "decision": "GO",
+  "authority": "Owner request to complete four readiness closure packages using fictional and Sandbox inputs, production unchanged by this chat and no real mail",
+  "scope": "Approved offering at pinned versions, supported formats and bounded operating envelope",
+  "versions": {
+    "consumer": {
+      "source": "21cea4fd091a22d34600b7ad4993c14ab45179a8",
+      "build": "crp-v1-e2084558545d401e",
+      "files": 193,
+      "manifest_digest": "E2084558545D401E101116D40D5452D16D3470C617C52976A0347F6736EC1D9F"
+    },
+    "mail": {
+      "source": "2b5b4a100b268ea693b0e3cd86d2ee8dcaf28926",
+      "build": "mail-internal-06b086d3e7fb1148",
+      "files": 71,
+      "schema_migration": 11,
+      "tables": 25
+    },
+    "affiliate": {
+      "source": "ebaec9f63b9f4442a013111c0f6d9476274bff0a",
+      "image": "sha256:e58f5b96234fc9cdff96371731ccbd1421bb2f29783ef314a3e076992662ec4d",
+      "runtime_files": 64,
+      "build_files": 66,
+      "migrations": [
+        "001",
+        "002",
+        "003",
+        "004",
+        "007"
+      ],
+      "native_tested_implementation_source": "fb1a9cbfb7ba68d013dbc7021c830094985f70dc",
+      "packaged_hashes_identical": true
+    },
+    "family": {
+      "source": "3f60497f65513ed7c983ab5d3adc95440aea3b4f",
+      "build": "crp-family-4da6f430ef63abe2262c",
+      "files": 47,
+      "manifest_sha256": "e9a7523eaf0cc85b31b06e114c0c5367cd8cb40a1c7fd9334562f2906e4ad38c"
+    }
+  },
+  "consumer_minimum": [
+    {
+      "id": "ALL82",
+      "expected": "All82 approved jurisdictions and supported functional cells",
+      "status": "PASS",
+      "evidence": "Current full all82/applicability/coverage sections plus formal 30/123/46"
+    },
+    {
+      "id": "INTAKE",
+      "expected": "Supported ordinary PDF/scan/image-set association and decisive facts",
+      "status": "PASS",
+      "evidence": "Current full ingestion/readers/required-data evidence and formal acceptance"
+    },
+    {
+      "id": "ISSUES",
+      "expected": "Material source-linked findings and governed questions",
+      "status": "PASS",
+      "evidence": "Current full category/checklist/evidence/wording and question-limit sections"
+    },
+    {
+      "id": "PACKETS",
+      "expected": "Owned selected editable approved packets and usable downloads",
+      "status": "PASS",
+      "evidence": "Current full; actual all-page source/provider-copy approval/download; independent16/16"
+    },
+    {
+      "id": "PURCHASE",
+      "expected": "Configured one-time/subscription access cancellation and upgrade",
+      "status": "PASS",
+      "evidence": "Current full billing/lifecycle and genuine12-cell Sandbox plus live read-only configuration"
+    },
+    {
+      "id": "CONTINUING_VALUE",
+      "expected": "Owned history and subsequent-report comparison",
+      "status": "PASS",
+      "evidence": "Current full report history/country comparison sections and formal acceptance"
+    },
+    {
+      "id": "TRUST_AND_RELEASE",
+      "expected": "Authentication isolation privacy deletion support storage secrets and release custody",
+      "status": "PASS",
+      "evidence": "Current full; exact runtime; current isolated backup boot/restart; native joined access; guarded release records"
+    }
+  ],
+  "enabled_services": [
+    {
+      "id": "MAIL",
+      "status": "PASS",
+      "basis": "13/13 independently reviewed staging acceptance, same immutable71-file production release and current native joined outputs"
+    },
+    {
+      "id": "AFFILIATE",
+      "status": "PASS",
+      "basis": "26/26 revised input acceptance, final116/116 main CI,64 runtime files and six unchanged browser families"
+    },
+    {
+      "id": "FAMILY",
+      "status": "PASS",
+      "basis": "47-file exact production source, historical actual production SSO, current hosted staging parity and final exact-version native joined acceptance"
+    }
+  ],
+  "closure_packages": [
+    {
+      "id": "C1",
+      "status": "CLOSED",
+      "basis": "This consolidated source-bound register and signed final report"
+    },
+    {
+      "id": "C2",
+      "status": "CLOSED",
+      "basis": "Current235-file authenticated backup extraction, isolated native running restore/restart,340 original rows109 blobs exact; installed job/timer/custody reuse"
+    },
+    {
+      "id": "C3",
+      "status": "CLOSED",
+      "basis": "Newly completed13/13 Mail staging and same-artifact production release; current hashes and joined outputs"
+    },
+    {
+      "id": "C4",
+      "status": "CLOSED",
+      "basis": "Completed Affiliate main production exact-byte continuity; pinned47-file Family and final three-native-service acceptance"
+    }
+  ],
+  "remaining_blockers": [],
+  "readiness_status_semantics": {
+    "public_health_launch_ready_false_unchanged": true,
+    "meaning": "Legacy non-authoritative status; no new computed failure is inferred",
+    "current_assessment_authority": "This register and accepted formal evidence; no health/status tooling upgrade claimed"
+  },
+  "limits": [
+    "Current OS print dialog, paper output and physical posting unclaimed",
+    "Authorized functional fictional/reference inputs; private original specimen fidelity unclaimed",
+    "Sampled usability/accessibility only; no complete named conformance certificate",
+    "Bounded capacity only; no SLA, guaranteed RTO/RPO or complete bare-metal disaster recovery",
+    "Actual provider TEST records and signed receiver replay; independent Stripe push delivery reliability not newly observed",
+    "No commercial demand, actual partner assent, payout or postal/legal outcome claim",
+    "Creative Studio remains shelved; deferred costs and advisories remain optional"
+  ],
+  "capacity": {
+    "store_workers": 1,
+    "admitted_processing_requests": 8,
+    "http_connections": 128,
+    "processing_budget_ms": 150000,
+    "worker_old_generation_mb": 4096
+  },
+  "backup": {
+    "daily_utc": "03:45",
+    "random_delay_minutes": 10,
+    "local_retention_days": 30,
+    "offsite_round_trip_evidenced": true,
+    "remote_retention_duration_certified": false,
+    "guaranteed_rto_rpo": false
+  },
+  "new_independent_review": false,
+  "existing_independent_reviews_reused": true
+}

@@ -1,0 +1,152 @@
+{
+  "schema": "crp-sanitized-readiness-closure-evidence-references-v1",
+  "recorded_at_utc": "2026-10-25T21:08:55.694906+00:00",
+  "references": [
+    {
+      "label": "consumer production report",
+      "sha256": "A9A84619785F51A493C5FC9965D080C692AAE67A9F12F03652F93E36A19D64B1",
+      "payload_included": false,
+      "repository_path": "CRP_PDF_BROWSER_PRODUCTION_2026_10_25.md"
+    },
+    {
+      "label": "consumer bounded independent review",
+      "sha256": "CC7628DEE724165A9C6DE78F353DF1D4AC5D20651654048FB67E3D9EC6FFCC45",
+      "payload_included": false,
+      "repository_path": "docs/go-nogo/2026-10-25-pdf-browser/independent-review.md"
+    },
+    {
+      "label": "consumer public results",
+      "sha256": "106B70939266BD6BFEA41A2E77AE99E3B4872D8C89D50C91BD1EC614C0F3303C",
+      "payload_included": false,
+      "repository_path": "docs/go-nogo/2026-10-25-production/results-summary.json"
+    },
+    {
+      "label": "current backup complete extraction",
+      "sha256": "B53D18DADD65531BB07FB5285B6BDFBC32C7DD019E54B52DCC9A87A029FF7C22",
+      "payload_included": false
+    },
+    {
+      "label": "current running restore create",
+      "sha256": "54A5C003D86A4A8BD76196B9A7B85D9B63C66305FA43C72D31C6A4BDE8D7A82D",
+      "payload_included": false
+    },
+    {
+      "label": "current running restore restart cleanup",
+      "sha256": "32B88DC7D7880402FC7FFCD4B3E03CA3B65AD241DDB8081B47339859DCDF993C",
+      "payload_included": false
+    },
+    {
+      "label": "local joined final native log",
+      "sha256": "59A0FD712018BD55B9E9454E4993153C0E94D016515B82BD91577642E7C79F01",
+      "payload_included": false
+    },
+    {
+      "label": "local joined harness continuation",
+      "sha256": "30647C1D6BD2298CBA60116D0E6E05A8A4CED0D05FBE7C169F1BC606349819E4",
+      "payload_included": false
+    },
+    {
+      "label": "local joined initial bindings",
+      "sha256": "E9E3078F0F377C52DDB80CDB6C6B62612E2863489C46113A49FFD5DBB2B8FA40",
+      "payload_included": false
+    },
+    {
+      "label": "final preservation and source reuse",
+      "sha256": "718F18C09015B3AFE3B5883D0E387376A082E2A1E6CB12A98ACE1B478315D746",
+      "payload_included": false
+    },
+    {
+      "label": "initial read-only production tuple",
+      "sha256": "CC5F15911F7AC86D056E422E7A8BC33DEABCD961837E554B6008F632489A7F84",
+      "payload_included": false
+    },
+    {
+      "label": "post release read-only tuple",
+      "sha256": "9FE998FC444F8775055D6B738FF26F0BB3F81FFAE2DF1CAE0F738ACE88A7E6D7",
+      "payload_included": false
+    },
+    {
+      "label": "final stable production tuple",
+      "sha256": "C9E7C69F4874A089883605E693BA3EB9E21D302EBC4D2CD86B00035DF46CC1DA",
+      "payload_included": false
+    },
+    {
+      "label": "consumer current Linux proof",
+      "sha256": "05A67EDAAA738AAB5B55D819B4EF06233EC3686F058661C28267DB96B83245E4",
+      "payload_included": false
+    },
+    {
+      "label": "consumer current post backup authentication",
+      "sha256": "9A3242FB5AC9DB1A0E44810FD65A94CE73545B170319FBC6026B66C2CA537E7F",
+      "payload_included": false
+    },
+    {
+      "label": "mail completed staging report",
+      "sha256": "0A10F4CB17C52F0BE74FD4C502BFF30D7A738267B16F1C64FD227BB668E0BE74",
+      "payload_included": false
+    },
+    {
+      "label": "mail final independent staging review",
+      "sha256": "F26B95DA570713AC18FB99161D118A4F82C5DF5B0137167B45E41E1AC8F1DCF2",
+      "payload_included": false
+    },
+    {
+      "label": "mail production report",
+      "sha256": "91105278E5C1347F6C241849D170CCC4088E28282F5DDE4C183CD6E2E37F5511",
+      "payload_included": false
+    },
+    {
+      "label": "mail production release receipt",
+      "sha256": "601B480D356EE4D2B51197281519CE465B0E66F40757F214153C5524620CDABB",
+      "payload_included": false
+    },
+    {
+      "label": "mail production final acceptance",
+      "sha256": "6975B8AC355F2BBE1DFE2D479842C477233EED7949B3B091CE50A8B08FBB3C90",
+      "payload_included": false
+    },
+    {
+      "label": "mail production offsite recovery",
+      "sha256": "C87B0DF86F6EB04ECAC8A83E5E57F342779A4BE6E04188353446BD94F035678B",
+      "payload_included": false
+    },
+    {
+      "label": "affiliate independent input-policy GO",
+      "sha256": "B5596AAE9F1148684EBF623538F645095E079BF4FDFA31B7EAA9EAAE0559747F",
+      "payload_included": false
+    },
+    {
+      "label": "affiliate accepted production predecessor",
+      "sha256": "52A745BAC557BE7CEF579FCD5FECEFBD2AD5ED06B2F63D6597D0C5512C8A9919",
+      "payload_included": false
+    },
+    {
+      "label": "affiliate final main production report",
+      "sha256": "4F07929C2FF58D54966D8AC60089F194371182AEA38CD320E0E6F48C40B9B0B8",
+      "payload_included": false
+    },
+    {
+      "label": "affiliate final main production receipt",
+      "sha256": "72E57F8B9F823FBF4E81BF3145F14CBC5401180BB488DC7DF0AFD2AA52D865BA",
+      "payload_included": false
+    },
+    {
+      "label": "affiliate main source hash continuity",
+      "sha256": "038C557D1BEC26854DC36172C2096FDF9AC284FEA7B3565982E75918C3255D83",
+      "payload_included": false
+    },
+    {
+      "label": "current readiness register",
+      "sha256": "2D448159356FB3AA9E8BDD744506CFDA3FEBB069C84BB5E5877183F9E65703A7",
+      "payload_included": false,
+      "repository_path": "docs/go-nogo/2026-10-25-application-readiness/readiness-register.json"
+    },
+    {
+      "label": "four package closure receipt",
+      "sha256": "738487EB0C219875EA55BD06B62F9F651E6CE0CF74A4BFEF6BE01D54CBFE26DB",
+      "payload_included": false,
+      "repository_path": "docs/go-nogo/2026-10-25-application-readiness/closure.json"
+    }
+  ],
+  "private_payloads_included": false
+}

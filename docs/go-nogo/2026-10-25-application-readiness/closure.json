@@ -1,0 +1,111 @@
+{
+  "schema": "crp-application-readiness-four-package-closure-v1",
+  "recorded_at_utc": "2026-10-25T21:08:55.694906+00:00",
+  "decision": "GO",
+  "closed_packages": [
+    "C1",
+    "C2",
+    "C3",
+    "C4"
+  ],
+  "remaining_blockers": 0,
+  "versions": {
+    "consumer": {
+      "source": "21cea4fd091a22d34600b7ad4993c14ab45179a8",
+      "build": "crp-v1-e2084558545d401e",
+      "files": 193,
+      "manifest_digest": "E2084558545D401E101116D40D5452D16D3470C617C52976A0347F6736EC1D9F"
+    },
+    "mail": {
+      "source": "2b5b4a100b268ea693b0e3cd86d2ee8dcaf28926",
+      "build": "mail-internal-06b086d3e7fb1148",
+      "files": 71,
+      "schema_migration": 11,
+      "tables": 25
+    },
+    "affiliate": {
+      "source": "ebaec9f63b9f4442a013111c0f6d9476274bff0a",
+      "image": "sha256:e58f5b96234fc9cdff96371731ccbd1421bb2f29783ef314a3e076992662ec4d",
+      "runtime_files": 64,
+      "build_files": 66,
+      "migrations": [
+        "001",
+        "002",
+        "003",
+        "004",
+        "007"
+      ],
+      "native_tested_implementation_source": "fb1a9cbfb7ba68d013dbc7021c830094985f70dc",
+      "packaged_hashes_identical": true
+    },
+    "family": {
+      "source": "3f60497f65513ed7c983ab5d3adc95440aea3b4f",
+      "build": "crp-family-4da6f430ef63abe2262c",
+      "files": 47,
+      "manifest_sha256": "e9a7523eaf0cc85b31b06e114c0c5367cd8cb40a1c7fd9334562f2906e4ad38c"
+    }
+  },
+  "new_isolated_execution": {
+    "current_backup_manifest_files": 235,
+    "restored_data_files": 223,
+    "restore_first_process_checks": 704,
+    "restore_restart_cleanup_checks": 698,
+    "original_rows_preserved": 340,
+    "original_blobs_preserved": 109,
+    "restored_original_accounts_after_cleanup": 7,
+    "sessions_after_cleanup": 0,
+    "native_joined_tests_passed": 1,
+    "native_joined_tests_failed": 0,
+    "native_joined_tests_skipped": 0,
+    "successful_recovery_canaries_deleted": 2,
+    "failed_isolated_copy_retained_privately": true
+  },
+  "source_reuse": {
+    "consumer_tested_files_rehashed": 420,
+    "consumer_full_passed": 20324,
+    "consumer_full_rerun": false,
+    "manifest_regenerated": false,
+    "package_rebuilt": false,
+    "affiliate_packaged_inputs_equal": 66
+  },
+  "preservation": {
+    "consumer_mail_family_source_config_pids_exact": true,
+    "consumer_raw_state_exact": true,
+    "affiliate_external_owner_main_promotion_qualified": true,
+    "final_complete_tuple_stable": true,
+    "final_observed_at_utc": "2026-10-25T21:04:50.942279+00:00",
+    "production_writes_by_this_chat": 0
+  },
+  "external_owner_operations_reused": [
+    {
+      "component": "mail",
+      "completed_at_utc": "2026-10-25T20:52:57Z",
+      "performed_by_this_chat": false
+    },
+    {
+      "component": "affiliate_main",
+      "completed_at_utc": "2026-10-25T20:59:59Z",
+      "performed_by_this_chat": false,
+      "runtime_build_bytes_unchanged": true
+    }
+  ],
+  "retained_failed_attempts": [
+    "Incorrect local PDF generator import",
+    "Copied admin store disabled caused correct deletion refusal",
+    "Obsolete identical helper-client precondition",
+    "Historical withdrawn-art expectation superseded by approved ten-banner release",
+    "Strict all-Affiliate equality correctly refused separate owner main promotion"
+  ],
+  "actions": {
+    "production_deployments": 0,
+    "production_restarts": 0,
+    "production_configuration_or_database_writes": 0,
+    "real_customer_authentication": 0,
+    "provider_transactions": 0,
+    "real_mail_sent": 0,
+    "commits": 0,
+    "pushes": 0
+  },
+  "private_payloads_published": false,
+  "register_sha256": "2D448159356FB3AA9E8BDD744506CFDA3FEBB069C84BB5E5877183F9E65703A7"
+}

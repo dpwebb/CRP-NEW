@@ -1,0 +1,157 @@
+{
+  "schema": "crp-application-wide-readiness-report-only-v1",
+  "report_date": "2026-10-25",
+  "recorded_at_utc": "2026-10-25T20:41:29.4133416Z",
+  "decision": "NOT_YET_CERTIFIED_APPLICATION_WIDE",
+  "consumer_release_decision": "GO_RETAINED",
+  "starting_head": "74078a01082239eef36a2069224d087c462bf7f2",
+  "tested_consumer_source": "21cea4fd091a22d34600b7ad4993c14ab45179a8",
+  "consumer_build": "crp-v1-e2084558545d401e",
+  "last_reused_consumer_live_observation_utc": "2026-10-25T20:22:50.174565+00:00",
+  "new_live_observation_performed": false,
+  "remaining_closure_packages": [
+    {
+      "id": "C1",
+      "status": "OPEN",
+      "requirement": "Authoritative exact-version scope/evidence readiness register and final sign-off"
+    },
+    {
+      "id": "C2",
+      "status": "OPEN",
+      "requirement": "Current Consumer recovery continuity or isolated current-backup boot and operating recovery custody"
+    },
+    {
+      "id": "C3",
+      "status": "OPEN",
+      "requirement": "Mail A07 A11 A12 closure and intended production-version acceptance"
+    },
+    {
+      "id": "C4",
+      "status": "OPEN",
+      "requirement": "Affiliate intended production-version closure and final joined Family access proof"
+    }
+  ],
+  "mail_latest_completed_matrix": {
+    "blocked": 3,
+    "fail": 0,
+    "pass": 10
+  },
+  "affiliate_revised_input_matrix": {
+    "production_deployment_implied": false,
+    "blocked": 0,
+    "fail": 0,
+    "pass": 26
+  },
+  "limits": [
+    "Fictional inputs valid; observed application outputs required",
+    "No current native OS print or physical paper claim",
+    "No comprehensive accessibility conformance or unlimited-scale claim",
+    "No original private-specimen fidelity claim",
+    "Ongoing sibling release intent is not a completed receipt"
+  ],
+  "actions": {
+    "new_independent_reviews": 0,
+    "pushes": 0,
+    "production_changes": 0,
+    "real_mail_sent": 0,
+    "browser_actions": 0,
+    "provider_calls": 0,
+    "service_actions": 0,
+    "remote_host_commands": 0,
+    "commits": 0,
+    "new_test_runs": 0
+  },
+  "evidence": [
+    {
+      "label": "Consumer published production summary",
+      "sha256": "106B70939266BD6BFEA41A2E77AE99E3B4872D8C89D50C91BD1EC614C0F3303C",
+      "publication": "repository",
+      "payload_included": false,
+      "repository_path": "docs/go-nogo/2026-10-25-production/results-summary.json"
+    },
+    {
+      "label": "Consumer sanitized evidence references",
+      "sha256": "D9BBC0BDB88D8AFD71C3D9FEC0B221C3A3549DBB37526AB2AC1742CC9CAED0D6",
+      "publication": "repository",
+      "payload_included": false,
+      "repository_path": "docs/go-nogo/2026-10-25-production/evidence-references.json"
+    },
+    {
+      "label": "Consumer final production report",
+      "sha256": "A9A84619785F51A493C5FC9965D080C692AAE67A9F12F03652F93E36A19D64B1",
+      "publication": "repository",
+      "payload_included": false,
+      "repository_path": "CRP_PDF_BROWSER_PRODUCTION_2026_10_25.md"
+    },
+    {
+      "label": "Consumer bounded final independent review",
+      "sha256": "CC7628DEE724165A9C6DE78F353DF1D4AC5D20651654048FB67E3D9EC6FFCC45",
+      "publication": "repository",
+      "payload_included": false,
+      "repository_path": "docs/go-nogo/2026-10-25-pdf-browser/independent-review.md"
+    },
+    {
+      "label": "Consumer latest read-only main/runtime observation",
+      "sha256": "CA6E5191CCE5A079102F7CD461B13ED3C8FED150409ABACA1B2FF637588976AD",
+      "publication": "hash_only",
+      "payload_included": false
+    },
+    {
+      "label": "Consumer 74078a0 report publication confirmation",
+      "sha256": "8500E4B05E4B8E03C232C51DFAB6B9868B12D200AE1B5321ECBF87A84C0D6516",
+      "publication": "hash_only",
+      "payload_included": false
+    },
+    {
+      "label": "Consumer immutable full regression",
+      "sha256": "95770EB62D0C47D920A5C323868FC7AAE824C855D55B04B9BB21F8E57ADBC9A1",
+      "publication": "hash_only",
+      "payload_included": false
+    },
+    {
+      "label": "Consumer independent Linux verification",
+      "sha256": "05A67EDAAA738AAB5B55D819B4EF06233EC3686F058661C28267DB96B83245E4",
+      "publication": "hash_only",
+      "payload_included": false
+    },
+    {
+      "label": "Mail latest completed local acceptance report",
+      "sha256": "014DA5B6122E607FFAFBD1BC086C35866B7DDD340AE0C977C22F1A274A0BA0E2",
+      "publication": "hash_only",
+      "payload_included": false
+    },
+    {
+      "label": "Affiliate accepted input-policy review",
+      "sha256": "B5596AAE9F1148684EBF623538F645095E079BF4FDFA31B7EAA9EAAE0559747F",
+      "publication": "hash_only",
+      "payload_included": false
+    },
+    {
+      "label": "Affiliate completed staging release",
+      "sha256": "DD8DBAF647B83A5FDC6232991D9DF54A1DB21AD8AFDD93D6AA64C9273B7317EB",
+      "publication": "hash_only",
+      "payload_included": false
+    },
+    {
+      "label": "Family completed production SSO report",
+      "sha256": "95D698E9CF531F5235CC84552DA156AB963B10EDE2EC5E7C837A985EA4312EA8",
+      "publication": "repository",
+      "payload_included": false,
+      "repository_path": "CRP_FAMILY_SSO_PRODUCTION_2026_10_22.md"
+    },
+    {
+      "label": "Historical isolated Consumer restore and rollback",
+      "sha256": "7665600A335302AE93DB2A664FE79F2B29BE1B9FA2AE940EA43B3D4FF5338B96",
+      "publication": "repository",
+      "payload_included": false,
+      "repository_path": "CRP_BACKUP_RESTORE_ROLLBACK_CLOSEOUT_2026_10_09.md"
+    },
+    {
+      "label": "Historical accessibility and bounded capacity",
+      "sha256": "380E34845B66B36F5397C02E03ED1C514702D73C0430179E2E9D921AFFE0566E",
+      "publication": "repository",
+      "payload_included": false,
+      "repository_path": "CRP_ACCESSIBILITY_PERFORMANCE_PRODUCTION_2026_10_17.md"
+    }
+  ]
+}
