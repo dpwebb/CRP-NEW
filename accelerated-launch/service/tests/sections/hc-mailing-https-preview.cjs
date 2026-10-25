@@ -81,7 +81,12 @@ async function run(unused,check){
     const savedPacket=structuredClone(t.service.store.state().packets.find(p=>p.case_id===caseId));
     await duringRender('renderPage','/pages/1',()=>t.request('POST',base+'/packet/letter',{token:owner.token,body:{letter_text:view.packet.correspondence_preview+'\nA new fictional inline edit.'}}),409,()=>t.service.store.update(s=>{s.packets[s.packets.findIndex(p=>p.case_id===caseId)]=savedPacket;}));
     const {PDFDocument}=require('../../pdf-vendor/pdf-lib-1.17.1.min.js'),twoPages=await PDFDocument.create();twoPages.addPage();twoPages.addPage();twoPages.setTitle('Fictional metadata example\nPages: 1');preview=Buffer.from(await twoPages.save());
-    check.equal((await req(owner.token,base+'/mailing/print-preview/'+orderId+'/'+sha(preview)+'/pages')).json.page_count,2,'physical final-page count is not inferred from misleading PDF metadata text');
+    const multilineMetadata=await req(owner.token,base+'/mailing/print-preview/'+orderId+'/'+sha(preview)+'/pages');
+    // Poppler versions either escape metadata newlines or print them literally.
+    // Literal duplicate Pages rows must remain a safe refusal, never a false count.
+    check.ok(multilineMetadata.status===503||(multilineMetadata.status===200&&multilineMetadata.json.page_count===2),'multiline metadata cannot claim an incorrect physical page count');
+    twoPages.setTitle('Fictional metadata example Pages: 1');preview=Buffer.from(await twoPages.save());
+    check.equal((await req(owner.token,base+'/mailing/print-preview/'+orderId+'/'+sha(preview)+'/pages')).json.page_count,2,'ordinary misleading title text cannot override the physical two-page count');
     preview=Buffer.from('%PDF- malformed fictional provider response');
     check.equal((await req(owner.token,base+'/mailing/print-preview/'+orderId+'/'+sha(preview)+'/pages')).status,503,'an unrenderable provider copy cannot claim complete inline review');
     preview=opened.bytes;
