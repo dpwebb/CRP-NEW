@@ -25,6 +25,12 @@ All **420 tested source files**, **193 installed production files**, and **42 pu
 
 The [sanitized follow-up record](docs/go-nogo/2026-10-25-production/main-production-verification.json) records the results and a SHA-256 reference to the retained local receipt. No private receipt payload, credentials or QA artifacts are published. The verification performed no service actions, provider calls, mail actions or remote writes. No deployment, restart, production change or real mail occurred. This documentation-only follow-up preserves the tested application bytes and does not repeat the production checks.
 
+## Final read-only follow-up — October 25, 2026
+
+At **17:10 Halifax time (20:10 UTC)**, the final follow-up confirmed that report update `516712567a939a987dd2e30df1b7fe406c6f38ff` and its sanitized verification record were on remote main. All **420 tested source files**, **193 installed production files**, and **42 published evidence references** again matched. Production remained healthy on E208/source `21cea4f`; its activation record, configuration, raw customer primary state and original security files were unchanged. The stable read rehashed all 231 observed server files before and after without drift, with seven accounts, 340 business rows and no active sessions.
+
+The [sanitized final verification](docs/go-nogo/2026-10-25-production/final-main-production-verification.json) binds both retained local verification receipts by SHA-256 without publishing their raw payloads. The checks performed no service actions, provider calls, mail actions or remote writes. This update only records those completed observations: no deployment, restart, production change, new verification run or real mail is performed for publication. Earlier evidence and stated limits remain unchanged.
+
 ## Evidence and limits
 
 The [machine-readable summary](docs/go-nogo/2026-10-25-production/results-summary.json) records the outcome. The [sanitized evidence references](docs/go-nogo/2026-10-25-production/evidence-references.json) bind 42 retained records by SHA-256; all were rehashed locally with zero mismatches before publication. Raw evidence remains local and is not included in this commit.

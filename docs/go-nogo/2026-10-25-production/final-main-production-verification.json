@@ -1,0 +1,61 @@
+{
+  "schema": "crp-sanitized-final-main-production-verification-v1",
+  "passed": true,
+  "verification_recorded_at": "2026-10-25T20:10:19.878001+00:00",
+  "verification_recorded_at_halifax": "2026-10-25T17:10:19.878001-03:00",
+  "observed_main_commit": "516712567a939a987dd2e30df1b7fe406c6f38ff",
+  "tested_source_commit": "21cea4fd091a22d34600b7ad4993c14ab45179a8",
+  "build_id": "crp-v1-e2084558545d401e",
+  "report_publication_confirmation": {
+    "report_update_commit": "516712567a939a987dd2e30df1b7fe406c6f38ff",
+    "report_section_on_main": true,
+    "sanitized_receipt_on_main": true,
+    "source_evidence_sha256_verified": true,
+    "documentation_only_update": true,
+    "working_tree_clean": true
+  },
+  "main_tested_source_files_verified": 420,
+  "production_shipped_files_verified": 193,
+  "published_evidence_hash_references_verified": 42,
+  "production": {
+    "manifest_matches_main": true,
+    "deployment_provenance_matches_report": true,
+    "activation_record_unchanged": true,
+    "configuration_unchanged_since_final_report": true,
+    "customer_primary_state_unchanged_since_final_report": true,
+    "original_private_security_files_unchanged": true,
+    "production_accounts": 7,
+    "production_business_rows": 340,
+    "sessions": 0,
+    "stable_read_passed": true,
+    "files_rehashed_before_after": 231
+  },
+  "public_health": {
+    "status": 200,
+    "ok": true,
+    "build_id": "crp-v1-e2084558545d401e",
+    "deployment": "production",
+    "billing_mode": "live"
+  },
+  "operational_actions": {
+    "service_actions": 0,
+    "provider_calls": 0,
+    "mail_actions": 0,
+    "remote_writes": 0,
+    "production_changes": false,
+    "real_mail_sent": false
+  },
+  "source_evidence": [
+    {
+      "artifact_name": "verification-result.json",
+      "sha256": "564996F942B33478A95AA18D7E9C913CC62BE2E49F2869E89C5E578B28D5E538",
+      "payload_included": false
+    },
+    {
+      "artifact_name": "report-publication-verification.json",
+      "sha256": "3EA96B3384F565CD55D8BB9503F032AB0EF39A61A0942C271C9FB0A9EE27009C",
+      "payload_included": false
+    }
+  ],
+  "publication_scope": "Documentation-only publication of an already completed read-only check. Raw evidence, credentials, customer records, private QA artifacts, runtime paths and process identifiers remain excluded; no verification or production operation is rerun."
+}
