@@ -253,7 +253,7 @@ function syntheticTests(check) {
 
 /* ------------------------------------------------------------------ part 3: other channels refused */
 
-function otherChannelRefusals(check, checkSkip) {
+function otherChannelRefusals(check, checkSkip, t) {
   const outcomes = {};
   for (const file of [PUB_021, PUB_003, PUB_004]) {
     if (!fs.existsSync(file)) {
@@ -282,11 +282,12 @@ function otherChannelRefusals(check, checkSkip) {
       check.notEqual(detection.presentation_id, 'US-CONSUMER-DISCLOSURE', `${path.basename(file)}: and NOT as the US consumer family`);
     }
   }
-  if (fs.existsSync(EXP_006)) {
-    const detection = formats.detectSupportedFormat(buildPdfDocumentModel(EXP_006), { country: 'US' });
-    outcomes['EXP-006.pdf'] = { supported: detection.supported, refusal_reason: detection.refusal_reason };
-    check.equal(detection.supported, true, 'EXP-006.pdf: a screening artifact is read by the general intake');
-    check.equal(detection.presentation_id, 'GENERAL-BUREAU-REPORT', 'EXP-006.pdf: as a general report, not the US consumer family');
+  const screening = t?.generatedOnly ? require('../fictional-regression.cjs').wrongChannelFile(t) : EXP_006;
+  if (fs.existsSync(screening)) {
+    const detection = formats.detectSupportedFormat(buildPdfDocumentModel(screening), { country: 'US' });
+    outcomes[t?.generatedOnly ? 'GENERATED_WRONG_CHANNEL' : 'EXP-006.pdf'] = { supported: detection.supported, refusal_reason: detection.refusal_reason };
+    check.equal(detection.supported, true, 'the screening reference is read by the general intake');
+    check.equal(detection.presentation_id, 'GENERAL-BUREAU-REPORT', 'the screening reference remains general, not the US consumer family');
   }
   return outcomes;
 }
@@ -300,7 +301,7 @@ module.exports = {
     const real = realEvidence(check, check.skip, reader);
     const evaluation = real.skipped === true ? null : realEvaluation(check);
     const synthetic = syntheticTests(check);
-    const otherChannels = otherChannelRefusals(check, check.skip);
+    const otherChannels = otherChannelRefusals(check, check.skip, t);
     return {
       skipped: real.skipped === true,
       reason: real.reason || null,

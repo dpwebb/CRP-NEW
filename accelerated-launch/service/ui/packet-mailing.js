@@ -1,11 +1,6 @@
 'use strict';
 (() => {
   const node = (tag, text) => { const value = document.createElement(tag); if (text !== undefined) value.textContent = text; return value; };
-  const previewUrls = new Set();
-  document.addEventListener?.('crp-session-expired', () => {
-    for (const url of previewUrls) URL.revokeObjectURL(url);
-    previewUrls.clear();
-  });
   const states = { AWAITING_PAYMENT:'Waiting for simulated payment', QUEUED:'Queued for simulated mailing', SUBMITTING:'Simulating submission', ACCEPTED:'Simulated provider acceptance', DISPATCHED:'Simulated dispatch', DELIVERED:'Simulated delivery', RETURNED:'Simulated return', UNKNOWN:'Uncertain result — held for review', FAILED:'Simulated submission failed', CANCELLED:'Cancelled' };
   function mount({ root, caseId, version, request, ensure, canRequest, live=false, testMode=false }) {
     const labels=live?{AWAITING_PAYMENT:'Waiting for payment',QUEUED:'Waiting for staff preparation',ACCEPTED:'Prepared by staff',SUBMITTING:'Postal handoff in progress',DISPATCHED:'Posted - recorded by staff',DELIVERED:'Delivery recorded by staff',RETURNED:'Return recorded by staff',UNKNOWN:'Held for staff review',FAILED:'Unable to proceed',CANCELLED:'Cancelled'}:states;
@@ -53,10 +48,8 @@
           if(review?.previewAvailable&&order.state==='QUEUED'&&!review.approved){
             content.append(button('Load final mailing copy',async()=>{
               const result=await request('POST',path+'/print-preview',{});
-              if(previewCache?.url){URL.revokeObjectURL(previewCache.url);previewUrls.delete(previewCache.url);}
-              const binary=atob(result.pdf_base64),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
-              previewCache={orderId:result.order_id,hash:result.preview_hash,url:URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}))};reviewedPrintHash=null;
-              previewUrls.add(previewCache.url);
+              if(!/^[a-f0-9-]{36}$/.test(result.order_id||'')||!/^[a-f0-9]{64}$/.test(result.preview_hash||''))throw Error('Refresh the mailing status before reviewing this copy.');
+              previewCache={orderId:result.order_id,hash:result.preview_hash,url:path+'/print-preview/'+encodeURIComponent(result.order_id)+'/'+result.preview_hash};reviewedPrintHash=null;
             },'packet-mailing-print-load'));
             if(previewCache?.orderId===order.id&&previewCache.hash===review.previewHash){
               const link=node('a','Open and review every page of the final mailing copy');link.href=previewCache.url;link.target='_blank';link.rel='noopener';

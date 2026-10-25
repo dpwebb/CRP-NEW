@@ -177,7 +177,7 @@ async function run(t, check) {
   check.ok(plain.shared_identity.facts['account.reported_identity'], 'an unavailable mask does not erase the independently printed creditor');
 
   const file = process.env.CRP_CA_EQUIFAX_SPECIMEN;
-  if (file && fs.existsSync(file)) {
+  if (!t.generatedOnly && file && fs.existsSync(file)) {
     const model = formats.buildPdfDocumentModel(file), detection = formats.detectSupportedFormat(model, { country: 'CA' });
     check.equal(detection.presentation_id, 'PR-01', 'the authorized actual report retains exact specimen admission');
     check.equal(model.sha256, 'E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F', 'actual report bytes match the original PR-01 evidence');
@@ -191,7 +191,7 @@ async function run(t, check) {
     check.equal(actual.records.every((r) => r.printed['Account Number'].raw === null), true, 'actual historical collection identifiers remain redacted');
     check.equal(actual.ordinary_records.every((r) => !r.facts['tradeline.firstDelinquencyDate']), true, 'actual ordinary tables carry no invented first delinquency');
     check.equal(actual.records.filter((r) => r.printed['First Delinquency'].state === 'VALUE').length, 2, 'existing two collection delinquency readings remain available');
-  } else check.skip('actual PR-01 local measurement', 'AUTHORIZED_LOCAL_SOURCE_NOT_PRESENT');
+  } else if (!t.generatedOnly) check.skip('actual PR-01 local measurement', 'AUTHORIZED_LOCAL_SOURCE_NOT_PRESENT');
   return { inputs: 'fictional geometry and optional authorized local PR-01; no private report bytes or identities copied',
     fields: 'own masked identifiers, closure notes, balance/past due, responsibility and actual date captions',
     boundary: 'exact PR-01 admission unchanged; blank, malformed, duplicate and untrusted values remain unavailable' };

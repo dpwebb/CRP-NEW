@@ -206,6 +206,10 @@ function create(store,env=process.env){
     const result=await remote(c,'integration','GET',`/api/v1/orders/${record.order_id}/print-preview?ownerRef=${encodeURIComponent(record.quote.snapshot.ownerRef)}`);
     const bytes=Buffer.from(result.pdfBase64||'','base64');
     if(result.orderId!==record.order_id||result.packetHash!==record.packet_hash||sha(bytes)!==result.previewHash||bytes.subarray(0,5).toString()!=='%PDF-')fail();
+    const latest=records(actor,caseId).at(-1);
+    if(!latest||latest.id!==record.id||latest.order_id!==record.order_id||['CANCELLED','FAILED','RETURNED','DELIVERED'].includes(latest.order?.state))throw new ServiceError('MAILING_ORDER_CHANGED');
+    const refreshed=current(actor,caseId,latest.packet_version,c);
+    if(refreshed.packetHash!==result.packetHash)throw new ServiceError('PACKET_APPROVAL_STALE');
     return {order_id:record.order_id,packet_hash:record.packet_hash,preview_hash:result.previewHash,pdf_base64:result.pdfBase64};
   }
   async function approveprint(actor,caseId,body){

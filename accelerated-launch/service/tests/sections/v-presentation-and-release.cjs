@@ -398,3 +398,7 @@ module.exports = {
   id: 'v-presentation-and-release',
   title: 'Presentation gaps closed or bounded: Canadian family scope, GB currency, coverage messaging and the local release check'
 };
+
+// Owner-authorized generated regression reuses these pure fixture/assertion helpers.
+// The original captured-source run above remains available as its separate audit.
+module.exports.generatedRegression = { gbCurrency, messagingAndRelease, draftBoundaryAndRelease };

@@ -208,6 +208,7 @@ function everyCaRegion(check, extraction) {
     perRegion[region] = {
       statutory_checks_performed: statutory.length,
       factual_checks_performed: factual ? factual.performed.length : 0,
+      common_error_checks_performed: evaluated.common_errors.performed.length,
       factual_differences_found: factual ? factual.summary.a_difference_was_found : 0,
       unsupported_by_this_build: evaluated.unavailable_checks.length,
       assessment_kinds: evaluated.assessment_kinds
@@ -513,3 +514,7 @@ module.exports = {
 
 
 
+
+// Owner-authorized generated regression reuses these pure fixture/assertion helpers.
+// The original captured-source run above remains available as its separate audit.
+module.exports.generatedRegression = { syntheticBranches, syntheticView, field, everyCaRegion };

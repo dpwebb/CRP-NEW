@@ -380,3 +380,7 @@ module.exports = {
   id: 'cr-ca-ns-tu-real-report',
   title: 'BLOCKER-REPORT-DATA-TO-ISSUE-001: the supplied real TransUnion Canada report assessed under Nova Scotia — supported findings, the reporting-period limb and the paid boundaries'
 };
+
+// Owner-authorized generated regression reuses these pure fixture/assertion helpers.
+// The original captured-source run above remains available as its separate audit.
+module.exports.generatedRegression = { tuAccountBlock, tuExtraction, runControls };

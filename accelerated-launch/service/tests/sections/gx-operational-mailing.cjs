@@ -98,13 +98,14 @@ async function run(unused,check){
   check.equal(partial.textContent.includes('re_pending'),false,'unconfirmed provider refund is not labelled a successful reference');
   const reviewRoot=new Element('section');let approved=false,previewPosts=0,approvalPosts=0;
   context.window.CRP_PACKET_MAILING.mount({root:reviewRoot,caseId,live:true,version:'v1',ensure(){},canRequest:()=>true,request:async(method,url)=>{
-    if(url.endsWith('/print-preview')){previewPosts++;return {order_id:orderId,preview_hash:'fictional-preview-hash',pdf_base64:Buffer.from('%PDF-1.4 fictional unit bytes').toString('base64')};}
+    if(url.endsWith('/print-preview')){previewPosts++;return {order_id:orderId,preview_hash:'a'.repeat(64),pdf_base64:Buffer.from('%PDF-1.4 fictional unit bytes').toString('base64')};}
     if(url.endsWith('/approve-print')){approvalPosts++;approved=true;}
-    return {available:true,order:{id:orderId,state:'QUEUED',payment_state:'VERIFIED',mailer:'POSTGRID',print_review:{previewAvailable:true,previewHash:'fictional-preview-hash',approved}}};
+    return {available:true,order:{id:orderId,state:'QUEUED',payment_state:'VERIFIED',mailer:'POSTGRID',print_review:{previewAvailable:true,previewHash:'a'.repeat(64),approved}}};
   }});await tick();await tick();
   reviewRoot.querySelectorAll('button').find(n=>n.id==='packet-mailing-print-load').onclick();await tick();await tick();
   const approve=reviewRoot.querySelectorAll('button').find(n=>n.id==='packet-mailing-print-approve'),checked=reviewRoot.querySelectorAll('input').find(n=>n.id==='packet-mailing-print-checked');
   check.equal(approve.disabled,true,'final approval stays disabled after asynchronous load until review prerequisites hold');
+  check.equal(reviewRoot.querySelectorAll('a')[0].href, '/api/cases/'+caseId+'/mailing/print-preview/'+orderId+'/'+'a'.repeat(64), 'final-copy link uses the authenticated exact-order/hash HTTPS path');
   reviewRoot.querySelectorAll('a')[0].onclick();check.equal(approve.disabled,true,'opening the copy alone does not supply review consent');
   checked.checked=true;checked.onchange();check.equal(approve.disabled,false,'opening exact copy and explicit check enables approval');
   approve.onclick();await tick();await tick();check.equal(approvalPosts,1,'one enabled approval submits once');check.equal(previewPosts,1,'approval does not fetch or prepare another provider copy');

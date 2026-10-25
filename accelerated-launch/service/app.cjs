@@ -241,6 +241,7 @@ const ROUTES = Object.freeze([
   ['POST', '/api/cases/:caseId/mailing/confirm', true, 'mailingConfirm'],
   ['POST', '/api/cases/:caseId/mailing/cancel', true, 'mailingCancel'],
   ['POST', '/api/cases/:caseId/mailing/print-preview', true, 'mailingPrintPreview'],
+  ['GET', '/api/cases/:caseId/mailing/print-preview/:orderId/:previewHash', true, 'mailingPrintPdf'],
   ['POST', '/api/cases/:caseId/mailing/approve-print', true, 'mailingApprovePrint'],
   ['GET', '/api/cases/:caseId/packet-print', true, 'packetPrint'],
   ['GET', '/api/cases/:caseId/packet/preview', true, 'packetPreview'],
@@ -951,6 +952,21 @@ function createService(options) {
     buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || testMailbox.wrap(require('./confirmation-mail.cjs').sender()), adminStore, googleSignIn, mailOps, testMailbox),
     buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps),
     buildBillingHandlers(store, logger, pricingCurrency),
+    {mailingPrintPdf: async ({actor, params, req}) => {
+      if (!/^[a-f0-9-]{36}$/.test(params.orderId) || !/^[a-f0-9]{64}$/.test(params.previewHash)) throw new ServiceError('INVALID_REQUEST');
+      if (typeof mailOps.printpreview !== 'function') throw new ServiceError('NOT_AUTHORIZED');
+      const preview = await mailOps.printpreview(actor, params.caseId, {});
+      // A PDF opened in another tab retains cookie authentication and the exact reviewed identity.
+      const currentActor = accounts.resolveSession(store, sessionToken(req));
+      if (currentActor.account_id !== actor.account_id) throw new ServiceError('NOT_AUTHORIZED');
+      require('./signup-security.cjs').requireReady(store, currentActor);
+      entitlement.requireSubscriberFeature(store, currentActor);
+      if (preview.order_id !== params.orderId || preview.preview_hash !== params.previewHash) throw new ServiceError('MAILING_ORDER_CHANGED');
+      return {status:200, text:Buffer.from(preview.pdf_base64, 'base64'), content_type:'application/pdf', headers:{
+        'Content-Disposition':`inline; filename="final-mailing-copy-${params.orderId}.pdf"`,
+        'Cache-Control':'private, no-store', 'X-CRP-Preview-Hash':preview.preview_hash
+      }};
+    }},
     Object.fromEntries(['Status','Quote','Confirm','Cancel','PrintPreview','ApprovePrint'].map(action => ['mailing' + action, async ({actor,params,body}) => {
       if(typeof mailOps[action.toLowerCase()]!=='function')throw new ServiceError('NOT_AUTHORIZED');
       return {status: 200, json: { ok: true, ...await mailOps[action.toLowerCase()](actor, params.caseId, body) }};

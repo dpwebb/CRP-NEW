@@ -47,6 +47,7 @@ const FETCH_BLOCKED_PORTS = new Set([0,1,7,9,11,13,15,17,19,20,21,22,23,25,37,42
  * unset and the exact-specimen checks report the specimen as unavailable, as intended.
  */
 (function seedSpecimenPaths() {
+  if (require('./fixture-policy.cjs').fictionalEnabled()) return;
   const registerFile = path.join(REPOSITORY_ROOT, 'SOURCE_CAPTURES', 'PROD-003', 'report_representation_register.json');
   if (!fs.existsSync(registerFile)) return;
   const register = JSON.parse(fs.readFileSync(registerFile, 'utf8'));
@@ -315,6 +316,7 @@ class TestService {
 
 /** Read the evidenced specimen WITHOUT copying it: read-only, and only when the register pins it. */
 function readPinnedSpecimen() {
+  if (require('./fixture-policy.cjs').fictionalEnabled()) return { available: false, reason: 'PRIVATE_CAPTURE_EXCLUDED_BY_OWNER_FICTIONAL_REGRESSION' };
   const registerPath = path.join(REPOSITORY_ROOT, 'SOURCE_CAPTURES', 'PROD-003', 'report_representation_register.json');
   if (!fs.existsSync(registerPath)) return { available: false, reason: 'THE_PROD_003_REGISTER_IS_NOT_PRESENT' };
   const register = JSON.parse(fs.readFileSync(registerPath, 'utf8'));
