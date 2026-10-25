@@ -17,6 +17,14 @@ All original production **7 accounts, 340 business rows and 109 blobs**, raw pri
 
 Cleaned staging retains its original **66 accounts, 930 business rows and 198 blobs**. Exactly 31 oldest-prefix unowned diagnostic replacements are separately accounted for; original raw staging state equality is not claimed. Mail business tables/configuration and the current Affiliate images and four environment files are preserved. No real mail, live charge, real-consumer login/MFA, provider switch or shared reboot was performed.
 
+## Read-only main and production verification — October 25, 2026
+
+At **17:05 Halifax time (20:05 UTC)**, a read-only follow-up verified remote main `40a27ce8c18d3146a7d32750c372647a96952448` against tested source `21cea4fd091a22d34600b7ad4993c14ab45179a8` and production build `crp-v1-e2084558545d401e`.
+
+All **420 tested source files**, **193 installed production files**, and **42 published evidence references** matched their accepted hashes. Main differed from the tested source only by twelve report/evidence documents. Production's manifest and deployment provenance matched the report, and its activation record, configuration, raw customer primary state and original private security files were unchanged. The original seven accounts and 340 business rows remained intact, with no active sessions. All 231 files read on the server were rehashed before and after the observation without drift. Public health returned HTTP 200 for the expected production build in its existing live billing mode.
+
+The [sanitized follow-up record](docs/go-nogo/2026-10-25-production/main-production-verification.json) records the results and a SHA-256 reference to the retained local receipt. No private receipt payload, credentials or QA artifacts are published. The verification performed no service actions, provider calls, mail actions or remote writes. No deployment, restart, production change or real mail occurred. This documentation-only follow-up preserves the tested application bytes and does not repeat the production checks.
+
 ## Evidence and limits
 
 The [machine-readable summary](docs/go-nogo/2026-10-25-production/results-summary.json) records the outcome. The [sanitized evidence references](docs/go-nogo/2026-10-25-production/evidence-references.json) bind 42 retained records by SHA-256; all were rehashed locally with zero mismatches before publication. Raw evidence remains local and is not included in this commit.

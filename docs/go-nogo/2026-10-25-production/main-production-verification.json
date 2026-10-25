@@ -1,0 +1,47 @@
+{
+  "schema": "crp-sanitized-main-production-verification-v1",
+  "passed": true,
+  "verification_recorded_at": "2026-10-25T20:05:25.383586+00:00",
+  "verification_recorded_at_halifax": "2026-10-25T17:05:25.383586-03:00",
+  "observed_main_commit": "40a27ce8c18d3146a7d32750c372647a96952448",
+  "tested_source_commit": "21cea4fd091a22d34600b7ad4993c14ab45179a8",
+  "build_id": "crp-v1-e2084558545d401e",
+  "main_tested_source_files_verified": 420,
+  "production_shipped_files_verified": 193,
+  "published_evidence_hash_references_verified": 42,
+  "differences_from_tested_source": "Twelve report/evidence documents only at the observed main commit; no application source difference.",
+  "production": {
+    "manifest_matches_main": true,
+    "provenance_matches_final_report": true,
+    "activation_record_unchanged": true,
+    "configuration_unchanged_since_final_report": true,
+    "customer_primary_state_unchanged_since_final_report": true,
+    "original_private_security_files_unchanged": true,
+    "accounts": 7,
+    "business_rows": 340,
+    "sessions": 0,
+    "stable_read_passed": true,
+    "files_rehashed_before_and_after": 231
+  },
+  "public_health": {
+    "status": 200,
+    "ok": true,
+    "build_id": "crp-v1-e2084558545d401e",
+    "deployment": "production",
+    "billing_mode": "live"
+  },
+  "operational_actions": {
+    "service_actions": 0,
+    "provider_calls": 0,
+    "mail_actions": 0,
+    "remote_writes": 0,
+    "production_changes": false,
+    "real_mail_sent": false
+  },
+  "source_evidence": {
+    "artifact_name": "verification-result.json",
+    "sha256": "51AEA19C9A725360A56CACA8261C6C76CD0F3247544FBE01745D060ACD8B508E",
+    "payload_included": false
+  },
+  "publication_scope": "Sanitized local follow-up to the completed production report. Original private evidence, credentials, customer records, runtime paths and process identifiers are excluded. Publication changes documentation only; it does not rerun the verification or authorize deployment."
+}
