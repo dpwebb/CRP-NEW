@@ -234,6 +234,10 @@ async function retrieveFile(url, filename, previewWindow=null) {
 if(document.addEventListener)document.addEventListener('click',event=>{
   const link=event.target?.closest?.('a[href^="/api/"]');
   if(!link||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+  // This authenticated exact-order/hash endpoint already serves an inline private PDF.
+  // Preserve native HTTPS navigation; rebuilding it as blob: defeats the final-copy link.
+  const href=link.getAttribute('href')||'';
+  if(/^\/api\/cases\/case_[a-f0-9]{24}\/mailing\/print-preview\/[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}\/[a-f0-9]{64}$/.test(href))return;
   event.preventDefault();if(link.getAttribute('aria-busy')==='true')return;
   const preview=link.target==='_blank'?window.open('about:blank','_blank'):null;
   if(preview)preview.opener=null;

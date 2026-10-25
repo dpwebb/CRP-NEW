@@ -3,21 +3,23 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const caseId='case_'+'a'.repeat(24),orderId='11111111-1111-4111-8111-111111111111',attemptId='22222222-2222-4222-8222-222222222222';
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
 function consumer(responder){
-  const nodes=new Map(),calls=[];
+  const nodes=new Map(),calls=[],listeners=[];
   const node=id=>{if(!nodes.has(id))nodes.set(id,{value:'',innerHTML:'',textContent:'',style:{},dataset:{},querySelectorAll:()=>[],querySelector:()=>null,setAttribute(){},removeAttribute(){},focus(){}});return nodes.get(id);};
-  const context={console,setTimeout,clearTimeout,Promise,URLSearchParams,Date,Map,Set,JSON,Object,Array,Number,String,Error,crypto:require('node:crypto'),document:{getElementById:node,createElement:node},navigator:{clipboard:{}},location:{hash:'',search:'',assign(){}},fetch:async(url,options={})=>{
+  const context={console,setTimeout,clearTimeout,Promise,URLSearchParams,Date,Map,Set,JSON,Object,Array,Number,String,Error,crypto:require('node:crypto'),document:{getElementById:node,createElement:node,addEventListener:(type,handler,capture)=>listeners.push({type,handler,capture})},navigator:{clipboard:{}},location:{hash:'',search:'',assign(){}},fetch:async(url,options={})=>{
     calls.push({url,method:options.method||'GET'});return {ok:true,status:200,json:async()=>responder(url,options)};
   }};context.window=context;vm.createContext(context);
   const source=fs.readFileSync(path.join(__dirname,'../../ui/app.js'),'utf8');
   vm.runInContext(source.slice(0,source.indexOf('/* ------------------------------------------------------------------ bootstrap */')),context);
   const evaluate=code=>vm.runInContext(code,context);
   evaluate('state.account={account_id:"fictional-return",email:"fictional@example.test"};render=()=>{renderSequence++;};');
-  return {context,evaluate,calls};
+  return {context,evaluate,calls,listeners};
 }
 class Element{
   constructor(tag,text=''){this.tagName=tag;this.children=[];this.text=text;this.isConnected=true;this.value='';}
   append(...nodes){this.children.push(...nodes);}
   setAttribute(name,value){this[name]=value;}
+  getAttribute(name){return this[name]??null;}
+  removeAttribute(name){delete this[name];}
   replaceChildren(...nodes){this.children=nodes;this.text='';}
   set textContent(value){this.text=value;this.children=[];}
   get textContent(){return this.text+this.children.map(n=>typeof n==='string'?n:n.textContent).join(' ');}
@@ -106,6 +108,26 @@ async function run(unused,check){
   const approve=reviewRoot.querySelectorAll('button').find(n=>n.id==='packet-mailing-print-approve'),checked=reviewRoot.querySelectorAll('input').find(n=>n.id==='packet-mailing-print-checked');
   check.equal(approve.disabled,true,'final approval stays disabled after asynchronous load until review prerequisites hold');
   check.equal(reviewRoot.querySelectorAll('a')[0].href, '/api/cases/'+caseId+'/mailing/print-preview/'+orderId+'/'+'a'.repeat(64), 'final-copy link uses the authenticated exact-order/hash HTTPS path');
+  // Dispatch the actual component link through app.js's document capture listeners first.
+  // Testing only link.onclick misses the shared downloader that can turn HTTPS back into blob:.
+  const finalLink=reviewRoot.querySelectorAll('a')[0],navigation=consumer(()=>({}));let prevented=false,windowOpens=0;
+  navigation.context.open=()=>{windowOpens++;return {location:{replace(){}},close(){}};};
+  const event={target:{closest:selector=>selector==='button'?null:finalLink},preventDefault(){prevented=true;}};
+  for(const listener of navigation.listeners.filter(l=>l.type==='click'))listener.handler(event);
+  check.equal(prevented,false,'shared document capture preserves native HTTPS final-copy navigation');
+  check.equal(windowOpens,0,'final-copy click creates no downloader about:blank window');
+  check.equal(navigation.calls.length,0,'final-copy navigation does not fetch and rebuild a blob URL');
+  check.equal(finalLink.getAttribute('aria-busy'),null,'native final-copy opening does not enter the legacy download lifecycle');
+  await tick();await tick();
+  for(const href of ['/api/cases/'+caseId+'/packet/preview?version=v1',finalLink.href.replace(/a{64}$/,'invalid'),finalLink.href.replace(orderId,'not-an-order')]){
+    const legacy=consumer(()=>({})),anchor=new Element('a','Private document');anchor.href=href;anchor.target='_blank';let intercepted=false,opens=0;
+    legacy.context.open=()=>{opens++;return {location:{replace(){}},close(){}};};
+    for(const listener of legacy.listeners.filter(l=>l.type==='click'))listener.handler({target:{closest:selector=>selector==='button'?null:anchor},preventDefault(){intercepted=true;}});
+    check.equal(intercepted,true,'other private document and malformed final-copy links retain the existing guarded downloader');
+    check.equal(opens,1,'legacy interception retains its single owned preview window');
+    check.equal(legacy.calls[0]?.url,href,'legacy downloader still requests the exact selected private document');
+    await tick();await tick();
+  }
   reviewRoot.querySelectorAll('a')[0].onclick();check.equal(approve.disabled,true,'opening the copy alone does not supply review consent');
   checked.checked=true;checked.onchange();check.equal(approve.disabled,false,'opening exact copy and explicit check enables approval');
   approve.onclick();await tick();await tick();check.equal(approvalPosts,1,'one enabled approval submits once');check.equal(previewPosts,1,'approval does not fetch or prepare another provider copy');
