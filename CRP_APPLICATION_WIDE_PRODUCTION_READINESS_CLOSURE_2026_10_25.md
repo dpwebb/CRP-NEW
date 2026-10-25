@@ -83,3 +83,11 @@ Retained limits do not silently add features or remove approved outcomes:
 The lead accepts C1–C4 as closed for the named production tuple and approved customer offering, using the source-bound independent reviews, completed sibling releases and new recovery/joined outputs above. **There are no remaining blocking failures in this readiness register.** A future source/configuration/schema change needs impact-based evidence and its own deployment authority; this closure does not authorize one.
 
 Publication is limited to this report, its historical audit, the readiness register and sanitized JSON evidence records. References contain hashes and sanitized facts only. Credentials, backup identities, recovered customer data, private QA payloads, session material and raw screenshots remain outside Git. Publication does not regenerate a manifest/package or repeat an operational intent.
+
+## Post-publication main and production verification
+
+Completed October25 at **21:16:56UTC / 18:16:56 Halifax**. Remote main was exactly `f18ffc6f41ada43b95dcbefbcd7de62c0fe822fc`; the final report was present, register/closure hash bindings passed, all28 sanitized evidence references were present with published-file hash bindings verified, and all420 accepted tested source files matched main. The working tree was clean.
+
+Read-only production verification confirmed all four certified versions in the table above: **193 Consumer + 71 Mail + 64 Affiliate + 47 Family = 375 runtime files**. Mail's11 migration hashes/25-table schema and Affiliate's five migration versions/hashes matched. Repeated reads were stable. Protected configuration, Consumer primary state and service process IDs remained unchanged from the final certification baseline.
+
+The check performed zero production writes, service actions, provider calls or mail operations. No real-customer authentication, full regression, package rebuild or deployment was repeated. This documentation update reuses that completed observation; it does not claim a new production check at publication time. [Sanitized verification receipt](docs/go-nogo/2026-10-25-application-readiness/main-production-verification.json) retains version identities, results and hash-only source references; raw QA receipts and credentials remain excluded.
