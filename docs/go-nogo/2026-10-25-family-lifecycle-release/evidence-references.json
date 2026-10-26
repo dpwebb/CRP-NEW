@@ -496,6 +496,11 @@
       "label": "preexisting session expired at actual provisioning start",
       "sha256": "5a0749103c1897013a62f75764a8105b805b42cca2cec42d1793974d35a2fbce",
       "payload_included": false
+    },
+    {
+      "label": "October26 11:24 UTC read-only installed Family release health and asset verification",
+      "sha256": "4a341ac719ee94c9795356899baa90c946750cf94e686d4248df7d767ff37a5e",
+      "payload_included": false
     }
   ]
 }

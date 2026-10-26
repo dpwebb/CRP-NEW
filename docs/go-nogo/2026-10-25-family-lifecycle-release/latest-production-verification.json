@@ -1,0 +1,41 @@
+{
+  "schema": "crp-family-latest-production-verification-v1",
+  "checked_at_utc": "2026-10-26T11:24:00.077262+00:00",
+  "scope": "Family installed release, public health and three public assets; no new native-app data or authenticated workflow assessment",
+  "main_commit_verified": "2e455ee01da12a2287eb9ab9984dab47b512cdba",
+  "family_git_tree": "070e1dcefc33ac4d09451bc242991865da15453b",
+  "installed": {
+    "source": "74f1e8ada06ad960def80ad116983e5eb16ad22f",
+    "release": "crp-family-adae364ba65a91df162e",
+    "manifest_sha256": "7777739b8d7cf7418ca430b46ab8c01fb6304121a614a71614b7b925c37556b7",
+    "files_verified": 50,
+    "service_active": true,
+    "service_running": true,
+    "observed_pid": 3391267
+  },
+  "public_health_ok": true,
+  "public_assets": [
+    {
+      "path": "/",
+      "sha256": "af0364d3e1320a18433f1b5e2b6e47f06fb5a6313566dadceee7c3e703984686",
+      "matched": true
+    },
+    {
+      "path": "/app.js",
+      "sha256": "be0c6e8bf445b294497c6e0b61ee456b7b9de5a6f2eb1545f745925867740111",
+      "matched": true
+    },
+    {
+      "path": "/style.css",
+      "sha256": "96c08c14f72f3f6ea520e7ba01aa6bc1e9e08b5442514e626f83038a9727e10a",
+      "matched": true
+    }
+  ],
+  "production_matches_tested_family_source_on_main": true,
+  "deployment_needed": false,
+  "production_mutations": 0,
+  "service_actions": 0,
+  "real_mail_sent": 0,
+  "private_evidence_sha256": "4a341ac719ee94c9795356899baa90c946750cf94e686d4248df7d767ff37a5e",
+  "private_payload_included": false
+}
