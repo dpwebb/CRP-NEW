@@ -1,0 +1,97 @@
+{
+  "schema": "crp-family-lifecycle-closure-v1",
+  "recorded_at_utc": "2026-10-26T00:12:26.148705+00:00",
+  "decision": "GO_LOCAL_REPAIRED_CANDIDATE",
+  "assessment_complete": true,
+  "family_version": {
+    "baseline_source": "3f60497f65513ed7c983ab5d3adc95440aea3b4f",
+    "candidate_status": "UNCOMMITTED_LOCAL_SOURCE",
+    "files_including_tests_and_docs": 50,
+    "source_inventory_sha256": "095e955251e116f44a92a4dac558fb654041dffa6e43f7a73c0e389fa8162919",
+    "new_release_manifest_created": false
+  },
+  "starting_head": "3f60497f65513ed7c983ab5d3adc95440aea3b4f",
+  "criteria": {
+    "catalog_pass": 89,
+    "control_pass": 14,
+    "control_fail": 0,
+    "total_pass": 103,
+    "total_fail": 0,
+    "unassessed_active_criteria": 0
+  },
+  "coverage": {
+    "views": 27,
+    "reads_and_documents": 43,
+    "actions": 46,
+    "fresh_gateway_checks": 709,
+    "fresh_family_tests_passed": 49,
+    "fresh_family_tests_failed": 0,
+    "intentional_windows_linux_only_skips": 5,
+    "historical_portable_linux_checks_reused": 45,
+    "desktop_mobile_view_cases": 54,
+    "desktop_action_forms_passed": 46,
+    "mobile_action_forms_passed": 46,
+    "settled_overview_supplement_passed": true,
+    "every_native_business_transition_freshly_reexecuted": false,
+    "native_dependency_evidence_reused": true,
+    "independent_full_family_review_newly_commissioned": false,
+    "fresh_three_native_sso_acceptance_passed": 1,
+    "consumer_exact_tested_sources_reverified": 420
+  },
+  "blocking_findings": [],
+  "production_verification": {
+    "checked_at_utc": "2026-10-26T00:09:29.607107+00:00",
+    "runtime_files_matched": 375,
+    "family_files_matched": 47,
+    "configuration_unchanged": true,
+    "consumer_primary_state_unchanged": true,
+    "process_ids_unchanged": true,
+    "stable_read": true
+  },
+  "execution": {
+    "product_source_changes": "Family lifecycle only",
+    "production_writes": 0,
+    "production_restarts": 0,
+    "real_user_authentication": 0,
+    "production_clock_changes": 0,
+    "provider_transactions": 0,
+    "real_mail_sent": 0,
+    "commits": 0,
+    "pushes": 0,
+    "hosted_qa_actors_created": 0,
+    "new_provider_transactions": 0,
+    "sandbox_evidence_reused": true
+  },
+  "cleanup": {
+    "owned_browsers_closed": true,
+    "owned_listeners_stopped": true,
+    "controlled_draft_fixture_administrative_writes": 0,
+    "fresh_overview_fixture_sessions_before_close": 0,
+    "fictional_private_evidence_retained": true,
+    "fictional_form_fixture_writes": 46,
+    "fictional_form_fixture_intents": 46
+  },
+  "evidence_limits": [
+    "Family contract responses used declared synthetic native inputs; native business acceptance reused separately",
+    "Clock changes were isolated test inputs; no natural hosted idle expiry claimed",
+    "Existing Linux and independent component reviews retain original dates and scopes",
+    "No physical printing/posting, bank settlement or full accessibility conformance claim",
+    "GO applies only to this exact uncommitted local candidate; deployed Family remains original47-file build with lifecycle blockers",
+    "Production promotion, fresh immutable packaging and hosted acceptance are outside this repair authorization",
+    "No newly commissioned independent full-Family review; prior component reviews reused with original scope"
+  ],
+  "deployed_family_decision": "NO_GO_UNTIL_REPAIRED_RELEASE_ACCEPTED_AND_PROMOTED",
+  "resolved_findings": [
+    {
+      "id": "FAM-01",
+      "status": "PASS",
+      "evidence": "Trusted activity minute9 renews idle to24; minute16 workspace/draft retained; idle25 lock and fresh unlock restore draft; primary expiry recovery retains subject/session/CSRF/cap; original8h cap returns401",
+      "administrative_writes_during_lifecycle_test": 0
+    },
+    {
+      "id": "FAM-02",
+      "status": "PASS",
+      "evidence": "Passive status endpoint performs no native resolution;300 half-minute polls leave actual native Consumer session metadata exactly unchanged; native2h idle expiry and normal MFA recovery tested"
+    }
+  ]
+}

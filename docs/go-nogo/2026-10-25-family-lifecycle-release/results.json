@@ -1,0 +1,75 @@
+{
+  "schema": "crp-family-lifecycle-production-release-v1",
+  "recorded_at_utc": "2026-10-26T02:10:05.440893+00:00",
+  "decision": "GO_RELEASE_DEPLOYED_AND_VERIFIED",
+  "production_deployed": true,
+  "production_activation_at_utc": "2026-10-26T02:04:34.030964+00:00",
+  "production_url": "https://admin.creditregulatorpro.com",
+  "candidate": {
+    "release": "crp-family-adae364ba65a91df162e",
+    "source": "74f1e8ada06ad960def80ad116983e5eb16ad22f",
+    "manifest": "7777739b8d7cf7418ca430b46ab8c01fb6304121a614a71614b7b925c37556b7",
+    "files": 50
+  },
+  "criteria": {
+    "catalog_pass": 89,
+    "control_pass": 14,
+    "total_pass": 103,
+    "total_fail": 0
+  },
+  "checks": {
+    "source_matched_local_family_pass": 49,
+    "local_linux_only_skips": 5,
+    "fresh_linux_pass": 52,
+    "fresh_linux_fail": 0,
+    "fresh_linux_skips": 0,
+    "fresh_native_joined_pass": 1,
+    "catalog_contract_checks": 709,
+    "hosted_view_cases": 54,
+    "passive_polls": 300,
+    "natural_active_continuity_and_idle_lock": true,
+    "same_person_primary_recovery_and_separate_mfa_unlock": true,
+    "original_absolute_cap_preserved": true,
+    "role_revocation_stops_read": true,
+    "staging_acceptance": true,
+    "production_runtime_files_verified": 378,
+    "production_public_and_assets": true,
+    "normal_qa_logout_and_retirement": true,
+    "independent_linux_and_desktop_backup_recovery": true
+  },
+  "preservation": {
+    "production_consumer_primary_byte_exact": true,
+    "production_affiliate_tables_exact": 26,
+    "production_mail_customer_business_configuration_tables_exact": 25,
+    "mail_runtime_heartbeat_only_exact_hash_qualified": true,
+    "production_family_config_keys_audit_router_unit_metadata_exact_except_verified_lock_pid": true,
+    "native_application_pids_unchanged": true,
+    "staging_original_accounts_exact": 66,
+    "staging_all33_affiliate_tables_exact": true,
+    "staging_original_memberships_unlocks_and_audit_prefix_exact": true,
+    "staging_all_three_configs_restored_byte_exact": true,
+    "preexisting_expired_staging_session_removed_by_normal_cleanup": 1
+  },
+  "execution": {
+    "real_mail_sent": 0,
+    "new_provider_transactions": 0,
+    "production_customer_records_written": 0,
+    "production_config_changes": 0,
+    "native_production_restarts": 0,
+    "real_consumer_authentication_or_mfa_changes": 0,
+    "production_qa_accounts_created": 0,
+    "local_source_commits": 1,
+    "source_pushes": 0,
+    "private_qa_payloads_in_git": false,
+    "owned_browser_closed": true,
+    "production_rollback_timer_inactive": true
+  },
+  "evidence_limits": [
+    "Fresh authenticated browser checks used dedicated fictional staging identity; production reused certified identity evidence and fresh read-only binding/native membership inventory, with no real-owner sign-in",
+    "Natural hosted15minute admin idle and active continuity tested; primary recovery used normal owned-account session revocation, not a claim of natural two-hour native expiry",
+    "Financial acceptance reuses existing genuine Sandbox/native evidence; no new payment transaction",
+    "Prior independent component reviews reused; no new independent full-Family review claimed",
+    "Activity full-page capture failed at both widths; actual render/overflow assertions and viewport captures retained; existing mobile column wrapping remains a usability follow-up"
+  ],
+  "references_file": "evidence-references.json"
+}

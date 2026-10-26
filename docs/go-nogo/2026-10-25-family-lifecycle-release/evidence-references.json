@@ -1,0 +1,501 @@
+{
+  "schema": "crp-family-lifecycle-final-sanitized-evidence-v1",
+  "recorded_at_utc": "2026-10-26T02:10:05.440893+00:00",
+  "references": [
+    {
+      "label": "frozen release tuple",
+      "sha256": "a94e51d11346feb90e76dbbd0789e2d15777a4669dd826070efddfa0dcdcb7ad",
+      "payload_included": false
+    },
+    {
+      "label": "Linux52pass source50",
+      "sha256": "cec6f7f46cea1a0e3296ea3750c77300be8eaac0816454abe5913720cb2f83a0",
+      "payload_included": false
+    },
+    {
+      "label": "staging accepted current package",
+      "sha256": "1a0435ddd1609fd238b7b8a15418b48333fda7b41e3f905d83e8e9fe8da75894",
+      "payload_included": false
+    },
+    {
+      "label": "qualified54 desktop mobile hosted views",
+      "sha256": "f648517e5de1494add67b4bee832c3c7e5e50c3d0164316266c556cc498e81dc",
+      "payload_included": false
+    },
+    {
+      "label": "normal MFA and native links",
+      "sha256": "558712fe2d366d6cdcc81f84ab5b86aee477dd060a43de40e512de72af6885ed",
+      "payload_included": false
+    },
+    {
+      "label": "300 passive polls real native metadata unchanged",
+      "sha256": "f692b1f2c41788161b8ef2310e30e915541a003b4603493a46441675956f4aab",
+      "payload_included": false
+    },
+    {
+      "label": "natural16minute active continuity",
+      "sha256": "2ad9daef4e13b6d63f4d337311c9791e59234127d8845140d7a3ef432887d19a",
+      "payload_included": false
+    },
+    {
+      "label": "natural idle lock preserves draft",
+      "sha256": "80d3bd4ef56ea84b5d3274016fb45f11cb9769b1bd79f812b9632b44f26b1c20",
+      "payload_included": false
+    },
+    {
+      "label": "fresh factor restores draft after natural idle",
+      "sha256": "a06714d46cdb24cd05138c7bf0459152e9a498c972303086fa3cd6bbb6398143",
+      "payload_included": false
+    },
+    {
+      "label": "normal owned primary session revocation",
+      "sha256": "bbf6a5ae7ceec4e0e4d8bf460caf5b9875f5bc7ebfd51cd1ebeed4ba2fe526dd",
+      "payload_included": false
+    },
+    {
+      "label": "normal password MFA recovery",
+      "sha256": "ecf868682f197a30d5655f669952f0c546a8334f073fd1d712036f43d8fbbfd1",
+      "payload_included": false
+    },
+    {
+      "label": "separate unlock same person cap and draft",
+      "sha256": "7392169ee2e3dc0a4a0ceb1338931d85301e6ae13184b6bda41f4ea5de06887e",
+      "payload_included": false
+    },
+    {
+      "label": "native role change with subsequent read denied",
+      "sha256": "66fac451f4a76941d0fa4a80f7c043cd643bb380ae3fd81703cf71f79e631373",
+      "payload_included": false
+    },
+    {
+      "label": "owned QA removed original staging data and configurations exact",
+      "sha256": "1e2e8f7eb62c6193cb7842772b12788150f5334c404b1d334ad281052e778ef2",
+      "payload_included": false
+    },
+    {
+      "label": "preexisting expired session narrow qualification",
+      "sha256": "57c25d103880c137cf5899712ec41f55ef347ed873f9cb6eed268db09f0f8ef8",
+      "payload_included": false
+    },
+    {
+      "label": "staging final stopped snapshot and recovered backup",
+      "sha256": "23e52df896662d65c6120f2825a61b4391620410b53c91290f6394fccff572fa",
+      "payload_included": false
+    },
+    {
+      "label": "production current predecessor preflight",
+      "sha256": "9a81cc4ecefce9f840debca59bdace34ae37fd3ef5504e93e8230d6ab683d4c6",
+      "payload_included": false
+    },
+    {
+      "label": "production guarded activation receipt",
+      "sha256": "9f119d641e5da06124350cce6be86c776c9f6804678943f847864cecd2394bdb",
+      "payload_included": false
+    },
+    {
+      "label": "production whole snapshot independently collected and backup recovered",
+      "sha256": "a66f1603e1441eaab3a37f30273c0ba5cf59ada04ca62f85eacd1502dc0504bb",
+      "payload_included": false
+    },
+    {
+      "label": "production378 file and native preservation check",
+      "sha256": "9a929e861942df3cad9fb78644e41b441c8351b4414d750c379b846c9305ea7d",
+      "payload_included": false
+    },
+    {
+      "label": "production customer database preservation heartbeat qualification",
+      "sha256": "23550b82362c0b653b894a629c1fdfce75783882b24d9ed117a72726d890ac41",
+      "payload_included": false
+    },
+    {
+      "label": "production original binding inventory read only",
+      "sha256": "b247b44991a9868880d1cb77a44d82ca4d93f202c6c3fd516f3f394450c5417c",
+      "payload_included": false
+    },
+    {
+      "label": "production private Family custody exact except verified PID",
+      "sha256": "353ea012e44f8ea6a6d4e4c79c33d23b35d387c79a46225823dd494874588ea0",
+      "payload_included": false
+    },
+    {
+      "label": "both environments all6 served asset hashes exact",
+      "sha256": "c54d7e4069eec58f279ea56bb49e0bfe4528b1fed3add57e74a0134ba0989781",
+      "payload_included": false
+    },
+    {
+      "label": "production public browser acceptance",
+      "sha256": "00c26675c95a88f628e2d16697172f3608e3efdd2da17fdac449422ac5fa5682",
+      "payload_included": false
+    },
+    {
+      "label": "fresh credentials excluded from tracked Git",
+      "sha256": "6bfdcab7e895141a2fa1e459c06879dcba6663fa8fa9e415b954a24454b86774",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture activity-desktop-viewport",
+      "sha256": "4a79e5b7e0582457f9eb78aaa314760feb08812a48268521c8fd8b5da6990c7f",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture activity-mobile-viewport",
+      "sha256": "0080dba10b09b366f20475f99c354981507be3b01381d82af40bfe307d75b76d",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-staging-anonymous",
+      "sha256": "527e0e62a4a4ad1bbbde4471ad2678cd7c109483daa4f607639d916bef1e0c90",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-staging-anonymous",
+      "sha256": "a919ce14940a8875c96bde28776f0ef403a92a093638b64f13290fd0cb6078f5",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture natural-nine-draft",
+      "sha256": "614ccec28b6e3ac70d8c75e1dbcb4dc4e3da681e5b6f1546587444e64e76b7cd",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture natural-sixteen-draft",
+      "sha256": "614ccec28b6e3ac70d8c75e1dbcb4dc4e3da681e5b6f1546587444e64e76b7cd",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture production-desktop-anonymous",
+      "sha256": "527e0e62a4a4ad1bbbde4471ad2678cd7c109483daa4f607639d916bef1e0c90",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture production-mobile-anonymous",
+      "sha256": "a919ce14940a8875c96bde28776f0ef403a92a093638b64f13290fd0cb6078f5",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture staging-authenticated-desktop",
+      "sha256": "e2ad794fb27b3f319cb976236d8fbff3fe4b3e0a57b8a720b75821a502aa1272",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture staging-lifecycle-draft-start",
+      "sha256": "cb0109cdb7f58dc034ba71a7f3a9d26c4b78d02d58fc51deca71cf57938cb45e",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture staging-natural-idle-locked",
+      "sha256": "fa0ba3f4e4925a00367daff5dd9e24401f8f032e71774dbdd56415e04f4ce59b",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture staging-natural-idle-unlock-restored",
+      "sha256": "69c16dc0e986e11cc053cd62ff216f6af8340f56915d70b0aabbcbd293773a9a",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture staging-primary-reauthentication-required",
+      "sha256": "a1263e95ac45bfb0b02ed9241b014f53e70d2141cfa8f14c885e610b15fc7867",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture staging-primary-recovery-restored-draft",
+      "sha256": "69c16dc0e986e11cc053cd62ff216f6af8340f56915d70b0aabbcbd293773a9a",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-accounts",
+      "sha256": "59e753dc0374e7eb842070049fb1da702a3e6d600e29a2088cd7dc845fa75564",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-assets",
+      "sha256": "fa0722a58deed0bc77ed016419753c811ffd1a1a7059bde94ff7a294935e859f",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-billing",
+      "sha256": "94e1135e7fa82f78884b9192204085a53094c8f532bb18ed23ee465d9950debb",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-campaigns",
+      "sha256": "11734fc3b6ea8ef258e156ff96f0fdb9489f3cc2d05f51d2eaf85c03d41c69dd",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-cases",
+      "sha256": "51ac7e2a1c70b871bec6fba1d1a5e6b56c1de1ada2e97d02af153b313b2b43a3",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-commissions",
+      "sha256": "4a41b90347849fed49d3c5f25d8c24f2d17424e12c33b659d12d26f6cb27b75b",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-communications",
+      "sha256": "f4d4b60158cb6aebec460ea2cbdddb90b05141b274e57c85bda5f9bd27eade2d",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-contacts",
+      "sha256": "60a69aa722dad3f5b66c09f892951441258dd108663ccc64baeb32956e0874c8",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-evidence",
+      "sha256": "ab0e02bff8a22c7ad03d5fb23062f2535946029ddde7f5cd91fa5ecc8265526f",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-fulfillment",
+      "sha256": "b7e68a71310d640dcdc5eaa23eb7322c57d5544134ae57183d499c16f003799a",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-grants",
+      "sha256": "25777cd96aba13be86c55ecd5f5b7ebf2fe7335836b710ff908e5c1b41f71edb",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-holds",
+      "sha256": "bffb4e6d2b175db57f4615f03ec07aabe470b494b4614ef817e676ad1cb42d15",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-onboarding",
+      "sha256": "0479dcc6e77fc408071c6e6497056f52dc96d74365e7b5b2c953690ba6a5ddd7",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-orders",
+      "sha256": "f0fa4ba8d74b03b20b2e08f6215670f6b58d0cbb5c41984125191e1421174564",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-organizations",
+      "sha256": "59990f38d2b14c190f86c8dd6d440fe6a6847d5457da546e5818322765407963",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-overview",
+      "sha256": "7d4c74de59f09a9846f462b2e59dd9039e999d08bf11d4ecdf32a3df375e6e2e",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-partners",
+      "sha256": "ec928fe2f5f7af5e71af93e54c9b2a995920f6d863f2b8ea5d28bf6d85b94887",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-pricing",
+      "sha256": "81e79c3d92f2ded01dc411dc26743bc8e7d219decd246fbbed168ee18f22b5f3",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-proposals",
+      "sha256": "3636f4e4095086ddb82a1263fbb05d62cfead8085c0d603154cdb0e1dad73f13",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-referrals",
+      "sha256": "e87ed28f84dae054cde9b8b85f202f22d84c9926ecdca6e548ea3b4ba9d9d1ee",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-report",
+      "sha256": "556a6b0f165f4e45b69d835e44149d13649a0cacf2da2e8ea2c2b440cb6a535a",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-resources",
+      "sha256": "654bd85f8bceabeedf9dfce29d87e124dd5b17e96af09a9aa0232488649ba939",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-routes",
+      "sha256": "306f9e567ace217f5770ec8b0ef843fd9e63dc22808d4201f1cd29e8aef661c1",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-settings",
+      "sha256": "73f23653dbfaa928c1db45d58a82a8a9371ce5ee8c371a8b0d0acf49bf24239d",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-team",
+      "sha256": "b3c891935c710670d14ebf868026bd949091af43bb90207098a814d0379daaf1",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture desktop-tickets",
+      "sha256": "55388c62917d9bf41f0d66f7223f69f29ef0fdc1052ef4ca149009be4166949e",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-accounts",
+      "sha256": "947f726f64d2150a0afc4497f8d32bedc4af41cf7779ffb2212263a4394989d6",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-assets",
+      "sha256": "50992744876fd339895d469fa9df0c08b4ac9e8474ec07d13b5c14e7baecac90",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-billing",
+      "sha256": "88621c1e70c8a11f41df097f077190bdd049a5349c0e2e58a9d59883b624b498",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-campaigns",
+      "sha256": "7a815d7de5ef6e05f7596d909994a73823124bc2f48e4fa4e546bad3f129f7a8",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-cases",
+      "sha256": "c2d032ddd7aeffc668adab77944f539775ec58f2270dcf4eb7e31b6147ab142b",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-commissions",
+      "sha256": "e6106ed95869a517d5430abb04149553a9b4d63a766376caf2b73fcea15ae09b",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-communications",
+      "sha256": "25188cbe67b03b5576afef22d3a4d84da078431c0249c589fad5643ffc4f3587",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-contacts",
+      "sha256": "dad8362db0196003c3295b65a5c6ff9786b925ca83214bb3bfa0f47fb0a3c4eb",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-evidence",
+      "sha256": "2f75aef316b6252556f40ba60a6e66636941ae383c3d7b690614d7287e432082",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-fulfillment",
+      "sha256": "8ec3bb13197100ab9dd273c22214daa27fffd4dea34e68087d5930384768f929",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-grants",
+      "sha256": "9214c518668e8e8f6b55f73dd79a002e1d30af88d803e398ce7bca64b7c0adcf",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-holds",
+      "sha256": "5db76b13c3d06af3610f1735e7a1b534b1b969fed77216239b6996c721b1cd53",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-onboarding",
+      "sha256": "ef5f20d9ec8275621c42202f3cc32c6bf86a4a519e3153ef31a98d4cc19e314c",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-orders",
+      "sha256": "78b26092060586299ddd896dc565e10bdf7853ec95802096e1ea52edb714db9f",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-organizations",
+      "sha256": "4bac5cdf616ed14723d4d751d59329fdf0d6f42cee0f1ac657b1a41b1fce6bab",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-overview",
+      "sha256": "d8c18e8ecfec6e6a916bff4e424ed5c0472d4b5f0bf9465f805b71f8e67ca70d",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-partners",
+      "sha256": "2e277e4439bb00fe840c3809daff2bc9dc0483b2b5cf9e62ddb4d7d34758209c",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-pricing",
+      "sha256": "454a8584ea40b660c09efe80a554384b79861bb0cd829cfe658076ff65ad98e2",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-proposals",
+      "sha256": "9fda206f6131235f5c1fa8307ee1a77d91c84c1755ed252a815120cb6882fb81",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-referrals",
+      "sha256": "955d7366473904d4fcced198051149aea58cab6037770704a5cc0958c2592d96",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-report",
+      "sha256": "036ac03f7e4b696ffb3ddc6b8b4f8f7985f6eab8099b6b090ae2528cb87c3a15",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-resources",
+      "sha256": "bff8805cbf212a5527efc5dd323094566925e01186982cc50492db20fb96248e",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-routes",
+      "sha256": "57c2aca1b9a5a13e45bd1b27aa232781fad7bb7c4ea15ed955180df1a74faca8",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-settings",
+      "sha256": "e38d487a88d71544bd4dc89d37812b1827b7dfc8a509eb46ab182b8fbeea6d74",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-team",
+      "sha256": "3fc4e17e959ee32b305bf7290900529d4b4fa50f9024806dffe3ec289f461f24",
+      "payload_included": false
+    },
+    {
+      "label": "private browser capture mobile-tickets",
+      "sha256": "c88f90a07eab057f9e109a58eb90469783cd69357b419ec7401bd444392d0d95",
+      "payload_included": false
+    },
+    {
+      "label": "first staging probe refusal and guarded predecessor restoration",
+      "sha256": "e235b441142e07e444b009a2b23e3c819845a0134c7a410e3c1e90fdcaf0c713",
+      "payload_included": false
+    },
+    {
+      "label": "first provisioning refusal retained",
+      "sha256": "6aa953d82f5111f15974fb63bb67d521763b5992d78304b2ad95f2585b29b945",
+      "payload_included": false
+    },
+    {
+      "label": "first cleanup placeholder refusal retained",
+      "sha256": "101a0a54078f518e6b2d75e6ea653fa4e923cb2f08304be04a0e9536da080d40",
+      "payload_included": false
+    },
+    {
+      "label": "initial unicode comparator observation retained",
+      "sha256": "0846461d63857778fe2dc6034e0227371b409ad0c3388e19bc25886a453ab02a",
+      "payload_included": false
+    },
+    {
+      "label": "exact unicode draft observation without replay",
+      "sha256": "76c8d908bc6ecb5a06735a44c8a0cb4ff346707c0ed5925bb74f3a181446b0d7",
+      "payload_included": false
+    },
+    {
+      "label": "initial strict Mail comparison retained",
+      "sha256": "9baa558aa0dbbcbfbc6c709879e77cae44042ad8057634049c7f0800011276f5",
+      "payload_included": false
+    },
+    {
+      "label": "preexisting session expired at actual provisioning start",
+      "sha256": "5a0749103c1897013a62f75764a8105b805b42cca2cec42d1793974d35a2fbce",
+      "payload_included": false
+    }
+  ]
+}

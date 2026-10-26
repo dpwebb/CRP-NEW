@@ -1,0 +1,1871 @@
+{
+  "schema": "crp-family-repaired-full-workflow-matrix-v1",
+  "family_version": {
+    "baseline_source": "3f60497f65513ed7c983ab5d3adc95440aea3b4f",
+    "candidate_status": "UNCOMMITTED_LOCAL_SOURCE",
+    "files_including_tests_and_docs": 50,
+    "source_inventory_sha256": "095e955251e116f44a92a4dac558fb654041dffa6e43f7a73c0e389fa8162919",
+    "new_release_manifest_created": false
+  },
+  "scope": "Every active Family catalog workflow plus cross-cutting controls",
+  "workflows": [
+    {
+      "id": "read:crp:overview",
+      "kind": "read",
+      "app": "crp",
+      "name": "overview",
+      "path": "/api/admin/overview",
+      "method": "GET",
+      "permission": "overview.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:crp:accounts",
+      "kind": "read",
+      "app": "crp",
+      "name": "accounts",
+      "path": "/api/admin/accounts",
+      "method": "GET",
+      "permission": "accounts.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:crp:cases",
+      "kind": "read",
+      "app": "crp",
+      "name": "cases",
+      "path": "/api/admin/cases",
+      "method": "GET",
+      "permission": "cases.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:crp:billing",
+      "kind": "read",
+      "app": "crp",
+      "name": "billing",
+      "path": "/api/admin/billing",
+      "method": "GET",
+      "permission": "billing.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:crp:team",
+      "kind": "read",
+      "app": "crp",
+      "name": "team",
+      "path": "/api/admin/team",
+      "method": "GET",
+      "permission": "team.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:crp:organizations",
+      "kind": "read",
+      "app": "crp",
+      "name": "organizations",
+      "path": "/api/admin/organizations",
+      "method": "GET",
+      "permission": "organizations.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:crp:audit",
+      "kind": "read",
+      "app": "crp",
+      "name": "audit",
+      "path": "/api/admin/audit",
+      "method": "GET",
+      "permission": "audit.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:crp:referrals",
+      "kind": "read",
+      "app": "crp",
+      "name": "referrals",
+      "path": "/api/admin/affiliates",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:crp:fulfillment",
+      "kind": "read",
+      "app": "crp",
+      "name": "fulfillment",
+      "path": "/api/admin/fulfillment",
+      "method": "GET",
+      "permission": "fulfillment.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:crp:grants",
+      "kind": "read",
+      "app": "crp",
+      "name": "grants",
+      "path": "/api/admin/fulfillment-grants",
+      "method": "GET",
+      "permission": "fulfillment.grants",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:crp:settings",
+      "kind": "read",
+      "app": "crp",
+      "name": "settings",
+      "path": "/api/admin/settings",
+      "method": "GET",
+      "permission": "overview.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:crp:packet",
+      "kind": "read",
+      "app": "crp",
+      "name": "packet",
+      "path": "/api/admin/fulfillment/:id/packet",
+      "method": "GET",
+      "permission": "fulfillment.read",
+      "format": "pdf",
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:overview",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "overview",
+      "path": "/api/status",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:partners",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "partners",
+      "path": "/api/partners",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:campaigns",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "campaigns",
+      "path": "/api/campaigns",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:commissions",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "commissions",
+      "path": "/api/journal",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:proposals",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "proposals",
+      "path": "/api/proposals",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:holds",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "holds",
+      "path": "/api/holds",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:team",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "team",
+      "path": "/api/members",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:audit",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "audit",
+      "path": "/api/audit",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:proposal",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "proposal",
+      "path": "/api/proposals/:id/export",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:report",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "report",
+      "path": "/api/report",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:contacts",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "contacts",
+      "path": "/api/contacts",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:communications",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "communications",
+      "path": "/api/communications",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:assets",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "assets",
+      "path": "/api/assets",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:tickets",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "tickets",
+      "path": "/api/tickets",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:onboarding",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "onboarding",
+      "path": "/api/onboarding",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:journey",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "journey",
+      "path": "/api/onboarding/:id",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:evidence",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "evidence",
+      "path": "/api/holds/evidence",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:resources",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "resources",
+      "path": "/api/resources",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:creative",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "creative",
+      "path": "/api/campaigns/:id/creative",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:agreement",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "agreement",
+      "path": "/api/partners/:id/agreement",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:program",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "program",
+      "path": "/api/program",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:affiliate:qr",
+      "kind": "read",
+      "app": "affiliate",
+      "name": "qr",
+      "path": "/api/campaigns/:id/qr",
+      "method": "GET",
+      "permission": "affiliate.read",
+      "format": "svg",
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:mail:overview",
+      "kind": "read",
+      "app": "mail",
+      "name": "overview",
+      "path": "/staff/api/overview",
+      "method": "GET",
+      "permission": "fulfillment.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:mail:orders",
+      "kind": "read",
+      "app": "mail",
+      "name": "orders",
+      "path": "/staff/api/orders",
+      "method": "GET",
+      "permission": "fulfillment.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:mail:order",
+      "kind": "read",
+      "app": "mail",
+      "name": "order",
+      "path": "/staff/api/orders/:id",
+      "method": "GET",
+      "permission": "fulfillment.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:mail:pricing",
+      "kind": "read",
+      "app": "mail",
+      "name": "pricing",
+      "path": "/staff/api/pricing",
+      "method": "GET",
+      "permission": "fulfillment.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:mail:routes",
+      "kind": "read",
+      "app": "mail",
+      "name": "routes",
+      "path": "/staff/api/routes",
+      "method": "GET",
+      "permission": "fulfillment.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:mail:team",
+      "kind": "read",
+      "app": "mail",
+      "name": "team",
+      "path": "/staff/api/team",
+      "method": "GET",
+      "permission": "fulfillment.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:mail:provider",
+      "kind": "read",
+      "app": "mail",
+      "name": "provider",
+      "path": "/staff/api/orders/:id/postgrid",
+      "method": "GET",
+      "permission": "fulfillment.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:mail:packet",
+      "kind": "read",
+      "app": "mail",
+      "name": "packet",
+      "path": "/staff/api/orders/:id/packet",
+      "method": "GET",
+      "permission": "fulfillment.read",
+      "format": "pdf",
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "read:mail:preview",
+      "kind": "read",
+      "app": "mail",
+      "name": "preview",
+      "path": "/staff/api/orders/:id/print-preview",
+      "method": "GET",
+      "permission": "fulfillment.read",
+      "format": "pdf",
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "coverage": "27 active parent views at desktop/mobile; exact document transfer tested through actual Family HTTP and accepted document regressions"
+      }
+    },
+    {
+      "id": "action:crp:team.add",
+      "kind": "action",
+      "app": "crp",
+      "name": "team.add",
+      "path": "/api/admin/team",
+      "method": "POST",
+      "permission": "team.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 2
+    },
+    {
+      "id": "action:crp:team.update",
+      "kind": "action",
+      "app": "crp",
+      "name": "team.update",
+      "path": "/api/admin/team/:id",
+      "method": "PATCH",
+      "permission": "team.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 3
+    },
+    {
+      "id": "action:crp:organization.add",
+      "kind": "action",
+      "app": "crp",
+      "name": "organization.add",
+      "path": "/api/admin/organizations",
+      "method": "POST",
+      "permission": "organizations.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:crp:organization.update",
+      "kind": "action",
+      "app": "crp",
+      "name": "organization.update",
+      "path": "/api/admin/organizations/:id",
+      "method": "PATCH",
+      "permission": "organizations.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 1
+    },
+    {
+      "id": "action:crp:referral.sync",
+      "kind": "action",
+      "app": "crp",
+      "name": "referral.sync",
+      "path": "/api/admin/affiliates/sync",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:crp:referral.enroll",
+      "kind": "action",
+      "app": "crp",
+      "name": "referral.enroll",
+      "path": "/api/admin/affiliates/enroll",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:crp:referral.hold",
+      "kind": "action",
+      "app": "crp",
+      "name": "referral.hold",
+      "path": "/api/admin/affiliates/:id/hold",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 2
+    },
+    {
+      "id": "action:crp:referral.release",
+      "kind": "action",
+      "app": "crp",
+      "name": "referral.release",
+      "path": "/api/admin/affiliates/:id/hold",
+      "method": "DELETE",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:crp:fulfillment.add",
+      "kind": "action",
+      "app": "crp",
+      "name": "fulfillment.add",
+      "path": "/api/admin/fulfillment",
+      "method": "POST",
+      "permission": "fulfillment.grants",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:crp:fulfillment.update",
+      "kind": "action",
+      "app": "crp",
+      "name": "fulfillment.update",
+      "path": "/api/admin/fulfillment/:id",
+      "method": "PATCH",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 1
+    },
+    {
+      "id": "action:affiliate:team.add",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "team.add",
+      "path": "/api/members",
+      "method": "POST",
+      "permission": "team.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 1
+    },
+    {
+      "id": "action:affiliate:team.update",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "team.update",
+      "path": "/api/members",
+      "method": "PUT",
+      "permission": "team.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 2
+    },
+    {
+      "id": "action:affiliate:team.remove",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "team.remove",
+      "path": "/api/members",
+      "method": "DELETE",
+      "permission": "team.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 1
+    },
+    {
+      "id": "action:affiliate:partner.add",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "partner.add",
+      "path": "/api/partners",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 3
+    },
+    {
+      "id": "action:affiliate:partner.activate",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "partner.activate",
+      "path": "/api/partners/:id/activate",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:affiliate:campaign.add",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "campaign.add",
+      "path": "/api/campaigns",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 3
+    },
+    {
+      "id": "action:affiliate:proposal.prepare",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "proposal.prepare",
+      "path": "/api/proposals",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 3
+    },
+    {
+      "id": "action:affiliate:hold.release",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "hold.release",
+      "path": "/api/holds/:id/release",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:affiliate:contact.add",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "contact.add",
+      "path": "/api/contacts",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 2
+    },
+    {
+      "id": "action:affiliate:contact.suppress",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "contact.suppress",
+      "path": "/api/contacts/:id",
+      "method": "DELETE",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:affiliate:communication.queue",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "communication.queue",
+      "path": "/api/communications",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 5
+    },
+    {
+      "id": "action:affiliate:asset.publish",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "asset.publish",
+      "path": "/api/assets",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 3
+    },
+    {
+      "id": "action:affiliate:ticket.add",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "ticket.add",
+      "path": "/api/tickets",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:affiliate:onboarding.start",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "onboarding.start",
+      "path": "/api/onboarding",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:affiliate:onboarding.advance",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "onboarding.advance",
+      "path": "/api/onboarding/:id/advance",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:affiliate:onboarding.review",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "onboarding.review",
+      "path": "/api/onboarding/:id/review",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 1
+    },
+    {
+      "id": "action:affiliate:onboarding.pause",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "onboarding.pause",
+      "path": "/api/onboarding/:id/pause",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:affiliate:agent.run",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "agent.run",
+      "path": "/api/agent/run",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:affiliate:hold.add",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "hold.add",
+      "path": "/api/holds",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 2
+    },
+    {
+      "id": "action:affiliate:partner.destination",
+      "kind": "action",
+      "app": "affiliate",
+      "name": "partner.destination",
+      "path": "/api/partners/:id/destination",
+      "method": "POST",
+      "permission": "affiliate.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:mail:note.add",
+      "kind": "action",
+      "app": "mail",
+      "name": "note.add",
+      "path": "/staff/api/orders/:id/notes",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:mail:order.cancel",
+      "kind": "action",
+      "app": "mail",
+      "name": "order.cancel",
+      "path": "/staff/api/orders/:id/cancel",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:mail:order.assign",
+      "kind": "action",
+      "app": "mail",
+      "name": "order.assign",
+      "path": "/staff/api/orders/:id/assignment",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:mail:order.refund",
+      "kind": "action",
+      "app": "mail",
+      "name": "order.refund",
+      "path": "/staff/api/orders/:id/refund",
+      "method": "POST",
+      "permission": "billing.read",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:mail:team.add",
+      "kind": "action",
+      "app": "mail",
+      "name": "team.add",
+      "path": "/staff/api/team",
+      "method": "POST",
+      "permission": "team.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 4
+    },
+    {
+      "id": "action:mail:team.revoke",
+      "kind": "action",
+      "app": "mail",
+      "name": "team.revoke",
+      "path": "/staff/api/team/:id/revoke",
+      "method": "POST",
+      "permission": "team.manage",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:mail:pricing.update",
+      "kind": "action",
+      "app": "mail",
+      "name": "pricing.update",
+      "path": "/staff/api/pricing",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 3
+    },
+    {
+      "id": "action:mail:route.update",
+      "kind": "action",
+      "app": "mail",
+      "name": "route.update",
+      "path": "/staff/api/routes",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 16
+    },
+    {
+      "id": "action:mail:route.emergency",
+      "kind": "action",
+      "app": "mail",
+      "name": "route.emergency",
+      "path": "/staff/api/manual-emergencies",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 5
+    },
+    {
+      "id": "action:mail:recipient.verify",
+      "kind": "action",
+      "app": "mail",
+      "name": "recipient.verify",
+      "path": "/staff/api/postgrid/recipient",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 5
+    },
+    {
+      "id": "action:mail:order.fulfill",
+      "kind": "action",
+      "app": "mail",
+      "name": "order.fulfill",
+      "path": "/staff/api/orders/:id/fulfill",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 7
+    },
+    {
+      "id": "action:mail:provider.prepare",
+      "kind": "action",
+      "app": "mail",
+      "name": "provider.prepare",
+      "path": "/staff/api/orders/:id/postgrid/prepare",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:mail:provider.preview",
+      "kind": "action",
+      "app": "mail",
+      "name": "provider.preview",
+      "path": "/staff/api/orders/:id/postgrid/preview",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:mail:provider.send",
+      "kind": "action",
+      "app": "mail",
+      "name": "provider.send",
+      "path": "/staff/api/orders/:id/postgrid/send",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:mail:provider.reconcile",
+      "kind": "action",
+      "app": "mail",
+      "name": "provider.reconcile",
+      "path": "/staff/api/orders/:id/postgrid/reconcile",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    },
+    {
+      "id": "action:mail:provider.cancel",
+      "kind": "action",
+      "app": "mail",
+      "name": "provider.cancel",
+      "path": "/staff/api/orders/:id/postgrid/cancel",
+      "method": "POST",
+      "permission": "fulfillment.prepare",
+      "format": null,
+      "status": "PASS_FAMILY_CONTRACT",
+      "expected": "Authorized scoped Family result and refusal of unapproved access/input; native dependency rules remain authoritative",
+      "gateway_checks": "All applicable catalog checks passed; synthetic native response inputs declared",
+      "native_business_evidence": "Existing source-bound native component acceptance reused; not a new business transition for every route",
+      "browser": {
+        "desktop_open_cancel_submit": "PASS",
+        "actual_family_output": "APPLIED",
+        "keyboard_focus": "PASS",
+        "mobile_open_cancel": "PASS",
+        "mobile_confirmation_reachable": true
+      },
+      "select_variants_checked": 0
+    }
+  ],
+  "controls": [
+    {
+      "id": "AUTH_MFA",
+      "expected": "Normal password/MFA and administration unlock",
+      "status": "PASS",
+      "evidence": "Fresh49-test exact Family suite; real Consumer authentication"
+    },
+    {
+      "id": "GLOBAL_SSO",
+      "expected": "Automatic native links, handoff and logout",
+      "status": "PASS",
+      "evidence": "Fresh candidate real three-native1/1 acceptance; isolated current Consumer/Mail/Affiliate sources, no hosted or provider mutations"
+    },
+    {
+      "id": "NATIVE_SCOPE",
+      "expected": "Current permissions, organization, role and assignment revocation",
+      "status": "PASS",
+      "evidence": "709 permission refusals, native suite and existing real role/designation changes"
+    },
+    {
+      "id": "REQUEST_BOUNDARIES",
+      "expected": "Host/Origin/CSRF, fields, query and response confidentiality",
+      "status": "PASS",
+      "evidence": "Fresh49-test suite plus every catalog input/query refusal"
+    },
+    {
+      "id": "CONFIRM_STEPUP",
+      "expected": "Explicit environment/action confirmation and current factor",
+      "status": "PASS",
+      "evidence": "Every action confirmation refusal, sensitive-operation suite and real browser forms"
+    },
+    {
+      "id": "REQUEST_IDENTITY",
+      "expected": "Exactly-once dispatch, collision and unknown outcome holds",
+      "status": "PASS",
+      "evidence": "Every46 action duplicate prevented; journal fault/regression checks"
+    },
+    {
+      "id": "DOCUMENTS",
+      "expected": "Exact PDF/SVG bytes, type/path and revoked-access refusal",
+      "status": "PASS",
+      "evidence": "Four catalog document paths plus dedicated document suite"
+    },
+    {
+      "id": "JOURNAL",
+      "expected": "Durable intent, HMAC, truncation and restart safeguards",
+      "status": "PASS",
+      "evidence": "Fresh exact-source Journal/backup/security tests"
+    },
+    {
+      "id": "BACKUP",
+      "expected": "Journal/integrity/signing-key recovery and corruption refusal",
+      "status": "PASS",
+      "evidence": "Fresh backup tests and source-bound completed recovery records"
+    },
+    {
+      "id": "SINGLE_WRITER",
+      "expected": "Kernel ownership, unsafe lock files and crash release",
+      "status": "PASS",
+      "evidence": "Existing exact-production45 portable Linux checks reused; five Windows cases intentionally skipped"
+    },
+    {
+      "id": "UI_FORMS",
+      "expected": "All27 views and46 forms at desktop/mobile",
+      "status": "PASS",
+      "evidence": "54 view cases,46 desktop open/cancel/submit and46 final mobile form cases; settled overview supplement"
+    },
+    {
+      "id": "PRESERVATION",
+      "expected": "Production/data preservation and owned preview cleanup",
+      "status": "PASS",
+      "evidence": "Fresh375-file read-only production check; owned browsers/listeners stopped"
+    },
+    {
+      "id": "FAM-01",
+      "expected": "Active idle continuity and unsent draft recovery",
+      "status": "PASS",
+      "evidence": "Trusted activity minute9 renews idle to24; minute16 workspace/draft retained; idle25 lock and fresh unlock restore draft; primary expiry recovery retains subject/session/CSRF/cap; original8h cap returns401"
+    },
+    {
+      "id": "FAM-02",
+      "expected": "Passive status does not renew native idle metadata",
+      "status": "PASS",
+      "evidence": "Passive status endpoint performs no native resolution;300 half-minute polls leave actual native Consumer session metadata exactly unchanged; native2h idle expiry and normal MFA recovery tested"
+    }
+  ],
+  "explicit_boundaries": [
+    {
+      "area": "Creative Studio and postponed operating costs",
+      "disposition": "HELD_NOT_ACTIVATED",
+      "reason": "Owner-directed hold; not active production Family workflows"
+    },
+    {
+      "area": "Partner application/assent/training/platform declaration",
+      "disposition": "NATIVE_PERSONAL_WORKFLOW",
+      "reason": "Human/personal native authority retained; not converted into unrestricted admin authority"
+    },
+    {
+      "area": "Consumer approval/grant; assigned staff workspace",
+      "disposition": "NATIVE_PERSONAL_OR_SCOPED_WORKFLOW",
+      "reason": "Administrative review does not replace owner consent or assignment"
+    },
+    {
+      "area": "Payment execution/postal delivery/webhooks",
+      "disposition": "DEPENDENCY_OR_EXTERNAL_OUTCOME",
+      "reason": "Family gateway outputs tested; genuine native Sandbox evidence reused; no real execution"
+    },
+    {
+      "area": "Mail sample/simulate-only routes",
+      "disposition": "NOT_PRODUCTION_BUSINESS_WORKFLOW",
+      "reason": "Native source disables these when production is not simulation"
+    }
+  ],
+  "recorded_at_utc": "2026-10-26T00:12:26.148705+00:00",
+  "decision": "GO_LOCAL_REPAIRED_CANDIDATE"
+}

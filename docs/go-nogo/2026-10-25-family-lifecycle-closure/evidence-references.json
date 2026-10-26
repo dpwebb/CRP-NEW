@@ -1,0 +1,914 @@
+{
+  "schema": "crp-family-sanitized-lifecycle-evidence-v1",
+  "recorded_at_utc": "2026-10-26T00:12:26.148705+00:00",
+  "private_payloads_included": false,
+  "references": [
+    {
+      "label": "candidate50-file source inventory",
+      "sha256": "ab3347e3595465dcd0ac0a670503d57a449153846302d0da020f610267d5f6c2",
+      "payload_included": false
+    },
+    {
+      "label": "fresh49pass5Linux-onlyskip Family suite",
+      "sha256": "2ce6320198bf2b8f89e48ce69014638cff89554b2c915f53d5b4038800a17d88",
+      "payload_included": false
+    },
+    {
+      "label": "full suite invocation",
+      "sha256": "f8602a8cdf0b023697029e4c0aa5b9aa11b219e07744fa969bcb4ef2435f8642",
+      "payload_included": false
+    },
+    {
+      "label": "709 catalog checks",
+      "sha256": "99ead0ca3b0a6bbff438351a9ef1910553fac57d29eb9cd06f90b6653b8da616",
+      "payload_included": false
+    },
+    {
+      "label": "27view43read46action inventory",
+      "sha256": "d43b269163489d7b4d3945bfe9002c9f611c7ceb56869a2d57fe8de93ea7bdbd",
+      "payload_included": false
+    },
+    {
+      "label": "fresh real three-native1pass acceptance",
+      "sha256": "dd8e2ec1aead6a6f242862d321b3aa0aafe9d1af0dc82fff074fd0870f07b5fe",
+      "payload_included": false
+    },
+    {
+      "label": "420-source Consumer evidence reuse verification",
+      "sha256": "50fa29c552ffc1b841efccd0b1365e2ce79072487a6d5dc947926d6cfef0c79e",
+      "payload_included": false
+    },
+    {
+      "label": "production375-file read-only preservation",
+      "sha256": "9f69a70d102cb7d7e263ac576f07abdc8087f99068aebcef095f28e7edeaabe4",
+      "payload_included": false
+    },
+    {
+      "label": "owned full fixture cleanup",
+      "sha256": "22860f87cda506d487643fd5eb6d20bdc3d4fbe00fca3b281f5661dd2b4e875d",
+      "payload_included": false
+    },
+    {
+      "label": "owned lifecycle fixture cleanup",
+      "sha256": "32d2692d55fda6fc7c2f62c6376ee7372ad9a9d4f89931594166cb65bd8f2af6",
+      "payload_included": false
+    },
+    {
+      "label": "original assessment historical NO_GO",
+      "sha256": "6059babc04415e1ab168cfafe529f4283429755275c2e38c7cb2e3cbfe87152b",
+      "payload_included": false
+    },
+    {
+      "label": "browser forms-cli",
+      "sha256": "4dd48bbd0ad2abf9857a67361ba21dff477a75116c47d98e2351d98f95713bd7",
+      "payload_included": false
+    },
+    {
+      "label": "browser lifecycle-cap-settled-cli",
+      "sha256": "805035ea73fa75608db6c23fd52468bcba4254294c756f0cf87dfa25aca33715",
+      "payload_included": false
+    },
+    {
+      "label": "browser lifecycle-idle-continuation-cli",
+      "sha256": "3a2e0ed609eadcc5d1c7896aa90c993ab540c4ddf889f6b5bad1dcf3495ce8e6",
+      "payload_included": false
+    },
+    {
+      "label": "browser lifecycle-nine-continuation-cli",
+      "sha256": "f3b1d7ab6a349e3136f2cca3a7b9d311517f45d49db0be65111cc6e660c6b870",
+      "payload_included": false
+    },
+    {
+      "label": "browser lifecycle-primary-cli",
+      "sha256": "f14e68ec8c0ff51c342993362c55912c835c3dffdad2bb54c3bd29940d28b1c5",
+      "payload_included": false
+    },
+    {
+      "label": "browser lifecycle-sixteen-cli",
+      "sha256": "0ac240654fb813cdadab0bef2e7b1c6f6cce77a901e9195e67e18e6dfb1a3f47",
+      "payload_included": false
+    },
+    {
+      "label": "browser mobile-forms-cli",
+      "sha256": "4cd974837c2e61b13eb137f951ba7d26ecf1d75f36a04cd5a57d915b32c6e5ba",
+      "payload_included": false
+    },
+    {
+      "label": "browser settled-candidate-cli",
+      "sha256": "a48a87737eb50f68d46f43ee6196483d0277b482781dbe3b9670e34b6537767b",
+      "payload_included": false
+    },
+    {
+      "label": "browser views-cli",
+      "sha256": "18ea1bf4be02f5891648e411c9398670cc9926ed8a27d873743150af72998585",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-accounts",
+      "sha256": "e42907d7eabbd57316a618cb64fecca4d28a2e8861c4e89c3212d3783c639111",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-activity",
+      "sha256": "1c1333704b4e07aac13789f4e6e5608bb9e573ef481e717acd2a003a891fd088",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-assets",
+      "sha256": "c4677d60734b1f8b5a9150cfa9dc7b05ea965db8c46d49f01747ef8cc26020e7",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-billing",
+      "sha256": "9cc78b2aea1df6b40bf8633378412ec9c3341479dcc7f750330dc3f9eb5a5c45",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-campaigns",
+      "sha256": "6e232a0412d1920fca63b4ead1798b7e3c82da9221ac1b18f6a615da0c47b039",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-cases",
+      "sha256": "9b714713abbdf492c2d3069835c05292e81d2dd24e2866fcae28581def0729e6",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-commissions",
+      "sha256": "6814754f8361a28b0c867cee1b2bc1c4f5c6ae4c721d11f5af381e2269684c6b",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-communications",
+      "sha256": "ab1cd8a203aec3a623090632740f3b7b4518db66ff994e4cb75ad0ad597559f7",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-contacts",
+      "sha256": "919f5901dc7727f312a31e500a20613593daa420f0c0356c734c95399109a3aa",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-evidence",
+      "sha256": "0a95bbd22373e64947145e77d2548d062ec2cb4fd2e2880c10e3fb5c1f293173",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-fulfillment",
+      "sha256": "c350dcefc496410c0d2b64ea1286115d09f86890575ecfc52767d4f92df2d1c0",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-grants",
+      "sha256": "c71dfc5b5a63b699fe7081c5da54a2e521f71532118bd4baf2508f42465813cb",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-holds",
+      "sha256": "7a9f7dacc74bb310268b321c07492c34d6e9e525acab1880b3986923cc52be95",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-onboarding",
+      "sha256": "792523647cbca082416001de5b813bacfb664e7631e9b8593485038f9fee41a7",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-orders",
+      "sha256": "9551d7684d1b25f29b7f92cc9f0102ada8db8d87f703be94b831e3c3d94fd69e",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-organizations",
+      "sha256": "ad2c8531458df914b878fcc08ac41b29d5646dfa969a12793e54a31712a61af1",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-overview-settled",
+      "sha256": "60159e8a1cdc017f712d7a45ad0a993bc3904480a18dba519025be217bea2cb1",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-overview",
+      "sha256": "adbc99231c6ca9131d7e4be0274b46df5ae50582b041dd5072985dcb3aab5233",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-partners",
+      "sha256": "129f7f0bbdb1d7d03471783a89e446edc2fa0ff77e3f16e360ece3f75523cc80",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-pricing",
+      "sha256": "5c1932ef80eb4577df48d81379bea844f9045f412fd1ce0714e6ddaff8a153b4",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-proposals",
+      "sha256": "2e4b04ca4ab04118cbe74c7b166857125f9d1fc24cebac21af89f12983aa399c",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-referrals",
+      "sha256": "e90cdbb08bf97544bca1d291c4f6168e14a27d4f7693ff80f906a2756290a64a",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-report",
+      "sha256": "0892b74ce30934fa01a639bbf3888b3472a68ea62b4819b2b6d3efc8d1aae060",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-resources",
+      "sha256": "eb3e0b807f504edfdfa8e64ac739f0a8d1a3328414e6bca152f65224f2981342",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-routes",
+      "sha256": "fecf033780ab21dddfab448bb2ff23ea3d8620727a41d4147831abc39838bdf4",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-settings",
+      "sha256": "950cc6dcc561f9ae5841854be3978fbd1548c6aee623a670bb166c1ccaa0ecb7",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-team",
+      "sha256": "0ec794b8129c4c94f0f1756a7444dd1f29adc8540d927b0192659049c6ab3c68",
+      "payload_included": false
+    },
+    {
+      "label": "browser image desktop-tickets",
+      "sha256": "b2d8bb3e6da272582a36f93d925f47f9ef66c44e35e646ab6155e51e3060a88a",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-agent.run",
+      "sha256": "9d5d2b118e7df0dad668f6e3de88ba00cad3456f72bc5f9b88be4eec55ac78a1",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-asset.publish",
+      "sha256": "9a1c14af519297b475fb77ca1c50ffe1ad0c8894b63afb241dc3d7996f6b7441",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-campaign.add",
+      "sha256": "40a7fdf49149c277c951f2ba730edb93894b8454ee9fe9f135f13308fbc2ec87",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-communication.queue",
+      "sha256": "49a4a119ba726c1700c7cdadf557b17dccfbd494d25296ed96af078767833316",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-contact.add",
+      "sha256": "d90dcb5a02f37ec16d458da0d64523d48d2da2c39c00e05b023d56b8f87f4162",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-contact.suppress",
+      "sha256": "94d25a50b438bc5585361a17d11150ee08eb2ba18a5b56401623a844f1d42ee6",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-hold.add",
+      "sha256": "f89dc98f40c06069bce4a70e88fa3ec07f7b33b9ced7300848bb803c2c6fe2ff",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-hold.release",
+      "sha256": "f414b5f8c60efbcbd000fb603820fe842e0a58a7ae43b2262338c086d3626b61",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-onboarding.advance",
+      "sha256": "6ad0b21ad99a13457db1d39751280eee7c0086b82a00e3f51bdeed05639d0097",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-onboarding.pause",
+      "sha256": "24df2b706bc55cc5848e237c08832be0a634b0eedac46eac9ec668b1740c2a7f",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-onboarding.review",
+      "sha256": "5b4b2edf73afc80a2569764c637b1bc6febc6be65874cacc17500c533f4783bf",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-onboarding.start",
+      "sha256": "1119ab2ced2ce9edaff657da8c0631d4385585b8e72c61c9f67992b0249891fb",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-partner.activate",
+      "sha256": "897154ed1f7f56a9daa377640119968e2b342e0a3bbc636d485320d4b89333da",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-partner.add",
+      "sha256": "c296600d7170f4a9d7e212c5a3149dfdaf736ccb3fb924d3fc185c2acb11413f",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-partner.destination",
+      "sha256": "92bae10a977435c3e2df12d550a25075c720a86215c11673bb4cffdd4f1537c7",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-proposal.prepare",
+      "sha256": "5f73f6c478e26c4ac46e83912156bf13e04c922f5ccae8b169c0a6c7d3fa8f94",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-team.add",
+      "sha256": "503cab250c4a44286c2c7ad2e2816aae7baf0fc47bce11ec9064e2709c625da2",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-team.remove",
+      "sha256": "e8f884386e478de6426697b6d72ff9856a85860f3d072053c21f4ca17d332b10",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-team.update",
+      "sha256": "c8f18c4b91faca314a022e4ea3cec514f359221e029b30f212518d202b18c75b",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-affiliate-ticket.add",
+      "sha256": "e6a6fd85998dd5bbce24360426d2185eec7987a6b11dcc1d544c93aa166dd97c",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-crp-fulfillment.add",
+      "sha256": "b596eef5844057e74b470dbd4b9949fd98388f23d5edf8285a43c755e94a562e",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-crp-fulfillment.update",
+      "sha256": "5c744dd868c7fdd64bb88340b85eeb7161cc09467f2c4f68a3c174349b14bb6a",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-crp-organization.add",
+      "sha256": "cab1b7aa99320555810e6ea87ce17a966fc6c451f44d536fd671a0915b636084",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-crp-organization.update",
+      "sha256": "e75dcb1dbb20af6f85203010639e5c692f18f50acb44ce1676e2acaaf23976f8",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-crp-referral.enroll",
+      "sha256": "9f38ba11cdc395b3d0213813bf232378b425fac2d1b9860268d035069508d79c",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-crp-referral.hold",
+      "sha256": "47eccf4497580ec28230159f475dead4469b552abbda3ec04f938411f63abbbb",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-crp-referral.release",
+      "sha256": "016502b79f6a71769e7f59c4424b92bf17c47906d405924c544535f2172808aa",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-crp-referral.sync",
+      "sha256": "83117064633abdb0bd6a253684234bebad8e34f9535886d59d23a1393ba5c7a1",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-crp-team.add",
+      "sha256": "69a883cd9664d973795df6c789282839ecbebaef7101b53d9abf832c3d0e4bb3",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-crp-team.update",
+      "sha256": "95eb9aae04a491dc3ff138bda5b702cb967e334136a6193b575a37b7e3feae18",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-note.add",
+      "sha256": "1912fcd87802bc3e0abd41437f986e688518ef36b84e401f4296d99b1cea444c",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-order.assign",
+      "sha256": "676aadaac12ecb79b09ac5439d855cc77f8ba405a1df764fc305a24c0272cf21",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-order.cancel",
+      "sha256": "82a43bd6585b267b890b7297be17c738d6dda762af17823d06daf51870fc89cc",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-order.fulfill",
+      "sha256": "bfda2b38f175d0eb3ac3ff6024f91ab142729a44367b48dfd9e21cb768ce0d3f",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-order.refund",
+      "sha256": "f20a21117923e0f2dfdaaaffff4529378a42dc516fbcdacb65e535a6cea3e5fd",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-pricing.update",
+      "sha256": "2e860407607972ab3e4761193239c549fe5f75d8150b5968feda739f84412249",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-provider.cancel",
+      "sha256": "c36dd4311e606b2095d483b04b3839c42d79ea582d802d32ec0b95cadc8b3f91",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-provider.prepare",
+      "sha256": "96dce0f38e0544daf62208c1e95f87975335ca817de2e29fa2e9989c05d4dfd0",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-provider.preview",
+      "sha256": "cee9c108a7e6f2cd744e4f5cfe17ba3831027b6dd783d4eaa319624072b845e9",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-provider.reconcile",
+      "sha256": "e9bf6b1b9343815a1de5378571a93be7d181b5e1e49208d5be392ad61c11ee09",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-provider.send",
+      "sha256": "77c7e067bddbbba886c6ffd13a3c48358e1684a35b42a7d590566a882418887c",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-recipient.verify",
+      "sha256": "c61bd17f700c98b887e42e95d6e206d1d890fc1ad34292958586d09a599a7ba0",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-route.emergency",
+      "sha256": "d42fdb1a93c3e1a50cd911d3693f944830c74ab486cb68d9cff6b084bef85844",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-route.update",
+      "sha256": "bcb77058ef54f885d8a5e0c3ecbd2890b1d91d31a0d693417f108906ddc35d5a",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-team.add",
+      "sha256": "f991747a2603db632671b5e5e3169fc89cd526d55a0309e5aba4d1dfd071a335",
+      "payload_included": false
+    },
+    {
+      "label": "browser image dialog-mail-team.revoke",
+      "sha256": "5feded2f9dbdb67359781db186effb4a8ee8ec4907dd08f62f3510f407d80362",
+      "payload_included": false
+    },
+    {
+      "label": "browser image lifecycle-idle-lock",
+      "sha256": "fb9347d71fffdd6212630df42b6f1347a9c39ac2e4ca40b67b067e9b5cc9f609",
+      "payload_included": false
+    },
+    {
+      "label": "browser image lifecycle-idle-restored",
+      "sha256": "3440860e3b5f1666238324495cf98dfbea8b87f818177711a0cf492c06993f6e",
+      "payload_included": false
+    },
+    {
+      "label": "browser image lifecycle-nine-draft",
+      "sha256": "8ee12e67c06e787ecc93cede5b6409e021683c65940284b2d940a6f3d0ed0eec",
+      "payload_included": false
+    },
+    {
+      "label": "browser image lifecycle-primary-restored",
+      "sha256": "3440860e3b5f1666238324495cf98dfbea8b87f818177711a0cf492c06993f6e",
+      "payload_included": false
+    },
+    {
+      "label": "browser image lifecycle-sixteen-still-active",
+      "sha256": "8ee12e67c06e787ecc93cede5b6409e021683c65940284b2d940a6f3d0ed0eec",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-accounts",
+      "sha256": "cb944c1b11b753ff2f7129b2e7dc936f59aba938f592351e3a7e9ad0519a1f84",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-activity",
+      "sha256": "e566c4de130891d73967d3ee61ea5aa195a13cc3b8dcc49c7ef998227cc5b033",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-assets",
+      "sha256": "2c7afc40499b100e8e9c5c781779ed6305cfa7c10ca0ed70184df3e117440623",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-billing",
+      "sha256": "deb54a675314848d243a670affbdc1835323b358acd2ee33956955012d88aaa9",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-campaigns",
+      "sha256": "140b342382a5f3c13a0fdfc73cc7fbe7c636a9209ba003bdfd233d231eca4ad2",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-cases",
+      "sha256": "2c2cb4ea015d0cfdfc3f9ebce14ee83101a8823e64d1494e9d35cb39fe50f381",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-commissions",
+      "sha256": "688de0a1073e46e9e2c866b3f0f4e47b82e2ce0925e01a9c63d38e21fb7e18aa",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-communications",
+      "sha256": "14f5411f234ffda3936880f8c34e7831f05aeb7acfa672b432e3f96f12cc1baa",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-contacts",
+      "sha256": "7bddcdfcef19a234846a83a088a92b9dc29de8818c5dc3589c158e65de3839e9",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-agent.run",
+      "sha256": "584242b1452ccb2e0c5107c6cdee5cb7ac197557d9a5b4788cbcf68a58cc1a74",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-asset.publish",
+      "sha256": "2a88e6a30edd414527ecb830070d6d15a438a0f7b0182b2de1726d1d396b5150",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-campaign.add",
+      "sha256": "b90a7b4c56e5034755f198efc1f3988c8cc91e77eeccb7f86aa163aed7d9534e",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-communication.queue",
+      "sha256": "dd7e904a5d1f1e308e0f40a302d4a9b99614e2bb63c4cdec2f0e5fb410f4aabd",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-contact.add",
+      "sha256": "764468a78a9a5e672cd1bcb2297e03aea2dbb121fd00af2597c434f46d02151c",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-contact.suppress",
+      "sha256": "813105be5fe953f0111fd815e356778f470731084e3d36c26a9a4f0bcbf70c01",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-hold.add",
+      "sha256": "10212ea7d4c1277a77866ad895212b104418ffe61c8c98764e16cadb16cb8f77",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-hold.release",
+      "sha256": "9b9d3a899e4d8210ed5732a83d76020f3186719afb798d82a21054ce1b715860",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-onboarding.advance",
+      "sha256": "9ad462c973ba328bd54537674acfe9c47e801978d0c89664a82bf7b0ed99cd16",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-onboarding.pause",
+      "sha256": "2ab975503ee65fb9c895febf4673d2beb55c5b7946bfefa22950aaa1e23f2bf7",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-onboarding.review",
+      "sha256": "0ce79ea22125ced23a8e7739bb88f2b3a5be6624f0fc76fb8fea824e1f5c8b05",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-onboarding.start",
+      "sha256": "aa9aa64e970da90c8685d261dda38b7233b613a032527c3e48b8377bfac6eb37",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-partner.activate",
+      "sha256": "7020b18a6fac6a0c7eed5e3681dc8612b57bb9d41c53f564c0fa4be617b1907b",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-partner.add",
+      "sha256": "a007ec8505e9220d24c9961d352168527be92f6c83011b3d8df524c437d89897",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-partner.destination",
+      "sha256": "6b27232f0dfdf083baee6a4a0f4986c81005a5b076cdc091315906598fa9e7c4",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-proposal.prepare",
+      "sha256": "3b621767452ef5c10fe75c72c91c40c045b4998de13dd89a33421ec78d25865e",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-team.add",
+      "sha256": "e22747fcb035e45ba56f8bec1180d869edef7d1dc1cb4892d5b1ae486f580108",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-team.remove",
+      "sha256": "ae48cfad66bb6dad6b9413ae5878704b7b7b18a85966812502b949c21f1734cd",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-team.update",
+      "sha256": "6ed5112e9b68e0d74e3ab357061923dd101cda31fcd69961331f820fc1f27635",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-affiliate-ticket.add",
+      "sha256": "662a79c9e843c1b118ff09c23ed01f3fa1b8a1134efbc77069735d6d78b32234",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-crp-fulfillment.add",
+      "sha256": "b2c5423854f032f95cd09adad91b2222d35ff5bc8b9119575c2beaa52eab4be3",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-crp-fulfillment.update",
+      "sha256": "6b0d5be6d96aa9fa4906e4d30a97857a60c9f7022a59739a2d66816a1796d13b",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-crp-organization.add",
+      "sha256": "472bde7ef4366773d418f82759231ca51df9d083b681e2b5df3ef59189bf9457",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-crp-organization.update",
+      "sha256": "e74306db14acc32fdac3beb51b577c49affaffaf4e60a1551ee17a2bb346977e",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-crp-referral.enroll",
+      "sha256": "e12ff0f2b10678976170224a129daa4a6cf808121a46e942d8732938da0eb221",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-crp-referral.hold",
+      "sha256": "ffb154545aef2a335b9b0f02dad598be74cc0f6eca1fcf216c05a43658eb5d75",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-crp-referral.release",
+      "sha256": "a38ebfa49a1abe6433d3f14061de22aaf8048bbde1ddc103ca1e058375a715c5",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-crp-referral.sync",
+      "sha256": "231ee4bd23481517e2415577b6404a22912059933e009270654607d97732ec54",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-crp-team.add",
+      "sha256": "1dd7947cbe25295ddeab260fd40bcd5ee189c877de30de768e4c636e233e0a18",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-crp-team.update",
+      "sha256": "f196f79d76e0b814c4dc772e987922185f4f150f825608995e5af63373029f89",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-note.add",
+      "sha256": "3921f5e2111c3df20f6a7e05b9278c243ce0c65f05c122e7b35dc70d2e793df2",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-order.assign",
+      "sha256": "dd3c2da1a636a5d39bb60d55f198ca321e2db26d888f8b142ad04d95c1e194cc",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-order.cancel",
+      "sha256": "d388b5ecd63c61c8bfee3047de397031cee51000a040b6e2d397e380356b1edc",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-order.fulfill",
+      "sha256": "de5247337ce64203563b5dac46fb80b2847534a2206cb8ef699fa4ce0bc70edf",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-order.refund",
+      "sha256": "c5861f4352185fe5b4727ff2972086f1eb96e25bb6ad12d94a74a695851f53e3",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-pricing.update",
+      "sha256": "49528344f3785720e282f1804e6d877fd672e6480f15bca858b6c1cc62127611",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-provider.cancel",
+      "sha256": "3247f40e47c2cbfe8bef3a5f51d20e11b291f99e98c8ce7f96532e0c03f2886f",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-provider.prepare",
+      "sha256": "4d08297e50bff3d23e603bd4fa8f846e586599a0ee27fddfaa73b6c175e02802",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-provider.preview",
+      "sha256": "7eab1f52db2f4998ffee15b10db1dd5f86bb2a5c608fdd2c4593fb5f1bb5b88d",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-provider.reconcile",
+      "sha256": "88f250d11d4fc426db0baf8017eb0efa9d44433100ab0bb544199d59eab165a8",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-provider.send",
+      "sha256": "cfbd0eeb9f4e06c99b2456bb7892af3d2f50eb19d0c48dd7c1be4ce992b4287a",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-recipient.verify",
+      "sha256": "5fb677125500dda9c54370f29d5eb85d76d47b562308682d7cf273df0384b0d6",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-route.emergency",
+      "sha256": "0db0c6d0d2533b108a83347c23b4203c79bc2c041d4954d427f36d64a2f61c72",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-route.update",
+      "sha256": "fb6a5ac42c01862e0e98afe04571d997ff4872425e2f2546bd59d0fb4ef1aaad",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-team.add",
+      "sha256": "991016ea48493587b83669ebc537f97b8e3f36f0fa63208c83694ba24254d437",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-dialog-mail-team.revoke",
+      "sha256": "79fdc2d402f0ce6005f85679f929aea4ceefe761d69694bd832ef3e76ecd06e6",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-evidence",
+      "sha256": "23e4696e2fe9428d5fc152281b5fe64551df7f34faa5e24910086d0f21d58463",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-fulfillment",
+      "sha256": "51bb5a6fe12f3342237a94d51309cd9f38aa4942c674d414aa7ded62e4585d39",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-grants",
+      "sha256": "8945d039d4298e0802420396cfca0ff9480e6a2872ed718b83901c69051b1425",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-holds",
+      "sha256": "2b917daea8999810632794038f5602ae25cefb67e1c1190fd4b5202c835da20d",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-onboarding",
+      "sha256": "d49f795bde75eedafc729105c868001ab8a05ac55fa52fe64f8e2e3b056ff18c",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-orders",
+      "sha256": "f813f93817db8131f76ab40e3e0536ad10f3cb9350d551e0679bd67fe4b6a927",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-organizations",
+      "sha256": "a4466d7a7814781e125ded5b9343787ce94b7c931617d3fb1d8c6a2e681225a0",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-overview-settled",
+      "sha256": "06a709f01a6425d02867aeb93e20e470f08b974ed0b2ad4b1132c074aab776f5",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-overview",
+      "sha256": "4a45d53f64e5cd7c7dfb88f80c85032f5186ae79ce4c619045f1550b2d6dd6c9",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-partners",
+      "sha256": "31719797f9759f45a53be5450ac375ce2bba8494bc8cec8dcfdcc95c8b6547d1",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-pricing",
+      "sha256": "abfa413b899c1013331edea41df160543fa8cc50bf15f418106fe7946039c144",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-proposals",
+      "sha256": "85ca7d02d922ef61af52a2f7933785dd5d806ee26d632b54ab10ba99e1be4dcb",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-referrals",
+      "sha256": "fbd0405154739668c69b0a54be0245d9c942ad0ae3b2650c6a7285569baabe13",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-report",
+      "sha256": "046b42753e453104dd27dd30b1fee0b2a1cc44884d4ea289e66962b73bbc8d77",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-resources",
+      "sha256": "528ca6ac5b4a090acb8468f09ca77354a7678665d48eb679ea0f512227da1f1f",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-routes",
+      "sha256": "723d2a02d59b0f31ef197e05bd11c79effe76c86a201b3f25a31b9fca29b5a0a",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-settings",
+      "sha256": "53b10ba0f93855abba63b63f731f55267c74eab04a5bfa9ae754a0716d1510f2",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-team",
+      "sha256": "3afa858e069ec1cbb1363b4c2fb5e8fd9085d18634779568c167ef744960696e",
+      "payload_included": false
+    },
+    {
+      "label": "browser image mobile-tickets",
+      "sha256": "85a9d382452b7d134ac801d672a750f34a162e975e5326d0d1c3c4817b877b97",
+      "payload_included": false
+    },
+    {
+      "label": "real native passive idle failure",
+      "sha256": "FF6280C997EC5F6A0950436321FCB1FC71A24F5FCC8BB68CFCB39C829ABD7CB9",
+      "payload_included": false,
+      "reused_from_prior_assessment": true
+    },
+    {
+      "label": "Affiliate native route parity",
+      "sha256": "48E7DBD86E615AF7F68D19AB9C51ACD66DBD2368E5B04A7D7D964B2F67748A1D",
+      "payload_included": false,
+      "reused_from_prior_assessment": true
+    },
+    {
+      "label": "immutable Consumer full regression",
+      "sha256": "95770EB62D0C47D920A5C323868FC7AAE824C855D55B04B9BB21F8E57ADBC9A1",
+      "payload_included": false,
+      "reused_from_prior_assessment": true
+    },
+    {
+      "label": "accepted real native joined proof",
+      "sha256": "59A0FD712018BD55B9E9454E4993153C0E94D016515B82BD91577642E7C79F01",
+      "payload_included": false,
+      "reused_from_prior_assessment": true
+    },
+    {
+      "label": "Mail accepted staging dependencies",
+      "sha256": "0A10F4CB17C52F0BE74FD4C502BFF30D7A738267B16F1C64FD227BB668E0BE74",
+      "payload_included": false,
+      "reused_from_prior_assessment": true
+    },
+    {
+      "label": "Mail accepted production dependencies",
+      "sha256": "91105278E5C1347F6C241849D170CCC4088E28282F5DDE4C183CD6E2E37F5511",
+      "payload_included": false,
+      "reused_from_prior_assessment": true
+    },
+    {
+      "label": "Affiliate immutable main acceptance",
+      "sha256": "72E57F8B9F823FBF4E81BF3145F14CBC5401180BB488DC7DF0AFD2AA52D865BA",
+      "payload_included": false,
+      "reused_from_prior_assessment": true
+    }
+  ]
+}
