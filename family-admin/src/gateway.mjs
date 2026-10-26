@@ -31,6 +31,7 @@ export function scrub(v) {
   return v;
 }
 const random = () => randomBytes(32).toString("base64url");
+const IDLE_MS = 15 * 60000, MAX_SESSION_MS = 8 * 60 * 60000;
 const safeEqual = (a, b) => {
   if (typeof a !== "string" || typeof b !== "string") return false;
   const left = Buffer.from(a),
@@ -146,7 +147,7 @@ export class Gateway {
     return value;
   }
   cookie(token, clear = false) {
-    return `crp_family=${clear ? "" : token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${clear ? 0 : 900}${this.config.secure ? "; Secure" : ""}`;
+    return `crp_family=${clear ? "" : token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${clear ? 0 : MAX_SESSION_MS/1000}${this.config.secure ? "; Secure" : ""}`;
   }
   getSession(req) {
     const raw = String(req.headers.cookie || "")
@@ -155,7 +156,7 @@ export class Gateway {
       .find((x) => x.startsWith("crp_family="))
       ?.slice(11);
     const session = raw && this.sessions.get(digest(raw));
-    if (!session || session.expires <= this.now()) {
+    if (!session || (session.authenticatedUntil ?? session.expires) <= this.now()) {
       if (session) void this.logout(session).catch(() => {});
       fail("SESSION_REQUIRED", 401);
     }
@@ -201,16 +202,15 @@ export class Gateway {
     if (this.loginLimits.size > 1000)
       for (const [k, v] of this.loginLimits)
         if (v.until <= this.now()) this.loginLimits.delete(k);
-    for (const [k, v] of this.sessions)
-      if (v.expires <= this.now()) {
-        v.links = {};
-        this.sessions.delete(k);
-      }
+    for (const v of this.sessions.values())
+      if ((v.authenticatedUntil ?? v.expires) <= this.now())
+        await this.logout(v);
     if (this.sessions.size >= 200) fail("SESSION_CAPACITY", 503);
     const s = {
       csrf: random(),
       links: { crp: {} },
       expires: this.now() + 300000,
+      authenticatedUntil: this.now() + MAX_SESSION_MS,
       authorized: false,
     };
     try {
@@ -252,17 +252,46 @@ export class Gateway {
     strict(body, ["code"]);
     if (typeof body.code !== "string" || !/^\d{6}$/.test(body.code))
       fail("FRESH_FACTOR_REQUIRED", 400);
-    await this.call("crp", "/api/admin/unlock", s, { method: "POST", body });
+    try { await this.call("crp", "/api/admin/unlock", s, { method: "POST", body }); }
+    catch (error) {
+      if (['AUTHENTICATION_REQUIRED','SESSION_REQUIRED'].includes(error.code)) {
+        s.primaryAuthenticationExpired = true; s.authorized = false;
+        fail('PRIMARY_AUTHENTICATION_REQUIRED', 401);
+      }
+      throw error;
+    }
     const value = await this.call("crp", "/api/admin/session", s);
     if (value.session?.account_id !== s.subject) fail("IDENTITY_CHANGED");
     s.authorized = true;
     s.verifiedAt = this.now();
-    s.expires = this.now() + 900000;
+    s.expires = Math.min(this.now() + IDLE_MS, s.authenticatedUntil);
     this.journal.append("ADMIN_UNLOCKED", {
       subject: s.subject,
       environment: this.config.environment,
     });
     return this.session(s);
+  }
+  async reauthenticate(s, body) {
+    strict(body, ['password', 'code']);
+    if (!s.primaryAuthenticationExpired) fail('REAUTHENTICATION_NOT_REQUIRED', 409);
+    if (s.authenticatedUntil <= this.now()) fail('SESSION_REQUIRED', 401);
+    if (typeof body.password !== 'string' || !body.password || body.password.length > 1024 || typeof body.code !== 'string' || !/^\d{6}$/.test(body.code))
+      fail('LOGIN_FIELDS_REQUIRED', 400);
+    const renewed = { links: {crp:{}} };
+    try {
+      const value = await this.call('crp', '/api/sessions', renewed, {method:'POST', body:{email:s.email,password:body.password,code:body.code}});
+      if (value.account?.account_id !== s.subject || !renewed.links.crp.cookies?.crp_session) fail('IDENTITY_CHANGED', 403);
+      if(this.now()>=s.authenticatedUntil||this.sessions.get(s.key)!==s)fail('SESSION_REQUIRED',401);
+    } catch (error) {
+      if (renewed.links.crp.cookies?.crp_session)
+        await this.call('crp','/api/sessions/current',renewed,{method:'DELETE'}).catch(()=>{});
+      throw error;
+    }
+    s.links.crp = renewed.links.crp;
+    s.primaryAuthenticationExpired = false; s.authorized = false; s.verifiedAt = 0;
+    s.expires = Math.min(this.now()+300000,s.authenticatedUntil);
+    this.journal.append('PRIMARY_REAUTHENTICATED',{subject:s.subject,environment:this.config.environment,absoluteExpiresAt:new Date(s.authenticatedUntil).toISOString()});
+    return {csrf:s.csrf,unlockRequired:true,environment:this.config.environment,absoluteExpiresAt:new Date(s.authenticatedUntil).toISOString()};
   }
   async authorize(s) {
     if (
@@ -271,7 +300,13 @@ export class Gateway {
       this.sessions.get(s.key) !== s
     )
       fail("ADMIN_UNLOCK_REQUIRED", 401);
-    const v = await this.call("crp", "/api/admin/session", s);
+    let v;
+    try { v = await this.call("crp", "/api/admin/session", s); }
+    catch(error) {
+      if(error.code === 'TWO_FACTOR_REQUIRED') { s.authorized=false; fail('ADMIN_UNLOCK_REQUIRED',401); }
+      if(['AUTHENTICATION_REQUIRED','SESSION_REQUIRED'].includes(error.code)) { s.authorized=false;s.primaryAuthenticationExpired=true;fail('PRIMARY_AUTHENTICATION_REQUIRED',401); }
+      throw error;
+    }
     const p = v.session || v.principal;
     if (
       p?.account_id !== s.subject ||
@@ -320,8 +355,27 @@ export class Gateway {
     )
       fail("LINKED_PERMISSION_REQUIRED");
   }
+  status(s) {
+    // Passive browser polling is not user activity. Never call an upstream
+    // resolver here: resolving Consumer's session slides its idle deadline.
+    // This discloses no role/catalog/application data. Every real operation,
+    // full session read and MFA unlock still checks the native authority.
+    return {
+      unlockRequired: !s.authorized || s.expires <= this.now(),
+      reauthenticateRequired: s.primaryAuthenticationExpired === true,
+      expiresAt: new Date(s.expires).toISOString(),
+      absoluteExpiresAt: new Date(s.authenticatedUntil).toISOString(),
+    };
+  }
   async session(s) {
-    const p = await this.authorize(s);
+    const renewal = () => ({unlockRequired:true,reauthenticateRequired:true,csrf:s.csrf,environment:this.config.environment});
+    if(s.primaryAuthenticationExpired)return renewal();
+    let p;
+    try { p = await this.authorize(s); }
+    catch(error) {
+      if(error.code === 'PRIMARY_AUTHENTICATION_REQUIRED')return renewal();
+      if(error.code === 'ADMIN_UNLOCK_REQUIRED') return {unlockRequired:true,csrf:s.csrf,environment:this.config.environment}; throw error;
+    }
     const access = {};
     if (this.sso) for (const app of ['affiliate', 'mail']) {
       if (!this.binding(s, app) || !this.config.upstreams[app]) continue;
@@ -343,6 +397,7 @@ export class Gateway {
       environment: this.config.environment,
       demo: this.config.demo,
       expiresAt: new Date(s.expires).toISOString(),
+      absoluteExpiresAt: new Date(s.authenticatedUntil).toISOString(),
       applications: Object.fromEntries(
         ["crp", "affiliate", "mail"].map((app) => [
           app,
@@ -481,6 +536,15 @@ export class Gateway {
     await this.authorize(s);await this.nativeIdentity(s,app);
     this.journal.append('DOCUMENT_VIEWED',{subject:s.subject,app,resource:name,record:id,sha256:digest(bytes)});
     return bytes;
+  }
+  async activity(s) {
+    await this.authorize(s);
+    const native=await this.call('crp','/api/admin/activity',s,{method:'POST',body:{}});
+    const until=Date.parse(native.expires_at);
+    if(!Number.isFinite(until)||until<=this.now()) fail('ADMIN_UNLOCK_REQUIRED',401);
+    s.expires=Math.min(until,this.now()+IDLE_MS,s.authenticatedUntil);
+    // Activity is not MFA. verifiedAt deliberately stays unchanged.
+    return {expiresAt:new Date(s.expires).toISOString(),absoluteExpiresAt:new Date(s.authenticatedUntil).toISOString()};
   }
   async execute(s, app, name, input) {
     strict(input, ["id", "body", "requestId", "confirmation"]);

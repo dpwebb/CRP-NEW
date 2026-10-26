@@ -13,6 +13,7 @@ const messages = {
   SESSION_REQUIRED: "Sign in to the family workspace.",
   ADMIN_UNLOCK_REQUIRED:
     "Unlock administration with a current authenticator code.",
+  PRIMARY_AUTHENTICATION_REQUIRED: "Your underlying sign-in expired. Confirm your password and authenticator to keep your page and draft.",
   FRESH_FACTOR_REQUIRED:
     "Enter a fresh authenticator code before making this change.",
   APPLICATION_NOT_LINKED: "Connect your authorized application access first.",
@@ -146,6 +147,15 @@ export function createPortal(raw, options = {}) {
         json(res, 200, await gateway.unlock(session, await body(req)));
         return;
       }
+      if (path === '/api/reauthenticate' && req.method === 'POST') {
+        json(res, 200, await gateway.reauthenticate(session, await body(req))); return;
+      }
+      if (path === '/api/activity' && req.method === 'POST') {
+        const input = await body(req);
+        if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).length)
+          throw Object.assign(Error('INVALID_FIELDS'), {status:400});
+        json(res, 200, await gateway.activity(session)); return;
+      }
       if (path === "/api/logout" && req.method === "POST") {
         affiliateLogin.forget(session);
         await gateway.logout(session);
@@ -157,9 +167,12 @@ export function createPortal(raw, options = {}) {
         );
         return;
       }
+      if (path === '/api/status' && req.method === 'GET') {
+        json(res, 200, gateway.status(session)); return;
+      }
       if (path === "/api/session" && req.method === "GET") {
         const data = await gateway.session(session);
-        data.applications.affiliate.browserSignIn = !!config.affiliateLogin;
+        if (data.applications) data.applications.affiliate.browserSignIn = !!config.affiliateLogin;
         json(res, 200, data);
         return;
       }
@@ -259,7 +272,7 @@ export function createPortal(raw, options = {}) {
   });
   const reaper = setInterval(() => {
     for (const session of gateway.sessions.values())
-      if (session.expires <= gateway.now())
+      if ((session.authenticatedUntil ?? session.expires) <= gateway.now())
         void gateway.logout(session).catch(() => {});
   }, 30000);
   reaper.unref();

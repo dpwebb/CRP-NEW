@@ -260,10 +260,11 @@ export async function fixtures({ port = 0, dir, now = Date.now, singleSignIn = f
           body.code !== "123456"
         )
           return send(res, 401, { error: { code: "INVALID_CREDENTIALS" } });
+        state.primarySessionExpired = false;
         return send(
           res,
           200,
-          { ok: true, account: { account_id: account, email: body.email } },
+          { ok: true, account: { account_id: state.signInAccount || account, email: body.email } },
           { "set-cookie": cookie },
         );
       }
@@ -273,6 +274,7 @@ export async function fixtures({ port = 0, dir, now = Date.now, singleSignIn = f
           !state.active)
       )
         return send(res, 401, { error: { code: "SESSION_REQUIRED" } });
+      if (app === 'crp' && state.primarySessionExpired) return send(res,401,{error:{code:'AUTHENTICATION_REQUIRED'}});
       if (app === "crp" && path === "/api/admin/unlock") {
         if (body.code !== "654321")
           return send(res, 401, { error: { code: "TWO_FACTOR_INVALID" } });
@@ -290,6 +292,7 @@ export async function fixtures({ port = 0, dir, now = Date.now, singleSignIn = f
         !req.headers.cookie?.includes("crp_admin_session=fixture-admin-cookie")
       )
         return send(res, 401, { error: { code: "TWO_FACTOR_REQUIRED" } });
+      if(app==='crp' && path==='/api/admin/activity') return send(res,200,{expires_at:new Date(now()+900000).toISOString()});
       if (app === "crp" && path === "/api/admin/session")
         return send(res, 200, {
           ok: true,

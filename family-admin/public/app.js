@@ -9,6 +9,7 @@ const $ = (id) => document.getElementById(id),
     generation: 0,
     dialog: null,
     market: 'CA',
+    locked: false, resumeDialog: false, hasWorkspace: false,
   };
 const labels = {
   crp: "CRP Consumer",
@@ -148,13 +149,17 @@ async function api(path, { method = "GET", body } = {}) {
       Error(data.error?.message || "This request could not be completed."),
       { code: data.error?.code, status: r.status },
     );
-    if (["SESSION_REQUIRED", "ADMIN_UNLOCK_REQUIRED"].includes(e.code))
-      showLogin(e.message);
+    if (e.code === 'PRIMARY_AUTHENTICATION_REQUIRED') showReauthentication();
+    else if (e.code === 'ADMIN_UNLOCK_REQUIRED') showUnlock();
+    else if (["SESSION_REQUIRED","AUTHENTICATION_REQUIRED"].includes(e.code)) showLogin(e.message);
     throw e;
   }
   return data;
 }
 function showLogin(error = "") {
+  $('reauth').hidden=true;
+  $('reauth').reset();
+  S.locked=false;S.resumeDialog=false;S.hasWorkspace=false;activityAt=0;
   S.session = null;
   S.csrf = null;
   S.generation++;
@@ -169,8 +174,50 @@ function showLogin(error = "") {
   if ($("dialog").open) $("dialog").close();
   document.body.classList.remove("nav-open");
 }
+function showUnlock() {
+  if(!S.session || S.locked)return;
+  $('reauth').hidden=true;
+  S.locked=true;
+  S.generation++;
+  S.resumeDialog=$('dialog').open;
+  if(S.resumeDialog){for(const {input,f} of S.dialog.nodes.values())if(f.name==='freshCode'||f.type==='password')input.value='';$('dialog').close();}
+  $('workspace').hidden=true;$('auth').hidden=false;
+  $('login').hidden=true;$('unlock').hidden=false;
+  $('auth-title').textContent='Unlock your workspace';
+  $('auth-help').textContent='Your workspace locked after inactivity. Enter a current authenticator code to return to your page and draft.';
+  $('auth-error').textContent='';
+}
+function showReauthentication() {
+  if (!S.locked) showUnlock();
+  $('workspace').hidden=true; $('auth').hidden=false;
+  $('login').hidden=true; $('unlock').hidden=true; $('reauth').hidden=false;
+  $('auth-title').textContent='Confirm your sign-in';
+  $('auth-help').textContent='Your underlying sign-in expired. Your page and draft are kept. Enter your password and authenticator, then a fresh code to unlock administration.';
+}
+function sessionStatus() {
+  if(!S.session || S.locked)return;
+  const remaining=Date.parse(S.session.expiresAt)-Date.now();
+  $('session-status').textContent=remaining<120000?'Your workspace will lock soon if you remain inactive. Your page and draft will be kept.':'';
+  if(remaining<=0)showUnlock();
+}
+let activityAt=0,activityPending=false;
+async function userActivity(event) {
+  if(!event.isTrusted || document.visibilityState==='hidden' || !S.session || S.locked || activityPending || Date.now()-activityAt<60000)return;
+  activityPending=true;
+  const session = S.session, generation = S.generation;
+  try {const update=await api('/api/activity',{method:'POST',body:{}});if(S.session!==session||S.generation!==generation)return;Object.assign(session,update);activityAt=Date.now();sessionStatus();}
+  catch(error){if(error.status!==401)notice('Activity could not be confirmed. Your workspace may lock; your draft will be kept.');}
+  finally{activityPending=false;}
+}
+document.addEventListener('pointerdown',userActivity,true);
+document.addEventListener('keydown',userActivity,true);
 function unlocked(session) {
+  $('reauth').hidden=true;
+  const resuming=S.locked&&S.hasWorkspace&&S.session?.subject===session.subject&&S.session?.role===session.role&&JSON.stringify(S.session?.permissions)===JSON.stringify(session.permissions);
+  if(S.locked&&!resuming){$('content').replaceChildren();closeDialog();}
   S.session = session;
+  S.locked=false;
+  S.hasWorkspace=true;
   S.csrf = session.csrf;
   $("auth").hidden = true;
   $("workspace").hidden = false;
@@ -182,7 +229,12 @@ function unlocked(session) {
   $("who").textContent = session.email || session.role;
   $("demo-banner").hidden = !session.demo;
   renderNav();
-  navigate(S.view);
+  if(resuming) {
+    if(S.resumeDialog){S.dialog.generation=S.generation;$('dialog').showModal();}
+    S.resumeDialog=false;
+
+  } else load();
+  sessionStatus();
 }
 function renderNav() {
   const nav = $("nav");
@@ -294,6 +346,7 @@ function dialog(title, description, fields, submit, submitText = "Confirm") {
   $("dialog-close").focus();
 }
 function closeDialog() {
+  S.resumeDialog=false;
   $("dialog").close();
   S.dialog = null;
   $("dialog-fields").replaceChildren();
@@ -301,6 +354,7 @@ function closeDialog() {
 $("dialog-close").onclick = closeDialog;
 $("dialog-cancel").onclick = closeDialog;
 $("dialog").addEventListener("close", () => {
+  if (S.resumeDialog) return;
   $("dialog-fields").replaceChildren();
   S.dialog = null;
 });
@@ -1009,6 +1063,16 @@ $("unlock").onsubmit = async (e) => {
     e.submitter.disabled = false;
   }
 };
+$('reauth').onsubmit = async (e) => {
+  e.preventDefault();e.submitter.disabled=true;$('auth-error').textContent='';
+  try {
+    const f=new FormData(e.target),r=await api('/api/reauthenticate',{method:'POST',body:{password:f.get('password'),code:f.get('code')}});
+    S.csrf=r.csrf;$('reauth').hidden=true;$('unlock').hidden=false;
+    $('auth-title').textContent='Unlock administration';
+    $('auth-help').textContent='Enter the next fresh authenticator code. Your page and draft are kept.';
+  } catch(error) {$('auth-error').textContent=error.message;}
+  finally {e.target.reset();e.submitter.disabled=false;}
+};
 $("logout").onclick = async () => {
   try {
     await api("/api/logout", { method: "POST", body: {} });
@@ -1034,15 +1098,23 @@ $("menu").onclick = () => {
 setInterval(async () => {
   if (!S.session) return;
   try {
-    S.session = await api("/api/session");
+    const current = await api("/api/status");
+    if(current.reauthenticateRequired)showReauthentication();
+    else if(current.unlockRequired)showUnlock();
+    else {Object.assign(S.session,current);sessionStatus();}
   } catch (e) {
-    showLogin(e.message);
+    if(e.code==='PRIMARY_AUTHENTICATION_REQUIRED')showReauthentication();
+    else if(e.code==='ADMIN_UNLOCK_REQUIRED')showUnlock();
+    else if(e.status===401)showLogin(e.message);
+    else notice('Access check temporarily unavailable. Your page and draft have been kept.');
   }
 }, 30000);
 (async () => {
   let data;
-  try { data = await api("/api/session"); } catch { showLogin(); return; }
+  try { data = await api("/api/session"); } catch(e) { if(e.code==='PRIMARY_AUTHENTICATION_REQUIRED')showReauthentication();else showLogin(); return; }
   S.csrf = data.csrf;
+  if(data.reauthenticateRequired){S.session={csrf:data.csrf};showReauthentication();return;}
+  if(data.unlockRequired){S.session={csrf:data.csrf};showUnlock();return;}
   let message = "";
   if (data.applications.affiliate.browserSignIn && !data.applications.affiliate.linked) {
     try {

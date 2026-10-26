@@ -1,5 +1,17 @@
 # CRP Family Admin
 
+## October 25 local lifecycle repair candidate
+
+This checkout starts from production Family source `3f60497` / release `crp-family-4da6f430ef63abe2262c` and repairs FAM-01/FAM-02 locally. Production is unchanged. Its27 views,43 read/document routes and46 administrative actions are retained; held Creative Studio and postponed cost work are not included.
+
+Family sign-in has an original eight-hour absolute cap. Trusted visible user activity renews its15-minute idle authority through the native activity endpoint without renewing MFA. Idle locking keeps the page, unsent non-secret fields, Family session and CSRF value. A normal fresh factor unlocks administration again. If the underlying Consumer sign-in has expired, the same person must confirm their password and MFA, then separately unlock administration; identity/permission reductions fail closed and drafts are never submitted automatically.
+
+Background browser polling uses the minimal `/api/status` endpoint. It reads only local lock/expiry flags and never resolves the Consumer session or advances its native idle deadline. Every actual read, action, full session load and unlock still performs native authorization. Cookie lifetime, idle renewal and recovery never extend the original absolute cap.
+
+Tests use fictional actors and existing source-bound Sandbox evidence. `CRP_FAMILY_CONSUMER_ROOT` selects the certified Consumer checkout for native tests. This candidate does not authorize deployment, provider changes, real mail, production authentication or Git publication. The preserved baseline documentation below retains its historical release descriptions; the lifecycle contract above supersedes its older fixed-session behavior.
+
+## Preserved baseline documentation
+
 The deployed legacy portal is complete. The new single-sign-in and unified-admin successor is being verified locally; see [ADMIN_MIGRATION.md](ADMIN_MIGRATION.md) for coverage, trust and staged retirement gates. Individual admin pages remain available until complete acceptance.
 
 A standalone administration portal and bounded server-side gateway for CRP, Affiliate Operations and Mail Operations. This directory is an independent local build on `codex/family-admin-build`. No consumer runtime, release manifest, packet/mail release source, provider configuration or hosted data is changed.

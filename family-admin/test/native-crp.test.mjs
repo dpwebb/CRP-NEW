@@ -1,16 +1,18 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { resolve, join } from "node:path";
 import { createPortal } from "../src/server.mjs";
 const require = createRequire(import.meta.url),
+  consumerRoot = process.env.CRP_FAMILY_CONSUMER_ROOT || fileURLToPath(new URL("../..", import.meta.url)),
   {
     TestService,
-  } = require("../../accelerated-launch/service/tests/harness.cjs"),
-  security = require("../../accelerated-launch/service/signup-security.cjs"),
-  access = require("../../accelerated-launch/service/admin-access.cjs");
+  } = require(resolve(consumerRoot,"accelerated-launch/service/tests/harness.cjs")),
+  security = require(resolve(consumerRoot,"accelerated-launch/service/signup-security.cjs")),
+  access = require(resolve(consumerRoot,"accelerated-launch/service/admin-access.cjs"));
 test("real CRP HTTP authentication, MFA, scoped data and revocation through independent family gateway", async () => {
   const before = process.env.CRP_ADMIN_ENABLED,
     realNow = Date.now,
@@ -89,7 +91,9 @@ test("real CRP HTTP authentication, MFA, scoped data and revocation through inde
     });
     r = await request("/api/apps/crp/accounts");
     assert.equal(r.status, 401);
-    assert.equal(r.json.error.code, "TWO_FACTOR_REQUIRED");
+    assert.equal(r.json.error.code, "ADMIN_UNLOCK_REQUIRED");
+    assert.equal(Object.hasOwn(r.json, 'data'), false, 'membership revision withholds native account data');
+    assert.equal([...p.gateway.sessions.values()][0].authorized, false);
   } finally {
     Date.now = realNow;
     if (p) await p.close();

@@ -517,18 +517,20 @@ test("native Mail role changes and removal of linked capabilities deny cross-app
     );
     assert.equal(f.state.writes.length, 0);
   }));
-test("stale primary session expires and cannot reuse its old family cookie", async () => {
+test("idle privileges lock without discarding Family identity; absolute expiry revokes it", async () => {
   let clock = Date.now();
   const f = await fixtures({ now: () => clock });
   try {
     await f.login();
     const cookie = f.cookie;
+    const session = [...f.portal.gateway.sessions.values()][0], cap = session.authenticatedUntil;
     clock += 901000;
-    assert.equal(
-      (await f.request("/api/apps/crp/accounts", { headers: { cookie } }))
-        .status,
-      401,
-    );
+    assert.equal((await f.request("/api/apps/crp/accounts", { headers: { cookie } })).status, 401);
+    assert.equal(f.portal.gateway.sessions.size, 1);
+    assert.equal((await f.request("/api/session", { headers: { cookie } })).json.unlockRequired, true);
+    assert.equal(session.authenticatedUntil, cap);
+    clock = cap + 1;
+    assert.equal((await f.request("/api/session", { headers: { cookie } })).status, 401);
     assert.equal(f.portal.gateway.sessions.size, 0);
   } finally {
     await f.close();
