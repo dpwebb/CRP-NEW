@@ -3,7 +3,7 @@ const { ServiceError } = require('./errors.cjs');
 const profiles = require('./account-profile.cjs');
 const documents = require('./account-documents.cjs');
 const bureaus = require('./bureau-dispute-requirements.cjs');
-const FIELDS = new Set(['bureau', 'channel', 'purpose', 'document_ids', 'use_account_profile', 'identity_reference', 'no_ssn_issued', 'identity_shows_address', 'verification_requested', 'copies_confirmed', 'document_dates', 'other_identity_details']);
+const FIELDS = new Set(['bureau', 'channel', 'purpose', 'document_ids', 'use_account_profile', 'identity_reference', 'no_ssn_issued', 'identity_shows_address', 'verification_requested', 'copies_confirmed', 'document_dates', 'document_rotations', 'other_identity_details']);
 function normalize(input, country) {
   if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).some(key => !FIELDS.has(key))) throw new ServiceError('INVALID_REQUEST');
   if (input.channel !== 'POSTAL') throw new ServiceError('PACKET_SUBMISSION_METHOD_REQUIRED');
@@ -17,8 +17,12 @@ function normalize(input, country) {
   for (const key of ['identity_reference', 'other_identity_details']) if (input[key] != null && (typeof input[key] !== 'string' || input[key].length > 500 || /[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(input[key]))) throw new ServiceError('INVALID_REQUEST');
   const dates = input.document_dates || {};
   if (typeof dates !== 'object' || Array.isArray(dates) || Object.keys(dates).some(id => !input.document_ids.includes(id) || typeof dates[id] !== 'string' || (dates[id] && (!/^\d{4}-\d{2}-\d{2}$/.test(dates[id]) || !Number.isFinite(Date.parse(dates[id])) || new Date(dates[id]).toISOString().slice(0, 10) !== dates[id])))) throw new ServiceError('INVALID_REQUEST');
+  const rotations = input.document_rotations || {};
+  if (typeof rotations !== 'object' || Array.isArray(rotations) || Object.keys(rotations).some(id => !input.document_ids.includes(id) || ![0,90,180,270].includes(rotations[id]))) throw new ServiceError('INVALID_REQUEST');
+  const normalizedRotations = Object.fromEntries(Object.entries(rotations).filter(([,value])=>value!==0).sort());
   if (input.no_ssn_issued && String(input.identity_reference || '').trim()) throw new ServiceError('INVALID_REQUEST');
-  return { ...input, bureau, document_ids: [...input.document_ids].sort(), identity_reference: (input.identity_reference || '').trim(), other_identity_details: (input.other_identity_details || '').trim(), document_dates: Object.fromEntries(Object.entries(dates).sort()) };
+  const {document_rotations, ...rest} = input;
+  return { ...rest, ...(Object.keys(normalizedRotations).length ? {document_rotations:normalizedRotations} : {}), bureau, document_ids: [...input.document_ids].sort(), identity_reference: (input.identity_reference || '').trim(), other_identity_details: (input.other_identity_details || '').trim(), document_dates: Object.fromEntries(Object.entries(dates).sort()) };
 }
 function snapshot(store, actor, country, settings, mixed) {
   if (!settings) return null;

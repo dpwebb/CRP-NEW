@@ -158,6 +158,7 @@ const ROUTES = Object.freeze([
   ['DELETE', '/api/sessions/current', false, 'signOut'],
   ['GET', '/api/session', true, 'sessionInfo'],
   ['GET', '/api/account/security', true, 'accountSecurity'],
+  ['GET', '/api/testing/inbox', true, 'stagingInbox'],
   ['DELETE', '/api/account/google-identity', true, 'disconnectGoogle'],
   ['POST', '/api/account/confirm-email', true, 'confirmEmail'],
   ['POST', '/api/account/resend-confirmation', true, 'resendConfirmation'],
@@ -239,6 +240,11 @@ const ROUTES = Object.freeze([
   ['POST', '/api/cases/:caseId/mailing/quote', true, 'mailingQuote'],
   ['POST', '/api/cases/:caseId/mailing/confirm', true, 'mailingConfirm'],
   ['POST', '/api/cases/:caseId/mailing/cancel', true, 'mailingCancel'],
+  ['POST', '/api/cases/:caseId/mailing/print-preview', true, 'mailingPrintPreview'],
+  ['GET', '/api/cases/:caseId/mailing/print-preview/:orderId/:previewHash', true, 'mailingPrintPdf'],
+  ['GET', '/api/cases/:caseId/mailing/print-preview/:orderId/:previewHash/pages', true, 'mailingPrintPages'],
+  ['GET', '/api/cases/:caseId/mailing/print-preview/:orderId/:previewHash/pages/:pageNumber', true, 'mailingPrintPage'],
+  ['POST', '/api/cases/:caseId/mailing/approve-print', true, 'mailingApprovePrint'],
   ['GET', '/api/cases/:caseId/packet-print', true, 'packetPrint'],
   ['GET', '/api/cases/:caseId/packet/preview', true, 'packetPreview'],
   ['GET', '/api/cases/:caseId/packet/preview/pages', true, 'packetReviewPages'],
@@ -352,7 +358,12 @@ function availabilityFor(row) {
 }
 
 /** The consumer-facing handler set. Every consumer-visible string it returns came from another module. */
-function buildHandlers(store, logger, surface, pricingCurrency, registrationMailer, adminStore, googleSignIn, mailOps) {
+function buildHandlers(store, logger, surface, pricingCurrency, registrationMailer, adminStore, googleSignIn, mailOps, testMailbox) {
+  const loginFactor = (actor, req) => {
+    const account=store.state().accounts.find(a=>a.account_id===actor.account_id);
+    if(account?.two_factor_secret && !accounts.loginMfaVerified(store,actor,sessionToken(req))) throw new ServiceError('AUTHENTICATION_REQUIRED');
+    return Boolean(account?.two_factor_secret);
+  };
   const ownerRoute = (account, token) => {
     const nextPath = adminStore && require('./admin-access.cjs').ownerSignInPath(adminStore, account, token);
     return nextPath === '/admin' ? { next_path: '/admin' } : {};
@@ -379,7 +390,7 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
       logger.log({ event: 'ACCOUNT_CREATED', outcome: 'OK' });
       return {
         status: 201,
-        json: { ok: true, account: created.account, profile: accountProfile.getProfile(store, created.account), signed_in: true, recovery_key: created.recovery_key, confirmation_sent, ...accounts.securityView(store,created.account) },
+        json: { ok: true, account: created.account, profile: accountProfile.getProfile(store, created.account), signed_in: true, recovery_key: created.recovery_key, confirmation_sent, confirmation_transport:confirmation_sent&&registrationMailer.captureFor?.(created.account.email)?'CAPTURED':confirmation_sent?'ACCEPTED':'UNAVAILABLE', ...accounts.securityView(store,created.account) },
         headers: { 'Set-Cookie': sessionCookie(created.token, 86400) }
       };
     },
@@ -399,17 +410,18 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
     sessionInfo: ({ actor, req }) => ({ status: 200, json: { ok: true, account: actor, signed_in: true, ...accounts.securityView(store,actor), ...ownerRoute(actor, sessionToken(req)) } }),
 
     confirmEmail: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').confirmEmail(store,actor,body)}}),
-    resendConfirmation: async ({actor}) => ({status:200,json:{ok:true,...await require('./signup-security.cjs').sendConfirmation(store,actor,registrationMailer)}}),
+    resendConfirmation: async ({actor}) => ({status:200,json:{ok:true,...await require('./signup-security.cjs').sendConfirmation(store,actor,registrationMailer),confirmation_transport:registrationMailer.captureFor?.(actor.email)?'CAPTURED':'ACCEPTED'}}),
+    stagingInbox: ({actor}) => ({status:200,json:{ok:true,...testMailbox.inbox(actor)}}),
     confirmRecoveryKey: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').confirmRecovery(store,actor,body)}}),
     finishSignup: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').finish(store,actor,body)}}),
     setupTwoFactor: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').beginTwoFactor(store,actor,body)}}),
-    confirmTwoFactor: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').confirmTwoFactor(store,actor,body)}}),
-    disableTwoFactor: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').disableTwoFactor(store,actor,body)}}),
+    confirmTwoFactor: ({actor,body,req}) => {const view=require('./signup-security.cjs').confirmTwoFactor(store,actor,body);accounts.markLoginMfaVerified(store,actor,sessionToken(req));return {status:200,json:{ok:true,...view}};},
+    disableTwoFactor: ({actor,body,req}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').disableTwoFactor(store,actor,body,loginFactor(actor,req))}}),
     accountSecurity: ({ actor }) => ({ status: 200, json: { ok: true, ...accounts.securityView(store, actor) } }),
-    disconnectGoogle: ({ actor, body }) => ({ status: 200, json: { ok: true, ...accounts.disconnectGoogle(store, actor, body) },
+    disconnectGoogle: ({ actor, body, req }) => ({ status: 200, json: { ok: true, ...accounts.disconnectGoogle(store, actor, body,loginFactor(actor,req)) },
       headers: { 'Set-Cookie': [sessionCookie('', 0), `${ADMIN_COOKIE}=; HttpOnly; SameSite=Strict; Path=/api/admin/; Max-Age=0${process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : ''}`] } }),
-    issueRecoveryKey: ({ actor, body }) => {
-      const issued = accounts.issueRecoveryKey(store, actor, body);
+    issueRecoveryKey: ({ actor, body, req }) => {
+      const issued = accounts.issueRecoveryKey(store, actor, body,loginFactor(actor,req));
       logger.log({ event: 'RECOVERY_KEY_ISSUED', outcome: 'OK' });
       return { status: 200, json: { ok: true, ...issued } };
     },
@@ -458,6 +470,7 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
       ensureAdministrationDeletionAllowed();
       const remove=()=>cases.deleteAccountSafely(store, actor, process.env, { beforeDelete: ensureAdministrationDeletionAllowed });
       const result = mailOps?.withDeletion ? await mailOps.withDeletion(actor,null,remove) : await remove();
+      try{testMailbox.remove(actor);}catch{logger.log({event:'TEST_INBOX_CLEANUP_PENDING',outcome:'UNAVAILABLE',count:1});}
       logger.log({ event: 'ACCOUNT_DELETED', outcome: 'OK', count: result.blobs_removed });
       return { status: 200, json: { ok: true, deleted: true, stored_files_removed: result.blobs_removed }, headers: { 'Set-Cookie': sessionCookie('', 0) } };
     },
@@ -568,7 +581,8 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps) {
       return { status: 200, json: { ok: true, cases: rows } };
     },
 
-    getCase: ({ params, actor }) => ({ status: 200, json: { ok: true, view: journey.caseView(store, actor, params.caseId) } }),
+    getCase: ({ params, actor }) => ({ status: 200, json: { ok: true, view: journey.caseView(store, actor, params.caseId),
+      checkout_return: require('./checkout-return-status.cjs').forCase(store, actor, params.caseId) } }),
 
     setCaseStatus: ({ params, body, actor }) => ({
       status: 200,
@@ -925,22 +939,58 @@ function createService(options) {
     catch { adminUnavailable = true; }
   }
   const logger = new Logger(opts.logSink);
+  store.retentionObserver = record => logger.log(record);
   const affiliate = require('./affiliate-attribution.cjs').create(store, { ...opts.affiliate, log: event => logger.log(event) });
   const googleSignIn = require('./auth0-google.cjs').create(store, opts.googleSignIn);
-  const passwordReset = require('./password-reset.cjs').create(store, { mailer: opts.passwordResetMailer || require('./confirmation-mail.cjs').sender(), origin: opts.passwordResetOrigin, logger });
+  const testMailbox = require('./staging-test-mail.cjs').create(store);
+  const passwordReset = require('./password-reset.cjs').create(store, { mailer: opts.passwordResetMailer || testMailbox.wrap(require('./confirmation-mail.cjs').sender()), origin: opts.passwordResetOrigin, logger });
   const requestPolicy=require('./request-policy.cjs').policy();
   const surface = loadJurisdictionSurface();
   const mailOps = require('./mail-ops-link.cjs').create(store);
   surface.google_sign_in = googleSignIn.status().enabled;
   const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
+  const mailingPreviewActor=({actor,req,params})=>{
+    const currentActor=accounts.resolveSession(store,sessionToken(req));
+    if(currentActor.account_id!==actor.account_id)throw new ServiceError('NOT_AUTHORIZED');
+    cases.requireOwnedCase(store,currentActor,params.caseId);
+    require('./signup-security.cjs').requireReady(store,currentActor);
+    entitlement.requireSubscriberFeature(store,currentActor);return currentActor;
+  };
+  const exactMailingPreview=async context=>{
+    const {params}=context;
+    if(!/^[a-f0-9-]{36}$/.test(params.orderId)||!/^[a-f0-9]{64}$/.test(params.previewHash))throw new ServiceError('INVALID_REQUEST');
+    if(typeof mailOps.printpreview!=='function')throw new ServiceError('NOT_AUTHORIZED');
+    const preview=await mailOps.printpreview(mailingPreviewActor(context),params.caseId,{});
+    mailingPreviewActor(context);
+    if(preview.order_id!==params.orderId||preview.preview_hash!==params.previewHash)throw new ServiceError('MAILING_ORDER_CHANGED');
+    return {preview,body:Buffer.from(preview.pdf_base64,'base64')};
+  };
+  const mailingPreviewHeaders=hash=>({'Cache-Control':'private, no-store','X-CRP-Preview-Hash':hash});
   const handlers = Object.assign(
     {},
-    buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || require('./confirmation-mail.cjs').sender(), adminStore, googleSignIn, mailOps),
+    buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || testMailbox.wrap(require('./confirmation-mail.cjs').sender()), adminStore, googleSignIn, mailOps, testMailbox),
     buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps),
     buildBillingHandlers(store, logger, pricingCurrency),
-    Object.fromEntries(['Status','Quote','Confirm','Cancel'].map(action => ['mailing' + action, async ({actor,params,body}) => ({
-      status: 200, json: { ok: true, ...await mailOps[action.toLowerCase()](actor, params.caseId, body) }
-    })])),
+    {mailingPrintPdf: async context => {
+      const {preview,body}=await exactMailingPreview(context);
+      return {status:200,text:body,content_type:'application/pdf',headers:{...mailingPreviewHeaders(preview.preview_hash),
+        'Content-Disposition':`inline; filename="final-mailing-copy-${context.params.orderId}.pdf"`}};
+    },mailingPrintPages:async context=>{
+      const {preview,body}=await exactMailingPreview(context);
+      const count=await require('./packet-page-renderer.cjs').pageCount(body);
+      await exactMailingPreview(context);
+      return {status:200,json:{ok:true,order_id:preview.order_id,preview_hash:preview.preview_hash,page_count:count},headers:mailingPreviewHeaders(preview.preview_hash)};
+    },mailingPrintPage:async context=>{
+      if(!/^[1-9]\d{0,2}$/.test(context.params.pageNumber))throw new ServiceError('INVALID_REQUEST');
+      const {preview,body}=await exactMailingPreview(context),renderer=require('./packet-page-renderer.cjs');
+      const count=await renderer.pageCount(body),image=await renderer.renderPage({body,page_count:count},Number(context.params.pageNumber));
+      await exactMailingPreview(context);
+      return {status:200,text:image,content_type:'image/png',headers:mailingPreviewHeaders(preview.preview_hash)};
+    }},
+    Object.fromEntries(['Status','Quote','Confirm','Cancel','PrintPreview','ApprovePrint'].map(action => ['mailing' + action, async ({actor,params,body}) => {
+      if(typeof mailOps[action.toLowerCase()]!=='function')throw new ServiceError('NOT_AUTHORIZED');
+      return {status: 200, json: { ok: true, ...await mailOps[action.toLowerCase()](actor, params.caseId, body) }};
+    }])),
     Object.fromEntries(['Packet','Refund','Catalog','Cancel'].map(action=>['mailingInternal'+action,async ({rawBody,headers,body})=>{
       if(!mailOps.fulfillment)throw new ServiceError('NOT_AUTHORIZED');
       return {status:200,json:await mailOps.fulfillment({rawBody,headers,body,operation:action.toLowerCase()})};
@@ -989,6 +1039,9 @@ function createService(options) {
       plain: 'Lapsed sessions and purchases were expired, and bytes a crash left behind were cleared. No report was read, moved or transmitted.'
     });
     logger.log({ event: 'SERVICE_STARTUP_RECOVERY', outcome: 'OK', count: recovery.orphan_blobs_removed });
+    // Counts only: never emit private row IDs, tokens, filenames or digests.
+    for(const [field,event] of [['expired_sessions_removed','STARTUP_SESSIONS_EXPIRED'],['entitlements_swept','STARTUP_ACCESS_TRANSITIONS'],['partial_blobs_removed','STARTUP_PARTIALS_REMOVED']])
+      logger.log({event,outcome:'OK',count:recovery[field]});
     return report;
   }
 
@@ -1079,7 +1132,7 @@ function createService(options) {
       }
 
       const actor = matched.auth ? accounts.resolveSession(store, sessionToken(req)) : null;
-      if(actor&&!['sessionInfo','accountSecurity','confirmEmail','resendConfirmation','confirmRecoveryKey','finishSignup','setupTwoFactor','confirmTwoFactor','disableTwoFactor','issueRecoveryKey','deleteAccount','contactLocation'].includes(matched.name)) require('./signup-security.cjs').requireReady(store,actor);
+      if(actor&&!['sessionInfo','accountSecurity','stagingInbox','confirmEmail','resendConfirmation','confirmRecoveryKey','finishSignup','setupTwoFactor','confirmTwoFactor','disableTwoFactor','issueRecoveryKey','deleteAccount','contactLocation'].includes(matched.name)) require('./signup-security.cjs').requireReady(store,actor);
       const body = req.method === 'GET' || req.method === 'HEAD' ? {} : await readRequestBody(req);
       const outcome = await handlers[matched.name]({
         req,
@@ -1097,7 +1150,7 @@ function createService(options) {
         sendText(res, outcome.status, outcome.text, outcome.content_type, outcome.headers);
         return;
       }
-      if (outcome.status < 300 && ['createAccount', 'finishGoogleSignIn', 'finishSignup', 'sessionInfo'].includes(matched.name)) {
+      if (outcome.status < 300 && ['createAccount', 'signIn', 'finishGoogleSignIn', 'finishSignup', 'sessionInfo'].includes(matched.name)) {
         try {
           const clear = affiliate.bind(req, actor || outcome.json?.account);
           if (clear) { outcome.headers ||= {}; outcome.headers['Set-Cookie'] = [...[].concat(outcome.headers['Set-Cookie'] || []), clear]; }

@@ -53,7 +53,8 @@ async function run(service, check) {
   check.ok(accounts.some((r) => typeof r.facts['account.paymentAmount'] === 'number'), 'and its printed payment amount');
   check.equal(commonErrors.formatCapability(us).checks['COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY'].supported, true,
     'so the balance/payment check is supported by THIS report own facts');
-  const wrong = read(path.join(ROOT, 'SOURCE_CAPTURES', 'EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION', 'EXP-006.pdf'), 'US');
+  const wrong = read(service.generatedOnly ? require('../fictional-regression.cjs').wrongChannelFile(service)
+    : path.join(ROOT, 'SOURCE_CAPTURES', 'EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION', 'EXP-006.pdf'), 'US');
   check.equal(wrong.presentation_id, 'GENERAL-BUREAU-REPORT', 'the earlier examined file routes to the generic presentation');
   check.equal(wrong.records.filter((r) => r.facts && Object.keys(r.facts).length).length, 0,
     'and yields no facts, which is why it raised nothing: the wrong specimen');
@@ -61,7 +62,8 @@ async function run(service, check) {
     'and the PER-REPORT capability refuses the check whose facts are absent, so nothing is advertised that did not run');
 
   evidence.au = 'PUB-012: recovered overdue/liability listing references with raw values; no masked identifier and no amount invented; only the dates check enabled';
-  evidence.us = 'PUB-001: US-CONSUMER-DISCLOSURE, 3 accounts + 1 inquiry with status/balance/past-due/payment facts; EXP-006 is the wrong specimen';
+  evidence.us = 'PUB-001: US-CONSUMER-DISCLOSURE, 3 accounts + 1 inquiry with status/balance/past-due/payment facts; '
+    + (service.generatedOnly ? 'generated native wrong-channel reference; no unverified EXP-006 read' : 'EXP-006 is the wrong specimen');
   return evidence;
 }
 

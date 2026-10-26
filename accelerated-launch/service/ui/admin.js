@@ -74,7 +74,7 @@
     if (!response.ok || data.ok === false) {
       const error = new Error(data.error?.message || (response.status === 403 ? 'Your account does not have access to this action.' : `This request could not be completed (${response.status}).`));
       error.status = response.status; error.code = data.error?.code || ''; error.data = data;
-      if (response.status === 401 && !sessionCheck && error.code === 'TWO_FACTOR_REQUIRED') showUnlock();
+      if (response.status === 401 && !sessionCheck && error.code === 'TWO_FACTOR_REQUIRED') showLogin('Your administration session has ended. Sign in to continue.');
       else if (response.status === 401 && !sessionCheck && error.code !== 'TWO_FACTOR_INVALID') showLogin('Your session has ended. Sign in to continue.');
       throw error;
     }
@@ -85,19 +85,14 @@
   function setBusy(form, busy) { form.setAttribute('aria-busy', String(busy)); for (const control of form.querySelectorAll('button[type=submit]')) control.disabled = busy; }
   function showLogin(message = '') {
     state.session = null; state.generation++; window.clearTimeout(state.searchTimer); if ($('editor').open) $('editor').close(); state.dialog = null; clear($('view')); clear($('editor-fields')); $('workspace').hidden = true; $('auth-shell').hidden = false; $('auth-checking').hidden = true;
-    $('login-form').hidden = false; $('stepup-form').hidden = true; $('access-message').hidden = true;
+    $('login-form').hidden = false; $('access-message').hidden = true;
     $('auth-title').textContent = 'Sign in to your workspace'; $('auth-description').textContent = 'Use the CRP account connected to your team.';
     showError('login-error', message); $('login-password').value = ''; $('login-code').value = ''; $('login-password').type = 'password'; $('toggle-password').textContent = 'Show password'; $('toggle-password').setAttribute('aria-pressed', 'false');
     document.querySelector('.skip-link').setAttribute('href', '#main-content'); closeMobile();
   }
   function showAccess(message) {
-    $('auth-shell').hidden = false; $('workspace').hidden = true; $('auth-checking').hidden = true; $('login-form').hidden = true; $('stepup-form').hidden = true; $('access-message').hidden = false;
+    $('auth-shell').hidden = false; $('workspace').hidden = true; $('auth-checking').hidden = true; $('login-form').hidden = true; $('access-message').hidden = false;
     $('auth-title').textContent = 'Workspace access'; $('auth-description').textContent = 'Your CRP account is signed in.'; $('access-description').textContent = message;
-  }
-  function showUnlock() {
-    state.generation++; window.clearTimeout(state.searchTimer); if ($('editor').open) $('editor').close(); state.dialog = null; clear($('view')); clear($('editor-fields')); $('auth-shell').hidden = false; $('workspace').hidden = true; $('auth-checking').hidden = true; $('login-form').hidden = true; $('access-message').hidden = true; $('stepup-form').hidden = false;
-    $('auth-title').textContent = 'Unlock your workspace'; $('auth-description').textContent = 'Administration needs a fresh authenticator code. Your CRP account is already signed in.';
-    $('login-password').value = ''; $('login-code').value = ''; $('stepup-code').value = ''; showError('stepup-error', ''); document.querySelector('.skip-link').setAttribute('href', '#main-content'); closeMobile(); $('stepup-code').focus();
   }
   function openMobile() { $('sidebar').classList.add('open'); $('mobile-backdrop').hidden = false; $('menu-toggle').setAttribute('aria-expanded', 'true'); $('menu-toggle').setAttribute('aria-label', 'Close navigation'); $('navigation').querySelector('button[aria-current=page]')?.focus(); }
   function closeMobile() { $('sidebar').classList.remove('open'); $('mobile-backdrop').hidden = true; $('menu-toggle').setAttribute('aria-expanded', 'false'); $('menu-toggle').setAttribute('aria-label', 'Open navigation'); }
@@ -450,10 +445,15 @@
     navigate(window.location.hash.slice(1) || state.view);
   }
   async function checkSession() {
-    $('auth-checking').hidden = false; $('login-form').hidden = true; $('access-message').hidden = true; $('stepup-form').hidden = true; $('retry-session').hidden = false;
-    try { const data = await api('GET', '/api/admin/session', undefined, { sessionCheck: true }); enterWorkspace(data.session || data.principal); }
+    $('auth-checking').hidden = false; $('login-form').hidden = true; $('access-message').hidden = true; $('retry-session').hidden = false;
+    try {
+      let data;
+      try { data = await api('GET', '/api/admin/session', undefined, { sessionCheck: true }); }
+      catch(error) { if(error.code!=='TWO_FACTOR_REQUIRED')throw error;await api('POST','/api/admin/unlock',{}, {sessionCheck:true});data=await api('GET','/api/admin/session',undefined,{sessionCheck:true}); }
+      enterWorkspace(data.session || data.principal);
+    }
     catch (error) {
-      if (error.code === 'TWO_FACTOR_REQUIRED') showUnlock();
+      if (error.code === 'TWO_FACTOR_REQUIRED') showLogin('Sign in with your password and authenticator to open administration.');
       else if (error.code === 'ADMIN_SECURITY_REQUIRED') showAccess('Complete your CRP account setup, verify your email and enable two-step sign-in before opening administration. You can manage these in your CRP account.');
       else if (error.status === 401) showLogin();
       else if (error.code === 'NOT_AUTHORIZED' || error.status === 403) showAccess('This account does not have an active administration role. Ask your workspace owner to check your access.');
@@ -462,7 +462,7 @@
     } finally { $('auth-checking').hidden = true; }
   }
   async function signOut() {
-    const controls = [$('sign-out'), $('auth-sign-out'), $('stepup-sign-out')]; for (const control of controls) control.disabled = true;
+    const controls = [$('sign-out'), $('auth-sign-out')]; for (const control of controls) control.disabled = true;
     try { await api('POST', '/api/admin/lock', {}, { sessionCheck: true }).catch(() => {}); await api('DELETE', '/api/sessions/current', undefined, { sessionCheck: true }); if ($('editor').open) $('editor').close(); showLogin(); $('login-email').focus(); }
     catch (error) { toast(error.message, true); }
     finally { for (const control of controls) control.disabled = false; }
@@ -476,18 +476,12 @@
   $('editor-form').addEventListener('submit', async (event) => { event.preventDefault(); if (!state.dialog) return; setBusy($('editor-form'), true); showError('editor-error', ''); try { await state.dialog(Object.fromEntries(new FormData($('editor-form')))); } catch (error) { showError('editor-error', error.message); } finally { setBusy($('editor-form'), false); } });
   $('login-form').addEventListener('submit', async (event) => {
     event.preventDefault(); showError('login-error', ''); setBusy($('login-form'), true);
-    try { await api('POST', '/api/sessions', { email: $('login-email').value.trim(), password: $('login-password').value, code: $('login-code').value.trim() }, { sessionCheck: true }); $('login-password').value = ''; $('login-code').value = ''; await checkSession(); }
+    try { await api('POST', '/api/sessions', { email: $('login-email').value.trim(), password: $('login-password').value, code: $('login-code').value.trim() }, { sessionCheck: true }); $('login-password').value = ''; $('login-code').value = ''; await api('POST', '/api/admin/unlock', {}, { sessionCheck: true }); await checkSession(); }
     catch (error) { showError('login-error', error.message); if (error.code === 'TWO_FACTOR_REQUIRED' || error.code === 'TWO_FACTOR_INVALID') { $('login-otp-field').hidden = false; $('login-code').required = true; $('login-code').focus(); } }
     finally { setBusy($('login-form'), false); }
   });
-  $('stepup-form').addEventListener('submit', async (event) => {
-    event.preventDefault(); showError('stepup-error', ''); setBusy($('stepup-form'), true);
-    try { await api('POST', '/api/admin/unlock', { code: $('stepup-code').value.trim() }, { sessionCheck: true }); $('stepup-code').value = ''; await checkSession(); }
-    catch (error) { if (error.code === 'AUTHENTICATION_REQUIRED') showLogin('Your session has ended. Sign in to continue.'); else showError('stepup-error', error.code === 'TWO_FACTOR_INVALID' ? 'That code did not match or was already used. Use the next code from your authenticator.' : error.message); }
-    finally { setBusy($('stepup-form'), false); }
-  });
   $('refresh-button').addEventListener('click', () => loadView()); $('retry-session').addEventListener('click', checkSession);
-  for (const id of ['sign-out', 'auth-sign-out', 'stepup-sign-out']) $(id).addEventListener('click', signOut);
+  for (const id of ['sign-out', 'auth-sign-out']) $(id).addEventListener('click', signOut);
   window.addEventListener('hashchange', () => { if (state.session) navigate(window.location.hash.slice(1)); });
   const closeMenu = button('×', () => { closeMobile(); $('menu-toggle').focus(); }, 'icon-button mobile-close'); closeMenu.setAttribute('aria-label', 'Close navigation'); $('sidebar').append(closeMenu);
   checkSession();

@@ -24,7 +24,7 @@ window.CRP_PACKET_REVIEW = (() => {
       const data = await request(base + query); live();
       root.dataset.version = version;
       if (data.preview_version !== version || !Number.isSafeInteger(data.page_count) || data.page_count < 1 || data.page_count > 400 || data.review_pages?.length !== data.page_count) throw new Error('Your packet changed. Save and review it again.');
-      root.innerHTML = `<div class="packet-page-toolbar"><strong>${data.page_count} pages in your complete packet</strong><label>Go to page <select id="packet-page-jump">${data.review_pages.map(p => `<option value="${p.page}">${p.page}: ${escape(pageLabel(p))}</option>`).join('')}</select></label><label>Page size <select id="packet-page-zoom"><option value="100">Fit to screen</option><option value="150">150%</option><option value="200">200%</option></select></label><a href="/api/cases/${encodeURIComponent(caseId)}/packet/preview${query}" target="_blank" rel="noopener noreferrer">Open complete PDF</a></div><p class="evidence">Read every page below. Edit the letter on its pages. Save your changes to update the PDF before approval.</p><p id="packet-page-load-status" role="status">Loading page 1 of ${data.page_count}...</p><div class="packet-page-list"></div>`;
+      root.innerHTML = `<div class="packet-page-toolbar"><strong>${data.page_count} pages in your complete packet</strong><label>Go to page <select id="packet-page-jump">${data.review_pages.map(p => `<option value="${p.page}">${p.page}: ${escape(pageLabel(p))}</option>`).join('')}</select></label><label>Page size <select id="packet-page-zoom"><option value="100">Fit to screen</option><option value="readable">Full size for reading</option><option value="150">150%</option><option value="200">200%</option></select></label><a href="/api/cases/${encodeURIComponent(caseId)}/packet/preview${query}" target="_blank" rel="noopener noreferrer">Open complete PDF to zoom or read</a></div><p class="evidence">Read every page below. Edit the letter on its pages. Save your changes to update the PDF before approval.</p><p id="packet-page-load-status" role="status">Loading page 1 of ${data.page_count}...</p><div class="packet-page-list"></div>`;
       const list = root.querySelector('.packet-page-list');
       for (const meta of data.review_pages) {
         const sheet = document.createElement('section'); sheet.className = 'packet-page'; sheet.id = 'packet-sheet-' + meta.page;
@@ -57,7 +57,7 @@ window.CRP_PACKET_REVIEW = (() => {
         }
       }
       root.querySelector('#packet-page-jump').onchange = event => root.querySelector('#packet-sheet-' + event.target.value)?.scrollIntoView({block:'start',behavior:'instant'});
-      root.querySelector('#packet-page-zoom').onchange = event => {for(const paper of root.querySelectorAll('.packet-sheet'))paper.style.width=event.target.value+'%';};
+      root.querySelector('#packet-page-zoom').onchange = event => {for(const paper of root.querySelectorAll('.packet-sheet'))paper.style.width=event.target.value==='readable'?'max(100%, 960px)':event.target.value+'%';};
       for (const meta of data.review_pages) {
         live();
         const img = root.querySelector('#packet-sheet-' + meta.page + ' img');

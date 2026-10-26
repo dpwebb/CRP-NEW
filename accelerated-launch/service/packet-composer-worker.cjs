@@ -201,32 +201,47 @@ async function letterPages(doc, text, signature) {
   // replaces a bureau font used by the original form's editable default appearances.
   const font = await doc.embedFont(fontBytes, { subset: false, customName: fontName });
   fonts.set(name(fontName), font.ref);
-  const width = 512, height = signature ? 580 : 692, fieldY=signature?162:50, padding = 4;
+  let signatureLines = [];
+  if (signature) {
+    if(typeof signature.name!=='string'||!signature.name.trim()||signature.name.length>120||/[\x00-\x1f\x7f]/.test(signature.name)||!/^\d{4}-\d{2}-\d{2}$/.test(signature.date||''))throw coded('INVALID_REQUEST');
+    signatureLines = wrapped('Signed by: ' + signature.name, font, 12, 512);
+    if (signatureLines.length > 3) throw coded('INVALID_REQUEST');
+  }
+  const signatureSpace = signature ? (signatureLines.length + 1) * 18 + 16 : 0;
+  const width = 512, height = 692 - signatureSpace, fieldY = 50 + signatureSpace, padding = 4;
   let size = 12, lines;
-  for (; size >= 10; size -= .5) { lines = wrapped(text, font, size, width - padding * 2); if (lines.length * size * 1.4 <= height - padding * 2) break; }
-  if (size < 10) { size = 10; lines = wrapped(text, font, size, width - padding * 2); }
-  const capacity = Math.floor((height - padding * 2) / (size * 1.4)), fields = [];
+  // Each explicit paragraph consumes at least one line. If even that lower
+  // bound cannot fit at 10 points, every larger trial would also paginate.
+  if (text.split('\n').length * 10 * 1.4 > height - padding * 2) {
+    size = 10; lines = wrapped(text, font, size, width - padding * 2);
+  } else {
+    for (; size >= 10; size -= .5) { lines = wrapped(text, font, size, width - padding * 2); if (lines.length * size * 1.4 <= height - padding * 2) break; }
+    if (size < 10) { size = 10; lines = wrapped(text, font, size, width - padding * 2); }
+  }
+  let capacity = Math.floor((height - padding * 2) / (size * 1.4));
+  while (lines.length > capacity && lines.length % capacity > 0 && lines.length % capacity < 4 && capacity > 8) capacity--;
+  const fields = [];
   for (let offset = 0, pageNumber = 1; offset < lines.length; offset += capacity, pageNumber++) {
     const chunk = lines.slice(offset, offset + capacity), page = doc.insertPage(pageNumber - 1, [612, 792]);
     let fieldName = `CRP_letter_page_${pageNumber}`;
     while (form.getFields().some(field => field.getName() === fieldName)) fieldName += '_';
     const field = form.createTextField(fieldName); field.enableMultiline(); field.setText(chunk.join('\n'));
-    field.addToPage(page, { x: 50, y: fieldY, width, height, borderWidth: 0, font, textColor: rgb(0, 0, 0), backgroundColor: rgb(1, 1, 1) });
+    const bodyHeight=signature && offset+capacity>=lines.length ? Math.min(height,chunk.length*size*1.4+padding*2) : height;
+    const bodyY=fieldY+height-bodyHeight;
+    field.addToPage(page, { x: 50, y: bodyY, width, height:bodyHeight, borderWidth: 0, font, textColor: rgb(0, 0, 0), backgroundColor: rgb(1, 1, 1) });
     field.setFontSize(size);
     field.updateAppearances(font, () => chunk.flatMap((line, at) => [lib.beginText(), lib.setFillingRgbColor(0, 0, 0), lib.setFontAndSize(font.name, size),
-      lib.moveText(padding, height - padding - size - at * size * 1.4), lib.showText(font.encodeText(line)), lib.endText()]));
+      lib.moveText(padding, bodyHeight - padding - size - at * size * 1.4), lib.showText(font.encodeText(line)), lib.endText()]));
     // The appearance has its own local font resource; edits resolve this separate alias
     // through AcroForm DR. pdf-lib customName alone does not change PDFFont.name.
     field.acroField.setDefaultAppearance(`/${fontName} ${size} Tf 0 g`);
     fields.push({ name: fieldName, type: 'TEXT', section: 'letter', page: pageNumber, text: chunk.join('\n'),
-      x: 50, y: fieldY, width, height, page_width: 612, page_height: 792, font_size: size, min_font_size: 10 });
+      x: 50, y: bodyY, width, height:bodyHeight, page_width: 612, page_height: 792, font_size: size, min_font_size: 10 });
   }
-  if(signature){
-    if(typeof signature.name!=='string'||!signature.name.trim()||signature.name.length>120||/[\x00-\x1f\x7f]/.test(signature.name)||!/^\d{4}-\d{2}-\d{2}$/.test(signature.date||''))throw coded('INVALID_REQUEST');
-    const page=doc.getPage(fields.length-1),lines=wrapped('Signed by: '+signature.name,font,12,512);
-    if(lines.length>3)throw coded('INVALID_REQUEST');
-    for(let index=0;index<lines.length;index++)page.drawText(lines[index],{x:50,y:140-index*18,size:12,font});
-    page.drawText('Signature date: '+signature.date,{x:50,y:140-lines.length*18,size:12,font});
+  if (signature) {
+    const page = doc.getPage(fields.length - 1), top = fields.at(-1).y - 22;
+    signatureLines.forEach((line, index) => page.drawText(line, {x:50,y:top-index*18,size:12,font}));
+    page.drawText('Signature date: ' + signature.date, {x:50,y:top-signatureLines.length*18,size:12,font});
   }
   return fields;
 }
@@ -244,41 +259,10 @@ function markerRectangle(marker, width, height) {
       || box.x0 < 0 || box.y0 < 0 || box.x1 <= box.x0 || box.y1 <= box.y0 || box.x1 > width || box.y1 > height) return null;
   return { x: box.x0 / width, y: box.y0 / height, width: (box.x1 - box.x0) / width, height: (box.y1 - box.y0) / height };
 }
-function markerNotes(markers, annotations) {
-  const captionLabel = value => {
-    const caption = label(value);
-    if (!/^[A-Za-z][A-Za-z0-9_.]*$/.test(caption)) return caption;
-    const leaf = caption.split('.').pop();
-    const familiar = { closeddate: 'Date closed', openeddate: 'Date opened', dateclosed: 'Date closed', dateopened: 'Date opened',
-      firstdelinquencydate: 'First missed-payment date', lastpaymentdate: 'Last payment date', reporteddate: 'Date reported',
-      maskedidentifier: 'Account number', pastdueamount: 'Amount overdue', creditlimit: 'Credit limit' };
-    const known = familiar[leaf.replace(/_/g, '').toLowerCase()];
-    if (known) return known;
-    const words = leaf.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
-    return words.charAt(0).toUpperCase() + words.slice(1);
-  };
-  const grouped = new Map();
-  for (const marker of markers) {
-    if (!grouped.has(marker.item_number)) grouped.set(marker.item_number, []);
-    grouped.get(marker.item_number).push(marker);
-  }
-  let notes;
-  if (grouped.size > 12) notes = ['Letter items ' + [...grouped.keys()].join(', ') + '. See the numbered requests in your letter.'];
-  else notes = [...grouped].map(([number, entries]) => {
-    const captions = [...new Set(entries.map(entry => captionLabel(entry.caption)).filter(Boolean))];
-    const detail = captions.join('; ');
-    return `Item ${number}: ${detail.length > 120 ? detail.slice(0, 117) + '...' : detail || 'report entry'}`
-      + (entries.some(entry => entry.omitted_value) ? '. A marked caption has a blank value on the report.' : '.');
-  });
-  notes.push('Yellow marks identify report details for the letter. Unmarked items are explained in the letter.');
-  for (const annotation of annotations) notes.push('Your note: ' + (annotation.note || 'Please check the marked area.'));
-  return notes;
-}
-async function reportMarkup(doc, page, entry, sourcePage, noteFont) {
+async function reportMarkup(page, entry, sourcePage) {
   const geometry = sourceGeometry(page), markers = (entry.markers || []).filter(marker => marker.page === sourcePage);
   const annotations = (entry.annotations || []).filter(annotation => annotation.page === sourcePage);
   if (annotations.length && (!geometry.annotation_available || annotations.length > 4)) throw coded('INVALID_REQUEST');
-  const notes = markerNotes(markers, annotations);
   if (!markers.length && !annotations.length) return { ...geometry, annotations: [] };
   const face = fontkit.create(fs.readFileSync(path.join(__dirname, 'packet-fonts', 'NotoSans-Regular.ttf')));
   const printable = value => [...String(value)].map(char => /\s/.test(char) || face.hasGlyphForCodePoint(char.codePointAt(0)) ? char : '?').join('');
@@ -296,19 +280,9 @@ async function reportMarkup(doc, page, entry, sourcePage, noteFont) {
       width: annotation.width * width, height: annotation.height * height, color: rgb(1, .85, 0), opacity: .25,
       borderColor: rgb(.65, .45, .05), borderOpacity: .6, borderWidth: .5 });
   }
-  // Every report keeps its original print dimensions. Explanations follow on
-  // their own printable pages, so a printer never shrinks the report to fit a gutter.
-  const size = 11, leading = size * 1.4, capacity = Math.floor(600 / leading);
-  const lines = wrapped(notes.flatMap(note => [printable(note), '']).join('\n'), noteFont, size, 512), notePages = [];
-  for (let offset = 0; offset < lines.length; offset += capacity) {
-    const notePage = doc.addPage([612, 792]);
-    notePage.drawText('NOTES FOR YOUR DISPUTED REPORT DETAILS', { x: 50, y: 740, size: 15, font: noteFont, color: rgb(.13, .19, .25) });
-    notePage.drawText('Source report page ' + sourcePage + (offset ? ' - continued' : ''), { x: 50, y: 708, size, font: noteFont, color: rgb(.13, .19, .25) });
-    for (const [index, line] of lines.slice(offset, offset + capacity).entries()) if (line) notePage.drawText(line,
-      { x: 50, y: 676 - index * leading, size, font: noteFont, color: rgb(.13, .19, .25) });
-    notePages.push(notePage);
-  }
-  return { ...geometry, annotations: metadata, note_pages: notePages };
+  // Keep source dimensions and highlights without adding explanatory print pages.
+  // Notes remain available as review metadata beside their source report page.
+  return { ...geometry, annotations: metadata };
 }
 async function appendEvidence(target, entry, isReport, position, copyBudget) {
   const bytes = Buffer.isBuffer(entry.bytes) ? entry.bytes : Buffer.from(entry.bytes || '', 'base64');
@@ -368,6 +342,9 @@ async function appendEvidence(target, entry, isReport, position, copyBudget) {
     const scale = Math.min(512 / image.width, 692 / image.height), width = image.width * scale, height = image.height * scale;
     page.drawImage(image, { x: (612 - width) / 2, y: (792 - height) / 2, width, height }); pages = [1];
   } else throw coded('INVALID_REQUEST');
+  if (!isReport && entry.rotation) for (let at=0;at<pages.length;at++) {
+    const page=target.getPage(position+at); page.setRotation(lib.degrees((page.getRotation().angle+entry.rotation)%360));
+  }
   return pages;
 }
 function isIdentityImage(entry) {
@@ -384,7 +361,8 @@ async function appendIdentitySheet(doc, entries, position) {
     try {
       const image = String(entry.content_type).toLowerCase().split(';')[0].trim() === 'image/png' ? await doc.embedPng(bytes) : await doc.embedJpg(bytes);
       if (![image.width, image.height].every(n => Number.isFinite(n) && n > 0)) throw new Error('IMAGE');
-      images.push({ entry, image, bytes });
+      const rotation = entry.rotation || 0, sideways = rotation === 90 || rotation === 270;
+      images.push({ entry, image, bytes, rotation, displayWidth: sideways ? image.height : image.width, displayHeight: sideways ? image.width : image.height });
     } catch {
       throw Object.assign(coded('PACKET_ATTACHMENT_UNREADABLE'), { attachment: { kind: 'document', index, reason: 'UNREADABLE' } });
     }
@@ -408,7 +386,7 @@ async function appendIdentitySheet(doc, entries, position) {
     let offset = 0;
     const groups = sizes.map(count => {
       const entries = images.slice(offset, offset+count); offset += count;
-      const ratios = entries.map(({image}) => columns ? image.height/image.width : image.width/image.height), ratio = ratios.reduce((n,r)=>n+r,0);
+      const ratios = entries.map(({displayWidth,displayHeight}) => columns ? displayHeight/displayWidth : displayWidth/displayHeight), ratio = ratios.reduce((n,r)=>n+r,0);
       return { entries, ratios, ratio, factor: Math.min(...ratios.map(r=>Math.min(1,r))),
         cap: (columns ? bounds.height-count*captionSpace-(count-1)*gap : bounds.width-(count-1)*gap)/ratio };
     });
@@ -440,12 +418,14 @@ async function appendIdentitySheet(doc, entries, position) {
   const page = doc.insertPage(position, [best.pageWidth, best.pageHeight]), heading = await doc.embedFont(lib.StandardFonts.HelveticaBold), caption = await doc.embedFont(lib.StandardFonts.Helvetica);
   page.drawText('Identification copies', { x: 36, y: best.pageHeight-42, size: 18, font: heading, color: rgb(.1, .2, .3) });
   page.drawText('Selected identification images - complete copies, fitted proportionally', { x: 36, y: best.pageHeight-62, size: 9, font: caption, color: rgb(.25, .3, .35) });
-  const sources = images.map(({ entry, image, bytes }, at) => {
+  const sources = images.map(({ entry, image, bytes, rotation }, at) => {
     const placement = best.placements[at];
     page.drawText('Copy ' + (at + 1), { x: placement.caption_x, y: placement.caption_y, size: 10, font: heading, color: rgb(.2, .25, .3) });
-    page.drawImage(image, { x: placement.x, y: placement.y, width: placement.width, height: placement.height });
+    const {x,y,width,height} = placement, sideways = rotation === 90 || rotation === 270;
+    page.drawImage(image, {x:x+([90,180].includes(rotation)?width:0), y:y+([180,270].includes(rotation)?height:0),
+      width:sideways?height:width,height:sideways?width:height,rotate:lib.degrees(rotation)});
     return { file_id: entry.file_id || null, filename: entry.filename || '', source_page: 1, original_sha256: digest(bytes),
-      image_width: image.width, image_height: image.height, x: placement.x, y: placement.y, width: placement.width, height: placement.height };
+      rotation, image_width: image.width, image_height: image.height, x: placement.x, y: placement.y, width: placement.width, height: placement.height };
   });
   page.drawText('Check that every copy is complete and readable before printing.', { x: 36, y: 26, size: 9, font: caption, color: rgb(.25, .3, .35) });
   return { grouped_identification: true, sources, file_ids: sources.map(source => source.file_id), page_width: best.pageWidth, page_height: best.pageHeight };
@@ -458,7 +438,6 @@ async function compose(input) {
   doc.setCreationDate(new Date('2000-01-01T00:00:00Z')); doc.setModificationDate(new Date('2000-01-01T00:00:00Z'));
   const fields = await letterPages(doc, input.letter_text, input.signature), sections = [{ kind: 'letter', label: 'My dispute letter', start_page: 1, page_count: fields.length }];
   const reviewPages = fields.map(field => ({ page: field.page, kind: 'letter', page_width: field.page_width, page_height: field.page_height, annotation_available: false }));
-  const noteFont = await doc.embedFont(fs.readFileSync(path.join(__dirname, 'packet-fonts', 'NotoSans-Regular.ttf')), { subset: true });
   let position = fields.length;
   const identityImages = (input.documents || []).map((entry, index) => ({ entry, index })).filter(({ entry }) => isIdentityImage(entry));
   let identitySheetAdded = false;
@@ -478,18 +457,10 @@ async function compose(input) {
     }
     let inserted = 0;
     for (const sourcePage of pages) {
-      const page = doc.getPage(position + inserted), metadata = kind === 'report' ? await reportMarkup(doc, page, entry, sourcePage, noteFont)
+      const page = doc.getPage(position + inserted), metadata = kind === 'report' ? await reportMarkup(page, entry, sourcePage)
         : { ...sourceGeometry(page), annotation_available: false, annotations: [], ...(pages.image_copy || {}) };
-      const notePages = metadata.note_pages || []; delete metadata.note_pages;
       reviewPages.push({ page: position + inserted + 1, kind, label: label(entry.label), file_id: entry.file_id || null, source_page: sourcePage, ...metadata });
       inserted++;
-      for (let removed = 0; removed < notePages.length; removed++) doc.removePage(doc.getPageCount() - 1);
-      for (const notePage of notePages) {
-        doc.insertPage(position + inserted, notePage);
-        reviewPages.push({ page: position + inserted + 1, kind: 'report-note', label: 'Notes for report page ' + sourcePage,
-          file_id: entry.file_id || null, source_page: sourcePage, page_width: 612, page_height: 792, annotation_available: false });
-        inserted++;
-      }
     }
     sections.push({ kind, label: label(entry.label), file_id: entry.file_id || null, start_page: position + 1, page_count: inserted, source_pages: [...pages], ...(pages.image_copy || {}) }); position += inserted;
   }

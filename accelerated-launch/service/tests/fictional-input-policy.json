@@ -1,0 +1,21 @@
+{
+  "id": "OWNER_AUTHORIZED_FICTIONAL_REGRESSION_20261024",
+  "default_profile": "fictional",
+  "owner_authorization": "allow the substitute of Fictional substitutes too legitimately satisfy those regresion checks. Owner Authorized",
+  "seed": 20261024,
+  "generated_private_specimen_substitutes": ["j-specimen-journey", "r-ca-factual-assessment", "v-presentation-and-release", "w-ca-second-bureau-format", "dr-reader-evidence-delivery", "ce-tu-ca-account-material", "co-canada-upload-delivery", "cr-ca-ns-tu-real-report"],
+  "additional_private_capture_guard": "dq-ca-printed-account-fields",
+  "documented_public_fictional_references": {
+    "PUB-001": "Official Experian consumer educational sample; sample provenance, not an assertion of real customer origin or present-day layout currency.",
+    "PUB-003": "Official TotalView guide: SAMPLE REPORT / EXAMPLE FILE ONLY - NOT TO BE USED FOR CREDIT PURPOSES.",
+    "PUB-004": "Official Experian technical guide explaining a sample Credit Profile; copy-withheld container predicates remain measured.",
+    "PUB-009": "Official Experian training postal example explicitly declares the information fictitious.",
+    "PUB-012": "Official Equifax Sample report URL linked by its consumer guide; fictional-reference classification inferred from bureau sample provenance, no on-face fictitious disclaimer claimed.",
+    "PUB-021": "Official Experian HTML-style PDF sample report."
+  },
+  "unverified_reference_replacement": "EXP-006 is replaced by a generated native wrong-channel reference, not opened in this profile.",
+  "source_audit_boundary": "Original private capture assertions and pins remain available only in the separate captured profile. Fictional behavior never certifies original private bytes, captured compatibility or present-day presentation currency.",
+  "production_admission_changed": false,
+  "billing_local_tests": "Signed local test adapter is labelled separately from genuine hosted Stripe Sandbox acceptance.",
+  "reference_sources": "Existing code-definition and legal-authority documents remain authoritative reference material; they are not consumer test subjects."
+}

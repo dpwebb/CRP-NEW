@@ -1,0 +1,72 @@
+{
+  "schema": "crp-production-release-publication-summary-v1",
+  "decision": "GO for the completed owner-authorized exact production release",
+  "source_commit": "21cea4fd091a22d34600b7ad4993c14ab45179a8",
+  "build_id": "crp-v1-e2084558545d401e",
+  "manifest_sha256": "E2084558545D401E101116D40D5452D16D3470C617C52976A0347F6736EC1D9F",
+  "shipped_files": 193,
+  "activated_at": "2026-10-25T10:31:38.134Z",
+  "package_archive_sha256": "C58A728BE47AB15B0057C1CA9275FDEB2786FDD703E080B49BBFDD8AD7DA80DF",
+  "original_full": {
+    "passed": 20324,
+    "failed": 0,
+    "skipped": 0,
+    "sections": 200,
+    "tested_source_files": 420,
+    "sha256": "95770EB62D0C47D920A5C323868FC7AAE824C855D55B04B9BB21F8E57ADBC9A1",
+    "rerun_for_publication": false
+  },
+  "strict_staging_acceptance": {
+    "gates": 30,
+    "criteria": 123,
+    "required_predicates": 46,
+    "passed": true
+  },
+  "sandbox_acceptance": {
+    "plan_currency_cells": 12,
+    "upgrade_credit_and_cancellation_passed": true,
+    "new_fictional_accounts_cleaned": 13,
+    "live_charges": 0,
+    "real_mail_sent": 0
+  },
+  "production_acceptance": {
+    "public_checks_passed": 42,
+    "anonymous_desktop_width": 1440,
+    "anonymous_mobile_width": 390,
+    "independent_snapshot_entries": 227,
+    "independent_snapshot_files": 222,
+    "independent_snapshot_directories": 5,
+    "pre_and_post_backups_authenticated": true,
+    "independent_review": "GO"
+  },
+  "preservation": {
+    "production_accounts": 7,
+    "production_business_rows": 340,
+    "production_blobs": 109,
+    "raw_primary_state_preserved": true,
+    "original_security_and_signed_authority_preserved": true,
+    "configuration_preserved_except_build_line": true,
+    "lifecycle_exceptions": "store.lock and exactly three verified restricted writer records",
+    "staging_accounts": 66,
+    "staging_business_rows": 930,
+    "staging_blobs": 198,
+    "original_staging_raw_state_equality_claimed": false,
+    "bounded_unowned_diagnostic_replacements": 31,
+    "mail_business_tables_and_configuration_preserved": true,
+    "affiliate_images_and_four_environment_files_preserved": true
+  },
+  "limits": [
+    "Physical printing and native print-dialog success are unclaimed.",
+    "Original private-report capture fidelity is unclaimed; authorized fictional substitutes remain explicit.",
+    "Removed staging Mail nonces are consistent with native expiry; their original deadlines were not independently captured.",
+    "Original autofilled sign-in screenshots remain private. Cleared replacement views were checked without credential submission.",
+    "GO is scoped to this completed release; the existing launch_ready:false flag remains unchanged."
+  ],
+  "publication": {
+    "documentation_only": true,
+    "raw_artifacts_included": false,
+    "credentials_included": false,
+    "new_product_full_or_package": false,
+    "production_changes": false
+  }
+}

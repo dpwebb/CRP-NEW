@@ -1,0 +1,229 @@
+{
+  "schema": "crp-production-sanitized-evidence-references-v1",
+  "build_id": "crp-v1-e2084558545d401e",
+  "source_commit": "21cea4fd091a22d34600b7ad4993c14ab45179a8",
+  "scope": "Hash-only references to retained local evidence; raw artifact payloads are not included in Git. These are verification records, not instructions to rerun operations.",
+  "verification": "All 42 original referenced files were rehashed locally before publication; zero mismatches.",
+  "original_index_sha256": "053AEFDF4245E145DA8B86DF3E13594476D893D89DA1C165766CA6CC649FC308",
+  "retained_prepublication_report_sha256": "05993D975E89077454E1772A6A54A5CA5A0E4A0DB73E062237CF26D2F19FF426",
+  "references": [
+    {
+      "reference_id": "E01",
+      "artifact_name": "campaign-plan.json",
+      "sha256": "8170F3621754C5372D8467CB97FEDF355BBAC4C5D0CCFC8023BB861136513F37"
+    },
+    {
+      "reference_id": "E02",
+      "artifact_name": "portable-evidence-derivation.json",
+      "sha256": "9D5B94D1C57084AD1020AF5B14771E5186494A5CBEF1A5C568BE5BB393951C34"
+    },
+    {
+      "reference_id": "E03",
+      "artifact_name": "portable-proof-assembly.json",
+      "sha256": "8A5F164391B97DFFB86A6BBFDBC7A4F41C689D89179FF1F72946541080E0D609"
+    },
+    {
+      "reference_id": "E04",
+      "artifact_name": "linux-portable-verification.json",
+      "sha256": "05A67EDAAA738AAB5B55D819B4EF06233EC3686F058661C28267DB96B83245E4"
+    },
+    {
+      "reference_id": "E05",
+      "artifact_name": "clean-protected-baseline.json",
+      "sha256": "48E6A33F1A910C41A1AD1AAEAE35DD5CBC131FBEE99187C108C9AE9CAF3FD83A"
+    },
+    {
+      "reference_id": "E06",
+      "artifact_name": "cleanup-diagnostic-provider03.json",
+      "sha256": "DC473B7DC5A6363C3F0A832F61551D56A76CBA7706920379930B486E9EE6B9AE"
+    },
+    {
+      "reference_id": "E07",
+      "artifact_name": "mail-preservation-final.json",
+      "sha256": "EBA57A71CB149AB7C8205C92EC36BD65DD23BF587E3C8176746CF61AD06F8538"
+    },
+    {
+      "reference_id": "E08",
+      "artifact_name": "integration-before.json",
+      "sha256": "FDCEE2FF1EEC7298E49E9CAD289171609ED8537DA569AD1A5801E8591DDCCA8D"
+    },
+    {
+      "reference_id": "E09",
+      "artifact_name": "integration-preservation.json",
+      "sha256": "AB692384D8267468CEC519034C3202111DEF24283821E1B52CDFE1A840FE0C4E"
+    },
+    {
+      "reference_id": "E10",
+      "artifact_name": "integration-post.json",
+      "sha256": "318D8FBDA98282EC8240650067331B742FE42520315901795C976AAA73AD33CC"
+    },
+    {
+      "reference_id": "E11",
+      "artifact_name": "production-provider-preflight.json",
+      "sha256": "74702E5C80390D2835A9D141A7015369759D685229BB0134AA7E3F9226EDE1D6"
+    },
+    {
+      "reference_id": "E12",
+      "artifact_name": "backup-pre-authentication-qualified.json",
+      "sha256": "9A3CC6346115B2DE51CB3A14CCDF4D8EB4726163774278B7230D4A0F5A4A2FD3"
+    },
+    {
+      "reference_id": "E13",
+      "artifact_name": "backup-post-authentication.json",
+      "sha256": "9A3242FB5AC9DB1A0E44810FD65A94CE73545B170319FBC6026B66C2CA537E7F"
+    },
+    {
+      "reference_id": "E14",
+      "artifact_name": "context.json",
+      "sha256": "CDA30A7E24A431FF8E99463ECDCD9CA3D64528416BB77B6BB39E64D8E8EF1573"
+    },
+    {
+      "reference_id": "E15",
+      "artifact_name": "execution.json",
+      "sha256": "8CA80D414F52963F9AB0D8548A44E15B48DC4B58E264EE21D8DEBF5F638F8C4D"
+    },
+    {
+      "reference_id": "E16",
+      "artifact_name": "activation.json",
+      "sha256": "1F68920362304E38FB25008187A0295927D45C915685C5F201CA2416CE7EA614"
+    },
+    {
+      "reference_id": "E17",
+      "artifact_name": "independent-snapshot-collection.json",
+      "sha256": "DD377866EB1012CCE0F36D572A983EE25CE6A69D9494F9D2BE15CFA34448FED9"
+    },
+    {
+      "reference_id": "E18",
+      "artifact_name": "independent-whole-snapshot.json",
+      "sha256": "86E21B7FC36288CC135CAE544B0EC38094ACE60402F42035F201FC0F3CEDC4FA"
+    },
+    {
+      "reference_id": "E19",
+      "artifact_name": "independent-deployment-provenance.json",
+      "sha256": "04F3508714F91361D8CF8E418DE166A8024726626C5338529D4490E3A6254105"
+    },
+    {
+      "reference_id": "E20",
+      "artifact_name": "independent-candidate-activation.json",
+      "sha256": "1F68920362304E38FB25008187A0295927D45C915685C5F201CA2416CE7EA614"
+    },
+    {
+      "reference_id": "E21",
+      "artifact_name": "production-public-smoke.json",
+      "sha256": "6AA3E748C787977D56DFA76DEAB95FBCB32AD133695296CDAA7D4BB347DAF88D"
+    },
+    {
+      "reference_id": "E22",
+      "artifact_name": "production-health-final.json",
+      "sha256": "BD1CE7FBB7C9A29D0C87AEF3E036E73761A8FBF37D00F4ABE1CF4056BDDF4896"
+    },
+    {
+      "reference_id": "E23",
+      "artifact_name": "final-whole.json",
+      "sha256": "953898FE799500C28ACEDCD73EC5F674966A868FD2B5A1032AC7C384EDD23F32"
+    },
+    {
+      "reference_id": "E24",
+      "artifact_name": "custody-final.json",
+      "sha256": "3D68AC1BD5B13C7A8EEFBB3FE161572775D6D284457920BAD3BCD847D2741893"
+    },
+    {
+      "reference_id": "E25",
+      "artifact_name": "final-preservation.json",
+      "sha256": "D3520CBC84032FFF3C49B761F46D89C0063636DFDB9A4D0D7C4979A98951D1F6"
+    },
+    {
+      "reference_id": "E26",
+      "artifact_name": "production-writer-identity-verification.json",
+      "sha256": "D57F802F56AC9C0819DE0C8A91C2180EAF9C6B52731153384F6038C3E6473A43"
+    },
+    {
+      "reference_id": "E27",
+      "artifact_name": "production-anonymous-browser-cleared.json",
+      "sha256": "D45C64D3020251B964A034EE277BEF4CE85F1E91192D9BF09BF8DB244DCAE829"
+    },
+    {
+      "reference_id": "E28",
+      "artifact_name": "live-home-1440.png",
+      "sha256": "7B5156E8970308BF428E40758761334EBFC8C0639F77734F7254205F42697A90"
+    },
+    {
+      "reference_id": "E29",
+      "artifact_name": "live-home-390.png",
+      "sha256": "46AE5D7FAFB069079B652E21BA4CDAA26CD4E1894CA21A88E9157C8B4AD226D2"
+    },
+    {
+      "reference_id": "E30",
+      "artifact_name": "live-signin-cleared-1440.png",
+      "sha256": "CD8004EC17072B440B428C64788B94707AAB849EAE1795DBCD01A12581F9CE43"
+    },
+    {
+      "reference_id": "E31",
+      "artifact_name": "live-signin-cleared-390.png",
+      "sha256": "6BF930E33F7A4A563F7B6A3EF929BD7B0F88C5B2DBFE06A8966AB24330A7C46B"
+    },
+    {
+      "reference_id": "E32",
+      "artifact_name": "independent-final-review.json",
+      "sha256": "474896981A7CC33883B58048A441E3A400F86F0EEC99CA7040FCDC521686818D"
+    },
+    {
+      "reference_id": "E33",
+      "artifact_name": "exact-build-staging-acceptance.json",
+      "sha256": "0ADED316A8C923EFC12FCAF59FD5F282F3BB284E9A9387A7AF354D4CD1E9BCD8"
+    },
+    {
+      "reference_id": "E34",
+      "artifact_name": "measurements.json",
+      "sha256": "70A7F5E3CD0CD56EDDA0E99F47D31BB599567748A918105BD0B7927FDEE3FA18"
+    },
+    {
+      "reference_id": "E35",
+      "artifact_name": "candidate-manifest.json",
+      "sha256": "421D6FE6EBBE4C82E861F23642F5F529550164B885830CEF1E51875FC6B983F0"
+    },
+    {
+      "reference_id": "E36",
+      "artifact_name": "review-receipt.json",
+      "sha256": "2AAA3B341A8DF5EB66083C5C9BB9CED1814610C71A782B36649FED5D275E3683"
+    },
+    {
+      "reference_id": "E37",
+      "artifact_name": "download-receipt.json",
+      "sha256": "A3373165A53D233E3136B28A544D6FB6B50BACB6F77B6D2D94D03FD0ACB642D8"
+    },
+    {
+      "reference_id": "E38",
+      "artifact_name": "native-three-plan-proof.json",
+      "sha256": "88D43CFED7B76F7C36C182817D0FC727D9BEA40515F2B03EF99108F245A902DB"
+    },
+    {
+      "reference_id": "E39",
+      "artifact_name": "native-checkout-browser-proof.json",
+      "sha256": "451E22F591E2E32F45EF3EF9C1C21747ADDB319F38741455341C284688BF2A28"
+    },
+    {
+      "reference_id": "E40",
+      "artifact_name": "native-currency-choice-browser.json",
+      "sha256": "D81D83F3EF9598807051028237177252DDB97FED89073AB5C8E31D313B46F7BB"
+    },
+    {
+      "reference_id": "E41",
+      "artifact_name": "package-receipt.json",
+      "sha256": "1995C1CD43433607B1C4E12693E87BC2E327C36274410AA9B7D35D1970203491"
+    },
+    {
+      "reference_id": "E42",
+      "artifact_name": "full-regression.json",
+      "sha256": "95770EB62D0C47D920A5C323868FC7AAE824C855D55B04B9BB21F8E57ADBC9A1"
+    }
+  ],
+  "excluded_material": [
+    "Credentials, sessions, cookies, tokens and recovery values",
+    "Private actor capsules and raw customer/security state",
+    "Raw snapshots, encrypted backup archives and encryption identities",
+    "Private QA PDFs/screenshots and original autofilled sign-in screenshots",
+    "Operator scripts, executable intents, private paths and configuration values"
+  ],
+  "production_actions_performed_for_publication": 0
+}

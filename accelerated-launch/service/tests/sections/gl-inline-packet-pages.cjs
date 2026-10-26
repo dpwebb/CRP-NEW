@@ -150,8 +150,11 @@ async function run(t, check) {
   const concurrent=await Promise.all(Array.from({length:8},()=>request('GET',imageUrl(annotatedVersion,reportPage.page))));
   check.ok(concurrent.every(response=>response.status===200),'simultaneous requests for one uncached physical page share a bounded render');
   check.ok(concurrent.every(response=>response.bytes.equals(concurrent[0].bytes)),'concurrent physical-page responses retain identical complete-PDF raster bytes');
-  check.ok(comparableText(pdfText(annotated.bytes)).includes(comparableText(annotation.note)),
-    'consumer annotation note is present in the actual printable PDF');
+  const annotatedMetadata = (await request('GET', metadataUrl(annotatedVersion))).json;
+  check.ok(!comparableText(pdfText(annotated.bytes)).includes(comparableText(annotation.note))
+    && annotatedMetadata.review_pages.find(page => page.kind === 'report').annotations.some(note => note.note === annotation.note),
+    'saved consumer note stays in metadata without an extra printed notes page');
+  check.equal(annotatedMetadata.page_count, review.page_count, 'saving an annotation does not add printed pages');
   check.ok(!(await request('GET', imageUrl(annotatedVersion, reportPage.page))).bytes.equals(pageRasters.get(reportPage.page)),
     'the selected source page visibly includes the consumer annotation');
   check.ok((await request('GET', imageUrl(annotatedVersion, 1))).bytes.equals(pageRasters.get(1)),
@@ -179,8 +182,9 @@ async function run(t, check) {
   check.equal(reflow.sections.find(section => section.kind === 'report').start_page, letterSection.start_page + letterSection.page_count,
     'source evidence moves after all continuation letter pages');
   check.ok(pdfText(longPdf.bytes).includes('Paragraph 75:')
-    && comparableText(pdfText(longPdf.bytes)).includes(comparableText(annotation.note)),
-    'the final letter paragraph and saved evidence annotation remain printable');
+    && !comparableText(pdfText(longPdf.bytes)).includes(comparableText(annotation.note))
+    && reflow.review_pages.find(page => page.kind === 'report').annotations.some(note => note.note === annotation.note),
+    'the final letter paragraph prints and saved note metadata survives without printing extra notes');
   check.equal((await request('GET', imageUrl(annotatedVersion, reportPage.page))).json.error.code, 'PACKET_APPROVAL_STALE',
     'letter reflow invalidates prior physical-page image coordinates');
   check.equal((await request('GET', base + '/packet-print')).json.error.code, 'PACKET_NOT_APPROVED', 'letter reflow requires approval before printing');
@@ -226,12 +230,12 @@ async function run(t, check) {
     reports: [{ bytes: croppedBytes, content_type: 'application/pdf', relevant_pages: [2], file_id: 'fictional-cropped-source',
       markers: [{ issue_id: 'fictional-selected-date-issue', item_number: 1, page: 2, caption: 'Opened and closed dates',
         bbox: { x0: 40, y0: 82, x1: 370, y1: 98 }, omitted_value: false }] }] });
-  check.deepEqual(cropped.review_pages.map(page => page.kind), ['letter', 'report', 'report-note'],
-    'cropped original artwork retains its page and receives a separate explanatory page');
+  check.deepEqual(cropped.review_pages.map(page => page.kind), ['letter', 'report'],
+    'cropped original artwork retains its page without extra explanatory pages');
   check.equal(cropped.review_pages[1].annotation_available, false, 'cropped geometry refuses guessed inline consumer rectangles');
   check.deepEqual((await PDFDocument.load(cropped.bytes)).getPage(1).getCropBox(), croppedDoc.getPage(1).getCropBox(),
-    'callout fallback preserves the original source crop exactly');
-  check.equal(hash(croppedBytes), croppedHash, 'cropped-page callout does not mutate the source buffer');
+    'highlight refusal preserves the original source crop exactly');
+  check.equal(hash(croppedBytes), croppedHash, 'cropped-page review does not mutate the source buffer');
   const renderer=require('../../packet-page-renderer.cjs'),originalRender=renderer.renderPage;
   let releaseRender,enteredRender;const entered=new Promise(resolve=>enteredRender=resolve),gate=new Promise(resolve=>releaseRender=resolve);
   renderer.renderPage=async(...args)=>{enteredRender();await gate;return originalRender(...args);};

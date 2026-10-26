@@ -242,3 +242,51 @@ module.exports = {
   id: 'ce-tu-ca-account-material',
   title: 'BLOCKER-REPORT-DATA-TO-ISSUE-001: TransUnion Canada ordinary-account material extraction -> shared checks -> packet'
 };
+
+// Owner-authorized generated regression reuses these pure fixture/assertion helpers.
+// The original captured-source run above remains available as its separate audit.
+module.exports.generatedRegression = { tuAccountBlock, tuModel, tuExtraction, pipeline };
+
+module.exports.generatedRegression.runMaterial = async function(service, check) { const evidence={};
+  /* ---- 2. SYNTHETIC: the reader's measured column rule, and a supported potential issue end to end. ---- */
+  const positive = pipeline(tuExtraction(tuAccountBlock({ creditor: 'SYNTHETIC CREDITOR ONE', balance: 100, pastDue: 500, mop: '5' })));
+  const posIssues = balanceIssues(positive.iss);
+  check.equal(posIssues.length, 1, 'a printed past-due amount larger than the printed balance is one supported potential issue');
+  check.equal(posIssues[0].classification, null, 'never a legal classification');
+  check.equal(posIssues[0].request_type, 'VERIFICATION', 'reported as a factual verification request');
+  check.ok(/past-due amount \(500\) larger than its balance \(100\)/.test(posIssues[0].explanation),
+    "naming the report's own two printed amounts");
+  check.ok(posIssues[0].source_facts.some((f) => f.raw_value === '500'),
+    'with the printed past-due reading carried as source-linked provenance');
+
+  const benign = pipeline(tuExtraction(tuAccountBlock({ creditor: 'SYNTHETIC CREDITOR TWO', balance: 500, pastDue: 100, mop: '1' })));
+  check.equal(balanceIssues(benign.iss).length, 0, 'a past-due amount within the printed balance produces no issue');
+  const single = pipeline(tuExtraction(tuAccountBlock({ creditor: 'SYNTHETIC CREDITOR THREE', balance: 500, pastDue: 0, mop: '1' })));
+  check.equal(single.iss.filter((i) => i.check_id === 'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY').length, 0,
+    'a single printed period is never a payment-history inconsistency');
+
+  /* ---- 3. The selected issue reaches the EXISTING packet flow. It is store-injected because a synthetic PDF
+     cannot pass the real admission gate (the same constraint the other family sections document). ---- */
+  const owner = await service.unpaidAccount('ce-tum@example.test');
+  const c = (await service.request('POST', '/api/cases', { token: owner.token, body: { country: 'CA', region: 'CA-ON' } })).json.case;
+  await payReportOnce(service, owner, c.case_id);
+  const posExtraction = tuExtraction(tuAccountBlock({ creditor: 'SYNTHETIC CREDITOR ONE', balance: 100, pastDue: 500, mop: '5' }));
+  inject(service, owner, c.case_id, positive.ce, posExtraction.records);
+  const pv = (await service.request('GET', `/api/cases/${c.case_id}/packet`, { token: owner.token })).json.view;
+  const sel = pv.eligible_issues.find((i) => i.explanation && i.explanation.indexOf('past-due amount (500) larger than its balance (100)') !== -1);
+  check.ok(sel, 'the supported balance/past-due issue is offered for selection in the packet');
+  await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [sel.issue_id] } });
+  await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(owner, c.case_id);
+  await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token });
+  const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
+  check.equal(dl.status, 200, 'the approved packet downloads');
+  check.ok(/balance of \$?100.*overdue amount of \$?500.*overdue amount is larger than the balance/.test(comparableText(dl.text)), 'with both actual amounts and the supported factual conflict in plain language');
+  check.ok(comparableText(dl.text).indexOf('500') !== -1, 'and the printed past-due reading as evidence');
+
+  evidence.synthetic_material_issue =
+    "a synthetic past-due-exceeds-balance block, read through the reader's measured column rule, becomes one selectable " +
+    'VERIFICATION issue (never a legal finding) and downloads through the real packet flow';
+  evidence.benign_controls = 'a past-due within the printed balance and a single printed period each produce no issue';
+  return evidence;
+}

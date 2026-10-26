@@ -1,0 +1,15 @@
+{
+  "status": "OWNER_APPROVED_REPLACEMENT",
+  "approvedOn": "2026-10-23",
+  "ownerInstruction": "replace the website logo with this transparant version",
+  "supersedes": "../approved-2026-10-23/crp-website-logo.png",
+  "file": "crp-website-logo.png",
+  "originalFilename": "Transparent Credit Regulator Pro Logo.png",
+  "sha256": "bb062be6777ff1043eb3ce81ea2dd3b6d544e3ac98bfe784dba9b6d1c80eedd7",
+  "bytes": 1777292,
+  "width": 2048,
+  "height": 768,
+  "colorType": 6,
+  "preservedWithoutAlteration": true,
+  "otherApprovedAssets": "../approved-2026-10-23/manifest.json"
+}

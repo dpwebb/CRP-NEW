@@ -109,6 +109,7 @@ const STATUS_BY_CODE = Object.freeze({
   FILE_COUNT_LIMIT_REACHED: 409,
   TOO_MANY_FAILED_SIGN_INS: 429,
   PAYMENT_PROVIDER_NOT_CONFIGURED: 503,
+  PACKET_RENDER_UNAVAILABLE: 503,
   SERVICE_STATE_UNAVAILABLE: 503
 });
 
@@ -216,6 +217,7 @@ const MESSAGE_BY_CODE = Object.freeze({
   FILE_COUNT_LIMIT_REACHED: 'This case already holds the maximum number of files. Combine pages into a PDF under 10 MiB, or remove an unneeded case. Do not split one report across cases.',
   TOO_MANY_FAILED_SIGN_INS: 'Too many failed sign-in attempts. Wait and try again.',
   PAYMENT_PROVIDER_NOT_CONFIGURED: 'No payment provider is connected to this service, so nothing can be purchased and no access can be activated.',
+  PACKET_RENDER_UNAVAILABLE: 'We could not finish making your packet. Try Save and review again.',
   SERVICE_STATE_UNAVAILABLE: 'The service could not read its private state, so it refused the request rather than guess.'
 });
 

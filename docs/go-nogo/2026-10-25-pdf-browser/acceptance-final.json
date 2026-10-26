@@ -1,0 +1,130 @@
+[
+  {
+    "id": "C01",
+    "expected": "Exact current source/runtime, startup, health and readiness",
+    "method": "193-file hash comparison/public requests",
+    "status": "PASS",
+    "detail": "Current E208/source21,193 installed hashes, health/readiness/administration and public42 checks.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C02",
+    "expected": "Normal fictional registration, captured confirmation and recovery setup",
+    "method": "fresh hosted UI/API",
+    "status": "PASS",
+    "detail": "One fresh fictional actor through normal captured signup/confirmation/recovery; earlier13-actor proof retained; no external email delivery.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C03",
+    "expected": "Login, MFA invitation, wrong credentials, isolation and logout",
+    "method": "fresh hosted plus local real Chrome suite",
+    "status": "PASS",
+    "detail": "Current in-app password sign-in and optional invitation bypass; previous hosted MFA/refusal proof on unchanged modules plus current full200-section suite; all QA sessions revoked.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C04",
+    "expected": "Supported report upload, assessment, grounded output and paid refusal",
+    "method": "fictional generated PDF actual hosted UI/API",
+    "status": "PASS",
+    "detail": "Fresh generated Equifax CA-NS contradictory-date report through normal upload/evaluation; previous all82/reader proof plus current full; no production admission pins relaxed.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C05",
+    "expected": "Paid plans, genuine Sandbox checkout/callbacks and durable entitlement",
+    "method": "hosted supported Sandbox; local adapter separately",
+    "status": "PASS",
+    "detail": "Earlier12 genuine plan/currency cells and annual upgrade carried with declared dependency continuity; current campaign monthly and mailing Sandbox payments originated on8e, notnewE208 matrix sales.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C06",
+    "expected": "Packet selection, profile/supporting copies, edits, approval and exact download",
+    "method": "fresh hosted UI and rendered PDF",
+    "status": "PASS",
+    "detail": "Fresh five-page edited/signed source packet browser-reviewed/approved on8e; same approved source version retained onE208, distinct from six-page provider copy; original API byte equality, no fresh browser-download claim.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C07",
+    "expected": "Saved reports/history, deletion boundaries and account cleanup",
+    "method": "fresh owned subjects; local Chrome cancellation tests",
+    "status": "PASS",
+    "detail": "Fresh report resumed normally; owned actor and4 files deleted normally, all original Consumer counts restored; current full history/deletion checks.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C08",
+    "expected": "Optional paid mailing, consumer authorization, prepare/preview and cancellation/refund",
+    "method": "Current ordinary-browser six-page review/explicit approval plus native exact-hash consent and TEST draft/no-send readback",
+    "status": "PASS",
+    "detail": "Actual currentE208 ordinary-browser every6page final-copy review, return cover/signature checked, unchecked gate then fresh explicit checkbox/oneUIapproval; native1 exact-hash signature-consent row; providerTESTdraft0/no-send.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C09",
+    "expected": "Account roles, private access, invalid/malformed uploads and requests",
+    "method": "local real listener plus hosted negative tests",
+    "status": "PASS",
+    "detail": "Current nativeLinux167 and full auth/ownership/stale/logout/edit/cancellation race checks; actual cancellation metadata safely refused503, refunded access402; no unauthorized PDF delivery.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C10",
+    "expected": "Persistence/restart/recovery/concurrency/idempotency",
+    "method": "Real-storage fictional tests plus authenticated whole stopped staging snapshot/recovery/corruption refusal and guarded deployment",
+    "status": "PASS",
+    "detail": "Current full hardening/recovery plus whole stopped911-entry889-file authenticated snapshot/recovery, corrupt-cipher refusal and healthy predecessor restart; native guarded staging deployment/data-preserving rollback.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C11",
+    "expected": "Responsive/keyboard/public guides/privacy",
+    "method": "actual staged browser desktop/mobile and local UI suite",
+    "status": "PASS",
+    "detail": "Current affected final-copy1440x1000 and390x844 browser checks; keyboard page jump and200% in-page zoom, no viewport overflow; prior320/390 auth/layout proof retained, no comprehensive accessibility certificate.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C12",
+    "expected": "Billing upgrade/cancellation/refund/lifecycle",
+    "method": "Inherited qualified12-cell Sandbox matrix; fresh campaign2TEST payments/refunds and current affected final-copy readbacks",
+    "status": "PASS",
+    "detail": "Earlier qualified12-cell/annual-upgrade billing proof; fresh CAD27.95+9.00 TEST payments fully refunded/CAD36.95, renewalcancelled, native accessrevoked; no current-buildmatrix/formalattest claim.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C13",
+    "expected": "Required complete project regression with fictional inputs only",
+    "method": "Explicit owner-authorized fictional profile;200-section fresh full; private-capture compatibility audit NOT_RUN separately",
+    "status": "PASS",
+    "detail": "Current source21 governed fresh20324/0/0 across200complete sections/420source hashes,0unrun/exception/drift; Linux167/193 and packageC58A728B exact; explicit fictional contract, private capture mode separate.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C14",
+    "expected": "Independent service review completed and blockers dispositioned",
+    "method": "separate same-model reviewer final challenge",
+    "status": "PASS",
+    "detail": "Independent source/service and final evidence review; separate independent-review.md must be present before final publication and artifact indexing.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C15",
+    "expected": "Existing staging data and production preserved",
+    "method": "Hash-bound Consumer/Mail custody with explicit lifecycle, diagnostic, heartbeat and auth-expiry qualifications",
+    "status": "PASS",
+    "detail": "All original Consumer data/security/blobs/counts preserved;26exact null diagnostic rotations; productioncode/data/config exact with recorded scheduledbackup lifecycle, wholefreshpreactivation\u00e2\u2020\u2019final exact; Mailheartbeat/auth-expiry qualifications explicit.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  },
+  {
+    "id": "C16",
+    "expected": "Reproducible evidence/logs/report/output hashes",
+    "method": "Explicit public evidence allowlist/hash verification and reproduction; private artifacts excluded",
+    "status": "PASS",
+    "detail": "Final report, reproduction, service inventory, raw receipts/media and explicit allowlist index; private credentials/recovery/cookies/rawsnapshots excluded; Chrome tab closures unverified and disclosed.",
+    "evidenceScope": "See FINAL-REPORT.md for fresh versus inherited proof and qualifications"
+  }
+]

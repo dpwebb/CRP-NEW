@@ -864,7 +864,7 @@ function completePdf(store, actor, packet, row, selected) {
   }
   const documents = (packet.support?.document_ids || []).map(id => {
     const file = accountDocuments.getDocument(store, actor, id);
-    return { bytes: file.bytes, content_type: file.document.content_type, filename: file.document.original_filename, label: file.document.document_type, file_id: id, uploaded_at: file.document.created_at };
+    return { bytes: file.bytes, content_type: file.document.content_type, filename: file.document.original_filename, label: file.document.document_type, file_id: id, ...(packet.support.document_rotations?.[id] ? {rotation:packet.support.document_rotations[id]} : {}), uploaded_at: file.document.created_at };
   }).sort((a,b) => ({ SUPPORTING: 0, IDENTITY: 1, ADDRESS: 2 }[a.label] ?? 3) - ({ SUPPORTING: 0, IDENTITY: 1, ADDRESS: 2 }[b.label] ?? 3));
   const reports = (packet.report_snapshot?.copies || []).map(copy => ({ ...copy,
     filename: packet.report_snapshot.manifest?.find(item => item.file_id === copy.file_id)?.original_filename || '',

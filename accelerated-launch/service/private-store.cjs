@@ -135,6 +135,7 @@ function assertOutsideRepository(dir) {
 class PrivateStore {
   constructor(dataDir, options) {
     const opts = options || {};
+    this.retentionObserver = typeof opts.retentionObserver === 'function' ? opts.retentionObserver : null;
     this.dataDir = assertOutsideRepository(dataDir || defaultDataDir());
     this.stateFile = path.join(this.dataDir, STATE_FILE);
     this.backupFile = path.join(this.dataDir, BACKUP_FILE);
@@ -233,7 +234,7 @@ class PrivateStore {
    * kept as a backup, which is what makes the recovery above possible.
    */
   update(mutator) {
-    const next = structuredClone(this.state());
+    const before = this.state(), next = structuredClone(before);
     const returned = mutator(next);
     // Persist identical values without display indentation: report-rich stores
     // otherwise allocate and flush hundreds of MB of whitespace per transaction.
@@ -247,6 +248,18 @@ class PrivateStore {
     if (!fs.existsSync(this.initializedFile)) durableWrite(this.initializedFile, 'CRP_PRIVATE_STORE_INITIALIZED\n');
     durableWrite(this.stateFile,serialized);
     this.cache=freeze(next);this.cacheStamp=stamp(this.stateFile);
+    if (this.retentionObserver && before.billing_events?.some(row => row.outcome === 'REJECTED')) {
+      const kept = new Map();
+      for (const row of next.billing_events || []) { const key = JSON.stringify(row); kept.set(key, (kept.get(key) || 0) + 1); }
+      let removed = 0;
+      for (const row of before.billing_events) {
+        const key = JSON.stringify(row), count = kept.get(key) || 0;
+        if (count) kept.set(key, count - 1);
+        else if (row.outcome === 'REJECTED') removed++;
+      }
+      // A logging failure cannot turn an already committed state change into an apparent failed write.
+      if (removed) try { this.retentionObserver({event:'BILLING_DIAGNOSTICS_REMOVED',count:removed,outcome:'COMMITTED'}); } catch {}
+    }
     return returned;
   }
 

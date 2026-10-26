@@ -1,0 +1,31 @@
+# Creative Studio staging release completed — October23
+
+Status: **DEPLOYED_AND_VERIFIED_ON_STAGING_FOR_OWNER_REVIEW**. Production is unchanged; all new cost work is postponed.
+
+Creative Studio is inside the existing Affiliate site, with review/library/publication controls in the existing unified admin panel. It is not a fourth family application. Affiliate frozen source952f41dac43b680689d75af701c9bdccaddf328e/image9a35bdd1f4f385a9633b844d8f0d3b87fe33e6b44c41eabbab31b75813d36ec1 and Familya427945caa749d7b286b927dfddda2747a06dbd3/crp-family-8d39c40f833912a34ae0/manifest67ba97c2e2819dbf4b40e395cec3c1556dbcac92e112427f6bda6566f22a1ba7 are deployed. Accepted Consumer2ee8/6c7276 and Maild456/1edd sources remain installed.
+
+Final Linux115/115 Affiliate,57/57 Family and1/1 genuine native three-app SSO checks pass. Actual hosted normal password/MFA plus separate fresh global unlock verifies all three apps without Affiliate/Mail sign-in; real authorized lists return25Consumer accounts on the current page,2campaigns and20Mail orders.60HTTPS checks pass; deployed owner preview passes desktop and390px mobile. Three versioned brand/message/design proposals remain DRAFT, zero published and zero requests; usage and monetary defaults remain zero. Owner review is available at https://admin-staging.creditregulatorpro.com/ under Affiliate Creative Studio. New editable designs are not implicitly approved by source deployment.
+
+Authenticated whole stopped snapshots independently recover on VPS and desktop: pre573files/27PostgreSQL tables, post574files/30tables, accepted585files/30tables and both sequences; Family HMAC/key/config and final read-journal prefix recovery pass. Additive migration008 preserves all existing rows and sequences. Deferred007 is absent. Final preservation verifies all47other staging accounts and Consumer business collections exact, only the owned QA’s normal two_factor_last_counter plus sessions qualified; Affiliate30tables/2sequences exact to accepted backup, Mail business/other runtime rows exact with worker presence/heartbeat qualified. All protected provider/SSO configuration and production runtime/data remain preserved. No active database restore, source push, live charge, payout or mailing occurred.
+
+Retain every source/package/refusal, old Windows shared-process full-suite interruption and failed fixture/setup/public-smoke attempts. Final source-qualified Linux suites and actual hosted checks supply acceptance; no complete Windows Affiliate full-suite PASS is claimed. Earlier natural-native-expiry gates remain failed/unobserved. Cost50f/77c/schema007 and Family4d/c57 form/audit work remain separate and deferred. Unrelated dirty canonical Consumer and historical mailing-preview worktrees are preserved, not blanket-promoted.
+
+Safe report: family-admin/.local/evidence/family-studio-14ab16bc-e56f-42d4-9883-9dd63250c434/report.html and report.json. Complete operation/recovery custody remains in the protected matching qa-private directory and /opt/crp-family-admin-operations/family-studio-14ab16bc-e56f-42d4-9883-9dd63250c434. Documentation closure must not regenerate the accepted package or repeat an operator.
+
+## Historical work order and controlling steering
+
+# Family pending-work integration and staging release — October23
+
+Owner directs: finish Creative Studio, merge pending work across the three-application family, and confirm safe deployment to staging. This authorizes one coordinated staging-only successor; production remains unchanged. Family Admin is the existing administration surface, not a fourth family member. Main alone coordinates serial changes. Mail/Affiliate/cost chats supplied read-only inventories and relinquished competing work.
+
+Sources: preserve accepted Consumer2ee8c589/build6c7276 and Maild456b6d/build1edd; no pending accepted successor from their owners. Affiliate starts accepted staging2976166 and integrates controlled Studiobf72cec plus cost50f1853/77c170f (additive schema007/008, no rewrites). Family integrates its local Studio delta and selected4d5bb34/c57e807 cost-form/audit fixes onto current branding/session recovery. Do not replace either app with old cost candidate files or unpromoted production lineage. All approved PNGs/withdrawn410 paths, SSO/private trust, native roles and staff/partner access stay intact.
+
+Canonical dirty Consumer changes and two old detached mailing-preview worktrees are preserved, not blindly copied over frozen accepted source. Reconcile exact overlaps/ownership before calling those pending independent releases. Managed .projects and local credentials/stores are always excluded. Source integration is local; this instruction does not explicitly request GitHub publication.
+
+Release requires exact frozen sources and manifests, combined focused/final native Windows/Linux regression, real joined all-three SSO/role/refusal acceptance, actual desktop/mobile Studio/cost review, native additive-migration on independently recovered current database, fresh hosted custody/predecessors, authenticated complete pre/post backups with independent VPS+desktop recovery and data-preserving rollback. Retain all failed/refused attempts. No old operator replay, provider/financial/postal/security changes, shared restart or production action. New editable designs stay draft, zero Studio limits until explicit human review/configuration. Staging source deployment is not advertising publication.
+
+Old natural-recovery gates remain failed/unobserved; this new staging authorization does not relabel them passed. Actual financial completeness and historical simulation classification remain qualified, not invented.
+
+## Controlling owner steering — cost work postponed
+
+Owner now directs: “postpone all cost work fo a later period”. Exclude all NEW cost50f1853/77c170f/schema007 and Family4d5bb34/c57e807 form/audit changes. Preserve them in their independent worktrees/commits for later. Existing accepted staging functionality is not rolled back. Staging successor is Studio only atop Affiliate2976166 and current Family branding/session source, preserving Consumer2ee8 and Maild456 unchanged. The prior source inventory remains historical, not a shipping allowlist. No new cost work, cost-import test or cost release is authorized in this batch.

@@ -23,6 +23,16 @@ async function run(unused, check) {
     const stage=create(store,{env:{...env,CRP_DEPLOYMENT_ENV:'staging',CRP_AFFILIATE_ORIGIN:'https://affiliates-staging.creditregulatorpro.com'}});
     const stageToken=token({origin:'https://affiliates-staging.creditregulatorpro.com'});
     check.ok(stage.capture(request(stageToken)).headers['Set-Cookie'].includes('; Secure'),'staging referral cookie is always Secure');stage.close();
+    const scoped=create(store,{env:{...env,CRP_DEPLOYMENT_ENV:'staging',CRP_AFFILIATE_BINDING_ENABLED:'0',CRP_AFFILIATE_ORIGIN:'https://affiliates-staging.creditregulatorpro.com'},now:()=>time,fetcher});
+    const scopedToken=token({v:2,origin:'https://affiliates-staging.creditregulatorpro.com',simulationId:'00000000-0000-4000-8000-000000000001',consumerEmails:['referred@example.test']});
+    check.ok(scoped.capture(request(scopedToken)).headers['Set-Cookie'],'registered signed test handoff works with global capture disabled');
+    check.equal(scoped.capture(request(stageToken)).headers['Set-Cookie'],undefined,'ordinary handoff stays disabled globally');
+    check.equal(adapter.capture(request(scopedToken)).headers['Set-Cookie'],undefined,'test handoff never works in production');
+    store.update(s=>s.accounts.push({account_id:'acc_scoped',email:'referred@example.test',created_at:new Date(time).toISOString()},{account_id:'acc_wrong',email:'other@example.test',created_at:new Date(time).toISOString()},{account_id:'acc_older',email:'referred@example.test',created_at:new Date(time-86400000).toISOString()}));
+    for(const account_id of ['acc_scoped','acc_wrong','acc_older'])scoped.bind(request(scopedToken),{account_id});
+    check.ok(store.state().accounts.find(a=>a.account_id==='acc_scoped').affiliate_binding?.simulationId,'new allowlisted fictional account gets normal durable binding');
+    check.ok(!store.state().accounts.find(a=>a.account_id==='acc_wrong').affiliate_binding&&!store.state().accounts.find(a=>a.account_id==='acc_older').affiliate_binding,'unlisted and older accounts cannot acquire test binding');
+    mode=200;await scoped.drain();check.equal(store.state().accounts.find(a=>a.account_id==='acc_scoped').affiliate_binding.state,'SENT','scoped binding drains with global capture disabled');scoped.close();calls.length=0;mode=503;
     const valid = token(), captured = adapter.capture(request(valid));
     check.equal(captured.status, 303, 'signed consent handoff redirects without query');
     check.equal(captured.headers.Location, '/', 'no external/open redirect');
@@ -77,6 +87,8 @@ async function run(unused, check) {
       check.equal(row.affiliate_binding.body.binding.consumerRef,publicAccount.account.account_id,'real signup hook binds server-created account');
       check.equal(publicAccount.account.affiliate_binding,undefined,'outbox is not exposed in consumer account response');
       check.ok(registered.headers.get('set-cookie').includes('crp_session=')&&registered.headers.get('set-cookie').includes('crp_aff_ref='),'signup session survives clearing tracking cookie');
+      const secondEmail='fictional-login-referral@example.test',secondPassword='fictional-login-passphrase';const second=await fetch(base+'/api/accounts',{method:'POST',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify({email:secondEmail,password:secondPassword})});check.equal(second.status,201,'a new account created without a referral has no binding');const secondAccount=(await second.json()).account;check.equal(service.store.state().accounts.find(a=>a.account_id===secondAccount.account_id).affiliate_binding,undefined,'untracked account is not attributed before login');
+      const login=await fetch(base+'/api/sessions',{method:'POST',headers:{'Content-Type':'application/json',Origin:base,Cookie:tracking},body:JSON.stringify({email:secondEmail,password:secondPassword})});check.equal(login.status,200,'normal password login accepts the consented referral');check.equal(service.store.state().accounts.find(a=>a.account_id===secondAccount.account_id).affiliate_binding?.body.binding.consumerRef,secondAccount.account_id,'successful native login persists attribution immediately without a reload');check.ok(login.headers.get('set-cookie').includes('crp_session=')&&login.headers.get('set-cookie').includes('crp_aff_ref='),'login keeps its session while clearing the consumed tracking token');
     } finally {service.close();await new Promise(r=>server.close(r));}
     // Exercise the actual hosted entry point and its worker, not only createService.
     const {spawn}=require('node:child_process');

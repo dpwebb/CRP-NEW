@@ -1,0 +1,99 @@
+{
+  "ruling": "GO",
+  "at": "2026-10-25T05:33:45.338Z",
+  "scope": "Consumer staging functional and Sandbox acceptance, with declared dependency continuity; not production launch certification",
+  "counts": {
+    "pass": 16,
+    "fail": 0,
+    "blocked": 0,
+    "notApplicable": 0
+  },
+  "blockers": [],
+  "build": "crp-v1-e2084558545d401e",
+  "source": "21cea4fd091a22d34600b7ad4993c14ab45179a8",
+  "manifest": "E2084558545D401E101116D40D5452D16D3470C617C52976A0347F6736EC1D9F",
+  "shippedFiles": 193,
+  "productFull": {
+    "passed": 20324,
+    "failed": 0,
+    "skipped": 0,
+    "sections": 200,
+    "sourceHashes": 420,
+    "unrun": 0,
+    "drift": 0
+  },
+  "linux": {
+    "passed": true,
+    "assertions": 167,
+    "shippedHashes": 193,
+    "realNativePoppler": true,
+    "externalMailPdfMockedInLocalTests": true
+  },
+  "freshCampaign": {
+    "id": "36bcf0e9-a6dc-4857-a19d-a4fd848da443",
+    "actors": 1,
+    "fictionalOnly": true,
+    "payments": 2,
+    "testOnly": true,
+    "paymentAndSourceApprovalBuild": "crp-v1-8e7f21d40fe64c9a",
+    "finalBrowserReviewBuild": "crp-v1-e2084558545d401e",
+    "sourcePacketHash": "4f36c466e758d1dbc5759079d89735566d4bb6f50660e0fc7260eaaf1a2b2e72",
+    "providerPdfHash": "20467846cb364ec407292f9ea12c42784820c10594c08bda56e36f48b920ee8d",
+    "browserPages": 6,
+    "explicitUiApprovals": 1,
+    "nativeSignatureConsent": true
+  },
+  "billing": {
+    "inheritedGenuineMatrixCells": 12,
+    "inheritedAnnualUpgrade": 1,
+    "matrixExecutionBuild": "crp-v1-6dfea40121fe55c1",
+    "qualifiedContinuity": true,
+    "currentBuildMatrixTransactionsClaimed": false,
+    "newPaymentsFullyRefunded": 2,
+    "refundedMinorCAD": 3695,
+    "renewalCancelled": true
+  },
+  "cleanup": {
+    "fictionalActorDeleted": true,
+    "storedFilesRemoved": 4,
+    "originalConsumerCountsRestored": true,
+    "staffSessions": 0,
+    "consumerSessions": 0,
+    "orderState": "CANCELLED",
+    "paymentState": "REFUNDED",
+    "authorizationWithdrawn": true,
+    "historicalApprovedHashRetained": true,
+    "sendIntent": null,
+    "providerDraftCreatedCount": 0,
+    "inAppBrowserSignedOutResetClosed": true,
+    "allChromeOwnedTabClosuresVerified": false,
+    "unverifiedChromeQaTabClosures": 4
+  },
+  "preservation": {
+    "originalConsumerAccounts": 66,
+    "allOriginalProtectedBusinessSecurityRowsAndBlobsExact": true,
+    "qualifiedOldestPrefixDiagnosticReplacements": 26,
+    "productionCodeDataSecurityConfigurationExact": true,
+    "productionConsumerWholeExactFromFreshPreactivation": true,
+    "productionWholeCampaignRawOrPidEqualityClaimed": false,
+    "scheduledProductionBackupRestart": {
+      "at": "2026-10-25T03:49:39Z",
+      "oldPid": 271532,
+      "newPid": 3922841
+    },
+    "productionMutationDispatchedByCampaign": false,
+    "productionMailAllNonHeartbeatTablesExact": true,
+    "productionMailHeartbeatQualified": true,
+    "rawMailSqliteByteEqualityClaimed": false,
+    "stagingMailOldNonceTicketExpiryIndependentlyProved": false
+  },
+  "production": {
+    "build": "crp-v1-068133f19c359537",
+    "launchReady": false,
+    "releaseAuthorized": false
+  },
+  "noRealMail": true,
+  "independentReview": "independent-review.md",
+  "advisoryServices": "independent-service-update.md",
+  "artifactIndex": "artifact-index.json"
+}

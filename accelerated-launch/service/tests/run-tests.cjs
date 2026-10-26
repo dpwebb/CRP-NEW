@@ -19,7 +19,15 @@ const crypto = require('node:crypto');
 const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
 
 const OUT_DIR = path.join(__dirname, '..', 'out');
+let generatedRegression = false;
 const SECTION_FILES = [
+  'hd-fictional-fixture-policy.cjs',
+  'hc-mailing-https-preview.cjs',
+  'hb-operational-completion.cjs',
+  'ha-login-only-mfa.cjs',
+  'gz-staging-test-mail.cjs',
+  'gy-operational-packet.cjs',
+  'gx-operational-mailing.cjs',
   'gv-mailing-internal-boundaries.cjs',
   'gw-mailing-jurisdiction-visibility.cjs',
   'gu-packet-signature.cjs',
@@ -327,9 +335,14 @@ async function runSection(file, verbose) {
   const report = { id: section.id, title: section.title, file, passed: 0, failed: 0, skipped: [], failures: [], evidence: null, completed: false, section_exception: null };
   if (verbose) process.stdout.write(`\n${section.id} — ${section.title}\n`);
   const service = new TestService(section.id);
+  service.generatedOnly = generatedRegression;
   try {
     await service.listen();
-    report.evidence = await section.run(service, makeCheck(report, verbose));
+    const generated = generatedRegression ? require('./fictional-regression.cjs') : null;
+    report.evidence = generated && generated.ids.includes(section.id)
+      ? await generated.run(section.id, service, makeCheck(report, verbose))
+      : await section.run(service, makeCheck(report, verbose));
+    if (generated) report.fixture_policy = 'OWNER_AUTHORIZED_FICTIONAL_REGRESSION_20261024';
     report.completed = true;
   } catch (err) {
     report.failed += 1;
@@ -414,9 +427,10 @@ async function main() {
      fails loudly. A focused run writes its own focused-evidence.json and never overwrites the full release
      evidence (b2/b3/b4/clarify/common-errors) or marks unrun sections passed. */
   const rawArgs = process.argv.slice(2).filter(Boolean);
+  generatedRegression = require('./fixture-policy.cjs').fictionalEnabled();
   const receiptArgs = rawArgs.filter(arg => arg.startsWith('--receipt='));
   if (receiptArgs.length > 1) throw new Error('Only one focused receipt path is allowed');
-  const args = rawArgs.filter(arg => !arg.startsWith('--receipt='));
+  const args = rawArgs.filter(arg => !arg.startsWith('--receipt=') && !['--generated-regression','--fictional-regression','--captured-regression'].includes(arg));
   const requested = [];
   for (const arg of args) {
     if (!arg.startsWith('--lane=')) { requested.push(arg); continue; }
@@ -480,6 +494,10 @@ async function main() {
   }
   const execution = {
     mode: focused ? 'FOCUSED' : 'FULL_CURRENT_PRODUCT',
+    fixture_policy: generatedRegression ? 'OWNER_AUTHORIZED_FICTIONAL_REGRESSION_20261024' : 'ORIGINAL_CAPTURE_AND_SYNTHETIC_REGRESSION',
+    fixture_scope: generatedRegression ? require('./fixture-policy.cjs').policy : null,
+    generated_substitutions: generatedRegression ? require('./fictional-regression.cjs').ids : [],
+    captured_compatibility_audit: generatedRegression ? 'PRIVATE_CAPTURE_NOT_RUN; DOCUMENTED_PUBLIC_FICTIONAL_REFERENCES_REMEASURED' : 'ORIGINAL_SECTION_CONTRACTS',
     duration_ms: Date.now() - started,
     selected_sections: sectionReports.map((r) => r.id),
     unrun_sections: SECTION_FILES.map((f) => require(path.join(__dirname, 'sections', f)).id).filter((id) => !byId.has(id)),
@@ -540,6 +558,7 @@ async function main() {
   };
 
   const evidence = {
+    fixture_scope: execution.fixture_scope,
     owner_order: 'OWNER-ALL82-001',
     batch: 'B2',
     plan: 'CRP_IMMUTABLE_ALL_82_WIZARD_BUILD_PLAN.md',
@@ -668,7 +687,23 @@ async function main() {
     regionSupport[region].presentation_id = caFacts.presentation_id || 'PR-01';
     regionSupport[region].evidence = 'the digest-pinned Equifax Canada consumer specimen, read read-only';
   }
-  if (caFacts.skipped !== false) {
+  if (generatedRegression && caFacts.unit_regions) {
+    for (const [region, row] of Object.entries(caFacts.unit_regions)) {
+      if (!regionSupport[region]) continue;
+      Object.assign(regionSupport[region], {
+        checks_performed_on_real_evidence: 0,
+        checks_performed_on_fictional_native_unit_input:
+          row.statutory_checks_performed + row.factual_checks_performed + row.common_error_checks_performed,
+        functional_assessment_verified: clean('r-ca-factual-assessment'),
+        functional_assessment_kinds: row.assessment_kinds,
+        fictional_fixture_class: 'GENERATED_NATIVE_FILE_EXPLICIT_UNIT_POINTER',
+        original_private_capture_audit: 'NOT_RUN_BY_FICTIONAL_SCOPE',
+        working_assessment: false,
+        blocked_by: 'PRIVATE_CAPTURE_COMPATIBILITY_AUDIT_NOT_RUN',
+        evidence: 'Generated native22page file; explicit generated unit pointer; unchanged default production pin refuses it.'
+      });
+    }
+  } else if (caFacts.skipped !== false) {
     for (const region of ['CA-AB', 'CA-BC', 'CA-MB', 'CA-NB', 'CA-NL', 'CA-NS', 'CA-NT', 'CA-NU', 'CA-ON', 'CA-PE', 'CA-QC', 'CA-SK', 'CA-YT']) {
       if (regionSupport[region]) regionSupport[region].blocked_by = caFacts.reason || 'THE_EVIDENCED_SPECIMEN_IS_NOT_ON_THIS_MACHINE';
     }
@@ -692,6 +727,7 @@ async function main() {
   }
 
   const b3 = {
+    fixture_scope: execution.fixture_scope,
     execution, capabilities,
     measurement_scope: 'Representative format fixture contracts; configured capability and current consumer delivery are separate',
     owner_order: 'OWNER-ALL82-001',
@@ -854,6 +890,7 @@ async function main() {
   const releaseCheck = require('../release-check.cjs').runReleaseCheck({ write: false });
 
   const b4 = {
+    fixture_scope: execution.fixture_scope,
     execution, capabilities,
     owner_order: 'OWNER-ALL82-001',
     batch: 'B4',
@@ -1001,9 +1038,11 @@ async function main() {
 
   /* OWNER-PACKET-CORRESPONDENCE-001: a successful full regression restores its own implementation evidence; a
      failed run leaves it alone, so nothing here can claim a pass the run did not demonstrate. */
-  const restored = totals.failed === 0 ? restoreImplementationEvidence() : [];
+  const restored = totals.failed === 0 && !generatedRegression ? restoreImplementationEvidence() : [];
   if (totals.failed !== 0) {
     process.stdout.write('implementation evidence NOT restored: this run failed, so no closure record was re-applied\n');
+  } else if (generatedRegression) {
+    process.stdout.write('Historical private-capture closure writers not reissued: this full run uses the owner-authorized fictional fixture contract.\n');
   } else {
     const okCount = restored.filter((r) => r.applied).length;
     process.stdout.write(`implementation evidence re-applied from this run: ${okCount}/${restored.length} closure records\n`);

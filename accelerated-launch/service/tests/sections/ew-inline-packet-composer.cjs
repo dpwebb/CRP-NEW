@@ -343,31 +343,31 @@ async function run(t, check) {
     file_id: 'fictional-report-file', markers: [marker], annotations: [{ page: 2, x: .1, y: .2, width: .2, height: .05, note: 'Please check this amount.' }] }] };
   const originalReportHash = hash(report), marked = composePacket(markedInput), markedDoc = await lib.PDFDocument.load(marked.bytes);
   check.equal(hash(report), originalReportHash, 'adding print-visible annotations never mutates the original report bytes');
-  check.ok(pdfText(marked.bytes).includes('REPORT PAGE 2 CEDAR AND MAPLE COLLECTIONS') && pdfText(marked.bytes).includes('Please check this amount.'), 'complete annotated PDF retains original source text and prints the saved consumer callout');
+  check.ok(pdfText(marked.bytes).includes('REPORT PAGE 2 CEDAR AND MAPLE COLLECTIONS') && !pdfText(marked.bytes).includes('Please check this amount.') && marked.review_pages[1].annotations.some(note => note.note === 'Please check this amount.'), 'complete PDF retains source text and keeps consumer notes in review metadata without printing them');
   const sourceDoc = await lib.PDFDocument.load(report), originalStreams = streams(sourceDoc, sourceDoc.getPage(1)), markedStreams = streams(markedDoc, markedDoc.getPage(1));
   check.ok(originalStreams.every(original => markedStreams.some(candidate => candidate.equals(original))), 'source artwork streams remain byte-identical underneath the annotation overlay');
   const markedPage = marked.review_pages.find(page => page.kind === 'report');
   check.ok(markedPage.page_width === markedPage.source_width && markedPage.page_height === markedPage.source_height,
     'source page retains its original print dimensions instead of shrinking to fit callouts');
-  check.deepEqual(marked.review_pages.map(page => page.kind), ['letter', 'report', 'report-note'], 'complete printed callout follows its source copy immediately');
+  check.deepEqual(marked.review_pages.map(page => page.kind), ['letter', 'report'], 'highlighted source prints without an extra notes page');
   check.deepEqual(markedDoc.getPage(1).getSize(), sourceDoc.getPage(1).getSize(), 'adding highlights preserves the original source media dimensions');
   check.deepEqual(markedDoc.getPage(1).getCropBox(), sourceDoc.getPage(1).getCropBox(), 'adding highlights preserves the original source crop dimensions');
   const manyNotes = composePacket({ letter_text: LETTER, reports: [{ bytes: report, content_type: 'application/pdf', relevant_pages: [2],
     markers: Array.from({ length: 12 }, (_, index) => ({ ...marker, item_number: index + 1, caption: ('Fictional field caption ' + index + ' ').repeat(6).slice(0, 160) })),
     annotations: Array.from({ length: 4 }, (_, index) => ({ page: 2, x: .1, y: .1 + index * .1, width: .1, height: .05,
       note: ('Consumer note ' + index + ' with full text. ').repeat(7).slice(0, 180) + ' FINAL-' + index })) }] });
-  check.ok(manyNotes.review_pages.filter(page => page.kind === 'report-note').length > 1
-    && pdfText(manyNotes.bytes).includes('FINAL-3'), 'long permitted callouts paginate at readable size and retain the last consumer note');
+  check.ok(manyNotes.page_count === 2 && !pdfText(manyNotes.bytes).includes('FINAL-3')
+    && manyNotes.review_pages[1].annotations.some(note => note.note.endsWith('FINAL-3')), 'long review notes remain complete without increasing the printed page count');
   check.equal(markedPage.annotations.find(annotation => annotation.automatic)?.x, marker.bbox.x0 / 612, 'automatic rectangle uses the measured source geometry rather than a guessed field location');
-  check.ok(!render(marked.bytes, 2).equals(render(packet.bytes, 2)), 'independent renderer observes the actual print-visible highlight and callout');
+  check.ok(!render(marked.bytes, 2).equals(render(packet.bytes, 2)), 'independent renderer observes the actual print-visible highlight');
   const ambiguous = composePacket({ letter_text: LETTER, reports: [{ bytes: report, content_type: 'application/pdf', relevant_pages: [2],
     markers: [{ ...marker, bbox: { x0: 0, y0: 0, x1: 10000, y1: 10000 } }] }] });
-  check.ok(ambiguous.review_pages.find(page => page.kind === 'report').annotations.every(annotation => !Number.isFinite(annotation.x)), 'out-of-page source geometry falls back to a page callout without a guessed highlight');
+  check.ok(ambiguous.review_pages.find(page => page.kind === 'report').annotations.every(annotation => !Number.isFinite(annotation.x)), 'out-of-page source geometry retains review metadata without a guessed highlight');
   const familiarCaption = composePacket({ letter_text: LETTER, reports: [{ bytes: report, content_type: 'application/pdf', relevant_pages: [2], markers: [{ ...marker, caption: 'closed_date' }] }] });
-  check.ok(pdfText(familiarCaption.bytes).includes('Date closed') && !pdfText(familiarCaption.bytes).includes('closed_date'), 'printed consumer callout uses a familiar date label without an internal field key');
+  check.ok(!pdfText(familiarCaption.bytes).includes('closed_date') && familiarCaption.review_pages[1].annotations[0].note === 'closed_date', 'review caption is retained without printing an internal field key');
   const rotatedDoc = await lib.PDFDocument.load(report); rotatedDoc.getPage(1).setRotation(lib.degrees(90));
   const rotated = composePacket({ letter_text: LETTER, reports: [{ bytes: Buffer.from(await rotatedDoc.save()), content_type: 'application/pdf', relevant_pages: [2], markers: [marker] }] });
-  check.deepEqual(rotated.review_pages.map(page => page.kind), ['letter', 'report', 'report-note'], 'rotated source gets a separate callout page while retaining the original page');
+  check.deepEqual(rotated.review_pages.map(page => page.kind), ['letter', 'report'], 'rotated source retains its original page without an extra notes page');
   check.equal((await lib.PDFDocument.load(rotated.bytes)).getPage(1).getRotation().angle, 90, 'fallback never rotates or redraws the original evidence');
   check.equal(rotated.review_pages[1].annotation_available, false, 'unsafe rotated coordinate mapping refuses consumer rectangles');
   refuses(check, { ...markedInput, reports: [{ ...markedInput.reports[0], annotations: [{ page: 2, x: .9, y: .1, width: .2, height: .1, note: '' }] }] }, 'a consumer rectangle cannot extend beyond source bounds');
@@ -388,7 +388,7 @@ async function run(t, check) {
   refuses(check, { letter_text: LETTER, documents: [{ bytes: png, content_type: 'image/gif' }] }, 'unsupported document type is refused rather than omitted');
   await encryptedEvidenceChecks(check, form);
   await identificationSheetChecks(t, check);
-  if (t?.dataDir) for (const [filename, bytes] of [['inline-editable-packet.pdf', packet.bytes], ['inline-edited-packet.pdf', saved], ['inline-long-letter.pdf', long.bytes]]) fs.writeFileSync(path.join(t.dataDir, filename), bytes);
+  if (t?.dataDir) for (const [filename, bytes] of [['inline-editable-packet.pdf', packet.bytes], ['inline-edited-packet.pdf', saved], ['inline-long-letter.pdf', long.bytes], ['inline-highlighted-no-notes.pdf', marked.bytes]]) fs.writeFileSync(path.join(t.dataDir, filename), bytes);
   return { single_complete_pdf: true, no_bureau_form_components: true, source_pages_only: true, editable_letter: true, deterministic_approval_bytes: true, independent_print_rendering: true };
 }
 module.exports = { run, ENCRYPTED_FIXTURES, identificationImages, id: 'ew-inline-packet-composer', title: 'Editable letter and PDF composition controls with exact inline evidence/document copies' };

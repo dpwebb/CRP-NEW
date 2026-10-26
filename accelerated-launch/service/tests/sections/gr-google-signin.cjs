@@ -193,9 +193,9 @@ async function run(disabled, check) {
     check.equal((await service.request('GET', '/api/session', { token })).status, 401, 'disconnect revokes earlier consumer sessions');
     check.equal((await service.request('GET', '/api/session', { token: other.token })).status, 200, 'disconnect preserves unrelated sessions');
     check.equal((await service.request('POST', '/api/sessions', { body: { email: 'new-google@example.test', password } })).status, 200, 'native password still works after disconnect');
-    check.equal((await service.request('DELETE', disconnect, { token: old.token, body: { password: 'a-long-enough-password' } })).json.error.code, 'TWO_FACTOR_REQUIRED', 'disconnect cannot bypass existing MFA');
-    check.equal((await service.request('DELETE', disconnect, { token: old.token, body: { password: 'a-long-enough-password', code: 'bad' } })).status, 401, 'wrong MFA cannot disconnect Google');
-    check.equal(row(old.account_id).external_identities.length, 1, 'refused disconnect preserves the binding');
+    check.equal((await service.request('DELETE', disconnect, { token: old.token, body: { password: 'a-long-enough-password' } })).status, 200, 'disconnect reuses the verified login or enrollment factor with the current password');
+    check.equal((await service.request('DELETE', disconnect, { token: old.token, body: { password: 'a-long-enough-password', code: 'bad' } })).status, 401, 'a revoked session cannot disconnect Google even with an action code');
+    check.equal(row(old.account_id).external_identities,undefined,'successful disconnect removes the binding and revoked retries cannot restore it');
     check.deepEqual(row(other.account_id), otherBefore, 'unrelated account row is exact');
     check.deepEqual(Object.fromEntries(Object.entries(service.service.store.state()).filter(([key]) => !['accounts', 'sessions'].includes(key))), businessBefore, 'all existing report, packet and billing tables stay exact');
     check.ok(!JSON.stringify(service.service.store.state()).includes('fictional-unused-provider-token'), 'provider tokens never enter private state');

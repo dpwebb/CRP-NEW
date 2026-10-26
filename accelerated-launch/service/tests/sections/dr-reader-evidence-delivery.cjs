@@ -134,7 +134,7 @@ async function run(t, check) {
   };
   // Private source bytes remain inside this loopback harness and are removed with its data directory.
   const localCa = process.env.CRP_CA_EQUIFAX_LOCAL_SPECIMEN || 'C:/Users/webbd/CREDIT REPORTS/CA/CA Equifax 001.pdf';
-  if (fs.existsSync(localCa)) {
+  if (!t.generatedOnly && fs.existsSync(localCa)) {
     const endpoint = await upload('CA', 'CA-NS', fs.readFileSync(localCa), 'local-canadian-report.pdf');
     const state = t.service.store.state(), caseId = endpoint.split('/').at(-1);
     const stored = state.results.find((row) => row.case_id === caseId);
@@ -165,7 +165,7 @@ async function run(t, check) {
       check.equal(/CA-CREDITOR-|INTERNAL-CREDITOR-|page undefined/.test(body), false,
         'the private-source packet exposes no internal creditor token or invented page');
     }
-  } else check.skip('authorized local Canadian delivery', 'LOCAL_SOURCE_NOT_PRESENT');
+  } else if (!t.generatedOnly) check.skip('authorized local Canadian delivery', 'LOCAL_SOURCE_NOT_PRESENT');
 
   const gbBytes = require('./do-gb-history-definitions.cjs').nativePdf();
   const endpoint = await upload('GB', 'GB-ENG', gbBytes, 'fictional-uk-history.pdf');

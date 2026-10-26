@@ -7,7 +7,7 @@ async function call(method, path, body) {
     headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
   const data = await response.json();
   if (!response.ok) throw new Error(response.status === 401 ? 'Sign in to CRP first.' :
-    data.error?.message || 'The referral request could not be completed.');
+    data.error?.code === 'INVALID_REQUEST' ? 'Use a customer referral code from this workspace. Affiliate partners share a campaign link instead of a code for this form.' : data.error?.message || 'The referral request could not be completed.');
   return data;
 }
 async function refresh() {

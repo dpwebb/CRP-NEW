@@ -1,0 +1,76 @@
+{
+  "schema": "crp-sanitized-readiness-main-production-verification-v1",
+  "passed": true,
+  "checked_at_utc": "2026-10-25T21:16:56.054440+00:00",
+  "checked_at_halifax": "2026-10-25T18:16:56.05444-03:00",
+  "observed_main_commit": "f18ffc6f41ada43b95dcbefbcd7de62c0fe822fc",
+  "report_present_on_main": true,
+  "register_and_closure_hash_bindings_passed": true,
+  "main_tested_source_files_verified": 420,
+  "production_versions": {
+    "consumer": {
+      "source": "21cea4fd091a22d34600b7ad4993c14ab45179a8",
+      "build": "crp-v1-e2084558545d401e",
+      "files_verified": 193
+    },
+    "mail": {
+      "source": "2b5b4a100b268ea693b0e3cd86d2ee8dcaf28926",
+      "build": "mail-internal-06b086d3e7fb1148",
+      "files_verified": 71
+    },
+    "affiliate": {
+      "source": "ebaec9f63b9f4442a013111c0f6d9476274bff0a",
+      "image": "sha256:e58f5b96234fc9cdff96371731ccbd1421bb2f29783ef314a3e076992662ec4d",
+      "files_verified": 64
+    },
+    "family": {
+      "source": "3f60497f65513ed7c983ab5d3adc95440aea3b4f",
+      "build": "crp-family-4da6f430ef63abe2262c",
+      "files_verified": 47
+    }
+  },
+  "runtime_files_verified": 375,
+  "mail_migration_hashes_verified": 11,
+  "mail_tables": 25,
+  "affiliate_migration_versions_verified": [
+    "001",
+    "002",
+    "003",
+    "004",
+    "007"
+  ],
+  "affiliate_read_only_database_transaction": true,
+  "stable_read_passed": true,
+  "configuration_unchanged_since_certification": true,
+  "consumer_primary_state_unchanged_since_certification": true,
+  "process_ids_unchanged_since_certification": true,
+  "operations": {
+    "production_writes": 0,
+    "service_actions": 0,
+    "provider_calls": 0,
+    "mail_actions": 0,
+    "new_production_check_for_this_publication": false,
+    "product_full_rerun": false,
+    "package_rebuilt": false
+  },
+  "source_evidence": [
+    {
+      "artifact_name": "main-verification.json",
+      "sha256": "7AC116335369DD3C132CD4E390F54771DC17893C519576EF4B0EA7A872AB8C16",
+      "payload_included": false
+    },
+    {
+      "artifact_name": "production-verification.json",
+      "sha256": "2A87097ABFDCF3028981E04F9F695863168596061F7952E334E1C0917BB4403E",
+      "payload_included": false
+    },
+    {
+      "artifact_name": "verification-result.json",
+      "sha256": "B34EBEEFB96A6F5D902DF09386C98CB140FFB39014F4BCD81B7017DFA6465F77",
+      "payload_included": false
+    }
+  ],
+  "publication_scope": "Documentation-only publication of the completed read-only verification; private QA payloads, credentials and runtime paths excluded.",
+  "published_evidence_references_present": 28,
+  "published_file_hash_bindings_verified": true
+}

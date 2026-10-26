@@ -30,7 +30,7 @@ async function run(service,check){
     const stored=service.service.store.state().accounts.find(a=>a.account_id===id);
     check.ok(!JSON.stringify(stored).includes(setup.json.secret),'authenticator seed is encrypted in persisted state');
     check.equal((await service.request('POST','/api/account/2fa/confirm',{token,body:{code:security.totp(setup.json.secret)}})).status,200,'2FA is activated only after a valid app code');
-    check.equal((await service.request('POST','/api/account/recovery-key',{token,body:{password:'a-long-enough-password'}})).status,401,'enabled 2FA also protects recovery-key replacement');
+    check.equal((await service.request('POST','/api/account/recovery-key',{token,body:{password:'incorrect-current-password'}})).status,401,'a verified MFA login still requires the current password to replace the recovery key');
     check.equal((await service.request('POST','/api/account/finish-signup',{token,body:{enable_two_factor:true}})).status,200,'all selected signup requirements complete');
     check.equal((await service.request('GET','/api/cases',{token})).status,200,'completed signup reaches the ordinary application');
     check.equal((await service.request('POST','/api/sessions',{body:{email:'fz-required@example.test',password:'a-long-enough-password'}})).json.error.code,'TWO_FACTOR_REQUIRED','password alone does not open a 2FA account');

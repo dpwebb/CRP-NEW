@@ -323,7 +323,7 @@ async function run(service, check) {
     && /Other or unknown locations see US prices/.test(billingBox)
     && /fixed prices, with no exchange-rate pricing/.test(billingBox) && /one-time purchase does not renew/i.test(billingBox)
     && /Renews until you cancel/.test(billingBox) && /Cancelling a subscription stops the next charge/.test(billingBox)
-    && /Your access lasts until the date shown above/.test(billingBox), 'and states currency, renewal, cancellation and remaining access before purchase');
+    && !/Your access lasts until the date shown above/.test(billingBox), 'and states currency, renewal and cancellation before purchase without inventing an access deadline');
   check.ok(!/do not prove working billing/.test(billingBox), 'and never renders the internal billing-readiness sentence');
 
   return { interaction: 'select -> save full preview -> edit disables approval -> save and read new preview -> approve -> download against the real service' };

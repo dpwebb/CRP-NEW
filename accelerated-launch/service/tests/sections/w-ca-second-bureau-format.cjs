@@ -435,8 +435,11 @@ function everyCanadianSelectionAssesses(check, reading) {
   check.deepEqual(Object.keys(perRegion).sort(), CA_REGIONS, 'and they are exactly the thirteen the recorded relation names');
   check.equal(OTHER_TWELVE.filter((r) => perRegion[r].factual_checks_performed === 2).length, 12,
     'each of the twelve selections with no recorded statutory limb ran both TransUnion factual checks');
-  check.ok(Object.values(perRegion).every((row) => row.dates_compared >= 119),
-    'and each comparison reached every readable printed date on the presentation (119 of them)');
+  check.ok(Object.values(perRegion).every((row) => reading.generated_oracle
+    ? row.dates_compared === reading.generated_oracle.readable_dates : row.dates_compared >= 119),
+    reading.generated_oracle
+      ? 'each comparison reaches all19declared readable generated dates (4+4+4+7);7partial dates remain excluded'
+      : 'and each comparison reached every readable printed date on the presentation (119 of them)');
   return perRegion;
 }
 
@@ -718,3 +721,7 @@ module.exports = {
   title: 'The second Canadian consumer format, admitted by its own measured structural contract, with the Equifax admission and the Nova Scotia statutory unit untouched'
 };
 
+
+// Owner-authorized generated regression reuses these pure fixture/assertion helpers.
+// The original captured-source run above remains available as its separate audit.
+module.exports.generatedRegression = { fileShapedModel, twoColumnHazards, ambiguityAndReferenceDate, checksAreScopedToTheirOwnLayout, everyCanadianSelectionAssesses };

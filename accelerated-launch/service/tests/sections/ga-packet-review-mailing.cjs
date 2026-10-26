@@ -85,6 +85,7 @@ async function recoveryChecks(t,browser,actor,source,check,out){
  const rasterUi=await openPacket(glyphCase.c,page=>page.route(imagePattern,rejectImage));
  try{
   const {page}=rasterUi;
+  check.ok(await page.locator('#packet-signature-save').isDisabled(),'signature action stays disabled while a later real packet image is pending');
   let imageTimer;
   try{await Promise.race([imageReached,new Promise((_,reject)=>{imageTimer=setTimeout(()=>reject(new Error('The expected second packet page image was not requested.')),60000);})]);}
   finally{clearTimeout(imageTimer);}
@@ -249,6 +250,10 @@ async function identificationSheetBrowser(t,browser,source,check,out){
    check.ok(await sheetNode.locator('img').evaluate(image=>image.complete&&image.naturalWidth>0),'the complete identification sheet actually renders at '+width+'px');
    check.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'shared-sheet review does not overflow at '+width+'px');
    await sheetNode.screenshot({path:path.join(out,'identification-sheet-'+width+'.png')});
+   await page.locator('#packet-page-zoom').selectOption('readable');
+   check.ok(await sheetNode.locator('.packet-sheet').evaluate(node=>node.getBoundingClientRect().width>=960),'full-size reading gives a readable physical page at '+width+'px');
+   check.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'full-size page scroll stays within its review region');
+   await page.locator('#packet-page-zoom').selectOption('100');
   }
   await page.locator('#packet-preview-reviewed').check();await page.locator('#packet-approve').click();await page.locator('#packet-download:enabled').waitFor();
   const preview=await req('GET',base+'/packet/preview?version='+view.packet.preview_version),download=await req('GET',base+'/packet-download'),print=await req('GET',base+'/packet-print');
@@ -257,6 +262,12 @@ async function identificationSheetBrowser(t,browser,source,check,out){
   const unrelated=await t.request('GET',base+'/packet/preview/pages?version='+view.packet.preview_version,{token:(await t.account('identification-sheet-other@example.test')).token});
   check.equal(unrelated.status,403,'a different account cannot read grouped private identification metadata');
   check.ok(!JSON.stringify(unrelated.json).includes(images[0].filename),'grouped identification filenames do not leak through ownership refusal');
+  const rotated=await req('POST',base+'/packet/support',{support:{...support,document_rotations:{[ids[0]]:90}}});
+  check.equal(rotated.status,200,'output rotation saves through the ordinary owned support route');
+  check.ok(!rotated.json.view.packet.approved&&rotated.json.view.packet.preview_version!==view.packet.preview_version,'rotation invalidates prior packet approval');
+  check.ok((await req('GET',base+'/packet-download')).status!==200,'rotation cannot download the old approved artifact');
+  const rotatedMetadata=(await req('GET',base+'/packet/preview/pages?version='+rotated.json.view.packet.preview_version)).json;
+  check.equal(rotatedMetadata.review_pages.find(item=>item.grouped_identification).sources.find(item=>item.file_id===ids[0]).rotation,90,'actual composed grouped page records the selected rotation');
   const remaining=chosen.filter(id=>id!==ids[1]);
   await req('POST',base+'/packet/support',{support:{...support,document_ids:remaining,document_dates:Object.fromEntries(remaining.map(id=>[id,support.document_dates[id]]))}});
   const changed=(await req('GET',base+'/packet')).json.view.packet;
@@ -290,7 +301,7 @@ async function run(t,check){
   check.equal(await page.locator('#packet-letter').evaluate(node=>Boolean(node.closest('[data-packet-page]'))),true,'the consumer edits the letter within its actual packet page');
   check.equal(await page.locator('#review').count(),0,'review does not repeat the assessment-review button');
   check.ok(await page.locator('#packet-approve').isDisabled()&&await page.locator('#packet-print').isDisabled()&&await page.locator('#packet-download').isDisabled(),'unapproved printing and downloading are blocked with clear requirements');
-  const original=await page.locator('#packet-letter').inputValue();await page.locator('#packet-letter').fill(original+'\nFictional custom edit.');await page.locator('#packet-save').click();await page.getByText('Packet saved. Check your letter and every page in the PDF.',{exact:true}).waitFor();check.ok((await page.locator('#packet-letter').inputValue()).includes('Fictional custom edit.'),'Save persists the full consumer letter');
+  const original=await page.locator('#packet-letter').inputValue();await page.locator('#packet-letter').fill(original+'\nFictional custom edit.');await page.locator('#packet-save').click();await page.getByText('Packet saved. Loading your pages for review.',{exact:true}).waitFor();check.ok((await page.locator('#packet-letter').inputValue()).includes('Fictional custom edit.'),'Save persists the full consumer letter');
    check.deepEqual((await req('GET',route+'/packet')).json.view.packet.annotations,savedAnnotations,'ordinary letter Save preserves every existing saved annotation');
   await page.locator('#packet-reset-letter').click();await page.getByText('The prepared letter is restored. Check it and every page before approving.',{exact:true}).waitFor();check.equal(await page.locator('#packet-letter').inputValue(),original,'Use the prepared letter visibly restores it without another save click');check.equal((await req('GET',route+'/packet')).json.view.packet.letter_text,null,'reset removes the stored override through the owned API');
    check.deepEqual((await req('GET',route+'/packet')).json.view.packet.annotations,savedAnnotations,'prepared-letter reset preserves every existing saved annotation');
@@ -304,8 +315,9 @@ async function run(t,check){
   check.ok((await page.locator('#packet-ready-status').innerText()).includes('Remove it before mailing'),'the visible ready message reinforces removal');
   const before=sha(bytes);await page.locator('[data-step="5"]').click();await page.locator('#packet-preparation-content').waitFor();
   check.equal(await page.locator('#packet-verification-requested,#packet-copies-confirmed').count(),0,'Prepare has no repeated identity or copy-quality confirmations');
-  check.equal(await page.locator('#packet-account-details:visible').count(),0,'complete saved contact details and copies do not prompt another Account or upload detour');
-  check.equal(await page.locator('[data-packet-document]:visible').count(),0,'complete saved document copies do not need to be selected again');
+  check.equal(await page.locator('#packet-account-details:visible').count(),1,'complete preparation keeps the optional contact and document replacement route available');
+  check.equal(await page.locator('#packet-prepare-next').isEnabled(),true,'complete saved contact details and copies allow continuing without another Account or upload detour');
+  check.ok(await page.locator('[data-packet-document]:visible').count()>0,'complete saved document copies stay visible for optional review without reselection');
   await page.locator('#packet-prepare-next').click();await page.locator('#packet-approved-status').waitFor();check.equal(sha((await req('GET',route+'/packet-download')).bytes),before,'unchanged backward/forward navigation preserves approval and bytes');
   await page.locator('#packet-download:enabled').waitFor();
   await page.locator('#packet-letter-date').fill('2026-10-14');await page.locator('#packet-save').click();await page.locator('#packet-preview-reviewed:enabled').waitFor();
@@ -331,7 +343,7 @@ async function run(t,check){
    check.deepEqual(finalView.packet.annotations,savedAnnotations,'saved annotations remain exact after long-letter edits and final approval');
   check.ok(editedBytes.equals((await req('GET',finalView.packet.letter_preview_url)).bytes),'the browser downloads the exact complete packet reviewed after all inline edits');
   const normalized=require('../packet-pdf-assertions.cjs').comparableText(require('../packet-pdf-assertions.cjs').pdfText(editedBytes));
-  check.ok(normalized.includes('Fictional final-page consumer edit.')&&normalized.includes('Please compare these impossible account dates.'),'the printable packet retains the last-page edit and evidence note');
+  check.ok(normalized.includes('Fictional final-page consumer edit.')&&!normalized.includes('Please compare these impossible account dates.'),'the printable packet retains the last-page edit without printing the saved evidence note');
   const finalPrintResponse=page.waitForResponse(r=>new URL(r.url()).pathname===route+'/packet-print'),finalPopup=page.waitForEvent('popup');await page.locator('#packet-print').click();const finalPrintPage=await finalPopup;await finalPrintPage.waitForURL('blob:**');check.ok((await(await finalPrintResponse).body()).equals(editedBytes),'printing uses that same saved and approved edited PDF');await finalPrintPage.close();
   const recovery=await recoveryChecks(t,browser,a,source,check,out);
   await identificationSheetBrowser(t,browser,source,check,out);
