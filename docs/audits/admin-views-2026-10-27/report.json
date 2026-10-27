@@ -1,0 +1,152 @@
+{
+  "status": "READ_ONLY_HOSTED_VIEW_AUDIT_PASSED_WITH_EMPTY_DATA_LIMITS",
+  "workDate": "2026-10-27",
+  "releaseAtStart": "crp-family-c3496c190be0c803a124",
+  "coverage": {
+    "stagingDesktopNavigationScreens": 27,
+    "stagingMobileNavigationScreens": 27,
+    "productionDesktopNavigationScreens": 27,
+    "productionMobileNavigationScreens": 27,
+    "mobileWidth": 390,
+    "productionDesktopWidth": 1440,
+    "stagingDesktop": "Normal Chrome desktop viewport, 2065px observed; additional 1440px support-dialog visual check. Initial desktop viewport override affected the selected production tab; staging dimensions were inspected and mobile testing used an explicit per-tab override.",
+    "screens": [
+      "overview",
+      "accounts",
+      "cases",
+      "billing",
+      "organizations",
+      "referrals",
+      "fulfillment",
+      "grants",
+      "settings",
+      "campaigns",
+      "holds",
+      "partners",
+      "commissions",
+      "proposals",
+      "report",
+      "contacts",
+      "communications",
+      "assets",
+      "tickets",
+      "onboarding",
+      "evidence",
+      "resources",
+      "orders",
+      "pricing",
+      "routes",
+      "team",
+      "activity"
+    ],
+    "teamPanels": [
+      "Consumer",
+      "Affiliate",
+      "Mail"
+    ],
+    "activityPanels": [
+      "Family",
+      "Consumer",
+      "Affiliate"
+    ],
+    "recordSampling": "At least one representative View per populated table; first and last visible records were sampled on the first 18 staging desktop screens where available. This is screen coverage, not every historical record or pagination page.",
+    "retainedRuntimeMeasurementsAfterBrowserControllerReset": 112,
+    "initial18StagingDesktopResults": "Passed; retained in browser tool outputs before the controller timeout. These results were not recovered from controller memory."
+  },
+  "presentation": {
+    "rawJsonBlocksFound": 0,
+    "serializedObjectValuesFound": 0,
+    "objectObjectPlaceholdersFound": 0,
+    "clippedDetailFieldsFound": 0,
+    "horizontalDetailOverflowFound": 0,
+    "expandedTechnicalReferencesChecked": true,
+    "actualScreenshotsVisuallyInspected": [
+      "staging desktop support details",
+      "production mobile support details"
+    ]
+  },
+  "completedNestedReads": {
+    "staging": [
+      {
+        "view": "full mailing order",
+        "httpStatus": 200,
+        "labelledFields": 220
+      },
+      {
+        "view": "provider status",
+        "httpStatus": 200,
+        "labelledFields": 53
+      },
+      {
+        "view": "agreement acceptance",
+        "httpStatus": 200,
+        "labelledFields": 7
+      },
+      {
+        "view": "onboarding checklist",
+        "httpStatus": 200,
+        "labelledFields": 28
+      },
+      {
+        "view": "approved campaign creative",
+        "httpStatus": 200,
+        "labelledFields": 147
+      }
+    ],
+    "production": [
+      {
+        "view": "agreement acceptance",
+        "httpStatus": 200,
+        "labelledFields": 17
+      },
+      {
+        "view": "onboarding checklist",
+        "httpStatus": 200,
+        "labelledFields": 46
+      },
+      {
+        "view": "approved campaign creative",
+        "httpStatus": 200,
+        "labelledFields": 139
+      }
+    ],
+    "method": "Verified completion of the UI-triggered GET through response and loading-finished events before inspecting the resulting dialog. Earlier immediate checks could inspect the previous record; the completed-response checks supersede them. No business mutation was replayed."
+  },
+  "emptyDataLimits": [
+    "Payout export details have no proposals in either environment.",
+    "Production mailing-order and provider details have no orders.",
+    "Other empty tables were checked for their empty-state presentation; no populated-record claim is made for them.",
+    "No customer or fictional records were created to populate an empty view."
+  ],
+  "dataPreservation": {
+    "receipt": "preservation.json",
+    "consumerCollectionsExactPerEnvironment": 12,
+    "consumerCollectionsComparedPerEnvironment": 14,
+    "consumerChangedCollections": [
+      "accounts",
+      "sessions"
+    ],
+    "consumerAccountRowByteEqualityClaimed": false,
+    "consumerBoundary": "Account/session collection hashes differ across the owner-completed normal authentication and admin-read window. Native sign-in updates MFA anti-replay counters. All other Consumer collections, including case/report/packet/billing records, match. These account/session differences are qualified rather than excluded from an equality claim.",
+    "stagingAffiliateTablesExact": "33/33",
+    "productionAffiliateTablesExact": "26/26",
+    "mailBusinessTablesExactPerEnvironment": "25/25",
+    "mailRuntimeChanged": "Single-row runtime table with columns name and heartbeat_at; normal worker activity is qualified separately.",
+    "originalFamilyAuditPrefixesExact": true,
+    "completeFamilyHmacChainsVerified": true,
+    "newBusinessActionEvents": 0,
+    "normalAuthenticationAndReadAuditEventsRetained": true,
+    "accountAndSessionCountDetail": "preservation.json contains unchanged account counts in both environments, unchanged staging session count, and the production session created during the owner-completed sign-in. Account collection bytes remain qualified; no exact per-account-field comparison is claimed."
+  },
+  "operationalChanges": {
+    "businessEdits": 0,
+    "newAccountsOrPermissions": 0,
+    "paymentsOrMailActions": 0,
+    "deploymentsOrRestarts": 0,
+    "viewportOverridesCleared": true,
+    "ownerCompletedNormalLoginAndMfa": true,
+    "credentialsOrMfaSecretsExtracted": false
+  },
+  "evidenceReferences": "evidence-references.json",
+  "publicationScope": "Sanitized report and preservation summary only. No credentials, MFA material, raw customer records, screenshots, protected configuration, backups, or operational scripts are published. Publication is Git-only and does not repeat testing or deploy a new package."
+}

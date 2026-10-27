@@ -1,0 +1,119 @@
+{
+  "recordedAt": "2026-10-27T03:24:24.764470+00:00",
+  "comparison": {
+    "staging": {
+      "consumerCollections": {
+        "exact": 12,
+        "total": 14,
+        "changed": [
+          "accounts",
+          "sessions"
+        ],
+        "rowCountsUnchanged": true
+      },
+      "affiliateTables": {
+        "exact": 33,
+        "total": 33,
+        "changed": [],
+        "rowCountsUnchanged": true
+      },
+      "mailTables": {
+        "exact": 25,
+        "total": 26,
+        "changed": [
+          "runtime"
+        ],
+        "rowCountsUnchanged": true
+      },
+      "changedConsumerCollectionRowCounts": {
+        "accounts": {
+          "before": 66,
+          "after": 66
+        },
+        "sessions": {
+          "before": 2,
+          "after": 2
+        }
+      }
+    },
+    "production": {
+      "consumerCollections": {
+        "exact": 12,
+        "total": 14,
+        "changed": [
+          "accounts",
+          "sessions"
+        ],
+        "rowCountsUnchanged": false
+      },
+      "affiliateTables": {
+        "exact": 26,
+        "total": 26,
+        "changed": [],
+        "rowCountsUnchanged": true
+      },
+      "mailTables": {
+        "exact": 25,
+        "total": 26,
+        "changed": [
+          "runtime"
+        ],
+        "rowCountsUnchanged": true
+      },
+      "changedConsumerCollectionRowCounts": {
+        "accounts": {
+          "before": 7,
+          "after": 7
+        },
+        "sessions": {
+          "before": 0,
+          "after": 1
+        }
+      }
+    }
+  },
+  "qualification": {
+    "staging": {
+      "familyAudit": {
+        "originalPrefixExact": true,
+        "hmacChainVerified": true,
+        "newEvents": {
+          "ADMIN_UNLOCKED": 1,
+          "APPLICATION_LINKED": 2,
+          "RESOURCE_VIEWED": 104
+        },
+        "newBusinessActions": 0
+      },
+      "mailRuntimeStructure": {
+        "rows": 1,
+        "columns": [
+          "name",
+          "heartbeat_at"
+        ],
+        "jsonValueFieldNames": []
+      }
+    },
+    "production": {
+      "familyAudit": {
+        "originalPrefixExact": true,
+        "hmacChainVerified": true,
+        "newEvents": {
+          "SIGN_IN": 1,
+          "ADMIN_UNLOCKED": 1,
+          "APPLICATION_LINKED": 2,
+          "RESOURCE_VIEWED": 85
+        },
+        "newBusinessActions": 0
+      },
+      "mailRuntimeStructure": {
+        "rows": 1,
+        "columns": [
+          "name",
+          "heartbeat_at"
+        ],
+        "jsonValueFieldNames": []
+      }
+    }
+  },
+  "boundary": "Consumer account/session collection hashes differ across the owner-completed normal login and admin-read window. All other Consumer collections, all Affiliate tables, and all Mail tables other than runtime match. No account-row byte equality is claimed. Native sign-in records MFA anti-replay counters; session activity and signed read audits are expected. Original Family audit prefixes and their entire HMAC chains verify; no business ACTION events were appended."
+}

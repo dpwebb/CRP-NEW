@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "preparedAt": "2026-10-27T05:31:30.248094+00:00",
+  "deployedExecutableSource": "372e5238c4c2701af0fbe3b944798e380a415239",
+  "release": "crp-family-c3496c190be0c803a124",
+  "sourceEvidence": [
+    {
+      "name": "results.json",
+      "sha256": "386aba721b719234cd4328676e08384cfd2b0a253dc081d9c588c1fc518a6bf8",
+      "availability": "Retained locally; original is not included in this publication."
+    },
+    {
+      "name": "preservation.json",
+      "sha256": "c50927b7bab9c19a7c29b80a5718c1f5e950fc813556229aad70365d7add5b78",
+      "availability": "Retained locally; original is not included in this publication."
+    },
+    {
+      "name": "before.json",
+      "sha256": "d6aa43d82e96dcd4e1a3bc1fa5c1f417b1e569a9610577336dc7075d4374e79e",
+      "availability": "Retained locally; original is not included in this publication."
+    },
+    {
+      "name": "after.json",
+      "sha256": "03b2d7a16a389df21139a31100158539d6ca3fd1a10d19900a037e77f05ac173",
+      "availability": "Retained locally; original is not included in this publication."
+    }
+  ],
+  "browserEvidence": "Authenticated hosted UI observations in the audit conversation. The initial 18 staging desktop summaries survived in tool outputs, while their controller-memory measurements were lost on timeout. Later measurements and nested response completion checks are distinguished in report.json.",
+  "freshHostedVerificationDuringPublication": false
+}
