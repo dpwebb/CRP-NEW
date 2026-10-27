@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "status": "DEPLOYED_AND_VERIFIED_STAGING_AND_PRODUCTION",
+  "recordedAt": "2026-10-27T02:47:30.471687+00:00",
+  "source": "372e5238c4c2701af0fbe3b944798e380a415239",
+  "release": "crp-family-c3496c190be0c803a124",
+  "manifestSha256": "40ecd02085a669c3910ddd062ca1d414d216b3f4d941994abebd5498709dfd74",
+  "files": 52,
+  "urls": {
+    "staging": "https://admin-staging.creditregulatorpro.com",
+    "production": "https://admin.creditregulatorpro.com"
+  },
+  "changes": [
+    "public/app.js",
+    "public/style.css"
+  ],
+  "addedLocalTestHelpers": [
+    "test/readable-views-demo.mjs",
+    "test/readable-views.browser.cjs"
+  ],
+  "checks": {
+    "sourceMatchedLocal": {
+      "pass": 49,
+      "fail": 0,
+      "linuxOnlySkipped": 5
+    },
+    "freshLinuxLock": {
+      "pass": 5,
+      "fail": 0,
+      "skip": 0
+    },
+    "localFictionalApplicationViews": 24,
+    "hostedPresentation": {
+      "staging": {
+        "passed": true,
+        "environment": "staging",
+        "build": {
+          "release": "crp-family-c3496c190be0c803a124",
+          "commit": "372e5238c4c2701af0fbe3b944798e380a415239",
+          "manifest": "40ecd02085a669c3910ddd062ca1d414d216b3f4d941994abebd5498709dfd74",
+          "files": 52
+        },
+        "anonymous401": [
+          "/api/session",
+          "/api/apps/crp/accounts",
+          "/api/apps/affiliate/tickets",
+          "/api/apps/mail/orders"
+        ],
+        "fictionalShapes": 3,
+        "widths": [
+          1440,
+          390
+        ],
+        "mode": "anonymous served-renderer check with fictional inputs; prior authenticated backend acceptance reused",
+        "writes": 0
+      },
+      "production": {
+        "passed": true,
+        "environment": "production",
+        "build": {
+          "release": "crp-family-c3496c190be0c803a124",
+          "commit": "372e5238c4c2701af0fbe3b944798e380a415239",
+          "manifest": "40ecd02085a669c3910ddd062ca1d414d216b3f4d941994abebd5498709dfd74",
+          "files": 52
+        },
+        "anonymous401": [
+          "/api/session",
+          "/api/apps/crp/accounts",
+          "/api/apps/affiliate/tickets",
+          "/api/apps/mail/orders"
+        ],
+        "fictionalShapes": 3,
+        "widths": [
+          1440,
+          390
+        ],
+        "mode": "anonymous served-renderer check with fictional inputs; prior authenticated backend acceptance reused",
+        "writes": 0
+      }
+    }
+  },
+  "preservation": {
+    "familySnapshotAndEncryptedBackupIndependentlyVerifiedOnVpsAndDesktop": true,
+    "nativeRuntimeConfigurationAndPids": true,
+    "familyKeysConfigJournalExactToStoppedSnapshots": true,
+    "journalQualifications": {
+      "staging": {
+        "rollbackTimerInactive": true,
+        "journal": {
+          "originalHash": "fba6b1c50afdd7c2c33e80a0bf8d963299011d8cc624755579676b21bf4954c1",
+          "exact": true,
+          "logoutEvents": 0,
+          "hmacVerifiedByIndependentRecovery": true
+        },
+        "backup": "5918101559ceee7b19fd4f5ba8217028fc8fc1608f469f50572441edfec14c7d"
+      },
+      "production": {
+        "rollbackTimerInactive": true,
+        "journal": {
+          "originalHash": "49f697d8bcb7378662e257dca190b94069014b1e5952a9751da4f14b41eb30bd",
+          "exact": true,
+          "logoutEvents": 0,
+          "hmacVerifiedByIndependentRecovery": true
+        },
+        "backup": "fee2157e06d5ed0bd101d28b75740dee8c4b6b616e2c53df182017dc0daae72c"
+      },
+      "retainedFirstRefusal": {
+        "logoutEvents": 2,
+        "originalPrefixVerified": true,
+        "receiptSha256": "fba6b1c50afdd7c2c33e80a0bf8d963299011d8cc624755579676b21bf4954c1"
+      }
+    },
+    "noNativeDatabaseEqualityClaim": true,
+    "noNewAccountsGrantsProviderTransactionsOrMail": true
+  },
+  "runtime": {
+    "staging": {
+      "build": {
+        "release": "crp-family-c3496c190be0c803a124",
+        "commit": "372e5238c4c2701af0fbe3b944798e380a415239",
+        "manifest": "40ecd02085a669c3910ddd062ca1d414d216b3f4d941994abebd5498709dfd74",
+        "files": 52
+      },
+      "pid": "720275"
+    },
+    "production": {
+      "build": {
+        "release": "crp-family-c3496c190be0c803a124",
+        "commit": "372e5238c4c2701af0fbe3b944798e380a415239",
+        "manifest": "40ecd02085a669c3910ddd062ca1d414d216b3f4d941994abebd5498709dfd74",
+        "files": 52
+      },
+      "pid": "726058"
+    }
+  },
+  "publication": {
+    "sourceCommitLocal": true,
+    "sourcePush": false
+  },
+  "evidenceSha256": {
+    "final.json": "75c0ea085ea9af63563f5a095955a2dbe52f3442369c43f3e52df95879dd47ee",
+    "staging-browser-proof.txt": "ae3028135921a33830b58a3e72fcdf9a5f03cffdacfda439f321d786d102ac4f",
+    "production-browser-proof.txt": "aedb88e9b3c00510b4921009f14455bc4c3e95e968786199b55f7136fe508bdd",
+    "final-qualified-custody.json": "0b904093432ed777780330e92609acba3d5912a1908ad0ef5060a4edc37e297a"
+  }
+}
