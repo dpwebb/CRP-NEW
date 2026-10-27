@@ -141,4 +141,3 @@ function freezeExpected(options) {
 }
 
 module.exports = { buildMixedPagePdf, freezeExpected, jpegSize };
-

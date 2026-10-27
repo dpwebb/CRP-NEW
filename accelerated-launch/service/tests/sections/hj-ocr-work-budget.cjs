@@ -10,4 +10,3 @@ async function run(t,check){
   return {native_cases:5,scope:'fictional local source pixels and actual installed OCR, including injected malformed batch page identities',receipt:path.relative(path.join(__dirname,'../../../..'),path.join(output,'native.tap'))};
 }
 module.exports={id:'hj-ocr-work-budget',title:'Bounded physical OCR batches source views within the unchanged deadline',run};
-
