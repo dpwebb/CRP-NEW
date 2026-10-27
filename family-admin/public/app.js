@@ -493,14 +493,78 @@ function items(value) {
   if (Array.isArray(value?.orders)) return value.orders;
   return null;
 }
+// One readable presentation for native records and object-shaped summary pages.
+// Always use text nodes: upstream record text must never become executable HTML.
+function recordDetails(value, inheritedCurrency, level = 3) {
+  const root = el("div", null, "record-details");
+  const fieldLabels = {
+    id: "Record ID", partner_id: "Partner ID", assigned_to: "Assigned to",
+    state: "Status", manual_review: "Manually reviewed", resolution_evidence: "Resolution evidence",
+    created_at: "Created", updated_at: "Updated", revision: "Revision",
+  };
+  const label = (key) => Object.hasOwn(fieldLabels, key) ? fieldLabels[key] : human(key.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/_?minor$/i, ""));
+  const technical = (key) => /(^id$|_id$|Id$|_hash$|Hash$|^hash$|^sha256$|^revision$|^sequence$)/.test(key);
+  function scalar(item, key, currency) {
+    if (item === null || item === undefined || item === "") return el("span", "Not provided", "detail-muted");
+    if (technical(key)) return el("span", String(item));
+    if (typeof item === "boolean") return el("span", item ? "Yes" : "No");
+    if (typeof item === "number") {
+      if (/minor$/i.test(key) && currency && Number.isSafeInteger(item)) {
+        try { return el("span", new Intl.NumberFormat(undefined, { style: "currency", currency }).format(item / 100)); } catch { /* Preserve the supplied value below. */ }
+      }
+      return el("span", new Intl.NumberFormat().format(item) + (/minor$/i.test(key) ? " (minor units)" : ""));
+    }
+    const text = String(item);
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(text) && Number.isFinite(Date.parse(text))) {
+      const time = el("time", new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", second: "2-digit", timeZoneName: "short" }).format(new Date(text)));
+      time.dateTime = text; time.title = text; return time;
+    }
+    if (/(status|state|role)$/i.test(key)) return el("span", human(text.toLowerCase()), "badge");
+    return el("span", text);
+  }
+  if (Array.isArray(value)) {
+    if (!value.length) { root.append(el("p", "No items.", "detail-muted")); return root; }
+    const list = el("ol", null, "detail-items");
+    for (const [index, item] of value.entries()) {
+      const li = el("li");
+      if (item !== null && typeof item === "object") {
+        li.append(el("h" + Math.min(level, 6), "Record " + (index + 1)), recordDetails(item, inheritedCurrency, level + 1));
+      } else li.append(scalar(item, "", inheritedCurrency));
+      list.append(li);
+    }
+    root.append(list); return root;
+  }
+  if (value === null || typeof value !== "object") { root.append(scalar(value, "", inheritedCurrency)); return root; }
+  const entries = Object.entries(value), currency = value.currency || inheritedCurrency;
+  if (!entries.length) { root.append(el("p", "No details provided.", "detail-muted")); return root; }
+  const fields = el("dl", null, "detail-fields"), references = el("dl", null, "detail-fields");
+  const groups = [];
+  for (const [key, item] of entries) {
+    if (item !== null && typeof item === "object" && !technical(key)) { groups.push([key, item]); continue; }
+    const target = technical(key) ? references : fields;
+    const dt = el("dt", label(key)), dd = el("dd");
+    dd.append(item !== null && typeof item === "object" ? recordDetails(item, currency, level + 1) : scalar(item, key, currency));
+    target.append(dt, dd);
+  }
+  if (fields.childElementCount) root.append(fields);
+  for (const [key, item] of groups) {
+    const section = el("section", null, "detail-group");
+    section.append(el("h" + Math.min(level, 6), label(key)), recordDetails(item, currency, level + 1)); root.append(section);
+  }
+  if (references.childElementCount) {
+    const more = el("details", null, "detail-references");
+    more.append(el("summary", "Technical references"), references); root.append(more);
+  }
+  return root;
+}
 function showDetails(app, row) {
   dialog(
-    "Record details",
-    `${labels[app]}. Fields shown are supplied by that application.`,
+    (pages[S.view]?.label || "Record") + " details",
+    labels[app],
     [],
     null,
   );
-  $("dialog-fields").append(el("pre", JSON.stringify(row, null, 2)));
+  $("dialog-fields").append(recordDetails(row));
   const id = row.id || row.orderId || row.admin_id || row.job_id || row.org_id || row.account_id;
   const actions = el("div", null, "record-actions");
   const reads = S.session.catalog.reads[app];
@@ -600,7 +664,7 @@ function table(app, rows) {
       if (value === null || value === undefined) td.textContent = "—";
       else if (typeof value === "object")
         td.textContent = Array.isArray(value)
-          ? value.join(", ")
+          ? (value.some(item => item !== null && typeof item === "object") ? `${value.length} items · View details` : value.join(", "))
           : "View details";
       else if (/status|state|role/.test(key))
         td.append(el("span", human(value), "badge"));
@@ -685,7 +749,7 @@ async function appView(app, resource, root, generation) {
   if (generation !== S.generation) return;
   const rows = items(result.data);
   if (rows) root.append(table(app, rows));
-  else root.append(el("pre", JSON.stringify(result.data, null, 2)));
+  else root.append(recordDetails(result.data));
   if (result.data?.totals)
     root.append(
       el(

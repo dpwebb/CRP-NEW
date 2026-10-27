@@ -517,6 +517,25 @@ pre {
   overflow-wrap: anywhere;
   font-size: 12px;
 }
+.record-details { min-width: 0; line-height: 1.6; }
+.detail-fields { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(0, 2fr); margin: 0; }
+.detail-fields > dt, .detail-fields > dd { margin: 0; padding: 12px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; white-space: pre-wrap; }
+.detail-fields > dt { font-weight: 600; padding-right: 20px; }
+.detail-fields > dd { min-width: 0; }
+.detail-muted { color: var(--muted); }
+.detail-group { margin-top: 22px; }
+.detail-group > h3, .detail-group > h4, .detail-group > h5, .detail-group > h6 { font-size: 16px; margin: 0 0 10px; }
+.detail-items { margin: 0; padding-left: 24px; }
+.detail-items > li { padding: 8px 0; overflow-wrap: anywhere; }
+.detail-items > li > h3, .detail-items > li > h4 { margin: 0 0 8px; font-size: 15px; }
+.detail-references { margin-top: 20px; }
+.detail-references > summary { cursor: pointer; font-weight: 600; padding: 8px 0; }
+.detail-references > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+@media (max-width: 520px) {
+  .detail-fields { grid-template-columns: minmax(0, 1fr); }
+  .detail-fields > dt { padding: 12px 0 2px; border-bottom: 0; }
+  .detail-fields > dd { padding: 0 0 12px; }
+}
 .record-actions {
   margin-top: 20px;
   display: flex;
