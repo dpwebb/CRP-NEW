@@ -842,6 +842,22 @@ function numeric(value, depth = 0) {
     )
     .slice(0, 4);
 }
+function mailMonitoring(card, value, now = Date.now()) {
+  const box=el('section',null,'mail-monitoring');box.setAttribute('aria-label','Mail health and backup alerts');
+  box.append(el('h3','Mail health and backup alerts'));
+  const labels={API_IDENTITY_OR_HEALTH:'Mail service identity or health needs review',API_NOT_READY:'Mail service is not ready',WORKER_STALE:'Mail worker heartbeat is stale',RECONCILIATION_REQUIRED:'Uncertain mailing work needs reconciliation',PROVIDER_STATUS_REVIEW:'Provider progress needs review',FAILED_ORDERS:'Failed mailing orders need review',REFUND_REVIEW:'Refund evidence needs review',QUEUE_OVER_ONE_HOUR:'Mailing queue is over one hour old',ROUTE_EVIDENCE_RENEWAL:'Bureau route evidence needs renewal',LOCAL_BACKUP_STALE:'Mail backup is missing or stale',RECOVERY_EXPORT_STALE_OR_UNVERIFIED:'Recovery export is stale or unverified',MONITOR_INPUT_OR_STORAGE_FAILURE:'Mail monitor could not complete its checks',MONITOR_STATUS_UNAVAILABLE:'Mail monitoring is unavailable'};
+  const current=value?.configured===true&&Number.isSafeInteger(value.checkedAt)&&value.checkedAt<=now&&now-value.checkedAt<=300000&&Array.isArray(value.alerts)&&value.alerts.length<=32;
+  if(!current){box.append(el('p','Monitoring is not installed, is stale, or is unavailable.','badge warn'));}
+  else{
+    const clear=value.ok===true&&value.alerts.length===0;
+    box.append(el('p',clear?'Current monitor checks passed':'Administrator review required',clear?'badge ok':'badge warn'));
+    box.append(el('p','Checked '+new Date(value.checkedAt).toLocaleString(),'muted'));
+    if(!clear){const list=el('ul');for(const alert of value.alerts)list.append(el('li',alert.code==='BACKUP_JOB_FAILED'?'The scheduled Mail backup failed':labels[alert.code]||'Monitoring requires review'));box.append(list);}
+  }
+  const email={CAPTURED:'Email capture prepared; no message sent.',RELAY_ACCEPTED:'Email relay accepted the alert; inbox receipt and administrator acknowledgement are unverified.',UNKNOWN:'Email outcome is uncertain. Reconcile before retrying.',CLEAR:'No active email alert incident.'};
+  box.append(el('p',current&&email[value.emailState]?email[value.emailState]:'Administrator email delivery is not verified.','muted'));
+  card.append(box);
+}
 async function overview(root, generation) {
   const cards = el("div", null, "cards");
   root.append(cards);
@@ -883,7 +899,9 @@ async function overview(root, generation) {
           if (generation !== S.generation) return;
           badge.textContent = "Access verified";
           badge.className = "badge ok";
-          for (const item of numeric(result.data)) {
+          if(app==='mail')mailMonitoring(card,result.data?.monitoring);
+          const metricData=app==='mail'?Object.fromEntries(Object.entries(result.data||{}).filter(([key])=>key!=='monitoring')):result.data;
+          for (const item of numeric(metricData)) {
             const m = el("div", null, "metric");
             m.append(
               el("strong", new Intl.NumberFormat().format(item.value)),
