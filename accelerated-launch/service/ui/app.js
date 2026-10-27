@@ -2330,7 +2330,7 @@ function packetReportCopies(packet) {
   if (!Array.isArray(packet.report_exhibits)) return '';
   const reports = packet.report_exhibits;
   if (!reports.length) return '';
-  return `<section id="packet-reports"><h3>Report pages</h3>
+  return `<section id="packet-reports"><h2>Report pages</h2>
     <p class="evidence">The pages about your chosen disputes are included in your packet.</p>
     ${reports.map(report => {
       const label = String(report.label || 'Report copy').replace(/\b\d{4}-\d{2}-\d{2}\b/g, date => readableDate(date) || date);
@@ -2620,7 +2620,7 @@ async function wirePacket(panel) {
     ensureOrigin();
     if (!previewCurrent || edits || signatureDraft || !el('packet-preview-reviewed').checked) throw new Error('Save and read the current packet before approving it.');
     const captured = edits, ensureCurrent = () => { ensureOrigin(); if (captured !== edits || signatureDraft || !previewCurrent) throw cancelledAction(); };
-    await api('POST', `/api/cases/${caseId}/packet/approve`, { reviewed_version: pv.packet.preview_version }); ensureCurrent();
+    await api('POST', `/api/cases/${caseId}/packet/approve`, { reviewed_version: pv.packet.preview_version, reading_sha256:packetReviewController?.readingApproval?.() }); ensureCurrent();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
       state.notice = pv.packet.signature?.current ? 'Signed packet approved. You can download this exact PDF.' : 'Packet approved. Download your PDF, print it and sign where shown.';
   });
@@ -2787,6 +2787,14 @@ async function wirePacket(panel) {
     try {
       packetReviewController = window.CRP_PACKET_REVIEW.mount({root:el('packet-all-pages'),caseId,version:pv.packet.preview_version,
         ensure:ensureOrigin,request:path=>currentRequest(ensureOrigin,'GET',path),letter:pv.packet.correspondence_preview,
+        approvedReading:pv.packet.approved_reading_sha256,
+        saveReading:reading=>run(async()=>{
+          ensureOrigin();
+          if(edits||signatureDraft)throw new Error('Save other packet changes before saving text alternatives.');
+          await currentRequest(ensureOrigin,'POST',`/api/cases/${caseId}/packet/reading`,{expected_version:pv.packet.preview_version,reading});
+          state.notice='Text alternatives saved. Review the text and approve this new version before downloading.';
+          render();
+        },{redraw:false}),
         annotations:pv.packet.annotations || [],letterDisabled:()=>dateResetConfirmed,
         changed:kind=>{if(kind==='letter'){letterEdited=true;resetLetter=false;updateDateCopy();}else annotationsEdited=true;markChanged();}});
       await packetReviewController.ready; ensureOrigin();
@@ -2995,7 +3003,7 @@ function renderCase(panel) {
     ${notices()}
     ${view ? `<div class="obs">
       <span class="pill">${esc(({ OPEN: 'Open', REVIEWED: 'Reviewed', RESPONSE_RECORDED: 'Reply received', CLOSED: 'Closed' })[view.case.status] || 'Open')}</span>
-      <h3>${esc(regionLabel(view.case.country, view.case.region))}</h3>
+      <h2>${esc(regionLabel(view.case.country, view.case.region))}</h2>
       ${currentReportIdentity(view)}
       <p class="evidence">${esc(view.status_label || '')}</p>
       ${[['OPEN', 'Open'], ['REVIEWED', 'Reviewed'], ['RESPONSE_RECORDED', 'Reply received'], ['CLOSED', 'Closed']].map(([s, label]) =>
@@ -3003,7 +3011,7 @@ function renderCase(panel) {
     </div>` : '<p class="note">No report is open. You can still review your privacy information and delete your account.</p>'}
     <div class="obs" id="privacyInventory">Loading your stored documents and retention information…</div>
     <div class="obs">
-      <h3>Deleting</h3>
+      <h2>Deleting</h2>
       ${surface?.mailing_internal === true ? '<p class="evidence">If you asked us to mail a packet, unfinished requests are cancelled or held before deletion. The mailing team keeps order and payment references to finish refunds or record posting that already happened. Deletion cannot recall a packet already posted.</p>' : ''}
       ${view ? `<p class="evidence"><strong>Report to delete:</strong> ${esc(deletionLabel)}</p>
       <p class="evidence">Deleting a report removes its uploaded files, saved results and packets from your account. Save any copies you need first.</p>
@@ -3021,9 +3029,9 @@ function renderCase(panel) {
     if (state.step !== STEP.CASE || state.caseId !== privacyCase || !state.account || state.account.account_id !== privacyAccount) return;
     const inventory = el('privacyInventory');
     if (!inventory) return;
-    inventory.innerHTML = `<h3>Your stored documents</h3>${(data.cases || []).map(c => `<p>${esc(regionLabel(c.country, c.region))}: ${(c.documents || []).map(d => `${esc(d.name)} (${esc(d.stored_bytes)} bytes)`).join(', ') || 'No stored documents'}; ${esc(c.result_count)} saved results.</p>`).join('') || '<p>No stored cases.</p>'}
-      ${(data.account_documents || []).length ? `<h4>Account documents</h4><ul>${data.account_documents.map(d => `<li>${esc(d.name)} (${esc(d.stored_bytes)} bytes)</li>`).join('')}</ul><p>Manage these documents in Your account.</p>` : ''}
-      <h3>Retention</h3><p>${esc(data.retention && data.retention.plain)}</p><p>Reports have no automatic expiry. Retention settings are not adjustable.</p>
+    inventory.innerHTML = `<h2>Your stored documents</h2>${(data.cases || []).map(c => `<p>${esc(regionLabel(c.country, c.region))}: ${(c.documents || []).map(d => `${esc(d.name)} (${esc(d.stored_bytes)} bytes)`).join(', ') || 'No stored documents'}; ${esc(c.result_count)} saved results.</p>`).join('') || '<p>No stored cases.</p>'}
+      ${(data.account_documents || []).length ? `<h3>Account documents</h3><ul>${data.account_documents.map(d => `<li>${esc(d.name)} (${esc(d.stored_bytes)} bytes)</li>`).join('')}</ul><p>Manage these documents in Your account.</p>` : ''}
+      <h2>Retention</h2><p>${esc(data.retention && data.retention.plain)}</p><p>Reports have no automatic expiry. Retention settings are not adjustable.</p>
       <p>${esc(data.deletion && data.deletion.backups)}</p><p>${esc(data.deletion && data.deletion.external_billing)}</p><p>${esc(data.pricing_location || '')}</p>`;
   }).catch(() => {
     try { ensurePrivacy(); } catch { return; }
@@ -3131,7 +3139,7 @@ function renderSupport(panel) {
     const summary = supportSummaryText(data);
     state.support = { reference: data.reference, summary, account_id: accountId };
     box.innerHTML = `
-      <h3>Your support reference</h3>
+      <h2>Your support reference</h2>
       <p class="evidence">Reference: <b id="supportReference">${esc(data.reference)}</b></p>
       <p class="evidence">${esc(data.plain)}</p>
       <details class="support-technical"><summary>Details for support</summary><p class="evidence">Build: <b>${esc(data.build_id)}</b> · Stage: <b>${esc(data.category)}</b></p><p class="evidence">Summary without your report details:</p>
@@ -3293,7 +3301,7 @@ function renderBillingView(data) {
   }).join('');
 
   box.innerHTML = `
-    <h3>Your access</h3>
+    <h2>Your access</h2>
     <p class="evidence">${accessLine}</p>
     ${failedPaymentBlock(ent)}
     <p class="evidence">${renewalLine}</p>

@@ -21,6 +21,8 @@ const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
 const OUT_DIR = path.join(__dirname, '..', 'out');
 let generatedRegression = false;
 const SECTION_FILES = [
+  'hj-ocr-work-budget.cjs',
+  'hi-packet-accessibility.cjs',
   'hd-fictional-fixture-policy.cjs',
   'hc-mailing-https-preview.cjs',
   'hb-operational-completion.cjs',

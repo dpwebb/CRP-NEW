@@ -127,6 +127,10 @@ function human(s) {
 function notice(text) {
   $("notice").textContent = text || "";
 }
+function focusAuth(form) {
+  document.querySelector('.skip').href = '#auth-main';
+  $(form).querySelector('input')?.focus();
+}
 async function api(path, { method = "GET", body } = {}) {
   const r = await fetch(path, {
     method,
@@ -173,6 +177,7 @@ function showLogin(error = "") {
   $("content").replaceChildren();
   if ($("dialog").open) $("dialog").close();
   document.body.classList.remove("nav-open");
+  focusAuth('login');
 }
 function showUnlock() {
   if(!S.session || S.locked)return;
@@ -186,6 +191,7 @@ function showUnlock() {
   $('auth-title').textContent='Unlock your workspace';
   $('auth-help').textContent='Your workspace locked after inactivity. Enter a current authenticator code to return to your page and draft.';
   $('auth-error').textContent='';
+  focusAuth('unlock');
 }
 function showReauthentication() {
   if (!S.locked) showUnlock();
@@ -193,6 +199,7 @@ function showReauthentication() {
   $('login').hidden=true; $('unlock').hidden=true; $('reauth').hidden=false;
   $('auth-title').textContent='Confirm your sign-in';
   $('auth-help').textContent='Your underlying sign-in expired. Your page and draft are kept. Enter your password and authenticator, then a fresh code to unlock administration.';
+  focusAuth('reauth');
 }
 function sessionStatus() {
   if(!S.session || S.locked)return;
@@ -221,6 +228,7 @@ function unlocked(session) {
   S.csrf = session.csrf;
   $("auth").hidden = true;
   $("workspace").hidden = false;
+  document.querySelector('.skip').href = '#main';
   $("environment").textContent = session.environment.toUpperCase();
   $("environment").classList.toggle(
     "production",
@@ -230,7 +238,8 @@ function unlocked(session) {
   $("demo-banner").hidden = !session.demo;
   renderNav();
   if(resuming) {
-    if(S.resumeDialog){S.dialog.generation=S.generation;$('dialog').showModal();}
+    if(S.resumeDialog){S.dialog.generation=S.generation;$('dialog').showModal();$('dialog-close').focus();}
+    else $('title').focus();
     S.resumeDialog=false;
 
   } else load();
@@ -258,7 +267,8 @@ function renderNav() {
         continue;
       const a = el("a");
       a.href = "#" + id;
-      a.append(el("span", p.icon), el("span", p.label));
+      const icon = el('span', p.icon); icon.setAttribute('aria-hidden', 'true');
+      a.append(icon, el("span", p.label));
       a.dataset.view = id;
       a.addEventListener("click", (e) => {
         e.preventDefault();
@@ -281,7 +291,7 @@ function navigate(view) {
 }
 function empty(text, button) {
   const box = el("div", null, "panel empty");
-  box.append(el("h3", "Nothing to show yet"), el("p", text));
+  box.append(el("h2", "Nothing to show yet"), el("p", text));
   if (button) box.append(button);
   return box;
 }
@@ -339,17 +349,20 @@ function dialog(title, description, fields, submit, submitText = "Confirm") {
     $("dialog-fields").append(l);
     nodes.set(f.name, { input, f });
   }
-  S.dialog = { submit, nodes, generation: S.generation };
+  S.dialog = { submit, nodes, generation: S.generation,
+    opener: $('dialog').open ? S.dialog?.opener : document.activeElement };
   // Replacing an open dialog must not enqueue a close event that clears the
   // replacement's fields and submit handler on the next browser task.
   if (!$("dialog").open) $("dialog").showModal();
   $("dialog-close").focus();
 }
 function closeDialog() {
+  const opener = S.dialog?.opener;
   S.resumeDialog=false;
   $("dialog").close();
   S.dialog = null;
   $("dialog-fields").replaceChildren();
+  if (opener?.isConnected && opener.getClientRects().length) opener.focus();
 }
 $("dialog-close").onclick = closeDialog;
 $("dialog-cancel").onclick = closeDialog;
@@ -357,6 +370,9 @@ $("dialog").addEventListener("close", () => {
   if (S.resumeDialog) return;
   $("dialog-fields").replaceChildren();
   S.dialog = null;
+});
+$("dialog").addEventListener("cancel", (event) => {
+  event.preventDefault(); closeDialog();
 });
 $("dialog-form").onsubmit = async (e) => {
   e.preventDefault();
@@ -631,12 +647,16 @@ function showDetails(app, row) {
       actions.append(btn(action.label, () => confirmAction(app, name, id)));
   $("dialog-fields").append(actions);
 }
-function table(app, rows) {
+function table(app, rows, title = pages[S.view].label + ': ' + labels[app]) {
   if (!rows.length) return empty("No records were returned for this view.");
   const wrap = el("div", null, "table-wrap"),
     t = el("table"),
     head = el("thead"),
     tr = el("tr");
+  wrap.tabIndex = 0;
+  wrap.setAttribute('role', 'region');
+  wrap.setAttribute('aria-label', title + ' table. Scroll horizontally for more columns.');
+  t.append(el('caption', title, 'sr-only'));
   const keys = [...new Set(rows.flatMap((row) => Object.keys(row)))]
     .filter(
       (k) =>
@@ -650,9 +670,10 @@ function table(app, rows) {
         ].includes(k),
     )
     .slice(0, 7);
-  for (const key of keys)
-    tr.append(el("th", human(key.replace(/_?minor$/i, ""))));
-  tr.append(el("th", "Details"));
+  for (const key of keys) {
+    const th = el('th', human(key.replace(/_?minor$/i, ''))); th.scope = 'col'; tr.append(th);
+  }
+  const details = el('th', 'Details'); details.scope = 'col'; tr.append(details);
   head.append(tr);
   t.append(head);
   const body = el("tbody");
@@ -685,12 +706,15 @@ function table(app, rows) {
       line.append(td);
     }
     const td = el("td");
-    td.append(btn("View", () => showDetails(app, row)));
+    const view = btn('View', () => showDetails(app, row));
+    const identity = row.id || row.orderId || row.admin_id || row.job_id || row.org_id || row.case_id || row.sequence || row.email || row.account_id || row.at || row.event || row.action || 'record';
+    view.setAttribute('aria-label', 'View ' + title + ' record ' + identity);
+    td.append(view);
     line.append(td);
     body.append(line);
   }
   t.append(body);
-  wrap.append(t);
+  wrap.append(el('p', 'More columns may be to the right. Scroll horizontally, or focus this table and use the arrow keys.', 'table-scroll-hint'), t);
   return wrap;
 }
 async function appView(app, resource, root, generation) {
@@ -928,8 +952,12 @@ async function load() {
   $("description").textContent =
     view.description ||
     "Review current records and the actions your role allows.";
-  for (const a of $("nav").querySelectorAll("a"))
+  document.title = view.label + ' · CRP Family Administration';
+  for (const a of $("nav").querySelectorAll("a")) {
     a.classList.toggle("active", a.dataset.view === S.view);
+    if (a.dataset.view === S.view) a.setAttribute('aria-current', 'page');
+    else a.removeAttribute('aria-current');
+  }
   const root = $("content");
   root.replaceChildren();
   root.setAttribute("aria-busy", "true");
@@ -952,7 +980,7 @@ async function load() {
       const result = await api("/api/audit");
       if (generation !== S.generation) return;
       const workspace = el("section", null, "panel");
-      workspace.append(el("h2", "Family workspace activity"), table("crp", result.items));
+      workspace.append(el("h2", "Family workspace activity"), table("crp", result.items, 'Family workspace activity'));
       root.append(workspace);
       for (const app of ["crp", "affiliate"]) {
         if (!S.session.catalog.reads[app].includes("audit")) continue;
@@ -980,7 +1008,13 @@ async function load() {
   } catch (e) {
     if (generation === S.generation) root.replaceChildren(empty(e.message));
   } finally {
-    if (generation === S.generation) root.setAttribute("aria-busy", "false");
+    if (generation === S.generation) {
+      root.setAttribute("aria-busy", "false");
+      if (!S.locked) {
+        $('view-status').textContent = view.label + ' loaded.';
+        if (!$('dialog').open) $('title').focus();
+      }
+    }
   }
 }
 function connectDialog(app) {
@@ -1102,6 +1136,7 @@ $("login").onsubmit = async (e) => {
     $("auth-title").textContent = "Unlock administration";
     $("auth-help").textContent =
       "Use the next current authenticator code to unlock your admin access.";
+    focusAuth('unlock');
   } catch (error) {
     $("auth-error").textContent = error.message;
   } finally {
@@ -1134,6 +1169,7 @@ $('reauth').onsubmit = async (e) => {
     S.csrf=r.csrf;$('reauth').hidden=true;$('unlock').hidden=false;
     $('auth-title').textContent='Unlock administration';
     $('auth-help').textContent='Enter the next fresh authenticator code. Your page and draft are kept.';
+    focusAuth('unlock');
   } catch(error) {$('auth-error').textContent=error.message;}
   finally {e.target.reset();e.submitter.disabled=false;}
 };
@@ -1158,7 +1194,13 @@ $("refresh").onclick = () => {
 $("menu").onclick = () => {
   const open = document.body.classList.toggle("nav-open");
   $("menu").setAttribute("aria-expanded", String(open));
+  if(open) $('nav').querySelector('[aria-current="page"]')?.focus();
 };
+document.addEventListener('keydown', event => {
+  if(event.key === 'Escape' && document.body.classList.contains('nav-open')) {
+    document.body.classList.remove('nav-open'); $('menu').setAttribute('aria-expanded', 'false'); $('menu').focus();
+  }
+});
 setInterval(async () => {
   if (!S.session) return;
   try {

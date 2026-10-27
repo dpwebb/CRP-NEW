@@ -248,6 +248,9 @@ const ROUTES = Object.freeze([
   ['GET', '/api/cases/:caseId/packet-print', true, 'packetPrint'],
   ['GET', '/api/cases/:caseId/packet/preview', true, 'packetPreview'],
   ['GET', '/api/cases/:caseId/packet/preview/pages', true, 'packetReviewPages'],
+  ['GET', '/api/cases/:caseId/packet/reading', true, 'packetReading'],
+  ['GET', '/api/cases/:caseId/packet/reading.html', true, 'packetReading'],
+  ['POST', '/api/cases/:caseId/packet/reading', true, 'packetReadingSave'],
   ['GET', '/api/cases/:caseId/packet/preview/pages/:pageNumber', true, 'packetReviewPage'],
   ['GET', '/api/cases/:caseId/packet/forms/:filename', true, 'packetForm'],
   /* BLOCKER-SUBSCRIPTION-VALUE-001 — owned report history and evidence-based comparison. */
@@ -762,7 +765,7 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps) {
     packetApprove: ({ params, actor, body }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
       entitlement.requireSubscriberFeature(store, actor);
-      packets.approvePacket(store, actor, params.caseId, body.reviewed_version, true);
+      packets.approvePacket(store, actor, params.caseId, body.reviewed_version, true, body.reading_sha256);
       logger.log({ event: 'PACKET_APPROVED', outcome: 'OK' });
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
     },
@@ -853,6 +856,26 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps) {
       return { status: 200, text: file.body, content_type: file.content_type,
         headers: { 'Content-Disposition': `inline; filename="${file.filename}"`, 'X-CRP-Packet-Version': file.approved_version,
           'X-Frame-Options': 'SAMEORIGIN', 'Content-Security-Policy': "default-src 'none'; frame-ancestors 'self'; form-action 'none'; base-uri 'none'" } };
+    },
+    packetReading: ({ params, actor, req }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      const query = new URL(req.url, 'http://127.0.0.1').searchParams, version = query.get('version');
+      if (!/^[a-f0-9]{64}$/.test(version || '')) throw new ServiceError('INVALID_REQUEST');
+      const approved = query.get('approved') === '1';
+      const reading = packets.packetReading(store, actor, params.caseId, version, approved);
+      const headers = { 'X-CRP-Packet-Version':version, 'X-CRP-Packet-SHA256':reading.pdf_sha256,
+        'X-CRP-Reading-SHA256':reading.reading_sha256, 'Cache-Control':'private, no-store', 'X-Robots-Tag':'noindex' };
+      if (new URL(req.url, 'http://127.0.0.1').pathname.endsWith('.html')) return {
+        status:200, text:require('./packet-accessibility.cjs').html(reading, approved), content_type:'text/html; charset=utf-8', headers };
+      return { status:200, json:{ok:true,reading}, headers };
+    },
+    packetReadingSave: ({ params, actor, body }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      if (!/^[a-f0-9]{64}$/.test(body?.expected_version || '')) throw new ServiceError('INVALID_REQUEST');
+      packets.setPacketReading(store, actor, params.caseId, body.expected_version, body.reading);
+      return {status:200,json:{ok:true,view:packets.packetView(store,actor,params.caseId)}};
     },
     packetReviewPages: ({ params, actor, req }) => {
       cases.requireOwnedCase(store, actor, params.caseId);

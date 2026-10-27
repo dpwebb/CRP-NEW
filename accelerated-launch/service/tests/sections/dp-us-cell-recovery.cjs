@@ -24,6 +24,7 @@ async function run(t, check) {
   let model, extraction;
   ocr.readPdfRegions = (...args) => { const reading = originalRegionReader(...args);
     physicalReads.push({ elapsed_ms: reading.elapsed_ms, band_time_budget_ms: reading.band_time_budget_ms,
+      ocr_executions: reading.ocr_executions, ocr_batch_views: reading.ocr_batch_views,
       source_sha256: reading.source_sha256, regions: reading.regions.length,
       refused: reading.refusal_reason, reasons: reading.regions.map((row) => row.reason) }); return reading; };
   try {

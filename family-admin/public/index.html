@@ -8,9 +8,9 @@
     <script src="/app.js" defer></script>
   </head>
   <body>
-    <a class="skip" href="#main">Skip to content</a>
+    <a class="skip" href="#auth-main">Skip to content</a>
     <section id="auth" class="auth">
-      <div class="auth-brand">
+      <div class="auth-brand" role="complementary" aria-label="About CRP Family">
         <div class="logo">C<span>↗</span></div>
         <p class="eyebrow">CREDIT REGULATOR PRO</p>
         <h1>Three applications.<br />One clear view.</h1>
@@ -22,13 +22,13 @@
           <span>CRP</span><span>Affiliate</span><span>Mail Operations</span>
         </div>
       </div>
-      <main class="auth-form">
+      <main id="auth-main" class="auth-form" tabindex="-1" aria-labelledby="auth-title">
         <p class="eyebrow">CRP FAMILY ADMIN</p>
         <h2 id="auth-title">Welcome to your workspace</h2>
         <p id="auth-help">
           Sign in with your CRP administration account and authenticator.
         </p>
-        <form id="login">
+        <form id="login" aria-labelledby="auth-title" aria-describedby="auth-help auth-error">
           <label
             >Email address<input
               name="email"
@@ -53,7 +53,7 @@
               maxlength="6" /></label
           ><button class="primary" type="submit">Continue securely</button>
         </form>
-        <form id="unlock" hidden>
+        <form id="unlock" aria-labelledby="auth-title" aria-describedby="auth-help auth-error" hidden>
           <label
             >Fresh authenticator code<input
               name="code"
@@ -65,7 +65,7 @@
           ><button class="primary" type="submit">Unlock administration</button
           ><button type="button" id="back-login">Use another account</button>
         </form>
-        <form id="reauth" hidden>
+        <form id="reauth" aria-labelledby="auth-title" aria-describedby="auth-help auth-error" hidden>
           <label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="1024"></label>
           <label>Authenticator code<input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" required maxlength="6"></label>
           <button class="primary" type="submit">Confirm my sign-in</button>
@@ -74,7 +74,7 @@
       </main>
     </section>
     <div id="workspace" hidden>
-      <aside>
+      <aside id="workspace-navigation">
         <a href="#overview" class="brand"
           ><span class="logo small">C↗</span
           ><span
@@ -94,6 +94,7 @@
             id="menu"
             aria-label="Toggle navigation"
             aria-expanded="false"
+            aria-controls="workspace-navigation"
           >
             ☰</button
           ><span class="breadcrumb"
@@ -112,7 +113,7 @@
           <div class="heading">
             <div>
               <p id="eyebrow" class="eyebrow">YOUR CONNECTED WORKSPACE</p>
-              <h1 id="title">Family overview</h1>
+              <h1 id="title" tabindex="-1">Family overview</h1>
               <p id="description" class="muted">
                 A clear view across CRP, Affiliate and Mail Operations.
               </p>
@@ -124,12 +125,13 @@
           </div>
           <p id="notice" role="status"></p>
           <p id="session-status" role="status" class="muted"></p>
+          <p id="view-status" role="status" aria-atomic="true" class="sr-only"></p>
           <section id="content" aria-busy="false"></section>
           <footer>CRP Family Administration <span id="observed"></span></footer>
         </main>
       </div>
     </div>
-    <dialog id="dialog">
+    <dialog id="dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description">
       <form id="dialog-form">
         <div class="dialog-head">
           <h2 id="dialog-title"></h2>
