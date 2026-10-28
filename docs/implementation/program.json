@@ -1,0 +1,285 @@
+{
+  "version": 1,
+  "authority": "Owner authorized local implementation 2026-10-28; no deployment",
+  "sources": [
+    {
+      "app": "consumer",
+      "ref": "9a0a83f63968969e09aa028f7716090cc5ed2ac2",
+      "build": "crp-v1-56e4e083ef4ec481",
+      "workspace": "C:/Users/webbd/.codex/worktrees/international-consumer-local/CRP-NEW"
+    },
+    {
+      "app": "family",
+      "ref": "d5d7dfd6a28ee3bb594d1eeff6545af6f8bdec12",
+      "build": "crp-family-7e0eb78d198251147d7d",
+      "workspace": "C:/Users/webbd/.codex/worktrees/international-family-local/CRP-NEW"
+    },
+    {
+      "app": "mail",
+      "ref": "eea1f307eafce9cf5fc5b0d4576fd0970e57446a",
+      "build": "mail-internal-a5cc30af9f505a18",
+      "workspace": "C:/Users/webbd/.codex/worktrees/international-mail-local/CRP-MAIL-OPS"
+    },
+    {
+      "app": "affiliate",
+      "ref": "ae9908ffdc2e4caeefd7fe5c9b109f90ab09e7b3",
+      "build": "sha256:278fbe5d31ca38f7c71a984005aa1288428a7e1cc8ac6b7896f499d24d6e2676",
+      "workspace": "C:/Users/webbd/.codex/worktrees/international-affiliate-local/CRP-AFFILIATE-OPS"
+    }
+  ],
+  "preservation": [
+    "all82",
+    "native-auth-and-roles",
+    "entitlements-and-cancellation",
+    "source-and-approved-packet-bytes",
+    "consumer-controlled-approval",
+    "postgrid-default-manual-emergency",
+    "append-only-financial-and-provider-custody",
+    "no-blind-retry",
+    "no-original-data-restore"
+  ],
+  "items": [
+    {
+      "id": "IP-01",
+      "priority": "P0",
+      "owner": "Implementation coordinator",
+      "dependencies": [],
+      "status": "LOCAL_READY",
+      "outcome": "Preservation register and source inventory",
+      "nextAction": "Recheck fresh preservation/source before any future release",
+      "localEvidence": [
+        "output/implementation/preservation-current.json"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "IP-02",
+      "priority": "P0",
+      "owner": "Business owner / jurisdiction reviewer",
+      "dependencies": [
+        "IP-01"
+      ],
+      "status": "EXTERNAL_DECISION_PENDING",
+      "outcome": "Country/channel worksheets and claims rules",
+      "nextAction": "Obtain dated qualified operator/legal/country/channel decisions; no advertising activation",
+      "localEvidence": [
+        "docs/implementation/claims.json"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "IP-03",
+      "priority": "P0",
+      "owner": "Operations / recovery custodian",
+      "dependencies": [
+        "IP-01"
+      ],
+      "status": "LOCAL_READY_HOSTED_PENDING",
+      "outcome": "Incident custody and production preparation",
+      "nextAction": "Complete actual hosted monitoring/alert/recurring four-app recovery acceptance under separate scope",
+      "localEvidence": [
+        "mail:output-international-mail-full-r4.log"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "IP-04",
+      "priority": "P0",
+      "owner": "Data custodian",
+      "dependencies": [
+        "IP-01",
+        "IP-02",
+        "IP-03"
+      ],
+      "status": "LOCAL_CUSTODY_READY_POLICY_PENDING",
+      "outcome": "Retention inventory, holds and restore dry run",
+      "nextAction": "Approve periods/holds/key custody and native delete/startup integration; no purge or service-opening permission",
+      "localEvidence": [
+        "tools/implementation/deletion-custody.cjs",
+        "output/implementation/continuation/deletion-custody-r3.log",
+        "docs/implementation/RESTORE-CUSTODY.md"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "IP-05",
+      "priority": "P0",
+      "owner": "Affiliate accounting owner",
+      "dependencies": [
+        "IP-01"
+      ],
+      "status": "BMO_CANADA_REGULAR_OLB_MAPPING_PENDING",
+      "outcome": "Liability aging and independent settlement contract",
+      "nextAction": "Prepare regular Canadian OLB statement/transaction review; establish actual rail/format and independent bank-origin authentication without assuming OLBB API access",
+      "localEvidence": [
+        "affiliate:docs/BMO-READ-ONLY-EVIDENCE.md",
+        "affiliate:international-continuation-full.log"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "IP-06",
+      "priority": "P1",
+      "owner": "Consumer product owner",
+      "dependencies": [
+        "IP-01",
+        "IP-02"
+      ],
+      "status": "LOCAL_READY",
+      "outcome": "Offer and assessment coverage",
+      "nextAction": "Review current candidate/actual operating envelope before future hosted acceptance",
+      "localEvidence": [
+        "output/implementation/continuation/consumer-full-r5-evidence.json"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "IP-07",
+      "priority": "P1",
+      "owner": "Support owner",
+      "dependencies": [
+        "IP-01",
+        "IP-02",
+        "IP-04"
+      ],
+      "status": "LOCAL_READY_SERVICE_RULES_PENDING",
+      "outcome": "Tracked support and complaints",
+      "nextAction": "Supply actual service/escalation owners and approved complaint clock rules; email remains disabled",
+      "localEvidence": [
+        "accelerated-launch/service/tests/consumer-care.test.cjs",
+        "family:family-admin/international-native-sso-final.log"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "IP-08",
+      "priority": "P1",
+      "owner": "Consumer product owner",
+      "dependencies": [
+        "IP-04",
+        "IP-06",
+        "IP-07"
+      ],
+      "status": "LOCAL_READY_LIVE_EVIDENCE_PENDING",
+      "outcome": "Dispute follow-up",
+      "nextAction": "Use actual carrier/provider/bureau evidence when available; no invented freshness or sourced legal reminder rules",
+      "localEvidence": [
+        "output/playwright/continuation-followup-mobile.png",
+        "output/implementation/continuation/native-consumer-freeze.log"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "IP-09",
+      "priority": "P1",
+      "owner": "Mail operations owner",
+      "dependencies": [
+        "IP-03",
+        "IP-07"
+      ],
+      "status": "LOCAL_READY_STAFFING_PENDING",
+      "outcome": "Staff review ownership",
+      "nextAction": "Actual staffing/backup/hours remain deferred; do not activate a designation/route by implication",
+      "localEvidence": [
+        "mail:output-international-mail-full-r4.log"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "IP-10",
+      "priority": "P1",
+      "owner": "Partner administrator",
+      "dependencies": [
+        "IP-02",
+        "IP-05",
+        "IP-07"
+      ],
+      "status": "LOCAL_READY_MARKET_EVIDENCE_PENDING",
+      "outcome": "Placement/disclosure evidence",
+      "nextAction": "Complete market/channel eligibility and actual publication/takedown evidence before promotion",
+      "localEvidence": [
+        "affiliate:international-continuation-full.log"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "IP-11",
+      "priority": "P1",
+      "owner": "Implementation coordinator",
+      "dependencies": [
+        "IP-01",
+        "IP-03",
+        "IP-05"
+      ],
+      "status": "LOCAL_READY",
+      "outcome": "Truthful status projections",
+      "nextAction": "Keep commercial outcome/settlement/provider acceptance separate from scoped counts",
+      "localEvidence": [
+        "affiliate:international-continuation-full.log",
+        "family:family-admin/international-native-sso-final.log"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "IP-12",
+      "priority": "P2",
+      "owner": "Consumer UX / assessment owner",
+      "dependencies": [
+        "IP-06",
+        "IP-07",
+        "IP-08"
+      ],
+      "status": "EXISTING_READY_SPECIALIST_DEFERRED",
+      "outcome": "Accessible review and compatibility",
+      "nextAction": "Retain mobile/keyboard/native packet reading checks; actual assistive-tech review remains deferred",
+      "localEvidence": [
+        "output/playwright/continuation-followup-mobile.png",
+        "output/implementation/continuation/consumer-full-r5-evidence.json"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "IP-13",
+      "priority": "P2",
+      "owner": "Engineering / business owner",
+      "dependencies": [
+        "IP-03",
+        "IP-11"
+      ],
+      "status": "LOCAL_MEASURED_HOSTED_PENDING",
+      "outcome": "Economics and realistic capacity",
+      "nextAction": "Approve real demand/targets and separate hosted envelope; preserve dense-tier review limit and all failed attempts",
+      "localEvidence": [
+        "output/implementation/continuation/soak-1793189081391-535a44/result.json",
+        "docs/implementation/CAPACITY-LOCAL.md",
+        "output/implementation/continuation/consumer-full-r5-evidence.json"
+      ],
+      "hostedAcceptance": "NOT_RUN",
+      "deployment": "NOT_AUTHORIZED"
+    }
+  ],
+  "handoff": "docs/implementation/LOCAL-HANDOFF.md",
+  "programComplete": false,
+  "generatedAt": "2026-10-28T13:29:57.636Z",
+  "localEngineeringTranche": "VERIFIED_LOCAL_ONLY",
+  "bankSelection": {
+    "name": "Bank of Montreal",
+    "country": "CA",
+    "product": "REGULAR_ONLINE_BANKING",
+    "readOnlyAccess": "NOT_VERIFIED",
+    "configured": false
+  },
+  "finalLocalEvidence": "output/implementation/continuation/final-checks.json"
+}

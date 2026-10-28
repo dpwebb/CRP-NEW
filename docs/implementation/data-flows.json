@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "reviewStatus": "EXTERNAL_DECISION_PENDING",
+  "flows": [
+    {"data":"Reports and source facts","boundary":"Consumer private store","purpose":"Assessment","crossAppDisclosure":"Not to Affiliate","residencyDecision":"UNVERIFIED"},
+    {"data":"Approved packet including selected supporting IDs","boundary":"Consumer to scoped Mail and actual print provider","purpose":"Authorized fulfillment","crossAppDisclosure":"Exact approved bundle only","residencyDecision":"UNVERIFIED"},
+    {"data":"Consent, opaque account binding and qualifying billing evidence","boundary":"Consumer to Affiliate native receiver","purpose":"Attribution and commission accounting","crossAppDisclosure":"No credit report","residencyDecision":"UNVERIFIED"},
+    {"data":"Minimal diagnostic reference and support messages","boundary":"Consumer and authorized administrators","purpose":"Support and complaints","crossAppDisclosure":"No automatic report attachments","residencyDecision":"UNVERIFIED"},
+    {"data":"Runtime/trust configuration and encrypted data snapshots","boundary":"Approved offsite storage; key held separately","purpose":"Recovery","crossAppDisclosure":"No plaintext or key in source","residencyDecision":"UNVERIFIED"},
+    {"data":"IP for country lookup, consented public analytics and service email","boundary":"Existing configured external processors","purpose":"Pricing location, consented measurement and service communication","crossAppDisclosure":"No report findings for ad audiences","residencyDecision":"UNVERIFIED"}
+  ],
+  "contractsAndActualProcessorLocations": "REVIEW_REQUIRED",
+  "newProviderAuthorized": false
+}

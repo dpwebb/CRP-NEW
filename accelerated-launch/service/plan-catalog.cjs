@@ -76,7 +76,7 @@ const GRANTS = Object.freeze({
  */
 const NOT_GRANTED = Object.freeze([
   'no legal conclusion and no legal advice',
-  'no letter, no dispute filing and no contact with any bureau (you send your own packet)',
+  'no legal representation or automatic dispute filing; subscribers can prepare an approved packet and download it, or separately authorize available paid mailing',
   'no removal, no correction and no score change',
   'no check of every possible legal issue',
   'a one-time unlock is limited to the one report it was bought for'

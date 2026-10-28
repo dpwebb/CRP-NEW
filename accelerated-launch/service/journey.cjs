@@ -143,8 +143,7 @@ function getResult(store, actor, caseId, resultId) {
 
 function persistResult(store, actor, caseRow, provenance, evaluated, extraction, clock) {
   const rendered = results.renderResultSet({ evaluation: evaluated, extraction });
-  return store.update((state) => {
-    const created = {
+  const created = {
       result_id: newResultId(),
       case_id: caseRow.case_id,
       account_id: actor.account_id,
@@ -163,6 +162,8 @@ function persistResult(store, actor, caseRow, provenance, evaluated, extraction,
       assessment_clock: clock || (evaluated && evaluated.assessment_clock) || null,
       created_at: clock && clock.assessment_run_at_utc ? clock.assessment_run_at_utc : nowIso()
     };
+  require('./assessment-budget.cjs').requireBudget(created);
+  return store.update((state) => {
     state.results.push(created);
     return created;
   });

@@ -27,6 +27,9 @@ const STATUS_BY_CODE = Object.freeze({
   ACCOUNT_SECURITY_UNAVAILABLE: 503,
 
   INVALID_REQUEST: 400,
+  CARE_REVISION_CHANGED: 409,
+  CARE_RATE_LIMITED: 429,
+  ASSESSMENT_REVIEW_LIMIT: 422,
   MAILING_SIMULATION_UNAVAILABLE: 503,
   MAILING_SERVICE_UNAVAILABLE: 503,
   MAILING_ROUTE_UNAVAILABLE: 409,
@@ -115,6 +118,7 @@ const STATUS_BY_CODE = Object.freeze({
 
 /** Plain-language copy for every machine code. The consumer UI renders these and nothing rawer. */
 const MESSAGE_BY_CODE = Object.freeze({
+  ASSESSMENT_REVIEW_LIMIT: 'This report needs a larger review than we can safely save. Your file is kept, and no partial assessment was saved. Contact support using your support reference. Do not split one report across cases.',
   GOOGLE_SIGN_IN_UNAVAILABLE: 'Google sign-in is not available right now. You can still use your email and password.',
   GOOGLE_SIGN_IN_INVALID: 'We could not confirm this Google sign-in. Please start again.',
   GOOGLE_SIGN_IN_EXPIRED: 'This Google sign-in expired. Please start again.',

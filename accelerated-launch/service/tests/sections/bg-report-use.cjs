@@ -222,7 +222,7 @@ async function run(t, check) {
           if (sel === '[data-skip]') return [skipBtn];
           return [];
         }) : (() => []),
-        querySelector: () => null
+        querySelector: sel => uiElement('care:'+sel), append() {}, insertBefore() {}, addEventListener() {}, replaceChildren() {}, isConnected:true
       });
     }
     return uiNodes.get(id);
@@ -304,7 +304,7 @@ async function run(t, check) {
     if (!realNodes.has(id)) {
       realNodes.set(id, {
         id, innerHTML: '', textContent: '', className: '', value: '', disabled: false, style: {}, dataset: {}, files: [], onclick: null, onchange: null, hidden: true, scrollIntoView() {},
-        querySelectorAll: () => [], querySelector: () => null
+        querySelectorAll: () => [], querySelector: sel => realEl('care:'+sel), append() {}, insertBefore() {}, addEventListener() {}, replaceChildren() {}, isConnected:true
       });
     }
     return realNodes.get(id);

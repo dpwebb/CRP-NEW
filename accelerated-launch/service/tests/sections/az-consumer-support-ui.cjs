@@ -31,7 +31,11 @@ function makeElement(id) {
     files: [], onclick: null, onchange: null, _selected: false,
     scrollIntoView() {},
     querySelectorAll: () => [],
-    querySelector: () => null,
+    // Minimal DOM ports for the additive care forms; real submissions are
+    // checked separately against native HTTP/store and the local browser.
+    querySelector: selector => makeElement(id+':'+selector),
+    append() {}, appendChild() {}, addEventListener() {}, replaceChildren() {}, insertBefore() {},
+    setAttribute() {}, isConnected: true,
     select() { this._selected = true; },
     focus() { this._focused = true; }
   };
