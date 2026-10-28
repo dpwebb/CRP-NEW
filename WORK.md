@@ -10,3 +10,6 @@ Continuation closure: new native Consumer outcomes and Affiliate assurance pages
 
 ## Source publication — October28
 Outcome: publish verified local implementation on codex/international-readiness-family-20261028. Exact allowlist: family-admin/public/app.js, family-admin/src/catalog.mjs, family-admin/test/native-sso-acceptance.mjs, WORK.md, family-admin/test/international-contract.test.mjs. External actions: existing origin feature-branch push only. Checks: frozen source hashes, staged allowlist, prior full regression; preserve tested bytes including trailing blank lines. Exit: remote SHA matches local; no deployment.
+
+## Merge authorization — October28
+Outcome: merge published international readiness branches into main. Allowlist: existing published commits and WORK.md merge record; resolve overlapping WORK.md by retaining both histories. External actions: origin feature pushes, pull-request creation and main merge only. Checks: current remotes, ancestry, conflict simulation, frozen-source regression evidence and no deployment workflows/webhooks. Exit: all four branch tips reachable from remote main; no runtime/deployment actions.
