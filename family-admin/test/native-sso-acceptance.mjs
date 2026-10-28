@@ -9,7 +9,7 @@ import { resolve, join } from 'node:path';
 import { mkdtempSync, writeFileSync, rmSync, mkdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { createServer } from 'node:net';
-import { generateKeyPairSync, randomUUID } from 'node:crypto';
+import { generateKeyPairSync, randomUUID, createHash } from 'node:crypto';
 import { createPortal } from '../src/server.mjs';
 import { permissions } from './fixtures.mjs';
 const require=createRequire(import.meta.url);
@@ -21,8 +21,12 @@ test('real native services accept one CRP MFA login, preserve scopes and revoke 
   assert(mailRoot&&affiliateRoot&&consumerRoot,'Set all three intended isolated native checkout roots');
   const {TestService}=require(resolve(consumerRoot,'accelerated-launch/service/tests/harness.cjs'));
   const security=require(resolve(consumerRoot,'accelerated-launch/service/signup-security.cjs')),access=require(resolve(consumerRoot,'accelerated-launch/service/admin-access.cjs'));
-  for(const name of ['family-sso-protocol.mjs','family-sso-client.mjs'])for(const checkout of [mailRoot,affiliateRoot])
-    assert.deepEqual(readFileSync(resolve(checkout,'src',name)),readFileSync(new URL('../native/'+name,import.meta.url)), 'Native shared protocol bytes must match the Family candidate');
+  for(const checkout of [mailRoot,affiliateRoot])
+    assert.deepEqual(readFileSync(resolve(checkout,'src/family-sso-protocol.mjs')),readFileSync(new URL('../native/family-sso-protocol.mjs',import.meta.url)), 'Native shared wire protocol remains byte-identical');
+  // Accepted Mail login-only MFA differs intentionally from the global client.
+  // Pin each predecessor helper; retain every behavioral authority assertion below.
+  for(const [checkout,expected] of [[mailRoot,'92a6c0b11679ac282de857af7d9d087a0f8605c172be8d80e33fb20ba0546217'],[affiliateRoot,'d0d7bd2a82c2a2103016acf1586bad11429703e53dd76a01eac2138dfc6a4d0b']])
+    assert.equal(createHash('sha256').update(readFileSync(resolve(checkout,'src/family-sso-client.mjs'))).digest('hex'),expected,'Accepted native helper unchanged');
   const root=mkdtempSync(join(tmpdir(),'crp-family-all-native-')),originalNow=Date.now,enabled=process.env.CRP_ADMIN_ENABLED;
   let consumer,mail,affiliate,db,pg,portal,clock=originalNow();
   const observations=[];
@@ -74,16 +78,30 @@ test('real native services accept one CRP MFA login, preserve scopes and revoke 
       const result=await request('/api/actions/'+app+'/'+name,'POST',{body,id,requestId:randomUUID(),confirmation:'local:'+app+':'+name});
       assert.equal(result.status,200,JSON.stringify(result.data));assert.equal(result.data.status,'APPLIED');return result.data.data;
     };
+    const intake=await consumer.request('POST','/api/support/contact',{body:{requestId:randomUUID(),email:'fictional.support@example.test',category:'signin',message:'Fictional native support acceptance'}});
+    assert.equal(intake.status,202);
+    const support=await request('/api/apps/crp/support');assert.equal(support.status,200);
+    const ticket=support.data.data.items.find(t=>t.category==='signin');assert(ticket);
+    await action('crp','support.review',{expectedRevision:1,status:'ACKNOWLEDGED',message:'Fictional review only',nextUpdateAt:clock+3600000},ticket.ticketId);
+    await action('mail','incident.review',{expectedRevision:0,state:'OPEN',owner:'CURRENT_OPERATOR',nextReviewAt:clock+3600000,reason:'REVIEW'},'WORKER_STALE');
+    for(const path of ['/api/apps/affiliate/liabilities','/api/apps/affiliate/placements','/api/apps/affiliate/assurance','/api/apps/crp/outcomes']){
+      const view=await request(path);assert.equal(view.status,200,JSON.stringify(view.data));
+    }
+    assert.equal(db.prepare('SELECT count(*) n FROM stewardship_events').get().n,1);
+    observations.push({newSupportIncidentAndLiabilityFlows:true,externalMessages:0,moneyActions:0});
     await action('crp','organization.add',{name:'Fictional unified administration'});
     const designation=await action('mail','team.add',{name:'Fictional designated operator',country:'CA',kind:'individual'});
     const prices=await request('/api/apps/mail/pricing'),price=prices.data.data.items.find(x=>x.country==='CA');
     await action('mail','pricing.update',{country:'CA',expectedRevision:price.revision,firstPageMinor:price.firstPageMinor+1,additionalPageMinor:price.additionalPageMinor,reason:'Fictional unified admin acceptance'});
     const createdCampaign=await action('affiliate','campaign.add',{partnerId:partner,name:'Fictional unified campaign',country:'CA'});
     const creative=await request('/api/apps/affiliate/creative?id='+createdCampaign.id);
-    assert.equal(creative.status,200);assert.equal(creative.data.data.visualCollateral.status,'WITHDRAWN');
-    assert.deepEqual(creative.data.data.frames,[]);assert.deepEqual(creative.data.data.banners,[]);
-    assert.equal(creative.data.data.publishing.imageUrl,null);
-    observations.push({withdrawnCollateralPreserved:true,legacyPathRefusals:24});
+    const {approvedBanners}=await native(affiliateRoot,'src/approved-banners.mjs');
+    assert.equal(creative.status,200);assert.equal(creative.data.data.visualCollateral.status,'APPROVED');
+    assert.deepEqual(creative.data.data.frames,[]);
+    assert.equal(approvedBanners.length,10);
+    assert.deepEqual(creative.data.data.banners.map(b=>({id:b.id,sha256:b.sha256})),approvedBanners.map(b=>({id:b.id,sha256:b.sha256})));
+    assert.equal(creative.data.data.publishing.imageUrl,affiliateOrigin+approvedBanners[0].path);
+    observations.push({approvedOctober23OriginalsPreserved:true,legacyPathRefusals:24,studioActivated:false});
     await action('affiliate','contact.add',{name:'Fictional support contact',email:'fictional-contact@example.test',sourceUrl:'https://example.test/consent',purpose:'partner_service',partnerId:partner});
     observations.push({nativeAdministrativeWrites:['CRP organization','Mail designation','Mail versioned price','Affiliate campaign','Affiliate contact'],fictionalOnly:true});
     // Native nonce and one-use callback run over real HTTP redirects; no provider sign-in.
