@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "executionAuthorized": "LOCAL_FICTIONAL_ONLY",
+  "hostedExecutionAuthorized": false,
+  "advertisingAuthorized": false,
+  "spendMinor": "0",
+  "proposedDurationMinutes": 30,
+  "demandApproved": false,
+  "proposedConcurrentConsumers": 4,
+  "staffSessions": 2,
+  "requiredWorkloads": [
+    "native-report",
+    "scanned-report",
+    "large-report",
+    "staff-review",
+    "affiliate-heavy-report",
+    "encrypted-backup"
+  ],
+  "requiredChecks": [
+    "rows",
+    "blobs",
+    "approvals",
+    "ledger",
+    "replay",
+    "restart",
+    "isolated-recovery",
+    "process-cleanup"
+  ],
+  "proposedThresholds": {
+    "readP95Ms": 2000,
+    "healthP95Ms": 1000,
+    "assessmentMaxMs": 150000,
+    "unexpectedFailures": 0
+  },
+  "reuse": {
+    "consumer": "Existing tools/readiness/consumer-capacity.cjs and seed-consumer.cjs in combined-readiness-scale; its three-minute historical run does not satisfy this thirty-minute mixed workload.",
+    "family": "Existing tools/readiness/family-capacity.mjs; fixture upstreams measure gateway behavior only.",
+    "affiliate": "Accepted report-equivalence and report optimization evidence; do not relax resource limits.",
+    "mail": "Accepted native writer-lock contention/refusal tests; do not weaken503/Retry-After or replay protection."
+  },
+  "pilot": {
+    "entry": [
+      "dated country/offer/channel approval of exact copy",
+      "actual staffed support and incident ownership",
+      "current monitoring and recurring recovery evidence",
+      "independent settlement source when payment is due",
+      "approved demand and budget"
+    ],
+    "stop": [
+      "unexpected5xx or transport failure",
+      "unknown send or settlement custody",
+      "missed scheduler or stale recovery",
+      "support backlog beyond approved service expectation",
+      "unapproved asset or disclosure",
+      "protected-data integrity failure"
+    ],
+    "expand": "Owner review of useful-read results, support and refunds, liabilities, measured capacity and operational coverage; no automatic campaign activation."
+  },
+  "lastLocalMeasurement": {
+    "receipt": "output/implementation/continuation/soak-1793189081391-535a44/result.json",
+    "durationMs": 1802494.1435,
+    "requestCount": 19843,
+    "metrics": {
+      "readP95Ms": 9.8078000000678,
+      "healthP95Ms": 2.8414999999804422,
+      "assessmentMaxMs": 2782.9283000000287,
+      "unexpectedFailures": 0
+    },
+    "integrity": {
+      "rows": true,
+      "blobs": true,
+      "approvals": true,
+      "ledger": true,
+      "replay": true,
+      "restart": true,
+      "isolated-recovery": true,
+      "process-cleanup": true,
+      "source": true
+    },
+    "processModel": "Native applications share one QA coordinator Node process. Family health only; authenticated gateway authority is verified separately. Not separate-process staging capacity.",
+    "hostedCapacityVerified": false
+  }
+}

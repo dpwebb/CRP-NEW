@@ -609,8 +609,9 @@ function renderAccount(panel) {
     <p class="auth-account-note">No report, identification or payment is needed to create an account.</p>
     <p id="auth-status" class="auth-status" role="status" aria-live="polite"></p>
     ${surface?.preview_mode ? '<p class="evidence">Staging preview: use fictional information while testing this page.</p>' : ''}
-    </form>${supportContactBlock()}</div>`;
+    </form>${supportContactBlock()}<button id="online-help" type="button" class="secondary">Request help online</button></div>`;
 
+  if(el('online-help'))el('online-help').onclick=()=>{state.step=STEP.SUPPORT;render();};
   const credentials = () => ({ email: el('email').value, password: el('password').value, code: el('signin-code')?.value || '' });
   if (el('signin-google')) el('signin-google').onclick = () => {
     if (authPending) return;
@@ -3117,9 +3118,83 @@ function supportSummaryText(data) {
 
 let supportSeq = 0;
 
+
+/* Native support and consumer-recorded follow-up. No provider or email action. */
+function mountCare(panel) {
+  const owner=state.account?.account_id||null;
+  const current=()=>state.step===STEP.SUPPORT&&(state.account?.account_id||null)===owner&&panel.isConnected;
+  const root=document.createElement('section');root.className='obs';
+  root.innerHTML='<h2>Ask for help</h2><p>Do not include passwords, card numbers, identification numbers or your credit report.</p><form data-care-form><label>Type of request <select name="category">'+
+    (owner?'<option value="support">Help using CRP</option><option value="billing">Billing</option>':'<option value="signin">Help signing in</option>')+
+    '<option value="complaint">Complaint</option><option value="privacy">Privacy request</option></select></label>'+
+    (owner?'':'<label>Your email <input name="email" type="email" maxlength="254" required autocomplete="email"></label>')+
+    '<label>How can we help? <textarea name="message" maxlength="1500" required rows="4"></textarea></label><button type="submit">Save request</button><p role="status" data-care-status></p></form><div data-care-tickets></div>';
+  panel.append(root);
+  root.querySelector('button').className='primary';
+  const form=root.querySelector('form'),status=root.querySelector('[data-care-status]');let key=crypto.randomUUID();
+  form.addEventListener('input',()=>{key=crypto.randomUUID();});
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();const button=form.querySelector('button');button.disabled=true;status.textContent='Saving…';
+    const data=Object.fromEntries(new FormData(form));data.requestId=key;
+    try{await api('POST',owner?'/api/support/tickets':'/api/support/contact',data);if(!current())return;
+      status.textContent=owner?'Your request is saved below. No report or email was sent.':'Your request is saved for support review. No account details are shown here. Use the support email if you need another contact method.';
+      form.reset();key=crypto.randomUUID();if(owner)await loadTickets();
+    }catch(error){if(current())status.textContent='We could not confirm the save. Check your requests before trying again; keep this form unchanged to use the same request reference.';}
+    finally{if(current())button.disabled=false;}
+  });
+  async function loadTickets(){
+    try{const data=await api('GET','/api/support/tickets');if(!current())return;
+      const box=root.querySelector('[data-care-tickets]');box.replaceChildren();
+      const h=document.createElement('h3');h.textContent='Your requests';box.append(h);
+      for(const t of data.items||[]){const p=document.createElement('p');p.textContent=t.ticketId+' · '+t.category+' · '+t.status+(t.nextUpdateAt?' · Next review '+new Date(t.nextUpdateAt).toLocaleString():' · Awaiting review');box.append(p);
+        for(const event of t.events||[]){const reply=document.createElement('p');reply.textContent=new Date(event.at).toLocaleString()+': '+event.message;box.append(reply);}}
+    }catch{if(current())root.querySelector('[data-care-tickets]').textContent='Your requests could not be loaded. Try opening Support again.';}
+  }
+  if(!owner)return;
+  loadTickets();
+  const follow=document.createElement('section');follow.className='obs';
+  follow.innerHTML='<h2>Track your next step</h2><p>Keep your own record of a dispute. These notes do not verify delivery or correction. They do not send a dispute or change an approved packet.</p><label>Choose your report <select data-care-case><option value="">Choose a report</option></select></label><div data-care-history></div><form data-follow-form hidden><label>What happened? <select name="type"><option value="NOTE">Add a note</option><option value="SUBMITTED">I submitted my dispute</option><option value="RECEIPT_RECORDED">I recorded a receipt</option><option value="RESPONSE_RECEIVED">I received a response</option><option value="UNCHANGED">I believe it is unchanged</option><option value="RESOLVED">I believe it is resolved</option><option value="UNCERTAIN">I am unsure</option></select></label><label>Event date <input name="date" type="date" required></label><label>Note <textarea name="note" rows="3" maxlength="1000" required></textarea></label><button type="submit">Save follow-up note</button><p role="status" data-follow-status></p></form>';
+  panel.append(follow);let revision=0,followKey=crypto.randomUUID(),loadVersion=0;
+  const select=follow.querySelector('select[data-care-case]'),ff=follow.querySelector('form'),box=follow.querySelector('[data-care-history]');
+  ff.querySelector('button').className='primary';
+  const extra=document.createElement('div');
+  extra.innerHTML='<label>Supporting response document (optional)<select name="documentId"><option value="">No document selected</option></select></label><p>Add a reply in Your account documents, then choose it here. Nothing is attached automatically.</p><label>My next review time (optional)<input type="datetime-local" name="nextReviewAt"></label><p>This is your own review appointment. No notification is sent and it is not a legal deadline.</p>';
+  ff.insertBefore(extra,ff.querySelector('button'));
+  const details=document.createElement('div');details.innerHTML='<label>Who did you contact? (optional)<input name="respondent" maxlength="120"></label><label>How did you contact them? <select name="submissionMethod"><option value="UNKNOWN">Not recorded</option><option value="POST">Post</option><option value="ONLINE">Online</option><option value="PHONE">Phone</option><option value="OTHER">Other</option></select></label><label>Correct an earlier note (optional)<select name="correctsEventId"><option value="">This is a new event</option></select></label><p>A correction adds a new note. It keeps the earlier note in your history.</p>';
+  ff.insertBefore(details,ff.querySelector('button'));
+  api('GET','/api/account/documents').then(data=>{if(!current())return;const select=extra.querySelector('select');for(const d of data.documents||[]){const option=document.createElement('option');option.value=d.file_id;option.textContent=d.name||'Saved supporting document';select.append(option);}}).catch(()=>{});
+  ff.addEventListener('input',()=>{followKey=crypto.randomUUID();});
+  async function loadFollow(){
+    const caseId=select.value,version=++loadVersion;ff.hidden=true;box.replaceChildren();if(!caseId)return;
+    try{const data=await api('GET','/api/cases/'+encodeURIComponent(caseId)+'/followup');if(!current()||version!==loadVersion)return;
+      revision=data.revision;const corrections=details.querySelector('select[name=correctsEventId]');corrections.replaceChildren();const none=document.createElement('option');none.value='';none.textContent='This is a new event';corrections.append(none);
+      for(const event of data.events){const p=document.createElement('p');p.textContent=new Date(event.occurredAt).toLocaleDateString()+' · '+event.type+' · '+event.note+' (recorded by you)'+(event.respondent?' · Contact: '+event.respondent:'')+(event.submissionMethod&&event.submissionMethod!=='UNKNOWN'?' · Method: '+event.submissionMethod:'')+(event.correctsEventId?' · Corrects note '+event.correctsEventId:'');box.append(p);const o=document.createElement('option');o.value=event.eventId;o.textContent=new Date(event.occurredAt).toLocaleDateString()+' · '+event.type+' · '+event.eventId.slice(-8);corrections.append(o);}ff.hidden=false;
+      for(const order of data.mailingHistory||[]){const p=document.createElement('p');p.textContent=(order.simulation?'Simulated mailing':'Mail service cached record')+' · '+order.state+' · Payment: '+order.paymentState+'. Last check time is unknown. This does not verify postal delivery or a bureau response.';box.append(p);}
+      const open=document.createElement('button');open.type='button';open.className='secondary';open.textContent='Open this report and packet';open.onclick=()=>run(async()=>{const selected=caseId,loaded=await api('GET','/api/cases/'+encodeURIComponent(selected));if(!current()||version!==loadVersion||select.value!==selected)return;state.caseId=selected;state.view=loaded.view;if(state.checkoutReturn?.caseId!==selected)state.checkoutReturn=null;state.assessment_error=null;state.purchase_needed=null;state.step=STEP.RESULTS;});box.append(open);
+      const history=document.createElement('button');history.type='button';history.className='secondary';history.textContent='Open saved reports and comparisons';history.onclick=()=>{if(current())navigateStep(STEP.JURISDICTION);};box.append(history);
+      const receipt=await api('GET','/api/cases/'+encodeURIComponent(caseId)+'/coverage-receipt');if(!current()||version!==loadVersion)return;
+      const p=document.createElement('p');p.textContent=receipt.checkInventoryAvailable?'Recorded check entries: '+receipt.checks.length+'. '+receipt.noIssueMeans:'A check inventory is not available yet. '+receipt.noIssueMeans;box.append(p);
+    }catch{if(current()&&version===loadVersion)box.textContent='We could not load this report’s follow-up notes.';}
+  }
+  select.addEventListener('change',()=>{followKey=crypto.randomUUID();loadFollow();});
+  ff.addEventListener('submit',async e=>{
+    e.preventDefault();const caseId=select.value,button=ff.querySelector('button'),message=ff.querySelector('[data-follow-status]');button.disabled=true;select.disabled=true;
+    const f=new FormData(ff),occurredAt=new Date(f.get('date')+'T00:00:00').getTime();
+    try{await api('POST','/api/cases/'+encodeURIComponent(caseId)+'/followup',{requestId:followKey,expectedRevision:revision,type:f.get('type'),note:f.get('note'),occurredAt,
+      submissionMethod:f.get('submissionMethod')||'UNKNOWN',...(f.get('respondent')?{respondent:f.get('respondent')}:{}),...(f.get('correctsEventId')?{correctsEventId:f.get('correctsEventId')}:{}),
+      ...(f.get('documentId')?{documentId:f.get('documentId')}:{}),...(f.get('nextReviewAt')?{nextReviewAt:new Date(f.get('nextReviewAt')).getTime()}: {})});if(!current())return;
+      message.textContent='Your note is saved. No dispute or mailing was sent.';ff.reset();followKey=crypto.randomUUID();await loadFollow();
+    }catch{if(current())message.textContent='The save was not confirmed or this history changed. Review current notes before trying again.';}
+    finally{if(current()){button.disabled=false;select.disabled=false;}}
+  });
+  api('GET','/api/cases').then(data=>{if(!current())return;for(const c of data.cases||[]){const o=document.createElement('option');o.value=c.case_id;o.textContent=c.country+' · '+c.region+' · '+c.case_id.slice(-8);select.append(o);}}).catch(()=>{if(current())box.textContent='Your reports could not be loaded.';});
+}
+
 function renderSupport(panel) {
   if (!state.account) {
     panel.innerHTML = `${notices()}<h1>Support</h1><p class="lede">Contact us if you need help signing in or using your report.</p>${supportContactBlock()}<p>Sign in to see your support reference.</p>`;
+    mountCare(panel);
+    const back=document.createElement('button');back.type='button';back.className='secondary';back.textContent='Back to log in';back.onclick=()=>{state.step=STEP.ACCOUNT;render();};panel.append(back);
     return;
   }
   panel.innerHTML = `
@@ -3128,6 +3203,7 @@ function renderSupport(panel) {
     ${notices()}
     <div class="obs" id="supportInfo">Loading your support reference…</div>
     <div class="note">Copying the summary does not send a message. Use Contact support to open your email app, then send your request.</div>`;
+  mountCare(panel);
 
   const accountId = state.account.account_id;
   const seq = ++supportSeq;
