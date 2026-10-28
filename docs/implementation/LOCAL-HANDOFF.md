@@ -1,6 +1,6 @@
-# CRP international enhancement — local continuation handoff
+# CRP operational enhancement — local continuation handoff
 
-October28,2026. No deployment, source push, provider activation, messages, live charges, payments, mailing or access to original private stores. The first-tranche handoff and every failed/qualified test remain under output/implementation/continuation/first-tranche-* and the earlier evidence paths.
+October28,2026. Owner removed international advertising from the active work and release scope. Historical validation and audit records are retained. No deployment, source push, provider activation, messages, live charges, payments, mailing or access to original private stores. The first-tranche handoff and every failed/qualified test remain under output/implementation/continuation/first-tranche-* and the earlier evidence paths.
 
 **Final local checkpoint: VERIFIED_LOCAL_ONLY.** The restored-guide full-r4 passed20330/0/0 before the density issue was discovered. After the persistence guard, a new full-r5 passed20332/0/0 across203sections. The30-minute declared local mix and every integrity/source/cleanup check passed. No hosted capacity, deployment, banking access or global international-readiness approval is inferred.
 
@@ -63,7 +63,6 @@ The final local verifier passed: clean full-r5=20332/0/0 across203sections and43
 | Package | Current disposition | Remaining gate |
 |---|---|---|
 | IP-01 | Preservation/source tooling implemented; final original-data/source check passed | Recheck at any future release |
-| IP-02 | Country/offer/channel worksheets and exact-copy tests | Dated qualified operator/legal/channel decisions |
 | IP-03 | Incident ownership, scheduler witness and operational/recovery preparation | Actual hosted installation, alert arrival/acknowledgement and recurring four-app acceptance |
 | IP-04 | Persistent authenticated offline custody and restore refusal prepared | Approved periods/holds/key custody and native deletion/startup integration; no purge |
 | IP-05 | Bank selected: BMO; liabilities and native receipt validation preserved | Actual rail/statement format, independently authenticated source, issuer and transport acceptance for regular Canadian Online Banking |
@@ -71,12 +70,12 @@ The final local verifier passed: clean full-r5=20332/0/0 across203sections and43
 | IP-07 | Native support/complaints and authorized aging summaries | Actual service/escalation owners and approved complaint-clock rules; email disabled |
 | IP-08 | Structured notes/corrections, owned reply documents, cached Mail projection and navigation implemented | Rail/carrier/bureau evidence and sourced procedural reminders require actual facts/rules |
 | IP-09 | Native current-operator order/incident review implemented | Actual staffing/backup roles/hours remain owner-deferred |
-| IP-10 | Scoped asset-bound declaration/review/expiry plus assurance visibility | Market/channel eligibility and actual publication/takedown evidence |
+| IP-10 | Scoped asset-bound declaration/review/expiry plus assurance visibility | Existing partner records retained; actual publication remains independently unverified |
 | IP-11 | Scoped Consumer/Partner summaries and Family adoption implemented | No broad commercial outcome or external-provider availability claim |
 | IP-12 | Existing accessible packet reading and changed mobile/keyboard paths checked | Specialist review remains deferred; new layouts require distinct authorized specimens |
 | IP-13 | Actual30-minute local mix passed; dense-output defect fixed; final full-r5 clean | Approve real demand/targets and future hosted envelope; dense tier remains explicitly bounded |
 
-No global international-ready flag is set. Applicable external decisions are not replaced by artificial owner clicks for ordinary authorized administration.
+International advertising preparation and country/channel campaign approval are outside this operational release. Applicable external decisions are not replaced by artificial owner clicks for ordinary authorized administration.
 
 ## Source, preservation and rollback
 
@@ -84,4 +83,4 @@ Candidates remain uncommitted in their four attached worktrees, based on accepte
 
 Consumer account/case metadata is additive; preserve it and the private support sidecar during any later rollback/backup. Family/Affiliate add no schema migration. Mail012 adds immutable stewardship events and expanded26-table backup inventory. An unchanged older Mail artifact refuses schema12. The tested compatibility fallback retains migration012 and the expanded backup inspector with exact predecessor business code from immutable Git objects. Never restore an old database over newer orders, approvals or financial/provider history.
 
-Future source publication, guarded staging/production releases, provider access/configuration, notifications, staffing/routes, retention execution, payments, postal work and advertising remain distinct actions. No old intent is replayed.
+Future source publication, guarded staging/production releases, provider access/configuration, notifications, staffing/routes, retention execution, payments and postal work remain distinct actions. No old intent is replayed.

@@ -14,7 +14,7 @@ function fingerprint(){const prefixes={consumer:['accelerated-launch/service/','
 const sourceBefore=fingerprint();
 const report={version:1,runId,startedAt:new Date().toISOString(),environment:'local',fictional:true,mode:smoke?'HARNESS_SMOKE_ONLY':'THIRTY_MINUTE_PROPOSED_LOCAL_MIX',durationMs:0,staffSessions:2,
  processModel:'Native applications share one QA coordinator Node process. Family health only; authenticated gateway authority is verified separately. Not separate-process staging capacity.',
- runtime:{node:process.version,platform:process.platform,cpuCount:os.cpus().length,totalMemory:os.totalmem()},workloads:{'native-report':0,'scanned-report':0,'large-report':0,'staff-review':0,'affiliate-heavy-report':0,'encrypted-backup':0},integrity:{},requests:[],failures:[],intentional503:0,hostedCapacityVerified:false,customerSla:false,advertisingAuthorized:false};
+ runtime:{node:process.version,platform:process.platform,cpuCount:os.cpus().length,totalMemory:os.totalmem()},workloads:{'native-report':0,'scanned-report':0,'large-report':0,'staff-review':0,'affiliate-heavy-report':0,'encrypted-backup':0},integrity:{},requests:[],failures:[],intentional503:0,hostedCapacityVerified:false,customerSla:false};
 const save=()=>fs.writeFileSync(path.join(out,'result.json'),JSON.stringify(report,null,2));save();
 const free=()=>new Promise((resolve,reject)=>{const s=http.createServer();s.once('error',reject);s.listen(0,'127.0.0.1',()=>{const p=s.address().port;s.close(()=>resolve(p));});});
 let consumer,mail,db,affiliate,pg,portal,mailConfig,backupKey=crypto.randomBytes(32).toString('hex'),actors=[],mailSessions=[],affiliateCookie='',mailOrigin='',affiliateOrigin='',familyOrigin='',progress=null;const createdCases=[];

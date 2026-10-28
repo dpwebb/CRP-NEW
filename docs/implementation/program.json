@@ -54,22 +54,6 @@
       "deployment": "NOT_AUTHORIZED"
     },
     {
-      "id": "IP-02",
-      "priority": "P0",
-      "owner": "Business owner / jurisdiction reviewer",
-      "dependencies": [
-        "IP-01"
-      ],
-      "status": "EXTERNAL_DECISION_PENDING",
-      "outcome": "Country/channel worksheets and claims rules",
-      "nextAction": "Obtain dated qualified operator/legal/country/channel decisions; no advertising activation",
-      "localEvidence": [
-        "docs/implementation/claims.json"
-      ],
-      "hostedAcceptance": "NOT_RUN",
-      "deployment": "NOT_AUTHORIZED"
-    },
-    {
       "id": "IP-03",
       "priority": "P0",
       "owner": "Operations / recovery custodian",
@@ -91,7 +75,6 @@
       "owner": "Data custodian",
       "dependencies": [
         "IP-01",
-        "IP-02",
         "IP-03"
       ],
       "status": "LOCAL_CUSTODY_READY_POLICY_PENDING",
@@ -127,8 +110,7 @@
       "priority": "P1",
       "owner": "Consumer product owner",
       "dependencies": [
-        "IP-01",
-        "IP-02"
+        "IP-01"
       ],
       "status": "LOCAL_READY",
       "outcome": "Offer and assessment coverage",
@@ -145,7 +127,6 @@
       "owner": "Support owner",
       "dependencies": [
         "IP-01",
-        "IP-02",
         "IP-04"
       ],
       "status": "LOCAL_READY_SERVICE_RULES_PENDING",
@@ -199,13 +180,12 @@
       "priority": "P1",
       "owner": "Partner administrator",
       "dependencies": [
-        "IP-02",
         "IP-05",
         "IP-07"
       ],
-      "status": "LOCAL_READY_MARKET_EVIDENCE_PENDING",
+      "status": "LOCAL_READY_EXTERNAL_EVIDENCE_PENDING",
       "outcome": "Placement/disclosure evidence",
-      "nextAction": "Complete market/channel eligibility and actual publication/takedown evidence before promotion",
+      "nextAction": "Retain existing partner placement/disclosure records; actual publication remains independently unverified",
       "localEvidence": [
         "affiliate:international-continuation-full.log"
       ],
@@ -272,7 +252,7 @@
   ],
   "handoff": "docs/implementation/LOCAL-HANDOFF.md",
   "programComplete": false,
-  "generatedAt": "2026-10-28T13:29:57.636Z",
+  "generatedAt": "2026-10-28T13:55:31.760Z",
   "localEngineeringTranche": "VERIFIED_LOCAL_ONLY",
   "bankSelection": {
     "name": "Bank of Montreal",
@@ -281,5 +261,6 @@
     "readOnlyAccess": "NOT_VERIFIED",
     "configured": false
   },
-  "finalLocalEvidence": "output/implementation/continuation/final-checks.json"
+  "finalLocalEvidence": "output/implementation/continuation/final-checks.json",
+  "scope": "Consumer, Partner, Admin and Staff operational improvements; international advertising removed by owner October28,2026"
 }
