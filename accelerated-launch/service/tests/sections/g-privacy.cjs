@@ -7,6 +7,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const { PrivateStore, REPOSITORY_ROOT } = require('../../private-store.cjs');
 const { Logger, ALLOWED_FIELDS } = require('../../logger.cjs');
 const FIXTURES = require('../../../../internal-validation/ca-ns-last-payment-six-year/tests/fixtures.cjs');
@@ -80,8 +81,16 @@ async function run(t, check) {
 
   /* ---------------------------------------------------------------- public assets */
 
-  const register = JSON.parse(fs.readFileSync(path.join(REPOSITORY_ROOT, 'SOURCE_CAPTURES', 'PROD-003', 'report_representation_register.json'), 'utf8'));
-  const pinned = register.presentations.find((p) => p.presentation_id === register.selected_presentation);
+  const fictional = require('../fixture-policy.cjs').fictionalEnabled();
+  // The fictional profile checks real generated file bytes/path without opening
+  // a private consumer register. Preserve the separate captured audit unchanged.
+  let pinned;
+  if (fictional) pinned = { sha256:crypto.createHash('sha256').update(fs.readFileSync(fixtures.unpinned)).digest('hex'),
+    absolute_path_outside_this_repository:fixtures.unpinned };
+  else {
+    const register = JSON.parse(fs.readFileSync(path.join(REPOSITORY_ROOT, 'SOURCE_CAPTURES', 'PROD-003', 'report_representation_register.json'), 'utf8'));
+    pinned = register.presentations.find((p) => p.presentation_id === register.selected_presentation);
+  }
   const publicTrees = [
     path.join(REPOSITORY_ROOT, 'consumer-wizard', 'dist'),
     path.join(REPOSITORY_ROOT, 'accelerated-launch', 'service', 'ui')
@@ -99,7 +108,8 @@ async function run(t, check) {
     }
   }
 
-  return { scanned_public_assets: scans.length, log_records: t.logs.length };
+  return { scanned_public_assets: scans.length, log_records: t.logs.length,
+    reference_input:fictional?'GENERATED_FICTIONAL_FILE_DIGEST_AND_PATH':'ORIGINAL_CAPTURE_REGISTER',private_capture_audit:fictional?'NOT_RUN':'ORIGINAL_CONTRACT' };
 }
 
 module.exports = { run, id: 'g-privacy', title: 'No private file or identifier in logs or public assets' };

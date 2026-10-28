@@ -186,6 +186,7 @@ function canonicalVersion(packetRow, resultRow, selectedIssues, unsigned = false
     `issues:${ordered.map(issueContent).join(';')}`,
     `wording:${packetRow.wording || ''}`,
     `letter:${packetRow.letter_text || ''}`,
+    ...(!unsigned && packetRow.accessible_reading ? [`accessible-reading:${JSON.stringify(packetRow.accessible_reading)}`] : []),
     ...(!unsigned && packetRow.signature ? [`signature:${JSON.stringify(packetRow.signature)}`] : []),
     // Legacy automatic dates retain their exact approval identity. Only a new
     // consumer date choice adds material input to that identity.
@@ -262,6 +263,7 @@ function packetView(store, actor, caseId) {
         copy.file_id === annotation.file_id && copy.relevant_pages.includes(annotation.page))),
       approved: Boolean(packet && packet.approved_version && !approvalStale),
       approved_version: packet ? packet.approved_version : null,
+      approved_reading_sha256: packet?.approved_version && !approvalStale ? packet.approved_reading_sha256 || null : null,
       approved_at: packet ? packet.approved_at : null,
       approval_stale: approvalStale,
       recipient: { type: recipientTypeOf(packet), label: RECIPIENT_LABEL[recipientTypeOf(packet)] },
@@ -581,7 +583,7 @@ function requireCorrespondence(packet) {
 
 
 /** Explicitly approve the current version. Requires a non-empty selection bound to the current result. */
-function approvePacket(store, actor, caseId, expectedVersion, requirePostal) {
+function approvePacket(store, actor, caseId, expectedVersion, requirePostal, readingDigest) {
   const owned = cases.requireOwnedCase(store, actor, caseId);
   const packet = enrichedCurrentPacket(store, actor, owned.country, caseId);
   if (!packet || !packet.selected_issue_ids || !packet.selected_issue_ids.length) {
@@ -602,12 +604,18 @@ function approvePacket(store, actor, caseId, expectedVersion, requirePostal) {
   if (packet.support_snapshot?.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   if (expectedVersion != null && canonicalVersion(packet, row, selected) !== expectedVersion) throw new ServiceError('PACKET_APPROVAL_STALE');
   const composed = completePdf(store, actor, packet, row, selected);
+  let reading = null;
+  if (readingDigest != null) {
+    reading = require('./packet-accessibility.cjs').manifest(composed, packet, canonicalVersion(packet, row, selected));
+    if (!reading.complete || readingDigest !== reading.reading_sha256) throw new ServiceError('PACKET_APPROVAL_STALE');
+  }
   return store.update((state) => {
     const live = state.packets.find((p) => p.case_id === caseId);
     live.approved_version = canonicalVersion(packet, row, selected);
     live.approved_at = nowIso();
     delete live.approved_form_digests;
     live.approved_pdf_sha256 = composed.sha256;
+    live.approved_reading_sha256 = reading?.reading_sha256 || null;
     live.updated_at = nowIso();
     return live;
   });
@@ -846,6 +854,33 @@ function packetReview(store, actor, caseId, expectedVersion) {
   return { version, sha256: pdf.sha256, page_count: pdf.page_count, sections: pdf.sections,
     editable_fields: pdf.editable_fields, review_pages: pdf.review_pages };
 }
+/** Text reading is a companion to the exact PDF, never replacement evidence. */
+function packetReading(store, actor, caseId, expectedVersion, approved = false) {
+  const { packet, row, selected, version } = resolvePreview(store, actor, caseId, expectedVersion);
+  requireCorrespondence(packet);
+  if (!packet.support_snapshot || packet.support_snapshot.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
+  const pdf = completePdf(store, actor, packet, row, selected);
+  const reading = require('./packet-accessibility.cjs').manifest(pdf, packet, version);
+  if (approved) {
+    resolveSelected(store, actor, caseId);
+    if (!reading.complete || packet.approved_pdf_sha256 !== pdf.sha256 || packet.approved_reading_sha256 !== reading.reading_sha256) throw new ServiceError('PACKET_APPROVAL_STALE');
+  }
+  return reading;
+}
+function setPacketReading(store, actor, caseId, expectedVersion, input) {
+  const { packet, row, selected } = resolvePreview(store, actor, caseId, expectedVersion);
+  requireCorrespondence(packet);
+  if (!packet.support_snapshot || packet.support_snapshot.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
+  const pdf = completePdf(store, actor, packet, row, selected);
+  const normalized = require('./packet-accessibility.cjs').normalize(input, pdf);
+  return store.update(state => {
+    const live = state.packets.find(item => item.packet_id === packet.packet_id);
+    live.accessible_reading = normalized;
+    live.approved_version = null; live.approved_at = null; live.approved_pdf_sha256 = null;
+    live.approved_reading_sha256 = null; live.updated_at = nowIso();
+    return live;
+  });
+}
 function packetForm(store, actor, caseId) {
   cases.requireOwnedCase(store, actor, caseId);
   throw new ServiceError('NOT_FOUND');
@@ -869,7 +904,7 @@ function completePdf(store, actor, packet, row, selected) {
   const reports = (packet.report_snapshot?.copies || []).map(copy => ({ ...copy,
     filename: packet.report_snapshot.manifest?.find(item => item.file_id === copy.file_id)?.original_filename || '',
     annotations: (packet.annotations || []).filter(annotation => annotation.file_id === copy.file_id && copy.relevant_pages.includes(annotation.page)) }));
-  return composePacket({ letter_text: letter, instructions: !signed && packet.support?.channel === 'POSTAL' ? [
+  const composed = composePacket({ letter_text: letter, instructions: !signed && packet.support?.channel === 'POSTAL' ? [
     '1. Keep this instruction sheet for yourself. It is not part of the packet you send to the bureau.',
     '', '2. Check every remaining page. Make sure the letter, report pages and supporting copies are the ones you approved.',
     '', '3. Print pages 2 onward. Sign and date your letter where shown. If you change the letter, check the final version before sending.',
@@ -878,6 +913,7 @@ function completePdf(store, actor, packet, row, selected) {
     '', '6. Keep a copy of what you sent and your mailing receipt, if you have one.'
   ].join('\n') : null,
     ...(signed?{signature:{name:packet.signature.name,date:packet.signature.date}}:{}),reports, documents });
+  return { ...composed, reading_signature: signed ? { name:packet.signature.name, date:packet.signature.date } : null };
 }
 
 /** The same approved PDF is opened for printing and included in the download. */
@@ -908,6 +944,8 @@ module.exports = {
   packetReport,
   packetPreview,
   packetReview,
+  packetReading,
+  setPacketReading,
   packetForm,
   approvePacket,
   packetDownload,

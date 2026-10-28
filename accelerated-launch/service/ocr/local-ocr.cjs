@@ -865,6 +865,7 @@ function readPdfRegions(file, regions, options = {}) {
     report.refusal_reason = 'LOCAL_REGION_OCR_DEPENDENCY_UNAVAILABLE'; return report;
   }
   const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'crp-region-ocr-'));
+  report.ocr_executions = 0; report.ocr_batch_views = 0;
   try {
     const prefix = path.join(workDir, 'band');
     const raster = tryRun(pdftoppm.path, ['-r', String(dpi), '-singlefile',
@@ -960,6 +961,58 @@ function readPdfRegions(file, regions, options = {}) {
           }
         });
       }
+      const variantRaster = (variant) => {
+        const pad = variant.pad, width = variant.width + pad * 2, height = variant.height + pad * 2;
+        const output = Buffer.alloc(width * height, 255);
+        for (let y = 0; y < variant.height; y += 1) variant.pixels.copy(output,
+          (y + pad) * width + pad, y * variant.width, (y + 1) * variant.width);
+        return Buffer.concat([Buffer.from(`P5\n${width} ${height}\n255\n`), output]);
+      };
+      const preparedReadings = new Map();
+      let batchFailure = null;
+      // One bounded CLI image-list call per PSM reads every primary dark-source
+      // view. Keep all views and disable adaptive learning between images, so a
+      // preceding view cannot train the reading of a later source. Paper's
+      // original-first and conditional fallback paths remain unchanged.
+      if (!paperBackground) {
+        for (const psm of [7, 8]) {
+          const batch = candidates.filter(v => !v.fallback && v.preprocessing && (v.psm || 7) === psm);
+          if (!batch.length || !remainingMs()) continue;
+          const files = batch.map(v => {
+            const target = path.join(workDir, `region-${index}-${v.polarity}.pgm`);
+            fs.writeFileSync(target, variantRaster(v)); return target;
+          });
+          const list = path.join(workDir, `region-${index}-psm-${psm}.txt`);
+          fs.writeFileSync(list, files.join('\n') + '\n');
+          report.ocr_executions += 1;
+          const result = tryRun(tesseract.path, [list, 'stdout', '--tessdata-dir', tessdata.dir,
+            '--psm', String(psm), '-l', 'eng', '-c', 'classify_enable_learning=0', 'tsv'],
+          { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: Math.max(1, remainingMs()), maxBuffer: 4 * 1024 * 1024 });
+          const lines = result.ok ? String(result.stdout).split(/\r?\n/) : [];
+          while (lines.length && lines[lines.length - 1] === '') lines.pop();
+          const header = (lines[0] || '').split('\t'), pageIndex = header.indexOf('page_num'), levelIndex = header.indexOf('level');
+          const rows = lines.slice(1).map(line => ({ line, fields: line.split('\t') }));
+          const pages = rows.filter(row => row.fields[levelIndex] === '1').map(row => Number(row.fields[pageIndex]));
+          const valid = result.ok && header.join('\t') === 'level\tpage_num\tblock_num\tpar_num\tline_num\tword_num\tleft\ttop\twidth\theight\tconf\ttext'
+            && pages.length === batch.length
+            && pages.every((page, i) => page === i + 1) && rows.every(row => row.fields.length === header.length
+              && Number.isInteger(Number(row.fields[pageIndex])) && Number(row.fields[pageIndex]) >= 1
+              && Number(row.fields[pageIndex]) <= batch.length);
+          if (!valid) {
+            batchFailure = !remainingMs() ? 'PHYSICAL_OCR_BAND_TIME_BUDGET_EXCEEDED'
+              : result.ok ? 'PHYSICAL_OCR_BATCH_OUTPUT_INVALID' : 'PHYSICAL_OCR_BATCH_FAILED';
+            break;
+          }
+          batch.forEach((variant, i) => preparedReadings.set(variant, valid ? { ok: true,
+            stdout: lines[0] + '\n' + rows.filter(row => Number(row.fields[pageIndex]) === i + 1).map(row => row.line).join('\n') }
+            : { ok: false }));
+          report.ocr_batch_views += batch.length;
+        }
+      }
+      if (batchFailure) {
+        report.regions.push({ id: region.id, page, region: { ...region }, word: null,
+          reason: batchFailure, variants: [] }); continue;
+      }
       const variants = [];
       // All primary source candidates precede margin fallback work. No already readable
       // region pays for those extra reads; only the remaining failed own regions do.
@@ -971,15 +1024,17 @@ function readPdfRegions(file, regions, options = {}) {
         // are fallback work after that own reading fails, not votes against a readable source.
         if (paperBackground && variant.polarity === 'INVERTED_GRAYSCALE') continue;
         if (!paperBackground && !variant.preprocessing) continue;
-        const pad = variant.pad, paddedWidth = variant.width + pad * 2, paddedHeight = variant.height + pad * 2;
-        const output = Buffer.alloc(paddedWidth * paddedHeight, 255);
-        for (let y = 0; y < variant.height; y += 1) variant.pixels.copy(output,
-          (y + pad) * paddedWidth + pad, y * variant.width, (y + 1) * variant.width);
+        const pad = variant.pad;
         const target = path.join(workDir, `region-${index}-${variant.polarity}.pgm`);
-        fs.writeFileSync(target, Buffer.concat([Buffer.from(`P5\n${paddedWidth} ${paddedHeight}\n255\n`), output]));
-        const reading = tryRun(tesseract.path, [target, 'stdout', '--tessdata-dir', tessdata.dir,
-          '--psm', String(variant.psm || 7), '-l', 'eng', 'tsv'],
-        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: Math.max(1, remainingMs()), maxBuffer: 1024 * 1024 });
+        const prepared = preparedReadings.get(variant);
+        let reading = prepared;
+        if (!reading) {
+          fs.writeFileSync(target, variantRaster(variant));
+          report.ocr_executions += 1;
+          reading = tryRun(tesseract.path, [target, 'stdout', '--tessdata-dir', tessdata.dir,
+            '--psm', String(variant.psm || 7), '-l', 'eng', 'tsv'],
+          { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: Math.max(1, remainingMs()), maxBuffer: 1024 * 1024 });
+        }
         const words = reading.ok ? parseTsv(reading.stdout).map((word) => ({
           text: word.text, confidence: word.conf, trusted: word.conf >= TRUSTED_LINE_CONFIDENCE,
           x0: (x0 + left + variant.left + word.left - pad) * 72 / dpi,

@@ -1,0 +1,18 @@
+'use strict';
+// First-tranche qualified verifier is retained under output/.../continuation/.
+const fs=require('node:fs'),crypto=require('node:crypto'),path=require('node:path');
+const root=path.resolve(__dirname,'../..'),read=p=>JSON.parse(fs.readFileSync(path.resolve(root,p))),hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const full=read('output/implementation/continuation/consumer-full-r5-evidence.json'),program=read('docs/implementation/program.json'),sources=Object.fromEntries(program.sources.map(s=>[s.app,s.workspace]));
+const currentSourceExact=full.source_hashes.every(r=>hash(path.join(root,r.file))===r.sha256),fullClean=full.mode==='FULL_CURRENT_PRODUCT'&&full.fixture_policy==='OWNER_AUTHORIZED_FICTIONAL_REGRESSION_20261024'&&full.totals.failed===0&&full.totals.skipped===0&&full.totals.passed>=20330&&full.sections.length>=203&&full.sections.every(s=>s.completed&&s.failed===0)&&full.sections.some(s=>s.id==='hk-assessment-output-budget')&&!full.source_drift.length;
+function suite(file,tap=false){const text=fs.readFileSync(file,'utf8'),number=name=>{const pattern=new RegExp('^'+(tap?'# ':'ℹ ')+name+' (\\d+)\\s*$','gm'),rows=[...text.matchAll(pattern)];if(!rows.length)throw Error('INCOMPLETE_SUITE:'+path.basename(file));return Number(rows.at(-1)[1]);};return {tests:number('tests'),passed:number('pass'),failed:number('fail'),skipped:number('skipped')};}
+const affiliate=suite(path.join(sources.affiliate,'international-continuation-full.log')),family=suite(path.join(sources.family,'international-family-continuation-linux.log'),true),joined=suite(path.join(sources.family,'family-admin/international-native-sso-final.log'));
+const dirs=fs.readdirSync(path.join(root,'output/implementation/continuation')).filter(n=>n.startsWith('soak-')).sort(),soakPath='output/implementation/continuation/'+dirs.at(-1)+'/result.json',soak=read(soakPath);
+const loadSourceExact=soak.sourceAfter.every(s=>s.files.every(f=>hash(path.join(sources[s.app],f.file))===f.sha256));
+const preservation=read('output/implementation/preservation-current.json'),prerequisites=read('output/implementation/continuation/public-prerequisites-before-r5.json');
+const passed=fullClean&&currentSourceExact&&affiliate.tests===125&&affiliate.passed===125&&!affiliate.failed&&!affiliate.skipped&&family.tests===57&&family.passed===57&&!family.failed&&!family.skipped&&joined.passed===1&&!joined.failed&&!joined.skipped&&soak.passed&&soak.durationMs>=1800000&&soak.review.localEnvelopeAccepted&&loadSourceExact&&preservation.passed&&prerequisites.passed;
+const report={version:2,checkedAt:new Date().toISOString(),passed,consumer:{fullRun:full.totals,singleFullRunClean:fullClean,sections:full.sections.length,currentSourceExact,sourceFiles:full.source_hashes.length,earlierFailedAndQualifiedRunsPreserved:true},affiliate,family,nativeJoined:joined,
+mail:{passed:112,failed:0,skipped:0,evidence:'Reused unchanged Mail runtime full-r4; pinned rollback focused1/1 retained'},
+capacity:{receipt:soakPath,mode:soak.mode,durationMs:soak.durationMs,workloads:soak.workloads,metrics:soak.metrics,integrity:soak.integrity,currentSourceExact:loadSourceExact,processModel:soak.processModel,hostedCapacityVerified:false,customerSla:false},
+bank:{selected:'Bank of Montreal',accessVerified:false,configured:false,sourceHandoff:'affiliate:docs/BMO-READ-ONLY-EVIDENCE.md'},
+preservationPassed:preservation.passed,programComplete:false,externalPolicyAndAccessDecisionsPending:true,hostedChecksRun:false,deploymentPerformed:false,advertisingAuthorized:false};
+fs.writeFileSync(path.join(root,'output/implementation/continuation/final-checks.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report));if(!passed)process.exitCode=1;

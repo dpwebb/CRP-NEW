@@ -609,8 +609,9 @@ function renderAccount(panel) {
     <p class="auth-account-note">No report, identification or payment is needed to create an account.</p>
     <p id="auth-status" class="auth-status" role="status" aria-live="polite"></p>
     ${surface?.preview_mode ? '<p class="evidence">Staging preview: use fictional information while testing this page.</p>' : ''}
-    </form>${supportContactBlock()}</div>`;
+    </form>${supportContactBlock()}<button id="online-help" type="button" class="secondary">Request help online</button></div>`;
 
+  if(el('online-help'))el('online-help').onclick=()=>{state.step=STEP.SUPPORT;render();};
   const credentials = () => ({ email: el('email').value, password: el('password').value, code: el('signin-code')?.value || '' });
   if (el('signin-google')) el('signin-google').onclick = () => {
     if (authPending) return;
@@ -2330,7 +2331,7 @@ function packetReportCopies(packet) {
   if (!Array.isArray(packet.report_exhibits)) return '';
   const reports = packet.report_exhibits;
   if (!reports.length) return '';
-  return `<section id="packet-reports"><h3>Report pages</h3>
+  return `<section id="packet-reports"><h2>Report pages</h2>
     <p class="evidence">The pages about your chosen disputes are included in your packet.</p>
     ${reports.map(report => {
       const label = String(report.label || 'Report copy').replace(/\b\d{4}-\d{2}-\d{2}\b/g, date => readableDate(date) || date);
@@ -2620,7 +2621,7 @@ async function wirePacket(panel) {
     ensureOrigin();
     if (!previewCurrent || edits || signatureDraft || !el('packet-preview-reviewed').checked) throw new Error('Save and read the current packet before approving it.');
     const captured = edits, ensureCurrent = () => { ensureOrigin(); if (captured !== edits || signatureDraft || !previewCurrent) throw cancelledAction(); };
-    await api('POST', `/api/cases/${caseId}/packet/approve`, { reviewed_version: pv.packet.preview_version }); ensureCurrent();
+    await api('POST', `/api/cases/${caseId}/packet/approve`, { reviewed_version: pv.packet.preview_version, reading_sha256:packetReviewController?.readingApproval?.() }); ensureCurrent();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
       state.notice = pv.packet.signature?.current ? 'Signed packet approved. You can download this exact PDF.' : 'Packet approved. Download your PDF, print it and sign where shown.';
   });
@@ -2787,6 +2788,14 @@ async function wirePacket(panel) {
     try {
       packetReviewController = window.CRP_PACKET_REVIEW.mount({root:el('packet-all-pages'),caseId,version:pv.packet.preview_version,
         ensure:ensureOrigin,request:path=>currentRequest(ensureOrigin,'GET',path),letter:pv.packet.correspondence_preview,
+        approvedReading:pv.packet.approved_reading_sha256,
+        saveReading:reading=>run(async()=>{
+          ensureOrigin();
+          if(edits||signatureDraft)throw new Error('Save other packet changes before saving text alternatives.');
+          await currentRequest(ensureOrigin,'POST',`/api/cases/${caseId}/packet/reading`,{expected_version:pv.packet.preview_version,reading});
+          state.notice='Text alternatives saved. Review the text and approve this new version before downloading.';
+          render();
+        },{redraw:false}),
         annotations:pv.packet.annotations || [],letterDisabled:()=>dateResetConfirmed,
         changed:kind=>{if(kind==='letter'){letterEdited=true;resetLetter=false;updateDateCopy();}else annotationsEdited=true;markChanged();}});
       await packetReviewController.ready; ensureOrigin();
@@ -2995,7 +3004,7 @@ function renderCase(panel) {
     ${notices()}
     ${view ? `<div class="obs">
       <span class="pill">${esc(({ OPEN: 'Open', REVIEWED: 'Reviewed', RESPONSE_RECORDED: 'Reply received', CLOSED: 'Closed' })[view.case.status] || 'Open')}</span>
-      <h3>${esc(regionLabel(view.case.country, view.case.region))}</h3>
+      <h2>${esc(regionLabel(view.case.country, view.case.region))}</h2>
       ${currentReportIdentity(view)}
       <p class="evidence">${esc(view.status_label || '')}</p>
       ${[['OPEN', 'Open'], ['REVIEWED', 'Reviewed'], ['RESPONSE_RECORDED', 'Reply received'], ['CLOSED', 'Closed']].map(([s, label]) =>
@@ -3003,7 +3012,7 @@ function renderCase(panel) {
     </div>` : '<p class="note">No report is open. You can still review your privacy information and delete your account.</p>'}
     <div class="obs" id="privacyInventory">Loading your stored documents and retention information…</div>
     <div class="obs">
-      <h3>Deleting</h3>
+      <h2>Deleting</h2>
       ${surface?.mailing_internal === true ? '<p class="evidence">If you asked us to mail a packet, unfinished requests are cancelled or held before deletion. The mailing team keeps order and payment references to finish refunds or record posting that already happened. Deletion cannot recall a packet already posted.</p>' : ''}
       ${view ? `<p class="evidence"><strong>Report to delete:</strong> ${esc(deletionLabel)}</p>
       <p class="evidence">Deleting a report removes its uploaded files, saved results and packets from your account. Save any copies you need first.</p>
@@ -3021,9 +3030,9 @@ function renderCase(panel) {
     if (state.step !== STEP.CASE || state.caseId !== privacyCase || !state.account || state.account.account_id !== privacyAccount) return;
     const inventory = el('privacyInventory');
     if (!inventory) return;
-    inventory.innerHTML = `<h3>Your stored documents</h3>${(data.cases || []).map(c => `<p>${esc(regionLabel(c.country, c.region))}: ${(c.documents || []).map(d => `${esc(d.name)} (${esc(d.stored_bytes)} bytes)`).join(', ') || 'No stored documents'}; ${esc(c.result_count)} saved results.</p>`).join('') || '<p>No stored cases.</p>'}
-      ${(data.account_documents || []).length ? `<h4>Account documents</h4><ul>${data.account_documents.map(d => `<li>${esc(d.name)} (${esc(d.stored_bytes)} bytes)</li>`).join('')}</ul><p>Manage these documents in Your account.</p>` : ''}
-      <h3>Retention</h3><p>${esc(data.retention && data.retention.plain)}</p><p>Reports have no automatic expiry. Retention settings are not adjustable.</p>
+    inventory.innerHTML = `<h2>Your stored documents</h2>${(data.cases || []).map(c => `<p>${esc(regionLabel(c.country, c.region))}: ${(c.documents || []).map(d => `${esc(d.name)} (${esc(d.stored_bytes)} bytes)`).join(', ') || 'No stored documents'}; ${esc(c.result_count)} saved results.</p>`).join('') || '<p>No stored cases.</p>'}
+      ${(data.account_documents || []).length ? `<h3>Account documents</h3><ul>${data.account_documents.map(d => `<li>${esc(d.name)} (${esc(d.stored_bytes)} bytes)</li>`).join('')}</ul><p>Manage these documents in Your account.</p>` : ''}
+      <h2>Retention</h2><p>${esc(data.retention && data.retention.plain)}</p><p>Reports have no automatic expiry. Retention settings are not adjustable.</p>
       <p>${esc(data.deletion && data.deletion.backups)}</p><p>${esc(data.deletion && data.deletion.external_billing)}</p><p>${esc(data.pricing_location || '')}</p>`;
   }).catch(() => {
     try { ensurePrivacy(); } catch { return; }
@@ -3109,9 +3118,83 @@ function supportSummaryText(data) {
 
 let supportSeq = 0;
 
+
+/* Native support and consumer-recorded follow-up. No provider or email action. */
+function mountCare(panel) {
+  const owner=state.account?.account_id||null;
+  const current=()=>state.step===STEP.SUPPORT&&(state.account?.account_id||null)===owner&&panel.isConnected;
+  const root=document.createElement('section');root.className='obs';
+  root.innerHTML='<h2>Ask for help</h2><p>Do not include passwords, card numbers, identification numbers or your credit report.</p><form data-care-form><label>Type of request <select name="category">'+
+    (owner?'<option value="support">Help using CRP</option><option value="billing">Billing</option>':'<option value="signin">Help signing in</option>')+
+    '<option value="complaint">Complaint</option><option value="privacy">Privacy request</option></select></label>'+
+    (owner?'':'<label>Your email <input name="email" type="email" maxlength="254" required autocomplete="email"></label>')+
+    '<label>How can we help? <textarea name="message" maxlength="1500" required rows="4"></textarea></label><button type="submit">Save request</button><p role="status" data-care-status></p></form><div data-care-tickets></div>';
+  panel.append(root);
+  root.querySelector('button').className='primary';
+  const form=root.querySelector('form'),status=root.querySelector('[data-care-status]');let key=crypto.randomUUID();
+  form.addEventListener('input',()=>{key=crypto.randomUUID();});
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();const button=form.querySelector('button');button.disabled=true;status.textContent='Saving…';
+    const data=Object.fromEntries(new FormData(form));data.requestId=key;
+    try{await api('POST',owner?'/api/support/tickets':'/api/support/contact',data);if(!current())return;
+      status.textContent=owner?'Your request is saved below. No report or email was sent.':'Your request is saved for support review. No account details are shown here. Use the support email if you need another contact method.';
+      form.reset();key=crypto.randomUUID();if(owner)await loadTickets();
+    }catch(error){if(current())status.textContent='We could not confirm the save. Check your requests before trying again; keep this form unchanged to use the same request reference.';}
+    finally{if(current())button.disabled=false;}
+  });
+  async function loadTickets(){
+    try{const data=await api('GET','/api/support/tickets');if(!current())return;
+      const box=root.querySelector('[data-care-tickets]');box.replaceChildren();
+      const h=document.createElement('h3');h.textContent='Your requests';box.append(h);
+      for(const t of data.items||[]){const p=document.createElement('p');p.textContent=t.ticketId+' · '+t.category+' · '+t.status+(t.nextUpdateAt?' · Next review '+new Date(t.nextUpdateAt).toLocaleString():' · Awaiting review');box.append(p);
+        for(const event of t.events||[]){const reply=document.createElement('p');reply.textContent=new Date(event.at).toLocaleString()+': '+event.message;box.append(reply);}}
+    }catch{if(current())root.querySelector('[data-care-tickets]').textContent='Your requests could not be loaded. Try opening Support again.';}
+  }
+  if(!owner)return;
+  loadTickets();
+  const follow=document.createElement('section');follow.className='obs';
+  follow.innerHTML='<h2>Track your next step</h2><p>Keep your own record of a dispute. These notes do not verify delivery or correction. They do not send a dispute or change an approved packet.</p><label>Choose your report <select data-care-case><option value="">Choose a report</option></select></label><div data-care-history></div><form data-follow-form hidden><label>What happened? <select name="type"><option value="NOTE">Add a note</option><option value="SUBMITTED">I submitted my dispute</option><option value="RECEIPT_RECORDED">I recorded a receipt</option><option value="RESPONSE_RECEIVED">I received a response</option><option value="UNCHANGED">I believe it is unchanged</option><option value="RESOLVED">I believe it is resolved</option><option value="UNCERTAIN">I am unsure</option></select></label><label>Event date <input name="date" type="date" required></label><label>Note <textarea name="note" rows="3" maxlength="1000" required></textarea></label><button type="submit">Save follow-up note</button><p role="status" data-follow-status></p></form>';
+  panel.append(follow);let revision=0,followKey=crypto.randomUUID(),loadVersion=0;
+  const select=follow.querySelector('select[data-care-case]'),ff=follow.querySelector('form'),box=follow.querySelector('[data-care-history]');
+  ff.querySelector('button').className='primary';
+  const extra=document.createElement('div');
+  extra.innerHTML='<label>Supporting response document (optional)<select name="documentId"><option value="">No document selected</option></select></label><p>Add a reply in Your account documents, then choose it here. Nothing is attached automatically.</p><label>My next review time (optional)<input type="datetime-local" name="nextReviewAt"></label><p>This is your own review appointment. No notification is sent and it is not a legal deadline.</p>';
+  ff.insertBefore(extra,ff.querySelector('button'));
+  const details=document.createElement('div');details.innerHTML='<label>Who did you contact? (optional)<input name="respondent" maxlength="120"></label><label>How did you contact them? <select name="submissionMethod"><option value="UNKNOWN">Not recorded</option><option value="POST">Post</option><option value="ONLINE">Online</option><option value="PHONE">Phone</option><option value="OTHER">Other</option></select></label><label>Correct an earlier note (optional)<select name="correctsEventId"><option value="">This is a new event</option></select></label><p>A correction adds a new note. It keeps the earlier note in your history.</p>';
+  ff.insertBefore(details,ff.querySelector('button'));
+  api('GET','/api/account/documents').then(data=>{if(!current())return;const select=extra.querySelector('select');for(const d of data.documents||[]){const option=document.createElement('option');option.value=d.file_id;option.textContent=d.name||'Saved supporting document';select.append(option);}}).catch(()=>{});
+  ff.addEventListener('input',()=>{followKey=crypto.randomUUID();});
+  async function loadFollow(){
+    const caseId=select.value,version=++loadVersion;ff.hidden=true;box.replaceChildren();if(!caseId)return;
+    try{const data=await api('GET','/api/cases/'+encodeURIComponent(caseId)+'/followup');if(!current()||version!==loadVersion)return;
+      revision=data.revision;const corrections=details.querySelector('select[name=correctsEventId]');corrections.replaceChildren();const none=document.createElement('option');none.value='';none.textContent='This is a new event';corrections.append(none);
+      for(const event of data.events){const p=document.createElement('p');p.textContent=new Date(event.occurredAt).toLocaleDateString()+' · '+event.type+' · '+event.note+' (recorded by you)'+(event.respondent?' · Contact: '+event.respondent:'')+(event.submissionMethod&&event.submissionMethod!=='UNKNOWN'?' · Method: '+event.submissionMethod:'')+(event.correctsEventId?' · Corrects note '+event.correctsEventId:'');box.append(p);const o=document.createElement('option');o.value=event.eventId;o.textContent=new Date(event.occurredAt).toLocaleDateString()+' · '+event.type+' · '+event.eventId.slice(-8);corrections.append(o);}ff.hidden=false;
+      for(const order of data.mailingHistory||[]){const p=document.createElement('p');p.textContent=(order.simulation?'Simulated mailing':'Mail service cached record')+' · '+order.state+' · Payment: '+order.paymentState+'. Last check time is unknown. This does not verify postal delivery or a bureau response.';box.append(p);}
+      const open=document.createElement('button');open.type='button';open.className='secondary';open.textContent='Open this report and packet';open.onclick=()=>run(async()=>{const selected=caseId,loaded=await api('GET','/api/cases/'+encodeURIComponent(selected));if(!current()||version!==loadVersion||select.value!==selected)return;state.caseId=selected;state.view=loaded.view;if(state.checkoutReturn?.caseId!==selected)state.checkoutReturn=null;state.assessment_error=null;state.purchase_needed=null;state.step=STEP.RESULTS;});box.append(open);
+      const history=document.createElement('button');history.type='button';history.className='secondary';history.textContent='Open saved reports and comparisons';history.onclick=()=>{if(current())navigateStep(STEP.JURISDICTION);};box.append(history);
+      const receipt=await api('GET','/api/cases/'+encodeURIComponent(caseId)+'/coverage-receipt');if(!current()||version!==loadVersion)return;
+      const p=document.createElement('p');p.textContent=receipt.checkInventoryAvailable?'Recorded check entries: '+receipt.checks.length+'. '+receipt.noIssueMeans:'A check inventory is not available yet. '+receipt.noIssueMeans;box.append(p);
+    }catch{if(current()&&version===loadVersion)box.textContent='We could not load this report’s follow-up notes.';}
+  }
+  select.addEventListener('change',()=>{followKey=crypto.randomUUID();loadFollow();});
+  ff.addEventListener('submit',async e=>{
+    e.preventDefault();const caseId=select.value,button=ff.querySelector('button'),message=ff.querySelector('[data-follow-status]');button.disabled=true;select.disabled=true;
+    const f=new FormData(ff),occurredAt=new Date(f.get('date')+'T00:00:00').getTime();
+    try{await api('POST','/api/cases/'+encodeURIComponent(caseId)+'/followup',{requestId:followKey,expectedRevision:revision,type:f.get('type'),note:f.get('note'),occurredAt,
+      submissionMethod:f.get('submissionMethod')||'UNKNOWN',...(f.get('respondent')?{respondent:f.get('respondent')}:{}),...(f.get('correctsEventId')?{correctsEventId:f.get('correctsEventId')}:{}),
+      ...(f.get('documentId')?{documentId:f.get('documentId')}:{}),...(f.get('nextReviewAt')?{nextReviewAt:new Date(f.get('nextReviewAt')).getTime()}: {})});if(!current())return;
+      message.textContent='Your note is saved. No dispute or mailing was sent.';ff.reset();followKey=crypto.randomUUID();await loadFollow();
+    }catch{if(current())message.textContent='The save was not confirmed or this history changed. Review current notes before trying again.';}
+    finally{if(current()){button.disabled=false;select.disabled=false;}}
+  });
+  api('GET','/api/cases').then(data=>{if(!current())return;for(const c of data.cases||[]){const o=document.createElement('option');o.value=c.case_id;o.textContent=c.country+' · '+c.region+' · '+c.case_id.slice(-8);select.append(o);}}).catch(()=>{if(current())box.textContent='Your reports could not be loaded.';});
+}
+
 function renderSupport(panel) {
   if (!state.account) {
     panel.innerHTML = `${notices()}<h1>Support</h1><p class="lede">Contact us if you need help signing in or using your report.</p>${supportContactBlock()}<p>Sign in to see your support reference.</p>`;
+    mountCare(panel);
+    const back=document.createElement('button');back.type='button';back.className='secondary';back.textContent='Back to log in';back.onclick=()=>{state.step=STEP.ACCOUNT;render();};panel.append(back);
     return;
   }
   panel.innerHTML = `
@@ -3120,6 +3203,7 @@ function renderSupport(panel) {
     ${notices()}
     <div class="obs" id="supportInfo">Loading your support reference…</div>
     <div class="note">Copying the summary does not send a message. Use Contact support to open your email app, then send your request.</div>`;
+  mountCare(panel);
 
   const accountId = state.account.account_id;
   const seq = ++supportSeq;
@@ -3131,7 +3215,7 @@ function renderSupport(panel) {
     const summary = supportSummaryText(data);
     state.support = { reference: data.reference, summary, account_id: accountId };
     box.innerHTML = `
-      <h3>Your support reference</h3>
+      <h2>Your support reference</h2>
       <p class="evidence">Reference: <b id="supportReference">${esc(data.reference)}</b></p>
       <p class="evidence">${esc(data.plain)}</p>
       <details class="support-technical"><summary>Details for support</summary><p class="evidence">Build: <b>${esc(data.build_id)}</b> · Stage: <b>${esc(data.category)}</b></p><p class="evidence">Summary without your report details:</p>
@@ -3293,7 +3377,7 @@ function renderBillingView(data) {
   }).join('');
 
   box.innerHTML = `
-    <h3>Your access</h3>
+    <h2>Your access</h2>
     <p class="evidence">${accessLine}</p>
     ${failedPaymentBlock(ent)}
     <p class="evidence">${renewalLine}</p>

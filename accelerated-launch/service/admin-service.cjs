@@ -274,6 +274,21 @@ async function dispatchAdmin(options) {
   if (pathname === '/api/admin/lock' && method === 'POST') { fields(body, []); return response(access.lock(adminStore, actor, sessionToken, adminToken)); }
   if (pathname === '/api/admin/activity' && method === 'POST') { fields(body, []); return response(access.touch(adminStore, actor, sessionToken, adminToken)); }
   const principal = access.principal(adminStore, actor, sessionToken, adminToken);
+  if(pathname==='/api/admin/outcomes'&&method==='GET'){
+    guard(access,adminStore,principal,'accounts.read',query);guard(access,adminStore,principal,'cases.read',query);
+    if(partner(principal))deny();return response(require('./consumer-care.cjs').outcomeSummary(store));
+  }
+  if (pathname === '/api/admin/support' && method === 'GET') {
+    guard(access,adminStore,principal,'accounts.read',query);
+    if(partner(principal))deny();
+    return response(page(filter(require('./consumer-care.cjs').queue(store),query,['ticketId','category','status']),query));
+  }
+  const supportMatch=/^\/api\/admin\/support\/([A-Za-z0-9_-]+)$/.exec(pathname);
+  if(supportMatch && method==='POST'){
+    guard(access,adminStore,principal,'accounts.read',query);
+    if(principal.role!=='owner')deny();
+    return response(require('./consumer-care.cjs').reviewTicket(store,actor,supportMatch[1],body));
+  }
   if (pathname === '/api/admin/session' && method === 'GET') {
     const org = adminStore.state().organizations.find(row => row.org_id === principal.org_id);
     const session = { ...principal, organization: org ? orgView(org) : null };

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "approved": false,
+  "approvedBy": null,
+  "evidence": null,
+  "purgeEnabled": false,
+  "classes": {
+    "report": {"periodDays": null, "purpose": "Consumer assessment and continuing comparison"},
+    "identification": {"periodDays": null, "purpose": "Consumer-selected packet support; embedded copies must be inventoried"},
+    "packet": {"periodDays": null, "purpose": "Exact approval, download and fulfillment custody"},
+    "support": {"periodDays": null, "purpose": "Support, complaint handling and related holds"},
+    "financial": {"periodDays": null, "purpose": "Accounting, refunds and independently verified settlement"},
+    "backup": {"periodDays": null, "purpose": "Authenticated disaster recovery with deletion reconciliation"}
+  },
+  "pendingDecisions": ["Applicable periods and notices", "Legal/dispute holds", "Backup expiry", "Independent recovery completeness"]
+}

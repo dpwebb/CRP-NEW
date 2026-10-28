@@ -1,0 +1,8 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),{TestService}=require('../../accelerated-launch/service/tests/harness.cjs'),journey=require('../../accelerated-launch/service/journey.cjs'),{buildPdf}=require('../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
+(async()=>{const t=await new TestService('fictional-large-diagnosis').listen(),original=journey.evaluateCase;let failure=null;
+journey.evaluateCase=(...args)=>{try{return original(...args);}catch(e){failure={name:e.name,message:e.message,stack:String(e.stack).slice(0,3000)};throw e;}};
+try{const a=await t.unpaidAccount('fictional.large@example.test'),c=(await t.request('POST','/api/cases',{token:a.token,body:{country:'CA',region:'CA-NS'}})).json.case.case_id;
+const pdf=buildPdf({pages:Array.from({length:40},(_,n)=>({lines:['Equifax Consumer Credit Report','Report Date: June 12, 2026','Fictional page '+(n+1),...Array.from({length:30},(_,i)=>'Fictional Lender '+n+' '+i+' Balance $100 Opened 01/01/2020 Closed 01/01/2019')]}))});
+const upload=await t.request('POST','/api/cases/'+c+'/files',{token:a.token,body:{originalFilename:'fictional-large.pdf',declaredBytes:pdf.length,mimeType:'application/pdf',contentBase64:pdf.toString('base64')}}),r=await t.request('POST','/api/cases/'+c+'/evaluate',{token:a.token});
+const result={fictional:true,pages:40,bytes:pdf.length,uploadStatus:upload.status,evaluationStatus:r.status,errorCode:r.json?.error?.code,failure};fs.writeFileSync(path.resolve('output/implementation/continuation/large-diagnosis.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result));}finally{journey.evaluateCase=original;await t.close();}})().catch(e=>{console.error(e.stack);process.exitCode=1;});

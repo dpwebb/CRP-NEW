@@ -182,10 +182,17 @@ const ROUTES = Object.freeze([
   ['POST', '/api/cases/:caseId/packet/requirements', true, 'packetRequirements'],
   ['GET', '/api/privacy', true, 'privacyDashboard'],
   ['GET', '/api/support', true, 'supportInfo'],
+  ['POST', '/api/support/contact', false, 'supportContact'],
+  ['GET', '/api/support/tickets', true, 'supportTickets'],
+  ['POST', '/api/support/tickets', true, 'supportTicketCreate'],
+  ['GET', '/api/cases/:caseId/followup', true, 'caseFollowup'],
+  ['POST', '/api/cases/:caseId/followup', true, 'caseFollowupAdd'],
+  ['GET', '/api/cases/:caseId/coverage-receipt', true, 'caseCoverageReceipt'],
   ['GET', '/api/support/references/:reference', true, 'supportLookup'],
   ['DELETE', '/api/account', true, 'deleteAccount'],
   ['GET', '/api/jurisdictions', false, 'jurisdictions'],
   ['GET', '/api/health', false, 'health'],
+  ['GET', '/api/service-status', false, 'serviceStatus'],
   ['GET', '/api/formats', false, 'supportedFormats'],
   ['GET', '/api/pricing', false, 'publicPricing'],
   ['GET', '/api/credit-news', false, 'publicCreditNews'],
@@ -248,6 +255,9 @@ const ROUTES = Object.freeze([
   ['GET', '/api/cases/:caseId/packet-print', true, 'packetPrint'],
   ['GET', '/api/cases/:caseId/packet/preview', true, 'packetPreview'],
   ['GET', '/api/cases/:caseId/packet/preview/pages', true, 'packetReviewPages'],
+  ['GET', '/api/cases/:caseId/packet/reading', true, 'packetReading'],
+  ['GET', '/api/cases/:caseId/packet/reading.html', true, 'packetReading'],
+  ['POST', '/api/cases/:caseId/packet/reading', true, 'packetReadingSave'],
   ['GET', '/api/cases/:caseId/packet/preview/pages/:pageNumber', true, 'packetReviewPage'],
   ['GET', '/api/cases/:caseId/packet/forms/:filename', true, 'packetForm'],
   /* BLOCKER-SUBSCRIPTION-VALUE-001 — owned report history and evidence-based comparison. */
@@ -451,6 +461,12 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
 
     privacyDashboard: ({ actor }) => ({ status: 200, json: { ok: true, ...require('./privacy.cjs').dashboard(store, actor) } }),
     supportInfo: ({ actor }) => ({ status: 200, json: { ok: true, ...require('./support.cjs').supportInfo(store, actor) } }),
+    supportContact: ({body}) => ({status:202,json:{ok:true,...require('./consumer-care.cjs').contact(store,body)}}),
+    supportTickets: ({actor}) => ({status:200,json:{ok:true,items:require('./consumer-care.cjs').tickets(store,actor)}}),
+    supportTicketCreate: ({actor,body}) => ({status:201,json:{ok:true,...require('./consumer-care.cjs').createTicket(store,actor,body)}}),
+    caseFollowup: ({actor,params}) => ({status:200,json:{ok:true,...require('./consumer-care.cjs').followup(store,actor,params.caseId)}}),
+    caseFollowupAdd: ({actor,params,body}) => ({status:201,json:{ok:true,...require('./consumer-care.cjs').addFollowup(store,actor,params.caseId,body)}}),
+    caseCoverageReceipt: ({actor,params}) => ({status:200,json:{ok:true,...require('./consumer-care.cjs').coverageReceipt(store,actor,params.caseId)}}),
     supportLookup: ({ actor, params }) => ({ status: 200, json: { ok: true, ...require('./support.cjs').lookup(store, actor, params.reference) } }),
     deleteAccount: async ({ actor }) => {
       const ensureAdministrationDeletionAllowed = () => {
@@ -478,6 +494,8 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
     /* ------------------------------------------------------------ jurisdiction and formats */
 
     health: () => ({ status: 200, json: { ok: true, build_id: process.env.CRP_BUILD_ID || 'local-development', deployment: process.env.CRP_DEPLOYMENT_ENV || 'local', billing_mode: surface.entitlement.payment_mode, launch_ready: false } }),
+    serviceStatus: () => ({status:200,json:{version:1,service:'consumer',environment:process.env.CRP_DEPLOYMENT_ENV||'local',buildId:process.env.CRP_BUILD_ID||'local-development',processHealthy:true,
+      technicalAcceptance:'USE_VERSION_BOUND_RELEASE_RECORD',operationalCoverage:'NOT_ATTESTED_BY_HEALTH',commercialOutcomes:'NOT_ATTESTED_BY_HEALTH',checkedAt:Date.now()}}),
     jurisdictions: () => ({ status: 200, json: { ok: true, surface: { ...surface,
       bureau_choices: Object.fromEntries(surface.countries.map(country => [country.value, require('./bureau-dispute-requirements.cjs').catalog(country.value).map(({ id, label }) => ({ id, label }))])) } } }),
 
@@ -762,7 +780,7 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps) {
     packetApprove: ({ params, actor, body }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
       entitlement.requireSubscriberFeature(store, actor);
-      packets.approvePacket(store, actor, params.caseId, body.reviewed_version, true);
+      packets.approvePacket(store, actor, params.caseId, body.reviewed_version, true, body.reading_sha256);
       logger.log({ event: 'PACKET_APPROVED', outcome: 'OK' });
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
     },
@@ -853,6 +871,26 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency, mailOps) {
       return { status: 200, text: file.body, content_type: file.content_type,
         headers: { 'Content-Disposition': `inline; filename="${file.filename}"`, 'X-CRP-Packet-Version': file.approved_version,
           'X-Frame-Options': 'SAMEORIGIN', 'Content-Security-Policy': "default-src 'none'; frame-ancestors 'self'; form-action 'none'; base-uri 'none'" } };
+    },
+    packetReading: ({ params, actor, req }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      const query = new URL(req.url, 'http://127.0.0.1').searchParams, version = query.get('version');
+      if (!/^[a-f0-9]{64}$/.test(version || '')) throw new ServiceError('INVALID_REQUEST');
+      const approved = query.get('approved') === '1';
+      const reading = packets.packetReading(store, actor, params.caseId, version, approved);
+      const headers = { 'X-CRP-Packet-Version':version, 'X-CRP-Packet-SHA256':reading.pdf_sha256,
+        'X-CRP-Reading-SHA256':reading.reading_sha256, 'Cache-Control':'private, no-store', 'X-Robots-Tag':'noindex' };
+      if (new URL(req.url, 'http://127.0.0.1').pathname.endsWith('.html')) return {
+        status:200, text:require('./packet-accessibility.cjs').html(reading, approved), content_type:'text/html; charset=utf-8', headers };
+      return { status:200, json:{ok:true,reading}, headers };
+    },
+    packetReadingSave: ({ params, actor, body }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      if (!/^[a-f0-9]{64}$/.test(body?.expected_version || '')) throw new ServiceError('INVALID_REQUEST');
+      packets.setPacketReading(store, actor, params.caseId, body.expected_version, body.reading);
+      return {status:200,json:{ok:true,view:packets.packetView(store,actor,params.caseId)}};
     },
     packetReviewPages: ({ params, actor, req }) => {
       cases.requireOwnedCase(store, actor, params.caseId);

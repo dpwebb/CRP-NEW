@@ -99,7 +99,7 @@ async function purchaseSurface(t, check, evidence) {
   const notGranted = JSON.stringify(status.json.not_granted);
   check.ok(/no legal conclusion/i.test(notGranted), 'the surface states that no legal conclusion is granted');
   check.ok(/one-time unlock is limited to the one report/i.test(notGranted), 'and states the limit of a one-time unlock');
-  check.ok(/no letter/i.test(notGranted) && /no dispute/i.test(notGranted), 'and that no letter or dispute is granted');
+  check.ok(/no legal representation/i.test(notGranted) && /no.*automatic dispute filing/i.test(notGranted) && /separately authorize.*paid mailing/i.test(notGranted), 'legal representation and automatic filing remain excluded; optional paid mailing requires separate authority');
   check.ok(/no removal/i.test(notGranted), 'and that no removal is granted');
 
   const planView = await t.request('GET', '/api/billing/plans', { token: unpaid.token });
