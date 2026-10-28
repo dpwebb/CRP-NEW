@@ -102,6 +102,11 @@ for (const [id,label,app,resource] of [
   ['communications','Affiliate communications','affiliate','communications'],
   ['assets','Campaign assets','affiliate','assets'],
   ['tickets','Partner support','affiliate','tickets'],
+  ['consumer-support','Consumer support','crp','support'],
+  ['consumer-outcomes','Consumer service review','crp','outcomes'],
+  ['partner-liabilities','Partner payment review','affiliate','liabilities'],
+  ['partner-assurance','Partner service review','affiliate','assurance'],
+  ['publishing-evidence','Publishing evidence','affiliate','placements'],
   ['onboarding','Partner onboarding','affiliate','onboarding'],
   ['evidence','Commission concern evidence','affiliate','evidence'],
   ['resources','Approved affiliate resources','affiliate','resources'],
@@ -492,10 +497,13 @@ function actionButtons(app, resource) {
       communications:['communication.'],
       assets:['asset.'],
       tickets:['ticket.'],
+      support:['support.'],
+      placements:['placement.'],
       onboarding:['onboarding.'],
       report:['agent.'],
     }[resource] || [];
   if (resource === 'routes') prefixes.push('route.','recipient.');
+  if (app === 'mail' && resource === 'overview') prefixes.push('incident.');
   if (resource === 'orders') prefixes.push('provider.');
   if (resource === 'campaigns') prefixes.push('campaign.','asset.');
   for (const [name, action] of Object.entries(list))

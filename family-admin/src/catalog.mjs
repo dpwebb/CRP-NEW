@@ -252,6 +252,8 @@ export const actions = {
 // Native administrative parity. Public enrollment, partner assent/training,
 // provider webhooks and external human payment release remain native workflows.
 Object.assign(reads.crp, {
+  support:read('/api/admin/support','accounts.read',page),
+  outcomes:read('/api/admin/outcomes','accounts.read'),
   referrals: read('/api/admin/affiliates', 'affiliate.read'),
   fulfillment: read('/api/admin/fulfillment', 'fulfillment.read', page),
   grants: read('/api/admin/fulfillment-grants', 'fulfillment.grants', [...page,'org_id']),
@@ -259,6 +261,9 @@ Object.assign(reads.crp, {
   packet: { ...read('/api/admin/fulfillment/:id/packet','fulfillment.read'), format:'pdf' },
 });
 Object.assign(reads.affiliate, {
+  liabilities:read('/api/liabilities','affiliate.read'),
+  assurance:read('/api/assurance','affiliate.read'),
+  placements:read('/api/placements','affiliate.read'),
   report: read('/api/report','affiliate.read'),
   contacts: read('/api/contacts','affiliate.read'),
   communications: read('/api/communications','affiliate.read'),
@@ -279,6 +284,9 @@ Object.assign(reads.mail, {
   preview: { ...read('/staff/api/orders/:id/print-preview','fulfillment.read'),format:'pdf' },
 });
 Object.assign(actions.crp, {
+  'support.review':write('/api/admin/support/:id','accounts.read','Review consumer request',[
+    field('expectedRevision','Current revision','number'),field('status','Request status','select:OPEN,ACKNOWLEDGED,RESOLVED'),
+    field('message','Update for the consumer','textarea'),field('nextUpdateAt','Next update','timestamp')],{owner:true,requestId:true}),
   'referral.sync':write('/api/admin/affiliates/sync','affiliate.manage','Synchronize verified referral ledger',[],{sensitive:true}),
   'referral.enroll':write('/api/admin/affiliates/enroll','affiliate.manage','Enroll existing consumer referral account',[
     field('account_id','CRP account ID'),field('introducer_code','Introducer code','text',false),field('org_id','Organization ID','text',false)]),
@@ -288,6 +296,12 @@ Object.assign(actions.crp, {
   'fulfillment.update':write('/api/admin/fulfillment/:id','fulfillment.prepare','Update fulfillment task',[field('status','Status','select:REVIEWED,CANCELLED')],{method:'PATCH'}),
 });
 Object.assign(actions.affiliate, {
+  'placement.add':write('/api/placements','affiliate.manage','Record publishing declaration',[
+    field('partnerId','Partner ID'),field('campaignId','Campaign ID'),field('assetId','Current resource ID'),field('url','Published page URL'),
+    field('channel','Channel','select:publisher,email,social'),field('disclosure','Disclosure shown','textarea'),field('expiresAt','Review again by (ISO date and time)')],{requestId:true}),
+  'placement.review':write('/api/placements/:id/review','affiliate.manage','Review publishing evidence',[
+    field('expectedRevision','Current revision','number'),field('decision','Review result','select:OPERATOR_REVIEWED,REJECTED,WITHDRAWN'),
+    field('evidenceRef','Evidence reference'),field('reviewedCopyHash','Exact reviewed copy hash')],{owner:true,requestId:true}),
   'contact.add':write('/api/contacts','affiliate.manage','Record contact',[
     field('name','Name'),field('email','Email'),field('sourceUrl','Source URL'),field('purpose','Purpose','select:recruitment,partner_service,customer_education'),field('partnerId','Partner ID','text',false)]),
   'contact.suppress':write('/api/contacts/:id','affiliate.manage','Suppress contact',[],{method:'DELETE',owner:true}),
@@ -305,6 +319,12 @@ Object.assign(actions.affiliate, {
 const countryField=()=>field('country','Destination country','select:CA,US,GB,AU');
 const bureauField=()=>field('bureau','Bureau','select:EQUIFAX,EXPERIAN,TRANSUNION');
 Object.assign(actions.mail, {
+  'incident.review':write('/staff/api/incidents/:id','fulfillment.prepare','Review operational alert',[
+    field('expectedRevision','Current revision','number'),field('state','Review status','select:OPEN,ACKNOWLEDGED,RESOLVED'),field('owner','Review owner','select:CURRENT_OPERATOR'),
+    field('nextReviewAt','Next review','timestamp'),field('reason','Reason','select:REVIEW,HANDOVER,FOLLOW_UP,RESOLVED')],{owner:true,requestId:true}),
+  'order.review':write('/staff/api/orders/:id/review','fulfillment.prepare','Record order review ownership',[
+    field('expectedRevision','Current revision','number'),field('state','Review status','select:OPEN,ACKNOWLEDGED,RESOLVED'),field('owner','Review owner','select:CURRENT_OPERATOR'),
+    field('nextReviewAt','Next review','timestamp'),field('reason','Reason','select:REVIEW,HANDOVER,FOLLOW_UP,RESOLVED')],{requestId:true}),
   'route.update':write('/staff/api/routes','fulfillment.prepare','Update evidenced mailing route',[
     countryField(),bureauField(),field('address','Published bureau address','textarea'),field('originCountry','Origin country','select:CA,US,GB,AU'),field('enabled','Enable route','boolean'),field('service','Postal service'),field('maxPages','Maximum pages','number'),field('evidence','Supporting evidence','textarea'),field('mailer','Mailer','select:POSTGRID,MANUAL'),field('operatorCountry','Operator country','select:CA,US,GB,AU',false),field('mailingClass','Mailing class','select:first_class,registered,certified,certified_return_receipt',false),field('paperSize','Paper size','select:us_letter,a4',false),field('postgridRecipientId','Verified provider recipient ID','text',false),field('postgridRecipientHash','Verified recipient hash','text',false),field('expectedRevision','Current route revision','number')],{owner:true,sensitive:true,requestId:true}),
   'route.emergency':write('/staff/api/manual-emergencies','fulfillment.prepare','Set explicit manual-mail emergency',[
