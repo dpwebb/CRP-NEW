@@ -61,3 +61,6 @@ Removal complete: 5/5 focused checks passed; helper syntax and whitespace checks
 
 ## Publish advertising removal — October28
 Outcome: commit/push only the owner-requested advertising removal. Exact allowlist: WORK.md, docs/implementation/CAPACITY-LOCAL.md, docs/implementation/LOCAL-HANDOFF.md, docs/implementation/capacity-pilot.json, docs/implementation/claims.json, docs/implementation/program.json, tools/implementation/capacity-review.cjs, tools/implementation/capacity-review.test.cjs, tools/implementation/final-checks.cjs, tools/implementation/finalize-program.cjs, tools/implementation/governance.cjs, tools/implementation/governance.test.cjs, tools/implementation/mixed-soak.mjs. External action: existing origin feature-branch push only. Checks: staged allowlist, whitespace, prior passing 5 focused tests, unchanged application source. Exit: remote branch SHA matches commit; no merge or deployment.
+
+## Operational release preparation — October28
+Outcome, allowlist, external actions and checks recorded in predecessor WORK.md deployment batch. This fresh worktree freezes merged 0ad9a043; only generated release-manifest.json and WORK.md are source preparation edits. Output is confined to output/operational-release. No runtime change.
