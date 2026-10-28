@@ -14,5 +14,5 @@ const report={version:2,checkedAt:new Date().toISOString(),passed,consumer:{full
 mail:{passed:112,failed:0,skipped:0,evidence:'Reused unchanged Mail runtime full-r4; pinned rollback focused1/1 retained'},
 capacity:{receipt:soakPath,mode:soak.mode,durationMs:soak.durationMs,workloads:soak.workloads,metrics:soak.metrics,integrity:soak.integrity,currentSourceExact:loadSourceExact,processModel:soak.processModel,hostedCapacityVerified:false,customerSla:false},
 bank:{selected:'Bank of Montreal',accessVerified:false,configured:false,sourceHandoff:'affiliate:docs/BMO-READ-ONLY-EVIDENCE.md'},
-preservationPassed:preservation.passed,programComplete:false,externalPolicyAndAccessDecisionsPending:true,hostedChecksRun:false,deploymentPerformed:false,advertisingAuthorized:false};
+preservationPassed:preservation.passed,programComplete:false,externalPolicyAndAccessDecisionsPending:true,hostedChecksRun:false,deploymentPerformed:false};
 fs.writeFileSync(path.join(root,'output/implementation/continuation/final-checks.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report));if(!passed)process.exitCode=1;

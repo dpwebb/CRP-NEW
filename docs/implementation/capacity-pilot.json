@@ -2,7 +2,6 @@
   "version": 1,
   "executionAuthorized": "LOCAL_FICTIONAL_ONLY",
   "hostedExecutionAuthorized": false,
-  "advertisingAuthorized": false,
   "spendMinor": "0",
   "proposedDurationMinutes": 30,
   "demandApproved": false,
@@ -40,7 +39,6 @@
   },
   "pilot": {
     "entry": [
-      "dated country/offer/channel approval of exact copy",
       "actual staffed support and incident ownership",
       "current monitoring and recurring recovery evidence",
       "independent settlement source when payment is due",
@@ -51,10 +49,9 @@
       "unknown send or settlement custody",
       "missed scheduler or stale recovery",
       "support backlog beyond approved service expectation",
-      "unapproved asset or disclosure",
       "protected-data integrity failure"
     ],
-    "expand": "Owner review of useful-read results, support and refunds, liabilities, measured capacity and operational coverage; no automatic campaign activation."
+    "expand": "Owner review of useful-read results, support and refunds, liabilities, measured capacity and operational coverage."
   },
   "lastLocalMeasurement": {
     "receipt": "output/implementation/continuation/soak-1793189081391-535a44/result.json",

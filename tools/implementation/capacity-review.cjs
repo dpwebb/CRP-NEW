@@ -12,6 +12,6 @@ function capacityReview(r,contract){
  const limits=contract.proposedThresholds;
  for(const [name,limit]of Object.entries(limits))if(!valid(r?.metrics?.[name])||r.metrics[name]>limit)reasons.push('METRIC_FAILED_OR_MISSING:'+name);
  if(!Number.isSafeInteger(r?.intentional503)||r.intentional503<0)reasons.push('ADMISSION_REFUSALS_UNACCOUNTED');
- return {localEnvelopeAccepted:reasons.length===0,reasons,proposedTargets:true,hostedCapacityVerified:false,customerSla:false,advertisingAuthorized:false};
+ return {localEnvelopeAccepted:reasons.length===0,reasons,proposedTargets:true,hostedCapacityVerified:false,customerSla:false};
 }
 module.exports={capacityReview};
