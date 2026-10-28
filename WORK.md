@@ -64,3 +64,10 @@ Outcome: commit/push only the owner-requested advertising removal. Exact allowli
 
 ## Operational release preparation — October28
 Outcome, allowlist, external actions and checks recorded in predecessor WORK.md deployment batch. This fresh worktree freezes merged 0ad9a043; only generated release-manifest.json and WORK.md are source preparation edits. Output is confined to output/operational-release. No runtime change.
+
+Owner clarification: the October28 reply explicitly authorizes this Consumer release as part of the four-app deployment, overriding the Consumer deployment hold only for this release. No bank, advertising, money-release or unrelated authority is added.
+
+Release transfer batch: exact remote allowlist /opt/crp-acceptance/operational-release-20261028T1415Z/** and not-yet-active release directories only. Transfer immutable Affiliate image, Family archive, Mail archive and verified package metadata; compare SHA256 before extraction/load. No current pointer, environment, service, network or data write in this batch. Exit: bytes match local receipts; production services unchanged.
+
+## Preserve owner-approved active admin-mail maintenance
+Outcome: incorporate the now-active Consumer sender patch into a separate immutable successor before any cutover. Exact allowlist: WORK.md, accelerated-launch/service/confirmation-mail.cjs, accelerated-launch/service/tests/confirmation-mail-config.test.cjs, accelerated-launch/service/deploy/release-manifest.json, output/operational-release/**. Source input is the hash-verified handed-off code28acc37f; no credentials/configuration copied. External actions: none in source batch. Checks: independent-process sender/default/reset/header-injection tests, syntax, new manifest/frozen commit and fresh full after this actual runtime change. Retain the completed20332 first-candidate full and197-file package; do not relabel either for the successor. Exit: sender behavior preserved and source ready for final current-build checks.
