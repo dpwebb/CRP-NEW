@@ -422,11 +422,17 @@ function render() {
   const recovering = state.recoveryMode || state.emailRecoveryMode || state.emailResetMode;
   const authEntry = (!state.account || state.emailResetMode || state.emailRecoveryMode || state.signInInvitation) && state.step === STEP.ACCOUNT;
   document.body?.classList?.toggle('auth-entry', authEntry);
+  document.body?.classList?.toggle('signed-in', Boolean(state.account));
   document.body?.classList?.toggle('auth-create', authEntry && !recovering && !state.signInInvitation && !signInChallenge && (typeof location === 'undefined' || location.hash !== '#signin'));
   document.body?.classList?.toggle('auth-recovery', authEntry && recovering);
   document.title = authEntry ? `${recovering ? 'Reset password' : state.signInInvitation || signInChallenge || (typeof location !== 'undefined' && location.hash === '#signin') ? 'Log in' : 'Create account'} — Credit Regulator Pro` : 'Credit Regulator Pro — Check your credit report';
   packetLeave = null;
   el('who').textContent = state.account ? `Signed in as ${state.account.email}` : 'Not signed in';
+  const signout = el('workspace-signout');
+  if (signout) {
+    signout.hidden = !state.account;
+    signout.onclick = () => run(signOutCurrentAccount);
+  }
   banner();
   renderSteps();
   footerDisclaimer();
@@ -720,7 +726,7 @@ function renderSignupSecurity(panel) {
   if(el('resend-signup-email'))el('resend-signup-email').onclick=()=>run(async()=>{const result=await api('POST','/api/account/resend-confirmation',{});state.notice=result.confirmation_transport==='CAPTURED'?'A new code was saved in the staging test inbox. Nothing was emailed.':'A new confirmation code was sent from support@creditregulatorpro.com.';});
   el('signup-enable-two-factor').onchange=()=>{state.wantTwoFactor=el('signup-enable-two-factor').checked;state.twoFactorSetup=null;render();};
   el('finish-signup').onclick=()=>run(async()=>{const ensure=accountContext(),result=await api('POST','/api/account/finish-signup',{enable_two_factor:state.wantTwoFactor});ensure();state.accountSecurity={...security,...result};state.recoveryKey=null;state.twoFactorSetup=null;await refreshAccess();state.step=STEP.JURISDICTION;state.notice='Your account is ready.';});
-  el('signup-signout').onclick=()=>run(async()=>{await api('DELETE','/api/sessions/current');accountEpoch++;state.account=null;state.accountSecurity=null;state.recoveryKey=null;state.twoFactorSetup=null;state.securityMode=false;state.step=STEP.ACCOUNT;});
+  el('signup-signout').onclick=()=>run(signOutCurrentAccount);
 }
 function renderSecuritySettings(panel) {
   panel.innerHTML=`${notices(true)}<h1>Account security</h1>${recoveryKeyBlock()}<h2>Password recovery</h2><p>Forgot your password or lost your recovery key? On the log in page, choose “Forgot your password?” then “Email me a password reset link.” You can reset by email without your key. Your authenticator stays enabled.</p><p>Keep your recovery key private. It can also recover access if you lose your authenticator. Creating a new key replaces your old one.</p><label for="security-password">Current password</label><input id="security-password" type="password" autocomplete="current-password"><button id="create-recovery-key" class="secondary">Create a new recovery key</button><h2>Two-factor authentication</h2>${twoFactorFields()}${state.accountSecurity?.two_factor_enabled?'<label for="disable-factor-password">Current password</label><input id="disable-factor-password" type="password" autocomplete="current-password"><button id="disable-two-factor" class="secondary">Turn off two-factor authentication</button>':''}<p><button id="security-back" class="primary">Back to my account</button></p>`;
@@ -818,6 +824,26 @@ function clearClientAccountForRecovery() {
   state.assessing = false; state.assessment_error = null; state.purchase_needed = null;
   state.storageSnapshot = null; state.savedReportFilter = '';
   rememberPendingCheckout({});
+}
+let signOutPending = null;
+function signOutCurrentAccount() {
+  if (signOutPending) return signOutPending;
+  if (!state.account) return Promise.resolve();
+  signOutPending = (async () => {
+    accountEpoch++;
+    const ensure = accountContext();
+    await currentRequest(ensure, 'DELETE', '/api/sessions/current');
+    clearClientAccountForRecovery();
+    state.recoveryMode = false; state.emailRecoveryMode = false; state.emailResetMode = false;
+    state.emailResetInvalid = false; resetPasswordToken = null;
+    state.packetChoices = null; state.packetRepair = null;
+    state.step = STEP.ACCOUNT;
+    state.notice = 'Signed out.';
+    if (typeof history !== 'undefined' && typeof location !== 'undefined') {
+      history.replaceState(null, '', location.pathname + location.search + '#signin');
+    }
+  })().finally(() => { signOutPending = null; });
+  return signOutPending;
 }
 function renderEmailPasswordReset(panel) {
   const invalid = state.emailResetInvalid || !resetPasswordToken;
@@ -976,31 +1002,7 @@ function renderAccountDetails(panel) {
     state.step = answer.view.result_id === returning.resultId ? (returning.step ?? STEP.REVIEW) : STEP.RESULTS;
     state.notice = state.step !== STEP.RESULTS ? 'Your details are saved. Check your document choices and any missing items before reviewing.' : 'Your report has a newer result. Review it before preparing a packet.';
   });
-  el('signout').onclick = () => run(async () => {
-    accountEpoch++;
-    const ensure = accountContext();
-    await currentRequest(ensure, 'DELETE', '/api/sessions/current');
-    revokePrivateDocumentUrls();
-    state.account = null;
-    state.accountProfile = null;
-    state.accountDocuments = [];
-    state.cases = [];
-    state.savedReportsStatus = 'idle'; state.savedReportsAutoLoad = false;
-    state.caseId = null;
-    state.view = null;
-    state.result_list = []; state.storageSnapshot = null; state.savedReportFilter = '';
-    state.entitlement = null;
-    state.payment = null;
-    state.upgrade_credit = null;
-    state.upgrade_quotes = null;
-    state.support = null;
-    state.billing = null;
-    state.upgrade_confirmation = null;
-    rememberPendingCheckout({});
-    state.accountSecurity = null; state.recoveryKey = null; state.recoveryMode = false; state.securityMode=false;state.twoFactorSetup=null;state.wantTwoFactor=false;state.contactLocation=null; state.packetReturn = null; state.checkoutReturn = null;
-    state.step = 0;
-    state.notice = 'Signed out.';
-  });
+  el('signout').onclick = () => run(signOutCurrentAccount);
 }
 
 /* ------------------------------------------------------------------ step 1: jurisdiction */

@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-28T14:32:18.249Z",
+  "generated_at": "2026-10-29T02:07:41.373Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -674,7 +674,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 39,
-      "digest": "FB23BFDC8AC9B7559833FC193F2CE99620D3D7BFF26D374A75DBBF0F86AEBAFF",
+      "digest": "9F7EA9F0C9F8F3D257A167CA05EDC68AB54C8D2AB0F888535282B910EFD0ACD7",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -714,7 +714,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "18592FD1D2DE9B6E579E33AC7FC82E3DD54307E57F17F430F8F455E4F3C673F9"
+          "sha256": "B613B9067DA47B75F277DAF55BB54198346D30CD52E3672060EE7DF96CA075C2"
         },
         {
           "file": "accelerated-launch/service/ui/brand-logo.png",
@@ -742,7 +742,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/index.html",
-          "sha256": "0EB926124ABE815EFF5393969D2185CCF0F52FE2A680215B054C2ED7433AF1B1"
+          "sha256": "BEE4E08C3FEFC61AB236265FEA6E0D249A866BB3E9319DF00AA1B0DDA21343EE"
         },
         {
           "file": "accelerated-launch/service/ui/landing.css",
@@ -750,7 +750,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/landing.html",
-          "sha256": "E5E8F3455C28B866986925EB269FF20663B55590AB214FA2DAFB0C2045C76469"
+          "sha256": "0027D546D9788B4A71E4808BFB4E7055B9A087EF73358B10FBA68E669A8187E5"
         },
         {
           "file": "accelerated-launch/service/ui/mailing-preview.css",
@@ -826,7 +826,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/style.css",
-          "sha256": "B0EDCE2049E5C63155A14AFCC0C9FD8D31CBA8101E8E1D321970A30EB0651652"
+          "sha256": "770E5A8FFF964FDAF2404348349EEB347AE3CF8F9737F11F5DF155EF52F96D10"
         },
         {
           "file": "accelerated-launch/service/ui/theme.css",
@@ -835,6 +835,6 @@
       ]
     }
   ],
-  "manifest_digest": "30FD6AB2EB948262DA2BED8BFB4E4644C38804A10FF40E4A4CBF9C659A1FE83C",
+  "manifest_digest": "DDAA1119BE5F49B4268F51A47AF0DE625B3206A07F471F1B57A94838EC247670",
   "total_file_count": 197
 }

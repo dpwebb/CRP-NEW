@@ -20,6 +20,9 @@ body {
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; }
 .mark { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--lime); color: var(--accent); font-weight: 800; }
 .who { font-size: 13px; opacity: .9; }
+.account-actions { display:flex; align-items:center; justify-content:flex-end; gap:12px; min-width:0; max-width:65%; }
+.account-actions .who { min-width:0; }
+#workspace-signout { min-height:44px; padding:10px 16px; white-space:nowrap; flex-shrink:0; }
 .banner { margin: 0; padding: 12px 22px; background: var(--warn); border-bottom: 1px solid var(--line); font-size: 13.5px; }
 .banner.demo { background: #e5eefb; }
 .steps { display: flex; gap: 6px; flex-wrap: wrap; padding: 14px 22px 0; }
@@ -199,6 +202,9 @@ footer { max-width:1360px; margin:auto; display:flex; justify-content:space-betw
 body.auth-entry .sidebar, body.auth-entry .top, body.auth-entry .intro,
 body.auth-entry .banner, body.auth-entry .support-details, body.auth-entry .progress,
 body.auth-entry .support { display:none; }
+body.signed-in .top { position:sticky; top:0; z-index:30; background:var(--paper); }
+body.auth-entry.signed-in .top { display:flex; }
+@media(max-width:700px) { body.signed-in .top { height:auto; min-height:68px; padding:10px 16px; gap:10px; } .account-actions { max-width:65%; gap:8px; } .account-actions .who { max-width:none; font-size:10px; } #workspace-signout { padding:10px 12px; } }
 body.auth-entry .shell { margin:0; min-height:100vh; display:flex; flex-direction:column; }
 body.auth-entry main { width:100%; max-width:720px; margin:0 auto; padding:clamp(32px,6vw,76px) 20px 22px; }
 body.auth-entry .columns { display:block; }
