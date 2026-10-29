@@ -2,6 +2,12 @@
 // Public probes and file metadata only. No account data or secret configuration.
 const fs=require('node:fs'),path=require('node:path');
 const {execFileSync}=require('node:child_process');
+function sourceMatches(row, actual, expectedBuild, qualification) {
+  if(actual.toUpperCase()===row.sha256.toUpperCase())return true;
+  return Boolean(qualification && qualification.build_id===expectedBuild &&
+    qualification.file===row.file && qualification.original_sha256.toUpperCase()===row.sha256.toUpperCase() &&
+    qualification.active_sha256.toUpperCase()===actual.toUpperCase());
+}
 function validate(config) {
   const fail=()=>{throw Error('CRP_MONITOR_CONFIGURATION_INVALID');};
   if(!config||!Array.isArray(config.targets)||!config.targets.length||config.targets.length>16)fail();
@@ -18,6 +24,13 @@ function validate(config) {
       if(target.release_base!==undefined&&!path.isAbsolute(target.release_base))fail();
     }
     if(target.require_readiness!==undefined&&typeof target.require_readiness!=='boolean')fail();
+    if(target.approved_source_qualification!==undefined) {
+      const q=target.approved_source_qualification;
+      if(!q || !/^crp-v1-[a-f0-9]{16}$/.test(q.build_id||'') ||
+        q.file!=='accelerated-launch/service/confirmation-mail.cjs' ||
+        !/^[a-f0-9]{64}$/i.test(q.original_sha256||'') || !/^[a-f0-9]{64}$/i.test(q.active_sha256||'') ||
+        typeof q.authority!=='string' || !q.authority.trim())fail();
+    }
   }
   if(config.mode!==undefined&&!['external','host'].includes(config.mode))fail();
   if(config.require_alerts!==undefined&&typeof config.require_alerts!=='boolean')fail();
@@ -48,7 +61,7 @@ async function inspect(target, dependencies={}) {
       const crypto=require('node:crypto');
       for(const row of manifest.groups.flatMap(g=>g.files)) {
         const file=path.resolve(current,row.file);
-        if(!file.startsWith(current+path.sep) || crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').toUpperCase()!==row.sha256.toUpperCase()) {failed.push('RELEASE_BYTES');break;}
+        if(!file.startsWith(current+path.sep) || !sourceMatches(row,crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'),expected,target.approved_source_qualification)) {failed.push('RELEASE_BYTES');break;}
       }
     }catch{failed.push('RELEASE_UNAVAILABLE');}
   }
@@ -67,7 +80,8 @@ async function inspect(target, dependencies={}) {
   }
   try {const latest=files().filter(f=>f.verified).sort((a,b)=>b.mtime-a.mtime)[0];if(!latest || Date.now()-latest.mtime>36*60*60*1000)failed.push('BACKUP_STALE');}catch{failed.push('BACKUP_UNAVAILABLE');}
   try {const stats=(dependencies.disk || (()=>fs.statfsSync('/')))();if(Number(stats.bavail)/Number(stats.blocks)<0.1)failed.push('DISK_LOW');}catch{failed.push('DISK_PROBE_FAILED');}
-  return {target:target.name,passed:!failed.length,maintenance,failures:failed};
+  return {target:target.name,passed:!failed.length,maintenance,failures:failed,
+    ...(target.approved_source_qualification ? {source_qualification:target.approved_source_qualification} : {})};
 }
 async function external(target,dependencies={}) {
   const get=dependencies.fetch||fetch,failures=[];
@@ -102,5 +116,5 @@ async function run(config,dependencies={}) {
   fs.writeFileSync(directory+'/status.json.tmp',JSON.stringify(record)+'\n',{mode:0o600});fs.renameSync(directory+'/status.json.tmp',directory+'/status.json');
   return record;
 }
-module.exports={inspect,external,validate,run};
+module.exports={inspect,external,validate,run,sourceMatches};
 if(require.main===module)run(JSON.parse(fs.readFileSync(process.argv[2],'utf8'))).then(record=>{process.stdout.write(JSON.stringify(record)+'\n');if(!record.passed)process.exitCode=1;}).catch(()=>{console.error('CRP_MONITOR_FAILED');process.exitCode=1;});
