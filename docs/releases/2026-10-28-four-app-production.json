@@ -1,0 +1,81 @@
+{
+  "schema": "crp-four-app-production-release-v1",
+  "releaseDate": "2026-10-28",
+  "timeZone": "America/Halifax",
+  "completedAtUtc": "2026-10-29T01:21:11.927572+00:00",
+  "environment": "production",
+  "builds": {
+    "consumer": "crp-v1-30fd6ab2eb948262",
+    "family": "crp-family-22ba90cb8b3c6ec3b958",
+    "mail": "mail-internal-b0e2a9290437242d",
+    "affiliateImage": "sha256:cd06faceceb91cc385c7b2feefb29a52d5a6cab489d0f881a4d677b98b8c028c"
+  },
+  "sources": {
+    "consumer": "eb43df2de7f3c0910bf4ac47925618183f4e04d0",
+    "familyArtifact": "bcf902589ae51ca98ac1a0e915de1fc66dd7223c",
+    "mail": "ba559fe1a10c4c3ae003e9f4bbfb35b632f1374d",
+    "affiliate": "7de1767987bedd31da97598061e6502fd1e52bbf"
+  },
+  "tests": {
+    "consumer": {
+      "passed": 20332,
+      "failed": 0,
+      "skipped": 0
+    },
+    "affiliate": {
+      "passed": 126,
+      "failed": 0,
+      "skipped": 0
+    },
+    "familyLinux": {
+      "passed": 57
+    },
+    "mail": {
+      "passed": 112
+    },
+    "reuse": "Completed tests retained with original execution identities. No full regression or purchase matrix repeated during deployment resume/publication. Unchanged validator accepted explicit source-bound acceptance reevaluation:30 gates,123 criteria,46 predicates."
+  },
+  "preservation": {
+    "consumerAccounts": 8,
+    "accountSecurityAndNonSessionBusinessRowsExact": true,
+    "nativeFamilyGatewaySessionSignouts": 2,
+    "signedAdminLockEvents": 2,
+    "mailSchemaMigrations": 12,
+    "mailBackupTables": 26,
+    "oldMailBusinessRowsPreserved": true,
+    "newStewardshipTableEmpty": true,
+    "affiliate26TablesAndSequenceStatesExact": true,
+    "familyStoppedSnapshotFilesAndPermissionsExactExceptNativePidLock": true,
+    "stagingObservedStateUnchanged": true,
+    "activeCustomerDataRestored": false
+  },
+  "recovery": {
+    "preReleasePoint": "20261029T010442Z-7b45198f",
+    "postReleasePoint": "20261029T011308Z-d37a45c6",
+    "fourAppNativeVerification": true,
+    "independentPrivateLocations": [
+      "Google Cloud Storage",
+      "Google Drive"
+    ],
+    "readbackHashesVerified": true,
+    "keysUploaded": false,
+    "predecessorsAndStoppedSnapshotsRetained": true
+  },
+  "monitoring": {
+    "currentChecksPassed": true,
+    "scheduledTimersActive": true,
+    "stalePreviousBuildRecordArchivedByteExact": true
+  },
+  "boundaries": {
+    "bmoSettlementVerification": "NOT_CONFIGURED; provider identified only",
+    "humanFinancialReleaseControlsPreserved": true,
+    "liveChargesPartnerPayoutsPostalMailOrAdvertisingInitiated": false
+  },
+  "retainedRefusals": [
+    "Affiliate r1 incorrect health hostname; guarded rollback verified unchanged DB; r2 succeeded",
+    "Binding r1 strict unit occurrence count refused; bounded r2 completed remaining verified files",
+    "Consumer raw-private equality refused native Family gateway sign-outs; exact signed lifecycle r3 proof passed; no restore"
+  ],
+  "privateServerClosureSha256": "d67eb998d050515db481df2ce1b37d1c280ad129ed53e2f72b29cabad526c5b4",
+  "evidencePublicationScope": "Curated deployment metadata only. Credentials, customer data, private configuration, raw authentication/QA records, database dumps and private recovery artifacts are excluded."
+}
