@@ -1,0 +1,34 @@
+FOUR-APP CRP PRODUCTION DEPLOYMENT — COMPLETE
+Completed: October 28, 2026 at 10:21:11 p.m. ADT
+
+Consumer: https://creditregulatorpro.com — crp-v1-30fd6ab2eb948262 / eb43df2de7f3c0910bf4ac47925618183f4e04d0
+Admin / Family: https://admin.creditregulatorpro.com — crp-family-22ba90cb8b3c6ec3b958
+Staff / Mail: https://mail.creditregulatorpro.com — mail-internal-b0e2a9290437242d / ba559fe1a10c4c3ae003e9f4bbfb35b632f1374d
+Partner / Affiliate: https://affiliates.creditregulatorpro.com — image cd06faceceb91cc385c7b2feefb29a52d5a6cab489d0f881a4d677b98b8c028c / 7de1767987bedd31da97598061e6502fd1e52bbf
+
+Validation
+Completed Consumer20332/0/0, Affiliate126/0/0, Family and Mail checks were reused. No full regression or purchase matrix was rerun during this resume. Original earlier accepted test identities remain intact. The unchanged strict release validator accepted the explicit current-source reuse evaluation:30 gates /123 criteria /46 predicates. Current source/package hashes, four public health identities and Consumer-to-Family administration routing passed. Current monitors passed; their existing timers are active.
+
+Data and security
+All8 production Consumer accounts, account security fields and all non-session business rows are exact. Memberships, organizations, grants, partner metadata and fulfillment records are exact. Family graceful shutdown normally locked/revoked2 administrator gateway sessions and appended2 signed ADMIN_LOCKED events; those administrators need ordinary sign-in again. The corresponding signed journal78/audit47 and exact lifecycle differences are authenticated by post-release recovery. No credentials, MFA settings or access grants were changed.
+Mail existing business/migration rows are preserved; append-only012 migration added an empty stewardship table. Worker runtime heartbeat is operational metadata. Affiliate all26 tables and sequence states, actual environment, mounts, network addresses and database container were preserved. Family private files/permissions match its stopped snapshot except its native kernel PID lock. Entire observed staging state remained exact during production cutover. No customer data was restored.
+
+Recovery and operational configuration
+Fresh pre-cutover point20261029T010442Z-7b45198f and post-cutover point20261029T011308Z-d37a45c6 passed four-app native verification and independent private Google Cloud Storage/Drive readbacks. Keys were not uploaded; sharing/provider permissions were not changed. Predecessor releases, stopped snapshots, compatible Mail fallback65b667 and failed attempts are retained. Existing backup/monitor build inventories now match deployed source; obsolete Consumer source qualification was removed because the new manifest contains the approved sender. Existing Affiliate admin-mail override now pins the new image with all other fields unchanged. The previous-build Mail failure marker was archived byte-exact only after current native/offsite recovery, and both monitors then passed.
+
+Retained exceptions
+An incorrect Affiliate health hostname caused a guarded rollback; unchanged database was independently confirmed before the corrected same-image retry passed. A configuration-reconciliation occurrence guard refused before unit changes; a scoped continuation updated the three known unit path occurrences and publisher path. Initial whole-private equality assertions correctly refused native gateway sign-outs; exact lifecycle-specific preservation verification passed without restoring data.
+
+Remaining boundaries
+BMO Canada regular Online Banking is identified, but independent settlement verification remains NOT_CONFIGURED. Human approval/payment-release controls remain in force. No live charge, partner payout, postal mail, international advertising activation or source publication was initiated by this resume. Existing administrator alerting remains configured. Commercial outcomes/global scaling/native private-report fidelity are not certified by this deployment.
+
+Custody
+Runtime changes are complete. The COO chat acknowledged its hold and has now received the explicit safe window for its separate authorized upgrade using a fresh baseline. No further CRP release is implied. Original recovery working copies and all unrelated dirty/untracked files remain preserved.
+
+Evidence
+Published machine-readable closure: 2026-10-28-four-app-production.json
+Detailed private closure retained in controlled release custody.
+Post-cutover public-check receipt retained privately.
+Detailed preservation receipt retained privately.
+Source-bound acceptance reuse validation retained privately.
+Final server receipt SHA256: d67eb998d050515db481df2ce1b37d1c280ad129ed53e2f72b29cabad526c5b4

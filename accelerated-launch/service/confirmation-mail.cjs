@@ -1,6 +1,7 @@
 'use strict';
 const fs=require('node:fs'),tls=require('node:tls');
-const FROM='support@creditregulatorpro.com';
+const FROM=process.env.MAIL_FROM||'support@creditregulatorpro.com';
+if(!/^[^\s@<>\r\n]+@[^\s@<>\r\n]+\.[^\s@<>\r\n]+$/.test(FROM))throw Error('INVALID_MAIL_FROM');
 function messageBody(message) {
   const {to,code,kind,url}=message;
   if(!/^[^\s@<>\r\n]+@[^\s@<>\r\n]+\.[^\s@<>\r\n]+$/.test(to))throw Error('INVALID_CONFIRMATION_MESSAGE');
