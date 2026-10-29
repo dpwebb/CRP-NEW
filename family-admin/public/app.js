@@ -588,7 +588,11 @@ function showDetails(app, row) {
     [],
     null,
   );
-  $("dialog-fields").append(recordDetails(row));
+  const campaignGallery = app === 'affiliate' && window.CRPAffiliateBannerPreview?.render(row);
+  if (campaignGallery) {
+    $("dialog-fields").append(campaignGallery);
+    const references = el('details');references.append(el('summary','Creative fields and source references'),recordDetails(row));$("dialog-fields").append(references);
+  } else $("dialog-fields").append(recordDetails(row));
   const id = row.id || row.orderId || row.admin_id || row.job_id || row.org_id || row.account_id;
   const actions = el("div", null, "record-actions");
   const reads = S.session.catalog.reads[app];

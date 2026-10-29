@@ -67,6 +67,12 @@ export function createPortal(raw, options = {}) {
       ["/", ["index.html", "text/html; charset=utf-8"]],
       ["/app.js", ["app.js", "text/javascript; charset=utf-8"]],
       ["/style.css", ["style.css", "text/css; charset=utf-8"]],
+      ["/banner-preview.js", ["banner-preview.js", "text/javascript; charset=utf-8"]],
+      ["/approved-banners-2026-10-23/manifest.json", ["approved-banners-2026-10-23/manifest.json", "application/json"]],
+      ...Array.from({length:10}, (_,i) => {
+        const file = "approved-banners-2026-10-23/banner-" + String(i+1).padStart(2,"0") + ".png";
+        return ["/" + file, [file, "image/png"]];
+      }),
     ].map(([url, [file, type]]) => [
       url,
       { bytes: readFileSync(new URL(file, publicRoot)), type },

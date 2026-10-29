@@ -760,3 +760,5 @@ dialog::backdrop {
     min-height: 40px;
   }
 }
+
+.campaign-banner-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:20px}.campaign-banner-grid article{min-width:0;border:1px solid #c8d3dd;border-radius:8px;padding:16px}.campaign-banner-grid img{display:block;max-width:100%;width:auto;height:auto;max-height:360px;object-fit:contain;margin:16px auto}.campaign-banner-grid label{display:block;margin-top:16px}.campaign-banner-grid textarea{width:100%;box-sizing:border-box}
