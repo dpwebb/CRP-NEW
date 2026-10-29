@@ -11,6 +11,7 @@ const url='https://affiliates.creditregulatorpro.com/r/fictional-campaign';
 const brief=()=>({country:'CA',referralUrl:url,banners:assets.map(a=>({...a,url:'https://affiliates.creditregulatorpro.com'+a.path,referralUrl:url,websiteHtml:'<p>Disclosed campaign copy</p>'}))});
 test('admin gallery accepts only exact approved metadata and campaign-bound artwork',()=>{
  assert.equal(validate(brief()).banners.length,10);
+ const staged=JSON.parse(JSON.stringify(brief()).replaceAll('https://affiliates.creditregulatorpro.com','https://affiliates-staging.creditregulatorpro.com'));assert.equal(validate(staged).banners.length,10);assert.ok(validate(staged).referralUrl.startsWith('https://affiliates-staging.'));
  for(const change of [b=>b.referralUrl='https://untrusted.example/r/fictional-campaign',b=>b.banners.forEach(a=>a.url+='?pixel=1'),b=>b.banners.forEach(a=>a.width++),b=>b.banners.forEach(a=>a.referralUrl+='-other')]){const b=brief();change(b);assert.equal(validate(b),null);}
 });
 test('fixed public banner routes retain original bytes while unrelated paths stay refused',async t=>{

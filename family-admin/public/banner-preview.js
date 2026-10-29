@@ -5,7 +5,7 @@
     if (!brief || !['CA','US','GB','AU'].includes(brief.country) || !Array.isArray(brief.banners)) return null;
     let destination;
     try { destination = new URL(brief.referralUrl); } catch { return null; }
-    if (destination.origin !== 'https://affiliates.creditregulatorpro.com' || !/^\/r\/[A-Za-z0-9-]+$/.test(destination.pathname) || destination.search || destination.hash || destination.username || destination.password) return null;
+    if (!['https://affiliates.creditregulatorpro.com','https://affiliates-staging.creditregulatorpro.com'].includes(destination.origin) || !/^\/r\/[A-Za-z0-9-]+$/.test(destination.pathname) || destination.search || destination.hash || destination.username || destination.password) return null;
     const banners = brief.banners.flatMap(item => {
       const asset = approved.find(a => a.id === item?.id);
       if (!asset || item.sha256 !== asset.sha256 || item.width !== asset.width || item.height !== asset.height || item.referralUrl !== destination.href || item.url !== destination.origin + asset.path || typeof item.websiteHtml !== 'string' || item.websiteHtml.length > 32768) return [];
