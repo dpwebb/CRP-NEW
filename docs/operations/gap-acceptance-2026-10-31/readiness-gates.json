@@ -1,0 +1,158 @@
+{
+  "scope": "Evidence collection worksheet; empty gates do not contradict accepted historical health",
+  "partnerCurrentFullImageBinding": "not reconciled by this local task",
+  "apps": [
+    {
+      "app": "consumer",
+      "owner": "Consumer custodian",
+      "scope": "local evidence assessment; not deployment approval",
+      "acceptedForDeclaredScope": false,
+      "blockers": [
+        {
+          "gate": "service",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Consumer custodian",
+          "evidence": null
+        },
+        {
+          "gate": "administration",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Consumer custodian",
+          "evidence": null
+        },
+        {
+          "gate": "access",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Consumer custodian",
+          "evidence": null
+        },
+        {
+          "gate": "recovery",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Consumer custodian",
+          "evidence": null
+        },
+        {
+          "gate": "accuracy",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Consumer custodian",
+          "evidence": null
+        }
+      ]
+    },
+    {
+      "app": "family",
+      "owner": "Family/Admin custodian",
+      "scope": "local evidence assessment; not deployment approval",
+      "acceptedForDeclaredScope": false,
+      "blockers": [
+        {
+          "gate": "service",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Family/Admin custodian",
+          "evidence": null
+        },
+        {
+          "gate": "access",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Family/Admin custodian",
+          "evidence": null
+        },
+        {
+          "gate": "recovery",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Family/Admin custodian",
+          "evidence": null
+        },
+        {
+          "gate": "staffing",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Family/Admin custodian",
+          "evidence": null
+        }
+      ]
+    },
+    {
+      "app": "partner",
+      "owner": "Partner custodian / human finance owner",
+      "scope": "local evidence assessment; not deployment approval",
+      "acceptedForDeclaredScope": false,
+      "blockers": [
+        {
+          "gate": "service",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Partner custodian / human finance owner",
+          "evidence": null
+        },
+        {
+          "gate": "access",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Partner custodian / human finance owner",
+          "evidence": null
+        },
+        {
+          "gate": "recovery",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Partner custodian / human finance owner",
+          "evidence": null
+        },
+        {
+          "gate": "attribution",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Partner custodian / human finance owner",
+          "evidence": null
+        },
+        {
+          "gate": "settlement",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Partner custodian / human finance owner",
+          "evidence": null
+        }
+      ]
+    },
+    {
+      "app": "mail",
+      "owner": "Mail custodian",
+      "scope": "local evidence assessment; not deployment approval",
+      "acceptedForDeclaredScope": false,
+      "blockers": [
+        {
+          "gate": "service",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Mail custodian",
+          "evidence": null
+        },
+        {
+          "gate": "access",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Mail custodian",
+          "evidence": null
+        },
+        {
+          "gate": "recovery",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Mail custodian",
+          "evidence": null
+        },
+        {
+          "gate": "staffing",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Mail custodian",
+          "evidence": null
+        },
+        {
+          "gate": "alertAcknowledgement",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Mail custodian",
+          "evidence": null
+        },
+        {
+          "gate": "fulfillment",
+          "reason": "MISSING_EVIDENCE",
+          "owner": "Mail custodian",
+          "evidence": null
+        }
+      ]
+    }
+  ]
+}

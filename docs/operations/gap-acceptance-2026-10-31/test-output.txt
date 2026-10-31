@@ -1,0 +1,39 @@
+✔ preflight live writer remains read-only (50.1938ms)
+✔ preflight legacy live PID remains read-only (43.91ms)
+✔ preflight PID reused remains read-only (44.2803ms)
+✔ preflight dead writer remains read-only (42.5566ms)
+✔ preflight unknown live identity remains read-only (40.8103ms)
+✔ malformed writer fails closed (43.3849ms)
+✔ tampered journal fails closed (45.8316ms)
+✔ wrong source refuses before interpreting authority (37.0439ms)
+✔ reviewed quarantine on fictional copy preserves authority, customer and blob bytes (69.3046ms)
+✔ readiness separates administration, settlement and fulfillment from service health (1.0979ms)
+✔ readiness rejects stale (0.3413ms)
+✔ readiness rejects different generation (0.1206ms)
+✔ readiness rejects failed recovery (0.0977ms)
+✔ readiness rejects missing receipt (0.0705ms)
+✔ readiness rejects future acceptance (0.0722ms)
+✔ fully bound fictional acceptance is scoped, not deployment approval (0.1467ms)
+✔ captured existing alert lifecycle deduplicates, retries and distinguishes recovery (0.5017ms)
+✔ capacity reserve is checked without invoking any job (0.1502ms)
+✔ recovery index refuses prior generation, retired destination and missing scheduled witness (0.2495ms)
+✔ relay acceptance does not become arrival or human acknowledgement (0.0998ms)
+✔ synthetic bank evidence cannot settle a proposal (0.1953ms)
+✔ wrong partner, currency, amount and destination stay unmatched (0.1879ms)
+✔ complete candidate remains advisory and cannot configure bank or settle (0.0841ms)
+✔ packet drift, cancellation and duplicate prevent fulfillment acceptance (0.2049ms)
+✔ print evidence cannot imply mailing or delivery; independent evidence is required (0.1049ms)
+✔ fulfillment evidence cannot skip required staff and print stages (0.1049ms)
+✔ readiness requires explicit freshness policy (0.1146ms)
+✔ coverage exports source qualifications without inventing empirical accuracy (3.6941ms)
+✔ source-labelled accuracy scoring separates misses, false positives and unresolved elevations (0.2415ms)
+✔ empty or duplicated labels cannot certify accuracy (0.1943ms)
+✔ recovery cannot match unbound targets to unbound receipts (0.0895ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 595.3922

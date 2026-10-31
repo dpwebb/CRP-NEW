@@ -1,0 +1,50 @@
+[
+  {
+    "file": "src/accounting.mjs",
+    "workspace": "C:/Compnd.Systems/worktrees/international-affiliate-local/CRP-AFFILIATE-OPS",
+    "acceptedSource": "7de1767987bedd31da97598061e6502fd1e52bbf",
+    "currentSha256": "8a0f5317f093fd22d80f95be28f5f063dc9174ee63d9963d1e1848083efb060e",
+    "exactFileMatch": true,
+    "scope": "File-level comparison only; not whole dependency/runtime or provider acceptance"
+  },
+  {
+    "file": "tests/integration.test.mjs",
+    "workspace": "C:/Compnd.Systems/worktrees/international-affiliate-local/CRP-AFFILIATE-OPS",
+    "acceptedSource": "7de1767987bedd31da97598061e6502fd1e52bbf",
+    "currentSha256": "d5b252537e6aa82e6ae4ec70a8969db21cf4e0dd396953c02a9398e29e36f246",
+    "exactFileMatch": true,
+    "scope": "File-level comparison only; not whole dependency/runtime or provider acceptance"
+  },
+  {
+    "file": "tests/attribution.test.mjs",
+    "workspace": "C:/Compnd.Systems/worktrees/international-affiliate-local/CRP-AFFILIATE-OPS",
+    "acceptedSource": "7de1767987bedd31da97598061e6502fd1e52bbf",
+    "currentSha256": "eeff889dd14c45e6b8efa01f4250f637d7d323498d9c759b0a3202009868449d",
+    "exactFileMatch": true,
+    "scope": "File-level comparison only; not whole dependency/runtime or provider acceptance"
+  },
+  {
+    "file": "tests/foundation.test.mjs",
+    "workspace": "C:/Compnd.Systems/worktrees/international-mail-local/CRP-MAIL-OPS",
+    "acceptedSource": "0864c06465caea57176e0304ca992962c6dced9c",
+    "currentSha256": "9b9d346ec63ce2c86aefd5370b7f4fbf3829f75dd3928ca08c8d0de44d1f1e8b",
+    "exactFileMatch": true,
+    "scope": "File-level comparison only; not whole dependency/runtime or provider acceptance"
+  },
+  {
+    "file": "tests/internal-boundaries.test.mjs",
+    "workspace": "C:/Compnd.Systems/worktrees/international-mail-local/CRP-MAIL-OPS",
+    "acceptedSource": "0864c06465caea57176e0304ca992962c6dced9c",
+    "currentSha256": "45c166322834cc81f18893c35d998c67b3961cdf8339987fad777b5653843351",
+    "exactFileMatch": true,
+    "scope": "File-level comparison only; not whole dependency/runtime or provider acceptance"
+  },
+  {
+    "file": "tests/postgrid.test.mjs",
+    "workspace": "C:/Compnd.Systems/worktrees/international-mail-local/CRP-MAIL-OPS",
+    "acceptedSource": "0864c06465caea57176e0304ca992962c6dced9c",
+    "currentSha256": "186a6b5a7a648ecb0c886aad5a195ed27914e746cdc0ab8912ee87fd3a85cd5a",
+    "exactFileMatch": true,
+    "scope": "File-level comparison only; not whole dependency/runtime or provider acceptance"
+  }
+]

@@ -1,0 +1,43 @@
+{
+  "scope": "Local operational gap preparation; not hosted/provider acceptance",
+  "date": "2026-10-31",
+  "custodian": "CRP Group Tools",
+  "tests": {
+    "passed": 31,
+    "failed": 0,
+    "skipped": 0,
+    "syntaxChecks": 5,
+    "runner": "node --test accelerated-launch/service/tests/operational-gap-preparation.test.cjs",
+    "runtime": "v24.16.0",
+    "log": "docs/operations/gap-acceptance-2026-10-31/test-output.txt",
+    "logSha256": "63cebf47ce55b7247b9a1ab31a929a8607a64947dfed57d8d82a883ce21ce9d7"
+  },
+  "sourceBindings": [
+    {
+      "file": "accelerated-launch/service/deploy/admin-recovery-preflight.cjs",
+      "sha256": "5c458978f8a29b74ba0e9de7a342fd4ceb31a091ac7755ecac9bb9682e9b080f"
+    },
+    {
+      "file": "accelerated-launch/service/deploy/operational-gap-readiness.cjs",
+      "sha256": "d12e7e76947414ffd376ea0d2aad767f7857f47b9afb167d60bf0833ee33fdbc"
+    },
+    {
+      "file": "accelerated-launch/service/deploy/operational-evidence-contracts.cjs",
+      "sha256": "ba69837fece368beb9f949a262969895cfda671e0c3d55288f46615783371321"
+    },
+    {
+      "file": "accelerated-launch/service/deploy/operational-coverage-review.cjs",
+      "sha256": "eb580ad703a0f18a46dfe8e20b3af6249e209e7568bb3d04f3b0257e5781783c"
+    },
+    {
+      "file": "accelerated-launch/service/tests/operational-gap-preparation.test.cjs",
+      "sha256": "72d75c5cc4b8da7cd1825e2b1466fe1f1dcdb29da17a52729cd1bf5599589ce4"
+    }
+  ],
+  "deployment": false,
+  "realMail": false,
+  "hostedActions": false,
+  "customerDataUsed": false,
+  "fullSuiteRepeated": false,
+  "unrelatedWorkPreserved": true
+}

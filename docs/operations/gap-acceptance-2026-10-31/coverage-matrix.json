@@ -1,0 +1,304 @@
+{
+  "scope": "source-declared format coverage; not empirical accuracy",
+  "sourceBindings": [
+    {
+      "file": "../coverage-matrix.cjs",
+      "sha256": "4a49a30751d8aaef291ca0ffc5be133d597edf9ed0a5bcfcb904f3e70be94b77"
+    },
+    {
+      "file": "../formats.cjs",
+      "sha256": "d820133e78b199a9054c96ef6b9523e944230d8f5d0c7bd28a78a2164dc5fbbf"
+    },
+    {
+      "file": "../../coverage-matrix.json",
+      "sha256": "94d8562d330e355f113c2e4555e29e1238dc729c8ae710272d053ba130eec08c"
+    }
+  ],
+  "supportedPresentations": [
+    {
+      "presentation_id": "PR-01",
+      "display_name": "Equifax Canada consumer credit report — the evidenced specimen",
+      "country": "CA",
+      "container": "PDF",
+      "read_support_is": "EXACT_SPECIMEN_DIGEST",
+      "evidence_currency": "SUPPORTED_PRESENTATION_FOR_ONE_SELECTED_UNIT",
+      "present_day_support_claimed": true,
+      "note": "Read support is evidenced for this ONE specimen only, by its own pinned digest. A structurally similar file is refused, and so is another real Equifax Canada report — this admission does not widen with a second document.",
+      "currency_note": "The currency of this evidence is recorded in evidence_currency; no broader claim is made than it supports."
+    },
+    {
+      "presentation_id": "FAM-TU-CA-CONSUMER",
+      "display_name": "TransUnion Canada consumer disclosure — the evidenced format family",
+      "country": "CA",
+      "container": "PDF",
+      "read_support_is": "EVIDENCED_STRUCTURAL_CONTRACT",
+      "evidence_currency": "EVIDENCED_FROM_ONE_REAL_PRESENT_DAY_CONSUMER_DISCLOSURE",
+      "present_day_support_claimed": true,
+      "note": "Read support is evidenced for this format FAMILY, by measured structure, from the artifact named in evidenced_artifact_id. A file that does not satisfy the family structure is refused, and the refusal names the predicate it failed.",
+      "currency_note": "This family is evidenced from ONE real present-day TransUnion Canada consumer disclosure. The STRUCTURE it measures is admitted; a different product, print date or language is refused by the same predicates."
+    },
+    {
+      "presentation_id": "FAM-AU-EQX-CONSUMER",
+      "display_name": "Equifax Australia consumer credit file — the evidenced format family",
+      "country": "AU",
+      "container": "PDF",
+      "read_support_is": "EVIDENCED_STRUCTURAL_CONTRACT",
+      "evidence_currency": "EVIDENCED_FROM_ONE_CAPTURED_PUBLIC_SAMPLE",
+      "present_day_support_claimed": false,
+      "note": "Read support is evidenced for this format FAMILY, by measured structure, from the artifact named in evidenced_artifact_id. A file that does not satisfy the family structure is refused, and the refusal names the predicate it failed.",
+      "currency_note": "This family is evidenced from a 2016 report date; captured public sample. It supports the measured structure; current whole-layout support is not certified."
+    },
+    {
+      "presentation_id": "US-CONSUMER-DISCLOSURE",
+      "display_name": "Experian United States consumer credit disclosure — the evidenced format family",
+      "country": "US",
+      "container": "PDF",
+      "read_support_is": "EVIDENCED_STRUCTURAL_CONTRACT",
+      "evidence_currency": "EVIDENCED_FROM_ONE_CAPTURED_OFFICIAL_CONSUMER_SAMPLE",
+      "present_day_support_claimed": false,
+      "note": "Read support is evidenced for this format FAMILY, by measured structure, from the artifact named in evidenced_artifact_id. A file that does not satisfy the family structure is refused, and the refusal names the predicate it failed.",
+      "currency_note": "This family is evidenced from a 2015 official educational sample. It supports the measured structure; current whole-layout support is not certified."
+    },
+    {
+      "presentation_id": "FAM-GB-EXP-CONSUMER",
+      "display_name": "Experian United Kingdom consumer credit report — the evidenced format family",
+      "country": "GB",
+      "container": "PDF",
+      "read_support_is": "EVIDENCED_STRUCTURAL_CONTRACT",
+      "evidence_currency": "HISTORICAL_DEMONSTRATION_EVIDENCE_ONLY",
+      "present_day_support_claimed": false,
+      "note": "Read support is evidenced for this format FAMILY, by measured structure, from the artifact named in evidenced_artifact_id. A file that does not satisfy the family structure is refused, and the refusal names the predicate it failed.",
+      "currency_note": "This dedicated family is evidenced from a captured example dated 1 June 2007 that is marked on its own face as fictitious. It evidences structure only; current whole-layout support is not certified. The current GENERAL consumer field contract is recorded separately."
+    }
+  ],
+  "missingLayouts": [
+    {
+      "bureau": "Equifax",
+      "country": "CA",
+      "channel": "consumer",
+      "support_state": "MISSING",
+      "evidence": {
+        "artifacts": [
+          "PUB-005",
+          "PUB-006",
+          "PUB-007",
+          "PUB-008"
+        ],
+        "why_insufficient": "annotated user guides and a historical FCAC page; none is a report presentation"
+      },
+      "next_step": "a second same-bureau same-product Equifax Canada specimen, or an official current Equifax layout specification",
+      "support_scope": "DEDICATED_LAYOUT_EVIDENCE_MISSING",
+      "general_intake_available": true
+    },
+    {
+      "bureau": "TransUnion",
+      "country": "CA",
+      "channel": "consumer",
+      "support_state": "MISSING",
+      "evidence": {
+        "artifacts": [],
+        "why_insufficient": "one specimen evidences the family; no second variant is on hand"
+      },
+      "next_step": "a second genuine TransUnion Canada consumer disclosure to widen the family",
+      "support_scope": "DEDICATED_LAYOUT_EVIDENCE_MISSING",
+      "general_intake_available": true
+    },
+    {
+      "bureau": "Equifax",
+      "country": "US",
+      "channel": "consumer",
+      "support_state": "MISSING",
+      "evidence": {
+        "artifacts": [
+          "PUB-003",
+          "ALT-007",
+          "ALT-008",
+          "ALT-005"
+        ],
+        "why_insufficient": "TotalView and OneView are subscriber guides; the redesign announcement evidences format drift, not a consumer disclosure"
+      },
+      "next_step": "a genuine US Equifax consumer disclosure specimen, or an authoritative current consumer layout specification",
+      "support_scope": "DEDICATED_LAYOUT_EVIDENCE_MISSING",
+      "general_intake_available": true
+    },
+    {
+      "bureau": "TransUnion",
+      "country": "US",
+      "channel": "consumer",
+      "support_state": "MISSING",
+      "evidence": {
+        "artifacts": [
+          "PUB-002",
+          "ALT-002",
+          "PUB-015",
+          "PUB-025",
+          "ALT-006"
+        ],
+        "why_insufficient": "print-image guide and TUXML samples are subscriber formats; the third-party deck is not an official consumer artifact"
+      },
+      "next_step": "a genuine US TransUnion consumer disclosure specimen, or an authoritative current consumer layout specification",
+      "support_scope": "DEDICATED_LAYOUT_EVIDENCE_MISSING",
+      "general_intake_available": true
+    },
+    {
+      "bureau": "Equifax",
+      "country": "GB",
+      "channel": "consumer",
+      "support_state": "MISSING",
+      "evidence": {
+        "artifacts": [
+          "PUB-011",
+          "PUB-024"
+        ],
+        "why_insufficient": "glossary returned 404 and the statutory route is HTML; no consumer report specimen captured"
+      },
+      "next_step": "a genuine current Equifax GB consumer report",
+      "support_scope": "DEDICATED_LAYOUT_EVIDENCE_MISSING",
+      "general_intake_available": true
+    },
+    {
+      "bureau": "TransUnion",
+      "country": "GB",
+      "channel": "consumer",
+      "support_state": "MISSING",
+      "evidence": {
+        "artifacts": [
+          "PUB-010",
+          "PUB-018"
+        ],
+        "why_insufficient": "guide returned 403 and the statutory route is HTML; no consumer report specimen captured"
+      },
+      "next_step": "a genuine current TransUnion GB consumer report",
+      "support_scope": "DEDICATED_LAYOUT_EVIDENCE_MISSING",
+      "general_intake_available": true
+    },
+    {
+      "bureau": "Experian",
+      "country": "GB",
+      "channel": "consumer",
+      "support_state": "MISSING",
+      "evidence": {
+        "artifacts": [
+          "PUB-009"
+        ],
+        "why_insufficient": "the only Experian GB artifact is the 2007 fictitious training sample"
+      },
+      "next_step": "a genuine current Experian GB consumer report",
+      "support_scope": "DEDICATED_LAYOUT_EVIDENCE_MISSING",
+      "general_intake_available": true
+    },
+    {
+      "bureau": "Experian",
+      "country": "AU",
+      "channel": "consumer",
+      "support_state": "MISSING",
+      "evidence": {
+        "artifacts": [
+          "PUB-022",
+          "PUB-023"
+        ],
+        "why_insufficient": "integrated route and field guide are HTML, not a report specimen"
+      },
+      "next_step": "a genuine Experian AU consumer report",
+      "support_scope": "DEDICATED_LAYOUT_EVIDENCE_MISSING",
+      "general_intake_available": true
+    },
+    {
+      "bureau": "illion",
+      "country": "AU",
+      "channel": "consumer",
+      "support_state": "MISSING",
+      "evidence": {
+        "artifacts": [
+          "PUB-020",
+          "PUB-022"
+        ],
+        "why_insufficient": "the compliance review is not a report specimen; the integrated route is HTML"
+      },
+      "next_step": "a genuine illion AU consumer report",
+      "support_scope": "DEDICATED_LAYOUT_EVIDENCE_MISSING",
+      "general_intake_available": true
+    }
+  ],
+  "acquisitionQueue": [
+    {
+      "rank": 1,
+      "market": "US",
+      "bureau": "Equifax",
+      "channel": "consumer",
+      "reason": "largest remaining consumer market; subscriber guides already pin creditor-classification field names",
+      "blocker": "no genuine consumer disclosure specimen"
+    },
+    {
+      "rank": 2,
+      "market": "US",
+      "bureau": "TransUnion",
+      "channel": "consumer",
+      "reason": "same US consumer market; print-image and TUXML are out-of-channel",
+      "blocker": "no genuine consumer disclosure specimen"
+    },
+    {
+      "rank": 3,
+      "market": "AU",
+      "bureau": "Experian",
+      "channel": "consumer",
+      "reason": "official integrated Experian/illion route is live",
+      "blocker": "no report specimen"
+    },
+    {
+      "rank": 4,
+      "market": "AU",
+      "bureau": "illion",
+      "channel": "consumer",
+      "reason": "official integrated Experian/illion route is live",
+      "blocker": "no report specimen"
+    },
+    {
+      "rank": 5,
+      "market": "GB",
+      "bureau": "Experian",
+      "channel": "consumer",
+      "reason": "the dedicated family uses the 2007 fictitious training sample; GENERAL remains available for readable supported facts",
+      "blocker": "no complete current dedicated consumer layout specimen"
+    },
+    {
+      "rank": 6,
+      "market": "GB",
+      "bureau": "Equifax",
+      "channel": "consumer",
+      "reason": "no dedicated current layout is certified; GENERAL remains available",
+      "blocker": "no dedicated consumer report specimen"
+    },
+    {
+      "rank": 7,
+      "market": "GB",
+      "bureau": "TransUnion",
+      "channel": "consumer",
+      "reason": "current V9 consumer fields are supported on GENERAL; no complete dedicated export geometry is certified",
+      "blocker": "no dedicated consumer report specimen"
+    },
+    {
+      "rank": 8,
+      "market": "CA",
+      "bureau": "Equifax",
+      "channel": "consumer",
+      "reason": "PR-01 is digest-only; a second specimen or an official layout spec would promote it to a family",
+      "blocker": "one specimen only"
+    },
+    {
+      "rank": 9,
+      "market": "CA",
+      "bureau": "TransUnion",
+      "channel": "consumer",
+      "reason": "the family is evidenced by one specimen; a second variant would widen it",
+      "blocker": "one specimen only"
+    }
+  ],
+  "accuracy": {
+    "sampleCount": 0,
+    "measured": false,
+    "falsePositiveRate": null,
+    "missRate": null
+  },
+  "universalDetectionClaim": false
+}
