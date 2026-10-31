@@ -1,0 +1,44 @@
+{
+  "record_type": "Completed operational repair; historical acceptance",
+  "date": "2026-10-31",
+  "application": "CRP Consumer",
+  "environment": "production",
+  "build": "crp-v1-ddaa1119be5f49b4",
+  "cause": "Hostinger restore reinstated exact obsolete legacy admin writer claim",
+  "passed": true,
+  "stop_invocations": 1,
+  "start_invocations": 1,
+  "deployment": false,
+  "mail_operation": false,
+  "customer_state_restored": false,
+  "stopped_recovery_copies_exact": true,
+  "quarantined_claim_sha256": "1b36529c6a2633b1cf34c6091c4df28ca13c3e1220ce5ce516aee7c2adc26df0",
+  "only_intended_claim_moved": true,
+  "changed_existing_files": [
+    "store.lock"
+  ],
+  "native_writer_claims_added": 1,
+  "expired_sessions_removed": 0,
+  "all_other_customer_state_exact": true,
+  "admin_authority_journal_exact": true,
+  "configuration_unchanged": true,
+  "health_after": {
+    "ok": true,
+    "build_id": "crp-v1-ddaa1119be5f49b4",
+    "deployment": "production",
+    "billing_mode": "live",
+    "administration_enabled": true,
+    "administration_available": true,
+    "launch_ready": false
+  },
+  "anonymous_admin_overview_http_status": 401,
+  "deployed_admin_source_unchanged": true,
+  "server_evidence": "/opt/crp-admin-repair-20261031",
+  "recovery_scope": "Verified same-host stopped snapshot and recovery-proof copy; not a new off-host certification",
+  "limits": [
+    "General portfolio hold remains",
+    "No new owner MFA acceptance",
+    "No postal delivery or alert arrival certification",
+    "No attribution or settlement certification"
+  ]
+}
