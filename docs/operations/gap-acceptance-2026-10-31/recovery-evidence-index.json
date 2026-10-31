@@ -1,0 +1,69 @@
+{
+  "scope": "Recovery receipt reconciliation; no new job/restore",
+  "acceptedReferences": [
+    {
+      "receipt": "C:/Compnd.Systems/governance/migrations/hostinger-whelastic-20261030/hostinger-return-20261031/remediation-20261031/JOBS-ACCEPTANCE.json",
+      "scope": "Native monitor/jobs, preserved staging snapshot, five-file independent GCS readback; reuse recorded scope"
+    },
+    {
+      "receipt": "docs/releases/2026-10-28-four-app-production.json",
+      "scope": "Historical four-app recovery/provenance; not silently current-generation certification"
+    },
+    {
+      "receipt": "/opt/crp-admin-repair-20261031/result.json",
+      "scope": "Exact Consumer stopped recovery copies; same-host only"
+    }
+  ],
+  "apps": [
+    {
+      "app": "consumer",
+      "build": "crp-v1-ddaa1119be5f49b4",
+      "generation": "hostinger-backup57714599-return-20261031",
+      "status": "COMPLETE_CURRENT_GENERATION_INDEX_NOT_YET_ACCEPTED",
+      "remaining": [
+        "exact per-app independent recovery receipt binding",
+        "applicable isolated restore scope",
+        "genuine scheduled witness where required",
+        "current owner-key custody evidence at applicable scope"
+      ]
+    },
+    {
+      "app": "family",
+      "build": "crp-family-16733200822b3ad031b5",
+      "generation": "hostinger-backup57714599-return-20261031",
+      "status": "COMPLETE_CURRENT_GENERATION_INDEX_NOT_YET_ACCEPTED",
+      "remaining": [
+        "exact per-app independent recovery receipt binding",
+        "applicable isolated restore scope",
+        "genuine scheduled witness where required",
+        "current owner-key custody evidence at applicable scope"
+      ]
+    },
+    {
+      "app": "partner",
+      "build": null,
+      "generation": "hostinger-backup57714599-return-20261031",
+      "status": "COMPLETE_CURRENT_GENERATION_INDEX_NOT_YET_ACCEPTED",
+      "remaining": [
+        "exact per-app independent recovery receipt binding",
+        "applicable isolated restore scope",
+        "genuine scheduled witness where required",
+        "current owner-key custody evidence at applicable scope"
+      ]
+    },
+    {
+      "app": "mail",
+      "build": "mail-internal-b677502523e3bd4e",
+      "generation": "hostinger-backup57714599-return-20261031",
+      "status": "COMPLETE_CURRENT_GENERATION_INDEX_NOT_YET_ACCEPTED",
+      "remaining": [
+        "exact per-app independent recovery receipt binding",
+        "applicable isolated restore scope",
+        "genuine scheduled witness where required",
+        "current owner-key custody evidence at applicable scope"
+      ]
+    }
+  ],
+  "newBackup": false,
+  "newRestore": false
+}

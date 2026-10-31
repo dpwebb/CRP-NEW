@@ -1,0 +1,22 @@
+{
+  "consumer": {
+    "build": "crp-v1-ddaa1119be5f49b4",
+    "generation": "hostinger-backup57714599-return-20261031",
+    "evidence": {}
+  },
+  "family": {
+    "build": "crp-family-16733200822b3ad031b5",
+    "generation": "hostinger-backup57714599-return-20261031",
+    "evidence": {}
+  },
+  "partner": {
+    "build": null,
+    "generation": "hostinger-backup57714599-return-20261031",
+    "evidence": {}
+  },
+  "mail": {
+    "build": "mail-internal-b677502523e3bd4e",
+    "generation": "hostinger-backup57714599-return-20261031",
+    "evidence": {}
+  }
+}
