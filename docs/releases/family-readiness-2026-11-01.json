@@ -1,0 +1,46 @@
+{
+  "status": "SOURCE_PUBLICATION_RECORD_NOT_DEPLOYED",
+  "release": "crp-family-23e426661af0dfc17bf7",
+  "source": "f689efc2b7a641b7e152c76f0f40f4bd6ef01fd5",
+  "manifest": "7459bbd919f663b558df2db9b920a7a24d13ef4f85f98a9251ce9966d104d115",
+  "files": 73,
+  "baselineSource": "3bd236a4c54b26df1d8c1dd6707a694c55624710",
+  "baselineRelease": "crp-family-16733200822b3ad031b5",
+  "scope": [
+    "family-admin/READINESS_RELEASE_2026_11_01.md",
+    "family-admin/public/app.js",
+    "family-admin/src/readiness.mjs",
+    "family-admin/src/server.mjs",
+    "family-admin/test/readiness-demo.mjs",
+    "family-admin/test/readiness.test.mjs"
+  ],
+  "allTenOriginalBannerBytesExact": true,
+  "authenticationAuthorizationJournalSsoBackupSourceUnchanged": true,
+  "tests": {
+    "passed": 58,
+    "failed": 0,
+    "linuxOnlySkippedOnWindows": 5,
+    "focusedIncluded": 4,
+    "syntax": "existing command plus three new module/test/preview checks",
+    "logSha256": "40308b6348badfc7a249c40b606cc2886e5db5ff4fb27919d029c6c5ca90541e"
+  },
+  "browser": {
+    "scope": "Fictional loopback Chrome only",
+    "nativeSignInAndSeparateUnlock": true,
+    "readinessCards": 4,
+    "mobileViewport": 390,
+    "mobileDocumentWidth": 375,
+    "desktopInspected": true,
+    "viewportReset": true,
+    "ownedTabClosed": true,
+    "fixtureStopped": true
+  },
+  "archiveSha256": "3813c45cdfb818e44fb707edd4eeb24a60f0f01420aa263f8276aea7eca35b08",
+  "hostedAcceptance": "NOT_RUN",
+  "deployment": false,
+  "realMail": false,
+  "customerDataUsed": false,
+  "publicationBranch": "codex/family-readiness-runtime-20261101",
+  "publicationScope": "Prepared readiness change plus already-deployed Family banner baseline absent from main; no unrelated Consumer/Partner/Mail changes",
+  "originalPreparationSourcePushed": false
+}

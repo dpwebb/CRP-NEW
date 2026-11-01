@@ -8,6 +8,7 @@ import { Journal } from "./journal.mjs";
 import { Gateway } from "./gateway.mjs";
 import { AffiliateLogin } from "./affiliate-login.mjs";
 import { FamilySso } from './family-sso.mjs';
+import { readinessSummary } from './readiness.mjs';
 const publicRoot = new URL("../public/", import.meta.url);
 const messages = {
   SESSION_REQUIRED: "Sign in to the family workspace.",
@@ -67,6 +68,12 @@ export function createPortal(raw, options = {}) {
       ["/", ["index.html", "text/html; charset=utf-8"]],
       ["/app.js", ["app.js", "text/javascript; charset=utf-8"]],
       ["/style.css", ["style.css", "text/css; charset=utf-8"]],
+      ["/banner-preview.js", ["banner-preview.js", "text/javascript; charset=utf-8"]],
+      ["/approved-banners-2026-10-23/manifest.json", ["approved-banners-2026-10-23/manifest.json", "application/json"]],
+      ...Array.from({length:10}, (_,i) => {
+        const file = "approved-banners-2026-10-23/banner-" + String(i+1).padStart(2,"0") + ".png";
+        return ["/" + file, [file, "image/png"]];
+      }),
     ].map(([url, [file, type]]) => [
       url,
       { bytes: readFileSync(new URL(file, publicRoot)), type },
@@ -169,6 +176,13 @@ export function createPortal(raw, options = {}) {
       }
       if (path === '/api/status' && req.method === 'GET') {
         json(res, 200, gateway.status(session)); return;
+      }
+      if (path === '/api/readiness' && req.method === 'GET') {
+        const principal = await gateway.authorize(session);
+        if (!principal.permissions.includes('overview.read'))
+          throw Object.assign(Error('PERMISSION_REQUIRED'), {status:403});
+        if (url.search) throw Object.assign(Error('INVALID_FIELDS'), {status:400});
+        json(res, 200, readinessSummary(config.environment)); return;
       }
       if (path === "/api/session" && req.method === "GET") {
         const data = await gateway.session(session);
