@@ -7,9 +7,9 @@ import {fixtures} from './fixtures.mjs';
 
 test('readiness records retain four apps, review date, blockers and scoped evidence',()=>{
   const r=readinessSummary('production');
-  assert.equal(r.status,'NOT_FULLY_VERIFIED');assert.equal(r.applications.length,4);assert.equal(r.reviewedAt,'2026-10-31');
+  assert.equal(r.status,'NOT_FULLY_VERIFIED');assert.equal(r.applications.length,4);assert.equal(r.reviewedAt,'2026-11-01');
   for(const app of r.applications){assert.equal(app.status,'BLOCKERS_REMAIN');assert.ok(app.accepted.length);assert.ok(app.blockers.length);}
-  assert.match(r.applications[0].blockers.join(' '),/obsolete writer/);assert.match(r.applications[2].blockers.join(' '),/human release/);
+  assert.match(r.applications[0].accepted.join(' '),/obsolete writer claim is absent/);assert.doesNotMatch(r.applications[0].blockers.join(' '),/obsolete writer/);assert.match(r.applications[2].blockers.join(' '),/human-only/);
   assert.match(r.limitations,/not launch readiness/);
 });
 test('production receipts never certify staging or local; outputs cannot mutate retained records',()=>{
@@ -34,7 +34,27 @@ test('readiness renderer shows qualified evidence and safe text without write co
   const el=(tag,text='',className='')=>({tag,text:text??'',className,children:[],setAttribute(){},append(...x){this.children.push(...x);}});
   const ctx=vm.createContext({el,human:x=>x});vm.runInContext(code,ctx);const root=el('div'),r=readinessSummary('production');r.applications[0].blockers.push('<img src=x onerror=steal()>');ctx.operationalReadiness(root,r);
   const tags=[],texts=[];const walk=n=>{tags.push(n.tag);texts.push(n.text);n.children.forEach(walk);};walk(root);
-  assert.ok(texts.includes('Readiness and remaining blockers'));assert.ok(texts.includes('Not fully verified'));assert.ok(texts.includes('Evidence reviewed 2026-10-31 · production'));
+  assert.ok(texts.includes('Readiness and remaining blockers'));assert.ok(texts.includes('Not fully verified'));assert.ok(texts.includes('Evidence reviewed 2026-11-01 · production'));
   assert.ok(texts.includes('<img src=x onerror=steal()>'));assert.ok(!tags.includes('img'));assert.ok(!tags.includes('button'));assert.ok(!tags.includes('form'));
   for(const name of ['Consumer','Family / Admin','Partner','Mail / Staff'])assert.ok(texts.includes(name));
+});
+
+test('closed gaps retain receipt scope and are not repeated as blockers',()=>{
+  const r=readinessSummary('production'),family=r.applications.find(a=>a.app==='family'),mail=r.applications.find(a=>a.app==='mail');
+  assert.match(family.accepted.join(' '),/single-person model/);assert.match(family.accepted.join(' '),/not a second-device decryption/);
+  assert.doesNotMatch(family.blockers.join(' '),/coverage hours|response targets|vault.*unverified/);
+  assert.match(mail.accepted.join(' '),/two October29 incident messages/);assert.doesNotMatch(mail.blockers.join(' '),/Alert inbox arrival|acknowledgement/);
+  assert.match(r.sharedAccepted.join(' '),/genuine calendar witness/);assert.doesNotMatch(r.sharedBlockers.join(' '),/successful staging scheduled-backup run.*needs/);
+  assert.match(family.blockers.join(' '),/earlier Family package/);assert.equal(r.status,'NOT_FULLY_VERIFIED');
+});
+test('remaining technical gaps stay visible without turning local or owner evidence into global acceptance',()=>{
+  const r=readinessSummary('production');const blockers=[...r.sharedBlockers,...r.applications.flatMap(a=>a.blockers)].join(' ');
+  for(const pattern of [/customer, publisher and other staff MFA/,/role.grant restoration/,/DNS.TLS/,/OCR capacity/,/settled-transaction/,/Genuine customer attribution/,/latency failure/,/delivery evidence/,/measured detection accuracy/])assert.match(blockers,pattern);
+  assert.equal(readinessSummary('staging').sharedAccepted.length,0);
+});
+test('shared accepted evidence is rendered separately from remaining gates',()=>{
+  const source=readFileSync(new URL('../public/app.js',import.meta.url),'utf8'),code=source.slice(source.indexOf('function operationalReadiness('),source.indexOf('async function overview('));
+  const el=(tag,text='',className='')=>({tag,text:text??'',className,children:[],setAttribute(){},append(...x){this.children.push(...x);}});
+  const ctx=vm.createContext({el,human:x=>x});vm.runInContext(code,ctx);const root=el('div');ctx.operationalReadiness(root,readinessSummary('production'));
+  const texts=[];const walk=n=>{texts.push(n.text);n.children.forEach(walk);};walk(root);assert.ok(texts.includes('Shared evidence accepted'));assert.ok(texts.includes('Shared acceptance still needed'));
 });

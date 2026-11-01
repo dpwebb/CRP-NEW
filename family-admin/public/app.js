@@ -889,7 +889,12 @@ function operationalReadiness(root, result) {
     card.append(el('h4','Still needed'));
     const list=el('ul');for(const text of app.blockers)list.append(el('li',text));card.append(list);cards.append(card);
   }
-  section.append(cards,el('h3','Shared acceptance still needed'));
+  section.append(cards);
+  if(result.sharedAccepted?.length) {
+    section.append(el('h3','Shared evidence accepted'));
+    const accepted=el('ul');for(const text of result.sharedAccepted)accepted.append(el('li',text));section.append(accepted);
+  }
+  section.append(el('h3','Shared acceptance still needed'));
   const list=el('ul');for(const text of result.sharedBlockers)list.append(el('li',text));section.append(list);
   const references=el('details');references.append(el('summary','Evidence references'));
   const refs=el('ul');for(const ref of result.references)refs.append(el('li',ref.label+' · '+ref.reference));references.append(refs);
