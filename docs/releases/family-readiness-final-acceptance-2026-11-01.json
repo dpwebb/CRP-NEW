@@ -1,0 +1,66 @@
+{
+  "status": "DEPLOYED_AND_SCOPED_ACCEPTANCE_COMPLETE",
+  "staging": {
+    "accepted": true,
+    "release": "crp-family-23e426661af0dfc17bf7",
+    "source": "f689efc2b7a641b7e152c76f0f40f4bd6ef01fd5",
+    "ownerNativeUnlock": "Owner completed normal staging factor; current header admin@creditregulatorpro.com",
+    "authenticatedReadinessCards": 4,
+    "productionEvidenceDoesNotAcceptStaging": true,
+    "evidenceReferencesVisible": true,
+    "consumerPartnerMailReadViewsPassed": true,
+    "desktopViewport": 2065,
+    "desktopDocumentWidth": 2050,
+    "mobileViewport": 390,
+    "mobileDocumentWidth": 375,
+    "viewportReset": true,
+    "publicAssetsExact": 14,
+    "anonymousReadinessStatus": 401,
+    "acceptedLocalTestsReused": "58 pass/0 failures/5 unchanged Linux-only skips",
+    "mailOperation": false,
+    "preservationReceipt": "result.json"
+  },
+  "production": {
+    "accepted": true,
+    "release": "crp-family-23e426661af0dfc17bf7",
+    "source": "f689efc2b7a641b7e152c76f0f40f4bd6ef01fd5",
+    "identity": "admin@creditregulatorpro.com",
+    "ownerNativeSigninAndUnlock": "Owner completed normal production ceremony; authenticated browser header confirmed",
+    "readinessCards": 4,
+    "historicalReviewDate": "2026-10-31",
+    "historicalQualificationVisible": true,
+    "referencesExpanded": true,
+    "consumerAccountsRead": {
+      "passed": true,
+      "rows": 9
+    },
+    "partnerRecordsRead": {
+      "passed": true,
+      "rows": 3
+    },
+    "mailOrderListRead": {
+      "passed": true,
+      "rows": 0,
+      "emptyStateVisible": true,
+      "orderDetailClaimed": false
+    },
+    "acceptedEvidenceReused": [
+      "same frozen73filepackage",
+      "14 exact servedasset hashes",
+      "anonymous readiness401",
+      "staging desktop/mobile layout and linkedviews",
+      "58/0/5 localtests",
+      "stoppeddata/config/nativebackup preservation"
+    ],
+    "productionRedeployedForFinalChecks": false,
+    "businessWritesPerformed": false,
+    "mailOperation": false,
+    "productionOverviewLeftOpen": true
+  },
+  "retainedFailure": "staging/result.json",
+  "separatelyApprovedDependencyRepair": "consumer-staging-repair/result.json",
+  "preservation": "promotion-verification.json",
+  "noNewDeploymentDuringFinalAcceptance": true,
+  "mailOperation": false,
+  "fullOperationalReadinessClaimed": false
+}
