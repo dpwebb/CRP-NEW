@@ -1,0 +1,64 @@
+{
+  "status": "LOCAL_UPDATE_TESTED_NOT_DEPLOYED",
+  "reviewedAt": "2026-11-01",
+  "acceptedReceiptHashes": [
+    {
+      "name": "CURRENT-RECOVERY-AUTHENTICATION.json",
+      "sha256": "37770a199507e4f057f15e4188425cf406d5962bd21b116d193e36615e03ec48"
+    },
+    {
+      "name": "POSTREPAIR-CAPTURE-REVIEW.json",
+      "sha256": "c27057c5cf3e489f5ed5992eb015c45558a0145ef98ef39b11c49b9d31792b9e"
+    },
+    {
+      "name": "INDEPENDENT-DRIVE-VAULT-RECOVERY.json",
+      "sha256": "133e213305851835e3d578d7743227c48d71315b565cd328566e9aed0426ccf0"
+    },
+    {
+      "name": "ALERT-ARRIVAL-AND-ACKNOWLEDGEMENT.json",
+      "sha256": "355554a93797574c4509c0281504bf5bca1d258df6873b94386476b309509a52"
+    },
+    {
+      "name": "COLD-BOOT-ACCEPTANCE.json",
+      "sha256": "d0ea30aea5743cf633794c3a6c9036e51a3bddc94f1aae4e45d8c7260aff89b8"
+    },
+    {
+      "name": "CURRENT-RECOVERY-RECEIPTS.json",
+      "sha256": "ce75d9bd67e5a64c3d16efed0f538514820e78edaff0555758eabdf3d5a42d54"
+    },
+    {
+      "name": "FAMILY-ACCEPTANCE-REUSE.json",
+      "sha256": "5b5884a10b1591a5986cd9830027989b49c0e2462cb6a5c1bd824cc914ae4747"
+    },
+    {
+      "name": "OPERATING-COVERAGE-DESIGNATION.json",
+      "sha256": "06697ef1dcdc6215af92dd83e9cbd60e9d7a9ddd95925972a1282cdbdb4cae71"
+    }
+  ],
+  "fullFamilyTests": {
+    "passed": 61,
+    "failed": 0,
+    "unchangedLinuxOnlySkips": 5
+  },
+  "finalFocusedTests": {
+    "passed": 7,
+    "failed": 0
+  },
+  "browser": {
+    "scope": "Local component renderer/CSS preview only",
+    "cards": 4,
+    "desktopViewport": 2065,
+    "desktopDocumentWidth": 2065,
+    "mobileViewport": 390,
+    "mobileDocumentWidth": 390,
+    "viewportReset": true,
+    "tabClosed": true,
+    "listenerStopped": true
+  },
+  "changedRuntimeFiles": [
+    "family-admin/src/readiness.mjs",
+    "family-admin/public/app.js"
+  ],
+  "productionChanged": false,
+  "mailSent": false
+}
