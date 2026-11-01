@@ -870,7 +870,40 @@ function mailMonitoring(card, value, now = Date.now()) {
   box.append(el('p',current&&email[value.emailState]?email[value.emailState]:'Administrator email delivery is not verified.','muted'));
   card.append(box);
 }
+function operationalReadiness(root, result) {
+  const section=el('section',null,'operational-readiness');
+  section.setAttribute('aria-label','Readiness and remaining blockers');
+  section.append(el('h2','Readiness and remaining blockers'));
+  section.append(el('p','Not fully verified','badge warn'));
+  section.append(el('p','Evidence reviewed '+result.reviewedAt+' · '+human(result.reviewedEnvironment), 'muted'));
+  section.append(el('p',result.scope));
+  section.append(el('p',result.evidenceNote,'muted'));
+  const cards=el('div',null,'cards');
+  for(const app of result.applications) {
+    const card=el('article',null,'card');card.append(el('h3',app.name));
+    card.append(el('p',app.status==='ENVIRONMENT_NOT_ACCEPTED'?'No matching environment acceptance':'Blockers remain','badge warn'));
+    if(app.accepted.length) {
+      card.append(el('h4','Accepted evidence'));
+      const list=el('ul');for(const text of app.accepted)list.append(el('li',text));card.append(list);
+    }
+    card.append(el('h4','Still needed'));
+    const list=el('ul');for(const text of app.blockers)list.append(el('li',text));card.append(list);cards.append(card);
+  }
+  section.append(cards,el('h3','Shared acceptance still needed'));
+  const list=el('ul');for(const text of result.sharedBlockers)list.append(el('li',text));section.append(list);
+  const references=el('details');references.append(el('summary','Evidence references'));
+  const refs=el('ul');for(const ref of result.references)refs.append(el('li',ref.label+' · '+ref.reference));references.append(refs);
+  section.append(references,el('p',result.limitations,'muted'));root.append(section);
+}
 async function overview(root, generation) {
+  const readiness=el('div');root.append(readiness);
+  api('/api/readiness').then(result=>{
+    if(generation!==S.generation)return;
+    operationalReadiness(readiness,result);
+  }).catch(error=>{
+    if(generation!==S.generation)return;
+    readiness.append(el('h2','Readiness and remaining blockers'),el('p','Readiness evidence is unavailable. App access alone does not confirm readiness.','muted'));
+  });
   const cards = el("div", null, "cards");
   root.append(cards);
   for (const [app, description, icon] of [

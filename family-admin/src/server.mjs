@@ -8,6 +8,7 @@ import { Journal } from "./journal.mjs";
 import { Gateway } from "./gateway.mjs";
 import { AffiliateLogin } from "./affiliate-login.mjs";
 import { FamilySso } from './family-sso.mjs';
+import { readinessSummary } from './readiness.mjs';
 const publicRoot = new URL("../public/", import.meta.url);
 const messages = {
   SESSION_REQUIRED: "Sign in to the family workspace.",
@@ -175,6 +176,13 @@ export function createPortal(raw, options = {}) {
       }
       if (path === '/api/status' && req.method === 'GET') {
         json(res, 200, gateway.status(session)); return;
+      }
+      if (path === '/api/readiness' && req.method === 'GET') {
+        const principal = await gateway.authorize(session);
+        if (!principal.permissions.includes('overview.read'))
+          throw Object.assign(Error('PERMISSION_REQUIRED'), {status:403});
+        if (url.search) throw Object.assign(Error('INVALID_FIELDS'), {status:400});
+        json(res, 200, readinessSummary(config.environment)); return;
       }
       if (path === "/api/session" && req.method === "GET") {
         const data = await gateway.session(session);
