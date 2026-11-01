@@ -1,0 +1,112 @@
+{
+  "reviewDate": "2026-10-31",
+  "scope": "Current restored-generation recovery evidence review; no job or restore",
+  "production": {
+    "point": "20261031T200826Z-bb7db48a",
+    "receiptSha256": "6dc17f01045877174d3b0d68774fcfca6c920e5f9ea8e21502fde3ca7822271a",
+    "offsiteReceiptSha256": "c04ac5e2bced1e2f8276ad8da223065a3aa2a475f2ab5a53376e610162744c6c",
+    "scheduledWitness": "ACCEPTED_PERSISTENT_TIMER_CATCHUP",
+    "allFourVersionBindingsAccepted": true,
+    "wholeAuthenticatedRoundtrip": true,
+    "wholePlaintextRestored": false,
+    "crossApplicationAtomicityClaimed": false,
+    "offsiteReadbacks": "Accepted exact private Drive/GCS receipts reused; no repeated download"
+  },
+  "apps": [
+    {
+      "app": "consumer",
+      "build": "crp-v1-ddaa1119be5f49b4",
+      "acceptedScope": "Copied snapshot and signed journal/audit/head verification",
+      "remaining": [
+        "Independent post-repair capture",
+        "Isolated functional restore and writer-admission acceptance"
+      ]
+    },
+    {
+      "app": "family",
+      "build": "crp-family-16733200822b3ad031b5",
+      "acceptedScope": "Native isolated pack/recover and journal integrity",
+      "remaining": [
+        "Company-controlled independent custody",
+        "Recovered-host native access"
+      ]
+    },
+    {
+      "app": "partner",
+      "build": "sha256:cf594f9b5b58087bab5788cfb305a0cf0a6f89801e08100c5757e51a05814ffa",
+      "acceptedScope": "Consistent PostgreSQL dump and network-none 26-table restore",
+      "remaining": [
+        "Company-controlled independent custody",
+        "Current isolated full-host/workflow rehearsal"
+      ]
+    },
+    {
+      "app": "mail",
+      "build": "mail-internal-b677502523e3bd4e",
+      "acceptedScope": "Native encrypted isolated backup restore; 26 counted tables; schema migration count12",
+      "remaining": [
+        "Company-controlled independent custody",
+        "Recovered-host staff MFA/workflow acceptance"
+      ]
+    }
+  ],
+  "consumerRestoreRisk": {
+    "acceptedManifestContainsQuarantinedLegacyClaim": true,
+    "backupPredatesRepair": true,
+    "sameHostPostRepairCopiesAccepted": true,
+    "independentPostRepairPointAccepted": false
+  },
+  "staging": {
+    "status": "MANUAL_REPAIR_PASS_SCHEDULED_WITNESS_PENDING",
+    "point": "20261031T200643Z",
+    "snapshotFinishedAt": "2026-10-31T20:07:54.902658Z",
+    "manualRepairFinishedAt": "2026-10-31T23:02:19Z",
+    "nextCalendarTriggerInAcceptedRecord": "2026-11-01T08:15:13Z",
+    "futureRunCertified": false
+  },
+  "sharedRemaining": [
+    "Company vault identification and independent retrieval/decryption",
+    "Existing authorized isolated Linux rehearsal target",
+    "Full-host and cross-app consistency rehearsal",
+    "Owner-approved and measured RPO/RTO"
+  ],
+  "evidenceHashesVerified": [
+    {
+      "file": "host-observation.json",
+      "sha256": "7f951b19de9b7113f8340ebcbe69ec87ceb5151fed0f84fd65c4f18a82836c83"
+    },
+    {
+      "file": "local-test-cleanup.json",
+      "sha256": "0b442cefbb8d775427db1c46eb174326c8c4f09e64179679aec6656761081684"
+    },
+    {
+      "file": "observe.py",
+      "sha256": "ddae070038da939d911d4a4194e687f9baa26789991ff92b27ba3dbbf77b2c71"
+    },
+    {
+      "file": "public-release-bindings.json",
+      "sha256": "0bcb378e60572dfdc485768ee699dbc77f124fa4f2c73fa87e579f61ba0ac488"
+    },
+    {
+      "file": "runtime-proof.json",
+      "sha256": "cc9178ee124ba171adcd0310633636ea8341fa1c55956defb974e19600c583c2"
+    },
+    {
+      "file": "runtime-proof.py",
+      "sha256": "7e1bbc0bc3811011a62e1e389b937712d48255e68a880fc87fb924313eb32426"
+    },
+    {
+      "file": "settlement-focused.log",
+      "sha256": "c3496921a59de91c1d0c07515e4162930f008af8783c8233936d7c76ce765f90"
+    },
+    {
+      "file": "validate.py",
+      "sha256": "9071d1e22297f0beb4543985dd8831296cce9c7fc3b66d9273550e7baa31c56a"
+    }
+  ],
+  "noNewExport": true,
+  "noRestore": true,
+  "noCloudDownload": true,
+  "noDeployment": true,
+  "noRealMail": true
+}
