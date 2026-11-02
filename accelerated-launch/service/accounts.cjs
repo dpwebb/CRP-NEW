@@ -426,13 +426,16 @@ function resolveSession(store, token) {
     });
     throw new ServiceError('AUTHENTICATION_REQUIRED');
   }
-  if(!Number.isFinite(Date.parse(session.last_seen_at)) || Date.now()-Date.parse(session.last_seen_at)>=60000 || Date.parse(session.idle_expires_at)-Date.now()<60000)store.update((s) => {
-    const live = s.sessions.find((row) => row.session_id === session.session_id);
-    if (!live) return false;
-    live.last_seen_at = nowIso();
-    live.idle_expires_at = new Date(Date.now() + SESSION_IDLE_MINUTES * 60000).toISOString();
-    return true;
-  });
+  if(!Number.isFinite(Date.parse(session.last_seen_at)) || Date.now()-Date.parse(session.last_seen_at)>=60000 || Date.parse(session.idle_expires_at)-Date.now()<60000) {
+    const touch = (live) => {
+      if (!live) return false;
+      live.last_seen_at = nowIso();
+      live.idle_expires_at = new Date(Date.now() + SESSION_IDLE_MINUTES * 60000).toISOString();
+      return true;
+    };
+    if (typeof store.updateSessionScalars === 'function') store.updateSessionScalars(session.session_id, touch);
+    else store.update((s) => touch(s.sessions.find((row) => row.session_id === session.session_id)));
+  }
   return { account_id: account.account_id, email: account.email };
 }
 

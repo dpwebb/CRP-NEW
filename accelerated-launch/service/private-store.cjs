@@ -236,6 +236,23 @@ class PrivateStore {
   update(mutator) {
     const before = this.state(), next = structuredClone(before);
     const returned = mutator(next);
+    return this.commitSnapshot(before,next,returned);
+  }
+
+  appendRecord(collection,create) {
+    const before=this.state();
+    const {next,created}=require('./append-snapshot.cjs').prepareAppend(before,collection,create);
+    return this.commitSnapshot(before,next,created);
+  }
+
+  // Internal timestamp-only API. Arbitrary update(mutator) retains its original contract.
+  updateSessionScalars(sessionId, mutate) {
+    const before=this.state();
+    const {next,returned}=require('./append-snapshot.cjs').prepareSessionScalars(before,sessionId,mutate);
+    return this.commitSnapshot(before,next,returned);
+  }
+
+  commitSnapshot(before,next,returned) {
     // Persist identical values without display indentation: report-rich stores
     // otherwise allocate and flush hundreds of MB of whitespace per transaction.
     const serialized = JSON.stringify(next);

@@ -46,7 +46,7 @@ function createCase(store, actor, input) {
   const selection = resolveSelection(country, region);
   const bureau = typeof raw.bureau === 'string' ? raw.bureau : '';
   if (bureau && !require('./bureau-dispute-requirements.cjs').catalog(selection.country).some(row => row.id === bureau)) throw new ServiceError('INVALID_REQUEST');
-  return store.update((state) => {
+  return require('./append-snapshot.cjs').appendRecord(store,'cases',() => {
     const created = {
       case_id: newCaseId(),
       account_id: actor.account_id,
@@ -61,7 +61,6 @@ function createCase(store, actor, input) {
       created_at: nowIso(),
       updated_at: nowIso()
     };
-    state.cases.push(created);
     return created;
   });
 }
