@@ -19,6 +19,7 @@ const write = (path, permission, label, fields, extra = {}) => ({
   fields,
   ...extra,
 });
+export const requiresStepUp = op => !op.verifiedSession && Boolean(op.owner || op.sensitive);
 const page = ["q", "status", "page", "page_size", "limit", "offset"];
 export const reads = {
   crp: {
@@ -151,7 +152,7 @@ export const actions = {
       "affiliate.manage",
       "Activate accepted partner",
       [field('termsVersion','Current accepted agreement version')],
-      { owner: true },
+      { owner: true, verifiedSession: true },
     ),
     "campaign.add": write(
       "/api/campaigns",
@@ -308,10 +309,10 @@ Object.assign(actions.affiliate, {
   'communication.queue':write('/api/communications','affiliate.manage','Queue authorized communication',[field('contactId','Contact ID'),field('template','Template','select:invitation,activation,education,payout,followup,access_help')],{sensitive:true}),
   'asset.publish':write('/api/assets','affiliate.manage','Publish approved campaign asset',[field('campaignId','Campaign ID'),field('template','Template','select:newsletter,banner,video_script,fictional_example')],{sensitive:true}),
   'ticket.add':write('/api/tickets','affiliate.manage','Create partner support ticket',[field('partnerId','Partner ID'),field('question','Question','textarea')]),
-  'onboarding.start':write('/api/onboarding','affiliate.manage','Start partner onboarding',[field('contactId','Contact ID')],{owner:true,sensitive:true}),
-  'onboarding.advance':write('/api/onboarding/:id/advance','affiliate.manage','Advance onboarding checklist',[field('expectedVersion','Current version','number')],{owner:true,sensitive:true}),
-  'onboarding.review':write('/api/onboarding/:id/review','affiliate.manage','Record owner qualification review',[field('expectedVersion','Current version','number'),field('decision','Decision','select:approve,decline'),field('evidenceRef','Evidence reference')],{owner:true}),
-  'onboarding.pause':write('/api/onboarding/:id/pause','affiliate.manage','Pause or resume onboarding',[field('paused','Pause','boolean')],{owner:true,sensitive:true}),
+  'onboarding.start':write('/api/onboarding','affiliate.manage','Start partner onboarding',[field('contactId','Contact ID')],{verifiedSession:true,owner:true,sensitive:true}),
+  'onboarding.advance':write('/api/onboarding/:id/advance','affiliate.manage','Advance onboarding checklist',[field('expectedVersion','Current version','number')],{verifiedSession:true,owner:true,sensitive:true}),
+  'onboarding.review':write('/api/onboarding/:id/review','affiliate.manage','Record owner qualification review',[field('expectedVersion','Current version','number'),field('decision','Decision','select:approve,decline'),field('evidenceRef','Evidence reference')],{verifiedSession:true,owner:true}),
+  'onboarding.pause':write('/api/onboarding/:id/pause','affiliate.manage','Pause or resume onboarding',[field('paused','Pause','boolean')],{verifiedSession:true,owner:true,sensitive:true}),
   'agent.run':write('/api/agent/run','affiliate.manage','Request AI operations task',[field('task','Task','textarea')],{owner:true,sensitive:true,requestId:true}),
   'hold.add':write('/api/holds','affiliate.manage','Record evidenced commission concern',[field('id','New concern UUID'),field('partnerId','Partner ID'),field('reason','Reason','select:SELF_REFERRAL_CONCERN,SOURCE_INTEGRITY_CONCERN,ATTRIBUTION_CONFLICT'),field('evidenceAuditId','Relevant audit sequence'),field('expiresAt','Expiry (ISO date and time)')],{owner:true}),
   'partner.destination':write('/api/partners/:id/destination','affiliate.manage','Update independently verified payee destination',[field('destinationRef','Verified destination reference'),field('verified','I independently verified this destination','boolean')],{owner:true,sensitive:true}),

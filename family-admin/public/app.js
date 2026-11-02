@@ -312,12 +312,12 @@ function dialog(title, description, fields, submit, submitText = "Confirm") {
   for (const f of fields) {
     const l = el("label", f.label);
     let input;
-    if (f.type?.startsWith("select:")) {
+    if (f.options || f.type?.startsWith("select:")) {
       input = el("select");
       if (!f.required) { const option=el('option','Not specified');option.value='';input.append(option); }
-      for (const option of f.type.slice(7).split(",")) {
-        const o = el("option", human(option));
-        o.value = option;
+      for (const option of f.options || f.type.slice(7).split(",").map(value=>({value,label:human(value)}))) {
+        const o = el("option", option.label);
+        o.value = option.value;
         input.append(o);
       }
     } else if (f.type === "textarea" || f.type === "array")
@@ -402,6 +402,7 @@ $("dialog-form").onsubmit = async (e) => {
   button.disabled = true;
   try {
     await d.submit(values);
+    if (S.dialog !== d) return;
     if (d.generation !== S.generation) return;
     closeDialog();
     await load();
@@ -417,14 +418,44 @@ $("dialog-form").onsubmit = async (e) => {
 async function confirmAction(app, name, id) {
   const action = S.session.catalog.actions[app]?.[name];
   if (!action) return;
-  let termsVersion;
+  const routine = app === 'affiliate' && action.routinePartnerAction;
+  const confirmation = `${S.session.environment}:${app}:${name}`;
+  let context, termsVersion;
+  if (routine && action.needsId) {
+    try {
+      const resource = name.startsWith('onboarding.') ? 'onboarding' : 'partners';
+      const records = items((await api('/api/apps/affiliate/' + resource)).data) || [];
+      if (!id) {
+        if (!records.length) { notice('No partner records are available.'); return; }
+        dialog(action.label, 'Choose the partner record to continue.', [{name:'recordId',label:'Partner',required:true,
+          options:records.map(row=>({value:row.id,label:String(row.organization?.name || row.organization || row.name || row.partner_id || row.id) + (row.state || row.status ? ' · ' + human(row.state || row.status) : '')}))}],
+          values=>confirmAction(app,name,values.recordId),'Continue');
+        return;
+      }
+      context = records.find(row=>row.id===id);
+      if (!context) throw Error('This record is no longer available. Refresh the list.');
+      if (action.fields.some(f=>f.name==='expectedVersion') && !Number.isInteger(context.version))
+        throw Error('The current record version is unavailable. Refresh the list.');
+    } catch(error) { notice(error.message); return; }
+  }
   if(app==='affiliate'&&name==='partner.activate') {
     try { termsVersion=(await api('/api/apps/affiliate/program')).data.termsVersion;
       if(typeof termsVersion!=='string'||!termsVersion)throw Error('Current program agreement is unavailable.');
     }catch(error){notice(error.message);return;}
   }
+  const fieldOptions = {};
+  if (routine) {
+    for (const [fieldName,resource] of [['contactId','contacts'],['partnerId','partners'],['introducerId','partners']]) {
+      if (!action.fields.some(f=>f.name===fieldName)) continue;
+      try {
+        const rows=items((await api('/api/apps/affiliate/'+resource)).data) || [];
+        fieldOptions[fieldName]=rows.filter(row=>fieldName!=='partnerId'||row.status==='ACTIVE')
+          .map(row=>({value:row.id,label:String(row.name || row.organization || row.email || row.id)}));
+      } catch(error) { notice(error.message); return; }
+    }
+  }
   const fields = [
-    ...(action.needsId
+    ...(!routine && action.needsId
       ? [
           {
             name: "recordId",
@@ -434,7 +465,8 @@ async function confirmAction(app, name, id) {
           },
         ]
       : []),
-    ...action.fields.map(f=>f.name==='termsVersion'?{...f,value:termsVersion}:f),
+    ...action.fields.filter(f=>!routine || !['expectedVersion','termsVersion'].includes(f.name))
+      .map(f=>f.name==='termsVersion'?{...f,value:termsVersion}:fieldOptions[f.name]?{...f,label:f.name==='contactId'?'Contact':f.name==='introducerId'?'Introducer (optional)':'Partner',options:fieldOptions[f.name]}:f),
     ...(action.requiresStepUp
       ? [
           {
@@ -445,24 +477,28 @@ async function confirmAction(app, name, id) {
           },
         ]
       : []),
-    {
+    ...(!routine ? [{
       name: "confirmText",
       label: `Type ${S.session.environment}:${app}:${name} to confirm`,
       required: true,
-    },
+    }] : []),
   ];
   const key = crypto.randomUUID();
   dialog(
     action.label,
-    `${labels[app]} · ${S.session.environment.toUpperCase()}. The originating application checks access and validates this change. Refresh the record if its result is uncertain.`,
+    `${labels[app]} · ${S.session.environment.toUpperCase()}. ${context ? 'Partner: ' + String(context.organization?.name || context.organization || context.name || context.partner_id || context.id) + '. ' : ''}${routine ? 'Your verified admin session authorizes this action. Review the details, then confirm.' : 'The originating application checks access and validates this change. Refresh the record if its result is uncertain.'}`,
     fields,
     async (values) => {
       const { recordId, freshCode, confirmText, ...body } = values;
+      if (routine) {
+        if (action.fields.some(f=>f.name==='expectedVersion')) body.expectedVersion=context.version;
+        if (action.fields.some(f=>f.name==='termsVersion')) body.termsVersion=termsVersion;
+      }
       if (action.requiresStepUp)
         await api("/api/unlock", { method: "POST", body: { code: freshCode } });
       const result = await api("/api/actions/" + app + "/" + name, {
         method: "POST",
-        body: { id: recordId, body, requestId: key, confirmation: confirmText },
+        body: { id: routine ? id : recordId, body, requestId: key, confirmation: routine ? confirmation : confirmText },
       });
       notice(
         result.status === "APPLIED"
@@ -637,6 +673,8 @@ function showDetails(app, row) {
         }
       }),
     );
+  if (app==='affiliate' && S.view==='onboarding' && row.state==='AWAITING_ACTIVATION' && row.partner_id && S.session.catalog.actions.affiliate?.['partner.activate'])
+    actions.append(btn('Activate accepted partner',()=>confirmAction('affiliate','partner.activate',row.partner_id)));
   for (const [name, action] of Object.entries(
     S.session.catalog.actions[app] || {},
   ))
