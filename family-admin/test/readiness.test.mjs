@@ -32,9 +32,9 @@ test('readiness endpoint enforces normal sign-in, native unlock, permission and 
 test('readiness renderer shows qualified evidence and safe text without write controls',()=>{
   const source=readFileSync(new URL('../public/app.js',import.meta.url),'utf8'),code=source.slice(source.indexOf('function operationalReadiness('),source.indexOf('async function overview('));
   const el=(tag,text='',className='')=>({tag,text:text??'',className,children:[],setAttribute(){},append(...x){this.children.push(...x);}});
-  const ctx=vm.createContext({el,human:x=>x});vm.runInContext(code,ctx);const root=el('div'),r=readinessSummary('production');r.applications[0].blockers.push('<img src=x onerror=steal()>');ctx.operationalReadiness(root,r);
+  const ctx=vm.createContext({el,human:x=>x});vm.runInContext(code,ctx);const root=el('div'),r=readinessSummary('production');r.unresolvedGates[0].reason='<img src=x onerror=steal()>';ctx.operationalReadiness(root,r);
   const tags=[],texts=[];const walk=n=>{tags.push(n.tag);texts.push(n.text);n.children.forEach(walk);};walk(root);
-  assert.ok(texts.includes('Readiness and remaining blockers'));assert.ok(texts.includes('Not fully verified'));assert.ok(texts.includes('Evidence reviewed 2026-11-01 · production'));
+  assert.ok(texts.includes('Unresolved readiness gates'));assert.ok(texts.includes('Not fully verified'));assert.ok(texts.includes('Historical evidence reviewed 2026-11-01 · production'));
   assert.ok(texts.includes('<img src=x onerror=steal()>'));assert.ok(!tags.includes('img'));assert.ok(!tags.includes('button'));assert.ok(!tags.includes('form'));
   for(const name of ['Consumer','Family / Admin','Partner','Mail / Staff'])assert.ok(texts.includes(name));
 });
@@ -56,5 +56,30 @@ test('shared accepted evidence is rendered separately from remaining gates',()=>
   const source=readFileSync(new URL('../public/app.js',import.meta.url),'utf8'),code=source.slice(source.indexOf('function operationalReadiness('),source.indexOf('async function overview('));
   const el=(tag,text='',className='')=>({tag,text:text??'',className,children:[],setAttribute(){},append(...x){this.children.push(...x);}});
   const ctx=vm.createContext({el,human:x=>x});vm.runInContext(code,ctx);const root=el('div');ctx.operationalReadiness(root,readinessSummary('production'));
-  const texts=[];const walk=n=>{texts.push(n.text);n.children.forEach(walk);};walk(root);assert.ok(texts.includes('Shared evidence accepted'));assert.ok(texts.includes('Shared acceptance still needed'));
+  const texts=[];const walk=n=>{texts.push(n.text);n.children.forEach(walk);};walk(root);assert.ok(texts.includes('Shared evidence accepted'));assert.ok(texts.includes('Accepted evidence — historical and scope-limited'));assert.ok(texts.includes('Recovery'));assert.ok(texts.includes('Provider controls'));
+});
+
+
+test('unresolved gates keep separate categories, stable identities and dated candidate failures',()=>{
+  const result=readinessSummary('production'),gates=result.unresolvedGates;
+  assert.equal(new Set(gates.map(g=>g.id)).size,gates.length);
+  for(const category of ['capacity','access','recovery','customer','provider','finance','release'])assert.ok(gates.some(g=>g.category===category));
+  const capacity=gates.find(g=>g.id==='consumer-hosted-capacity');assert.equal(capacity.status,'FAILED');assert.equal(capacity.candidate,'e2ca4e3');assert.match(capacity.reason,/3.01 seconds/);assert.match(capacity.reason,/soak was skipped/);
+  const mail=gates.find(g=>g.id==='mail-status-activation');assert.equal(mail.status,'AWAITING_ACTIVATION');assert.match(mail.reason,/not performed/);
+  assert.equal(gates.find(g=>g.id==='family-current-recovery').reviewedAt,'2026-11-01');assert.equal(capacity.reviewedAt,'2026-11-02');
+  result.unresolvedGates[0].reason='changed';assert.notEqual(readinessSummary('production').unresolvedGates[0].reason,'changed');
+  for(const env of ['local','staging'])assert.ok(readinessSummary(env).unresolvedGates.every(g=>g.status==='ENVIRONMENT_NOT_ACCEPTED'));
+});
+
+test('missing structured gate data falls back to unresolved legacy records without claiming readiness',()=>{
+  const source=readFileSync(new URL('../public/app.js',import.meta.url),'utf8'),code=source.slice(source.indexOf('function operationalReadiness('),source.indexOf('async function overview('));
+  const el=(tag,text='',className='')=>({tag,text:text??'',className,children:[],setAttribute(){},append(...x){this.children.push(...x);}});
+  const ctx=vm.createContext({el,human:x=>x});vm.runInContext(code,ctx);
+  for(const structured of [false,true]){
+    const root=el('div'),r=readinessSummary('production');if(structured)r.unresolvedGates=[];else delete r.unresolvedGates;
+    ctx.operationalReadiness(root,r);const texts=[];const walk=n=>{texts.push(n.text);n.children.forEach(walk);};walk(root);
+    assert.ok(texts.includes('Not fully verified'));
+    assert.ok(texts.some(t=>structured?t.includes('does not establish launch readiness'):t.includes('Detailed gate data is unavailable')));
+    if(!structured)assert.ok(texts.includes(r.applications[0].blockers[0]));
+  }
 });

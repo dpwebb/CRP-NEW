@@ -911,32 +911,48 @@ function mailMonitoring(card, value, now = Date.now()) {
 function operationalReadiness(root, result) {
   const section=el('section',null,'operational-readiness');
   section.setAttribute('aria-label','Readiness and remaining blockers');
-  section.append(el('h2','Readiness and remaining blockers'));
+  section.append(el('h2','Unresolved readiness gates'));
   section.append(el('p','Not fully verified','badge warn'));
-  section.append(el('p','Evidence reviewed '+result.reviewedAt+' · '+human(result.reviewedEnvironment), 'muted'));
-  section.append(el('p',result.scope));
-  section.append(el('p',result.evidenceNote,'muted'));
-  const cards=el('div',null,'cards');
-  for(const app of result.applications) {
-    const card=el('article',null,'card');card.append(el('h3',app.name));
-    card.append(el('p',app.status==='ENVIRONMENT_NOT_ACCEPTED'?'No matching environment acceptance':'Blockers remain','badge warn'));
-    if(app.accepted.length) {
-      card.append(el('h4','Accepted evidence'));
-      const list=el('ul');for(const text of app.accepted)list.append(el('li',text));card.append(list);
+  section.append(el('p','Historical evidence reviewed '+result.reviewedAt+' · '+human(result.reviewedEnvironment), 'muted'));
+  if(result.updatesReviewedAt)section.append(el('p','Capacity and Mail release updates reviewed '+result.updatesReviewedAt,'muted'));
+  section.append(el('p',result.scope),el('p',result.evidenceNote,'muted'));
+  const gates=Array.isArray(result.unresolvedGates)?result.unresolvedGates:null;
+  const labels={capacity:'Capacity',access:'Access and MFA',recovery:'Recovery',customer:'Customer evidence',provider:'Provider controls',finance:'Payments and settlement',release:'Release activation'};
+  const statuses={FAILED:'Acceptance failed',UNVERIFIED:'Evidence still needed',AWAITING_ACTIVATION:'Activation pending',ENVIRONMENT_NOT_ACCEPTED:'No matching environment acceptance'};
+  if(gates) {
+    section.append(el('p',gates.length+' unresolved gates. Service health and accepted evidence are shown separately.','muted'));
+    if(!gates.length)section.append(el('p','No unresolved gates supplied. This alone does not establish launch readiness.','muted'));
+    const groups=el('div',null,'cards');
+    for(const category of [...Object.keys(labels),...new Set(gates.map(g=>g.category).filter(c=>!Object.hasOwn(labels,c)))]) {
+      const rows=gates.filter(g=>g.category===category);if(!rows.length)continue;
+      const card=el('article',null,'card');card.append(el('h3',labels[category]||'Other readiness gates'));
+      const list=el('ul');
+      for(const gate of rows) {
+        const item=el('li');item.append(el('h4',gate.application+' · '+gate.title),el('p',statuses[gate.status]||'Evidence still needed','badge warn'),el('p',gate.reason));
+        item.append(el('p','Reviewed '+gate.reviewedAt+(gate.candidate?' · candidate '+gate.candidate:''),'muted'));list.append(item);
+      }
+      card.append(list);groups.append(card);
     }
-    card.append(el('h4','Still needed'));
-    const list=el('ul');for(const text of app.blockers)list.append(el('li',text));card.append(list);cards.append(card);
+    section.append(groups);
+  } else {
+    section.append(el('p','Detailed gate data is unavailable. The recorded unresolved items remain below.','muted'));
+    for(const app of result.applications||[]) {
+      section.append(el('h3',app.name));const list=el('ul');for(const text of app.blockers||[])list.append(el('li',text));section.append(list);
+    }
+    section.append(el('h3','Shared acceptance still needed'));const list=el('ul');for(const text of result.sharedBlockers||[])list.append(el('li',text));section.append(list);
   }
-  section.append(cards);
+  const accepted=el('details');accepted.append(el('summary','Accepted evidence — historical and scope-limited'));
+  for(const app of result.applications||[]) {
+    if(!app.accepted?.length)continue;
+    accepted.append(el('h3',app.name));const list=el('ul');for(const text of app.accepted)list.append(el('li',text));accepted.append(list);
+  }
   if(result.sharedAccepted?.length) {
-    section.append(el('h3','Shared evidence accepted'));
-    const accepted=el('ul');for(const text of result.sharedAccepted)accepted.append(el('li',text));section.append(accepted);
+    accepted.append(el('h3','Shared evidence accepted'));const list=el('ul');for(const text of result.sharedAccepted)list.append(el('li',text));accepted.append(list);
   }
-  section.append(el('h3','Shared acceptance still needed'));
-  const list=el('ul');for(const text of result.sharedBlockers)list.append(el('li',text));section.append(list);
+  if(!(result.applications||[]).some(app=>app.accepted?.length)&&!result.sharedAccepted?.length)accepted.append(el('p','No matching environment acceptance is recorded here.','muted'));
   const references=el('details');references.append(el('summary','Evidence references'));
-  const refs=el('ul');for(const ref of result.references)refs.append(el('li',ref.label+' · '+ref.reference));references.append(refs);
-  section.append(references,el('p',result.limitations,'muted'));root.append(section);
+  const refs=el('ul');for(const ref of result.references||[])refs.append(el('li',ref.label+' · '+ref.reference));references.append(refs);
+  section.append(accepted,references,el('p',result.limitations,'muted'));root.append(section);
 }
 async function overview(root, generation) {
   const readiness=el('div');root.append(readiness);
@@ -947,6 +963,7 @@ async function overview(root, generation) {
     if(generation!==S.generation)return;
     readiness.append(el('h2','Readiness and remaining blockers'),el('p','Readiness evidence is unavailable. App access alone does not confirm readiness.','muted'));
   });
+  root.append(el("h2","Current app access and monitor checks"),el("p","These checks describe access and service health. They do not clear unresolved readiness gates.","muted"));
   const cards = el("div", null, "cards");
   root.append(cards);
   for (const [app, description, icon] of [

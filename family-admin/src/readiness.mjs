@@ -18,17 +18,44 @@ const shared = [
   'Original database role/grant restoration, provider-console/full Hostinger-image recovery and public DNS/TLS recovery remain unverified. The local VM does not certify those controls.',
   'Realistic shared-host Consumer/report/OCR capacity acceptance remains open. Local query improvements and paced soaks do not erase the retained Partner latency failure; no hosted load is admitted by this panel.'
 ];
+// Stable gate identities for the read-only display. Existing dated receipts remain
+// historical evidence; the two November 2 supplements do not refresh other gates.
+function unresolvedReadinessGates(environment) {
+  const matching=environment==='production';
+  const definitions={
+    consumer:[['consumer-report-accuracy','customer','Report accuracy']],
+    family:[['family-current-recovery','recovery','Current Family release recovery']],
+    affiliate:[['partner-attribution','customer','Customer attribution'],['partner-settlement','finance','Settlement verification'],['partner-capacity','capacity','Partner capacity']],
+    mail:[['mail-customer-delivery','customer','Customer fulfillment and delivery']]
+  };
+  const gates=records.flatMap(record=>record.blockers.map((reason,index)=>{
+    const [id,category,title]=definitions[record.app][index];
+    return {id,category,title,app:record.app,application:record.name,status:'UNVERIFIED',reason,reviewedAt:'2026-11-01'};
+  }));
+  for(const gate of [
+    {id:'shared-mfa',category:'access',title:'Other user MFA and SSO',reason:shared[0]},
+    {id:'shared-current-capture',category:'recovery',title:'Generation-matched recovery capture',reason:shared[1]},
+    {id:'shared-database-grants',category:'recovery',title:'Database roles and grants',reason:'Original database role/grant restoration remains unverified. The local VM rehearsal does not establish it.'},
+    {id:'shared-provider-host-recovery',category:'provider',title:'Provider console and full-host recovery',reason:'Provider-console and full Hostinger-image recovery remain unverified. The isolated application VM does not certify those controls.'},
+    {id:'shared-public-dns-tls',category:'recovery',title:'Public DNS and TLS recovery',reason:'Public DNS/TLS recovery was outside the accepted isolated VM rehearsal and remains unverified.'}
+  ])gates.push({...gate,app:'shared',application:'Shared controls',status:'UNVERIFIED',reviewedAt:'2026-11-01'});
+  gates.push({id:'consumer-hosted-capacity',category:'capacity',title:'Consumer report and OCR capacity',app:'consumer',application:'Consumer',status:'FAILED',reviewedAt:'2026-11-02',candidate:'e2ca4e3',reason:'Isolated e2ca4e3 acceptance passed the 1- and 4-client HTTP tiers. At 8 clients, upload p95 was 3.01 seconds and evaluation 2.80 seconds, above the 2-second limit, with zero HTTP errors. The required soak was skipped. No sustained capacity or production acceptance is established.'});
+  gates.push({id:'mail-status-activation',category:'release',title:'Mail status gateway activation',app:'mail',application:'Mail / Staff',status:'AWAITING_ACTIVATION',reviewedAt:'2026-11-02',candidate:'a2c8139',reason:'The a2c8139 source, package and gateway rollback checks passed. Production activation was not performed; public service-status remains 404. Native health/readiness remain separate from mailing or launch acceptance.'});
+  return gates.map(gate=>({...gate,status:matching?gate.status:'ENVIRONMENT_NOT_ACCEPTED'}));
+}
 export function readinessSummary(environment) {
   const matching = environment === 'production';
   return {
-    version:2,environment,reviewedEnvironment:'production',reviewedAt:'2026-11-01',
+    version:3,environment,reviewedEnvironment:'production',reviewedAt:'2026-11-01',
     scope:'Recorded operational review. Current app access and monitor checks are shown separately. No new recovery, delivery or payment test was run.',
     status:'NOT_FULLY_VERIFIED',
     evidenceNote:matching?'Historical accepted evidence; review again after relevant source, data, configuration or custody changes.':'These records describe production. They do not accept this environment or its data generation.',
     applications:records.map(r=>({...r,status:matching?'BLOCKERS_REMAIN':'ENVIRONMENT_NOT_ACCEPTED',accepted:matching?[...r.accepted]:[],blockers:[...(!matching?['No matching environment acceptance is recorded here.']:[]),...r.blockers]})),
     sharedAccepted:matching?[...sharedAccepted]:[],
     sharedBlockers:[...shared],
-    references:[{label:'Accepted recovery point and repaired-state capture',reference:'CURRENT-RECOVERY-AUTHENTICATION.json / POSTREPAIR-CAPTURE-REVIEW.json'},{label:'Independent retrieval and qualified vault access',reference:'INDEPENDENT-DRIVE-VAULT-RECOVERY.json'},{label:'Local isolated cold boot; earlier Family package',reference:'COLD-BOOT-ACCEPTANCE.json'},{label:'Two historical alerts: inbox arrival and owner acknowledgement',reference:'ALERT-ARRIVAL-AND-ACKNOWLEDGEMENT.json'},{label:'Owner-approved optional coverage policy',reference:'OPERATING-COVERAGE-DESIGNATION.json'},{label:'Current Family release access acceptance',reference:'FAMILY-ACCEPTANCE-REUSE.json'},{label:'Remaining gates and custodian restrictions',reference:'GO-NO-GO.md'}],
+    unresolvedGates:unresolvedReadinessGates(environment),
+    updatesReviewedAt:'2026-11-02',
+    references:[{label:'Consumer e2ca4e3 isolated capacity failure; no soak',reference:'20261102-consumer-e2ca4e3/COMPLETION.json'},{label:'Mail a2c8139 source/package/rollback; not activated',reference:'20261102-mail-a2c8139/COMPLETION.json'},{label:'Accepted recovery point and repaired-state capture',reference:'CURRENT-RECOVERY-AUTHENTICATION.json / POSTREPAIR-CAPTURE-REVIEW.json'},{label:'Independent retrieval and qualified vault access',reference:'INDEPENDENT-DRIVE-VAULT-RECOVERY.json'},{label:'Local isolated cold boot; earlier Family package',reference:'COLD-BOOT-ACCEPTANCE.json'},{label:'Two historical alerts: inbox arrival and owner acknowledgement',reference:'ALERT-ARRIVAL-AND-ACKNOWLEDGEMENT.json'},{label:'Owner-approved optional coverage policy',reference:'OPERATING-COVERAGE-DESIGNATION.json'},{label:'Current Family release access acceptance',reference:'FAMILY-ACCEPTANCE-REUSE.json'},{label:'Remaining gates and custodian restrictions',reference:'GO-NO-GO.md'}],
     limitations:'Read access is not launch readiness. These records do not authorize mailing, payments, provider changes or deployment.'
   };
 }
