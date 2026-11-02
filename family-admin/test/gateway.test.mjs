@@ -333,39 +333,34 @@ test("CSRF, foreign Host, unapproved commands, injected paths and unknown fields
     );
     assert.equal(f.state.writes.length, 0);
   }));
-test("privileged actions require recent MFA even with a still valid session", async () => {
+test("routine partner actions reuse verified sessions while sensitive changes retain recent MFA", async () => {
   let clock = Date.now();
   const f = await fixtures({ now: () => clock });
   try {
-    await f.login();
-    await f.connect();
-    clock += 61000;
-    assert.equal(
-      (
-        await f.request("/api/actions/affiliate/partner.activate", {
-          method: "POST",
-          body: change(),
-        })
-      ).json.error.code,
-      "FRESH_FACTOR_REQUIRED",
-    );
-    await f.request("/api/unlock", {
-      method: "POST",
-      body: { code: "654321" },
-    });
-    assert.equal(
-      (
-        await f.request("/api/actions/affiliate/partner.activate", {
-          method: "POST",
-          body: change(),
-        })
-      ).status,
-      200,
-    );
-  } finally {
-    await f.close();
-  }
+    await f.login(); await f.connect(); clock += 61000;
+    assert.equal((await f.request('/api/actions/affiliate/partner.activate',{method:'POST',body:change()})).status,200);
+    const sensitive={id:change().id,body:{destinationRef:'fictional-reviewed-destination',verified:true},requestId:randomUUID(),confirmation:'local:affiliate:partner.destination'};
+    assert.equal((await f.request('/api/actions/affiliate/partner.destination',{method:'POST',body:sensitive})).json.error.code,'FRESH_FACTOR_REQUIRED');
+    await f.request('/api/unlock',{method:'POST',body:{code:'654321'}});
+    assert.equal((await f.request('/api/actions/affiliate/partner.destination',{method:'POST',body:sensitive})).status,200);
+  } finally { await f.close(); }
 });
+test('onboarding advancement reuses verification but still requires current owner permission and session',async()=>{
+  let clock=Date.now();const f=await fixtures({now:()=>clock});
+  const input={id:change().id,body:{expectedVersion:3},requestId:randomUUID(),confirmation:'local:affiliate:onboarding.advance'};
+  try {
+    await f.login();await f.connect();clock+=61000;
+    const session=await f.request('/api/session');
+    assert.equal(session.json.catalog.actions.affiliate['onboarding.advance'].requiresStepUp,false);
+    assert.equal(session.json.catalog.actions.affiliate['partner.destination'].requiresStepUp,true);
+    assert.equal((await f.request('/api/actions/affiliate/onboarding.advance',{method:'POST',body:input})).status,200);
+    f.state.primaryRole='analyst';
+    assert.equal((await f.request('/api/actions/affiliate/onboarding.advance',{method:'POST',body:{...input,requestId:randomUUID()}})).status,403);
+    f.state.primaryRole='owner';clock+=31*60*1000;
+    assert.equal((await f.request('/api/actions/affiliate/onboarding.advance',{method:'POST',body:{...input,requestId:randomUUID()}})).status,401);
+  } finally {await f.close();}
+});
+
 test("sign-out clears gateway session and native sessions", () =>
   run(async (f) => {
     await f.login();

@@ -5,6 +5,7 @@ import {
   operation,
   nativePath,
   actionBody,
+  requiresStepUp,
 } from "./catalog.mjs";
 import { digest } from "./journal.mjs";
 const fail = (code, status = 403) => {
@@ -448,7 +449,8 @@ export class Gateway {
                     fields: op.fields,
                     needsId: op.path.includes(":id"),
                     sensitive: !!op.sensitive,
-                    requiresStepUp: !!(op.owner || op.sensitive),
+                    requiresStepUp: requiresStepUp(op),
+                    routinePartnerAction: app === "affiliate" && (op.verifiedSession || ["partner.add", "campaign.add"].includes(name)),
                   },
                 ]),
             ),
@@ -561,7 +563,7 @@ export class Gateway {
       )
     )
       fail("REQUEST_ID_REQUIRED", 400);
-    if ((op.owner || op.sensitive) && this.now() - s.verifiedAt > 60000)
+    if (requiresStepUp(op) && this.now() - s.verifiedAt > 60000)
       fail("FRESH_FACTOR_REQUIRED", 401);
     const body = actionBody(op, input.body, input.requestId),
       path = nativePath(op, input.id);
