@@ -1,0 +1,53 @@
+{
+  "status": "DEPLOYED_AND_SCOPED_ACCEPTANCE_COMPLETE",
+  "staging": {
+    "accepted": true,
+    "release": "crp-family-76ee209c6d7f519f1e1f",
+    "source": "27d5e8f9388a07d5f6099129194df6403a2e6c88",
+    "ownerNormalUnlock": true,
+    "identity": "admin@creditregulatorpro.com",
+    "readinessCards": 4,
+    "reviewDate": "2026-11-01",
+    "environmentQualification": true,
+    "referencesExpanded": true,
+    "consumerPartnerMailReadViews": true,
+    "acceptedAssetsReused": 14,
+    "acceptedLocalTestsReused": "61 pass/0fail/5Linux-only skips and7focused",
+    "mailOperation": false
+  },
+  "production": {
+    "accepted": true,
+    "release": "crp-family-76ee209c6d7f519f1e1f",
+    "source": "27d5e8f9388a07d5f6099129194df6403a2e6c88",
+    "ownerIdentity": "admin@creditregulatorpro.com",
+    "normalOwnerSigninAndUnlock": true,
+    "readinessCards": 4,
+    "reviewDate": "2026-11-01",
+    "sharedAcceptedEvidenceVisible": true,
+    "remainingBlockersVisible": true,
+    "referencesExpanded": true,
+    "consumerAccounts": {
+      "loaded": true,
+      "rows": 9
+    },
+    "partnerRecords": {
+      "loaded": true,
+      "rows": 3
+    },
+    "mailOrders": {
+      "loaded": true,
+      "rows": 0,
+      "emptyStateVisible": true,
+      "orderDetailAccepted": false
+    },
+    "priorAssetDenialPackageAndLocalTestsReused": true,
+    "productionOverviewLeftOpen": true,
+    "redeploymentPerformedForAcceptance": false,
+    "businessWritesPerformed": false,
+    "mailOperation": false
+  },
+  "preservationReceipt": "promotion-verification.json",
+  "separatelyAuthorizedDependencyRepair": "consumer-staging-repair/result.json",
+  "fullOperationalReadinessClaimed": false,
+  "mailOperation": false
+}
