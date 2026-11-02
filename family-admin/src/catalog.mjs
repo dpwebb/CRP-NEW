@@ -268,6 +268,7 @@ Object.assign(reads.affiliate, {
   report: read('/api/report','affiliate.read'),
   contacts: read('/api/contacts','affiliate.read'),
   communications: read('/api/communications','affiliate.read'),
+  email: read('/api/communications/:id','affiliate.read'),
   assets: read('/api/assets','affiliate.read'),
   tickets: read('/api/tickets','affiliate.read'),
   onboarding: read('/api/onboarding','affiliate.read'),
