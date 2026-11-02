@@ -1,0 +1,52 @@
+{
+  "operation": "partner-workspace-staging-20261102-9526a8a",
+  "completedAtUtc": "2026-11-02T16:49:35.7162538Z",
+  "state": "STAGING_DEPLOYED_VERIFIED",
+  "host": "Hostinger VPS1616603 / srv1616603.hstgr.cloud",
+  "affiliate": {
+    "container": "f73a3db37bd5d38279ca8a1981c3667bb1a2b45ef088c981a24dfe6fd1475586",
+    "image": "sha256:73ca49e277275013095a796763d98f76429132ecd826b77fcccc95d8c5abb424",
+    "origin": "https://affiliates-staging.creditregulatorpro.com",
+    "commit": "9526a8af6cedd56e2b1b1ca8412a7a2a24f972b8"
+  },
+  "family": {
+    "files": 75,
+    "manifest": "4a4e4e86c0bb8e977a8156420a53830e712ffd83b1ea1cca36c23acbfd34d4ba",
+    "release": "crp-family-f0ae01c2c498cb5d0282",
+    "origin": "https://admin-staging.creditregulatorpro.com",
+    "commit": "7120d4094dc8951e44377605a21b8a28abbeb47b"
+  },
+  "checks": {
+    "businessTableEqualityAtCutover": 33,
+    "anonymousAuthorization": "401 on protected routes",
+    "affiliateImageRecursiveParity": "66 files",
+    "familyPackage": "75 files verified as service user",
+    "hostedPublisher": "Ordinary OIDC and new workspace observed",
+    "configAndAuthenticationKeys": "Preserved",
+    "nativeHealth": "PASS",
+    "publicHealth": "PASS",
+    "databaseRestarted": false,
+    "publicAssets": "4 candidate hashes match",
+    "auditPrefix": "Preserved",
+    "familyNativeChangedFile": "process.kernel.lock only"
+  },
+  "productionUnchanged": true,
+  "payments": "HUMAN_ONLY",
+  "providerTrackingMailSwitches": "UNCHANGED",
+  "sourcePublication": "Two local release commits; neither pushed nor merged",
+  "evidence": [
+    "CUTOVER.json",
+    "PUBLIC-VERIFICATION.json",
+    "recursive-image-parity.json",
+    "OFFHOST-BACKUP-VERIFICATION.json",
+    "HOSTED-UI.json"
+  ],
+  "rollback": "Predecessor Affiliate container/image and Family release retained; authenticated encrypted snapshot read back off-host",
+  "limitations": [
+    "Staging release only; not a full production-readiness ruling",
+    "No new sale, account binding, commission, reversal or settlement acceptance claimed",
+    "Normal hosted sign-in created ephemeral authentication state after cutover equality checks",
+    "Family hosted personal admin acceptance not repeated; unchanged local accepted tests reused"
+  ],
+  "unrelatedRecoveryAssignment": "PARKED; no SCRAM/VM work started"
+}
