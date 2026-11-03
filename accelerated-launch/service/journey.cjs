@@ -163,10 +163,7 @@ function persistResult(store, actor, caseRow, provenance, evaluated, extraction,
       created_at: clock && clock.assessment_run_at_utc ? clock.assessment_run_at_utc : nowIso()
     };
   require('./assessment-budget.cjs').requireBudget(created);
-  return store.update((state) => {
-    state.results.push(created);
-    return created;
-  });
+  return require('./append-snapshot.cjs').appendRecord(store,'results',()=>created);
 }
 
 function reassessmentRefusal(reason) {

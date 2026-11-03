@@ -22,6 +22,8 @@ parentPort.on('message', async ({ id, request }) => {
   // handle() installs body listeners synchronously before its first await.
   if (request.body?.length) req.emit('data', Buffer.from(request.body));
   req.emit('end');
-  try { await handling; readiness(); }
+  // Storage probes perform synchronous disk flushes. Keep them on the startup
+  // and periodic paths so every queued request does not pay for a probe.
+  try { await handling; }
   catch { if (!finished) res.writeHead(500, { 'Content-Type': 'application/json' }), res.end('{"ok":false,"error":{"code":"INTERNAL_ERROR"}}'); }
 });

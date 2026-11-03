@@ -1,7 +1,7 @@
 'use strict';
 // Pure local evidence evaluator. No HTTP, writes, provider calls or switch changes.
 const DEFINITIONS=Object.freeze({
-  consumer:{owner:'Consumer custodian',gates:['service','administration','access','recovery','accuracy']},
+  consumer:{owner:'Consumer custodian',gates:['service','administration','access','recovery','accuracy','capacity']},
   family:{owner:'Family/Admin custodian',gates:['service','access','recovery','staffing']},
   partner:{owner:'Partner custodian / human finance owner',gates:['service','access','recovery','attribution','settlement']},
   mail:{owner:'Mail custodian',gates:['service','access','recovery','staffing','alertAcknowledgement','fulfillment']}

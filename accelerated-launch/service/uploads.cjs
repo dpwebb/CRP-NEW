@@ -253,7 +253,7 @@ function receiveReport(store, actor, caseRow, input) {
   const admitted = Boolean(extraction.admission && extraction.admission.admitted === true);
   const effectiveRefusal = admitted ? null : (extraction.refusal ? extraction.refusal.reason : detection.refusal_reason);
 
-  const row = store.update((state) => {
+  const row = require('./append-snapshot.cjs').appendRecord(store,'files',() => {
     const created = {
       file_id: fileId,
       upload_key: uploadKey || null,
@@ -276,7 +276,6 @@ function receiveReport(store, actor, caseRow, input) {
       extraction,
       created_at: new Date().toISOString()
     };
-    state.files.push(created);
     return created;
   });
 
