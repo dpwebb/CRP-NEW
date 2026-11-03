@@ -285,5 +285,5 @@ body.auth-entry footer { max-width:1180px; padding-top:64px; }
 @media(max-width:600px){[data-ssr-news] > li:nth-child(n+2){display:none}}
 .story-analytics{border-top:1px solid #cbd5e1;padding:1rem 0;margin-bottom:2rem;color:#334155;font-size:.9rem;line-height:1.6}.story-analytics [hidden]{display:none}.story-analytics-actions{display:flex;flex-wrap:wrap;gap:.75rem}.story-analytics button{font:inherit;background:#fff;color:#172b4d;border:1px solid #64748b;border-radius:5px;padding:.5rem .85rem;cursor:pointer}.story-analytics button:focus-visible{outline:3px solid #2563eb;outline-offset:3px}
 
-.crp-wordmark { display:block; width:clamp(120px, 24vw, 174px); height:auto; }
-.sidebar .crp-wordmark { width:145px; max-width:100%; background:#fff; border-radius:4px; }
+.crp-wordmark { display:block; width:clamp(150px, 30vw, 217.5px); max-width:100%; height:auto; }
+.sidebar .crp-wordmark { width:181.25px; max-width:100%; background:#fff; border-radius:4px; }
