@@ -4,6 +4,7 @@
 const http = require('node:http');
 const { staticResponse, SECURITY_HEADERS } = require('./app.cjs');
 const { ProcessingDispatcher, refusal } = require('./processing-dispatcher.cjs');
+const { timingAccess } = require('./timing-access.cjs');
 const HOST = process.env.CRP_LOCAL_SERVICE_HOST || '127.0.0.1';
 const PORT = Number(process.env.CRP_LOCAL_SERVICE_PORT || 8787);
 const dispatcher = new ProcessingDispatcher();
@@ -24,6 +25,19 @@ const server = http.createServer((req, res) => {
     const ready=identity().ok && dispatcher.storage?.readable===true && dispatcher.storage?.writable===true && Date.now()-dispatcher.storageCheckedAt<60000 && dispatcher.admitted<dispatcher.limit;
     res.writeHead(ready?200:503,{...SECURITY_HEADERS,'Content-Type':'application/json','Cache-Control':'no-store'});
     return res.end(req.method==='HEAD'?'':JSON.stringify({...identity(),ok:ready,storage_ready:ready,storage_recovered:dispatcher.storage?.recovered===true}));
+  }
+  if (req.method === 'GET' && pathname === '/api/internal/timing') {
+    // Diagnostic only. Loopback outside production; in production it also needs
+    // CRP_TIMING_ENABLED=1 and either loopback or the configured bearer token.
+    const access = timingAccess({ remoteAddress: req.socket?.remoteAddress,
+      authorization: req.headers.authorization, deploymentEnv: process.env.CRP_DEPLOYMENT_ENV,
+      nodeEnv: process.env.NODE_ENV, enabled: process.env.CRP_TIMING_ENABLED,
+      token: process.env.CRP_TIMING_TOKEN });
+    if (!access.allowed) return refusal(res, 'NOT_FOUND', 404);
+    res.writeHead(200, { ...SECURITY_HEADERS, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+    return res.end(JSON.stringify({ ok: true, deployment: identity().deployment,
+      queue: { depth: dispatcher.queueDepth, admitted: dispatcher.admitted, limit: dispatcher.limit },
+      timing: dispatcher.metrics.snapshot() }));
   }
   if ((req.method === 'GET' || req.method === 'HEAD') && !pathname.startsWith('/api/')) {
     if (req.method === 'GET' && pathname === '/affiliate/referral') return dispatcher.handle(req, res);
