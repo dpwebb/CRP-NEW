@@ -971,12 +971,18 @@ function createService(options) {
   // Administrative metadata is opt-in and has its own schema and sole writer.
   // A normal consumer service never opens or migrates this optional store.
   const adminEnabled = process.env.CRP_ADMIN_ENABLED === '1';
+  const logger = new Logger(opts.logSink);
   let adminStore = null, adminUnavailable = false;
   if (adminEnabled) {
     try { adminStore = new (require('./admin-store.cjs').AdminStore)(store.dataDir, { consumerStore: store }); }
-    catch { adminUnavailable = true; }
+    catch (err) {
+      adminUnavailable = true;
+      const known = ['ADMIN_STORE_ALREADY_HAS_WRITER', 'ADMIN_WRITER_IDENTITY_UNAVAILABLE',
+        'ADMIN_STATE_UNAVAILABLE', 'EACCES', 'EPERM', 'EROFS', 'ENOSPC', 'EIO'];
+      logger.log({event: 'ADMIN_STORE_STARTUP', outcome: 'FAILED',
+        reason_code: known.includes(err?.code) ? err.code : 'ADMIN_STARTUP_UNKNOWN'});
+    }
   }
-  const logger = new Logger(opts.logSink);
   store.retentionObserver = record => logger.log(record);
   const affiliate = require('./affiliate-attribution.cjs').create(store, { ...opts.affiliate, log: event => logger.log(event) });
   const googleSignIn = require('./auth0-google.cjs').create(store, opts.googleSignIn);

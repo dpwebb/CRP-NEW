@@ -32,15 +32,20 @@ function safeDirectory(dir) {
   fs.mkdirSync(dir, {recursive: true, mode: 0o700});
   syncDirectory(path.dirname(dir));
 }
+function linuxBootId() {
+  const boot = fs.readFileSync('/proc/sys/kernel/random/boot_id', 'utf8').trim();
+  if (!/^[a-f0-9-]{36}$/.test(boot)) throw error('ADMIN_WRITER_IDENTITY_UNAVAILABLE');
+  return boot;
+}
 function processIdentity(pid) {
   if (process.platform !== 'linux') return null;
   // PID alone is not ownership: Linux can reuse it for another process/thread.
   // Unknown process identity must never make a live writer appear stale.
   try {
-    const boot = fs.readFileSync('/proc/sys/kernel/random/boot_id', 'utf8').trim();
+    const boot = linuxBootId();
     const stat = fs.readFileSync(`/proc/${pid}/stat`, 'utf8');
     const start = stat.slice(stat.lastIndexOf(')') + 2).split(/\s+/)[19];
-    if (!/^[a-f0-9-]{36}$/.test(boot) || !/^\d+$/.test(start || '')) throw error();
+    if (!/^\d+$/.test(start || '')) throw error();
     return {boot, start};
   } catch {throw error('ADMIN_WRITER_IDENTITY_UNAVAILABLE');}
 }
@@ -50,8 +55,16 @@ function writerAlive(row) {
   if (!row.identity || typeof row.identity !== 'object' ||
       Object.keys(row.identity).sort().join(',') !== 'boot,start' ||
       !/^[a-f0-9-]{36}$/.test(row.identity.boot || '') || !/^\d+$/.test(row.identity.start || '')) throw error();
-  const current = processIdentity(row.pid);
-  return !current || (row.identity.boot === current.boot && row.identity.start === current.start);
+  if (process.platform !== 'linux') return true;
+  try {
+    if (row.identity.boot !== linuxBootId()) return false;
+    const current = processIdentity(row.pid);
+    return row.identity.boot === current.boot && row.identity.start === current.start;
+  } catch (err) {
+    // A contender can exit between the liveness check and the /proc read.
+    if (!isProcessAlive(row.pid)) return false;
+    throw error('ADMIN_WRITER_IDENTITY_UNAVAILABLE');
+  }
 }
 class AdminStore {
   constructor(consumerDataDir, {consumerStore} = {}) {

@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-29T02:07:41.373Z",
+  "generated_at": "2026-11-03T21:41:26.488Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 122,
-      "digest": "ACAC7DF66749ED72A7B19449302B84EBA83299E0342DB12E58F9A5AE9599CE8A",
+      "digest": "DC8C3E1FF64ADE8C9DBA1D0F07057C2C1AB18EAA6FE9A99DA9024686169A372E",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -98,7 +98,7 @@
         },
         {
           "file": "accelerated-launch/service/admin-store.cjs",
-          "sha256": "C054809F4EAF9277AE6A85B64F5444AC9B6872BC1CE276625B54176AC1A228ED"
+          "sha256": "45AB96F993AA5C5A98C079EB044B395880FB0BF3627AC217C105737DEF5F38AB"
         },
         {
           "file": "accelerated-launch/service/affiliate-attribution.cjs",
@@ -106,7 +106,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "60A0249B5FB9DE22B23D013244413B368D78099D0F8895F6A045C7624C20F959"
+          "sha256": "44BEC26C39293A8BCCE67EE1623403410B1F820A3031C38A3B8EFC7B5B3A6160"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -442,7 +442,7 @@
         },
         {
           "file": "accelerated-launch/service/public-seo.cjs",
-          "sha256": "5062F49B326E18BA65CFE60E27C54737B336541295DF21B8CA0721A66168CB7C"
+          "sha256": "5A10E863F14ECEC7F4BC9DA15C4C8D5AFC8629469BE275F957C5D0A3D0B1A812"
         },
         {
           "file": "accelerated-launch/service/public-transfer.cjs",
@@ -674,7 +674,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 39,
-      "digest": "9F7EA9F0C9F8F3D257A167CA05EDC68AB54C8D2AB0F888535282B910EFD0ACD7",
+      "digest": "2479EB07EE09FE2EAFA7AA063530AD1AC126A48434E2FA8BF890FB9118C74226",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -718,7 +718,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/brand-logo.png",
-          "sha256": "E65DDF3D2331414F6F2DE436BF3AC19EAA93272C7DF941C4D86480D155CC28E2"
+          "sha256": "22C04A998403FFDA36E34E1A4748FF1ECBAFF2A4204CF1259EA5C970CD368F24"
         },
         {
           "file": "accelerated-launch/service/ui/brand-logo.svg",
@@ -742,7 +742,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/index.html",
-          "sha256": "BEE4E08C3FEFC61AB236265FEA6E0D249A866BB3E9319DF00AA1B0DDA21343EE"
+          "sha256": "DCEDA85F2E9E2CB17493BFE624E0E73495DC48E9A7DF593629C6C7B75178F8B8"
         },
         {
           "file": "accelerated-launch/service/ui/landing.css",
@@ -750,7 +750,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/landing.html",
-          "sha256": "0027D546D9788B4A71E4808BFB4E7055B9A087EF73358B10FBA68E669A8187E5"
+          "sha256": "8F68BE78E1F1463BF6E6E31858E3C0E72BE882DE889F0A6E62D9C9F588E6BD62"
         },
         {
           "file": "accelerated-launch/service/ui/mailing-preview.css",
@@ -786,7 +786,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/privacy.html",
-          "sha256": "7BE339245B9088F2EF347E0EE198380A136021F1D88BA2252FE5CD0629386AC6"
+          "sha256": "63F150D7B32B4E98ACB8EC609493F8476A4D764B7C338C71CC0AC87BA3316CFE"
         },
         {
           "file": "accelerated-launch/service/ui/public-analytics.js",
@@ -822,7 +822,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/story.css",
-          "sha256": "5362E5DAF5A6F8481972CE02989B48D9999EA427656EE83C665671EC938FE7E5"
+          "sha256": "DD7D75ABD2F476C9825D1B6ADBEC56591DF36C408CB46A9149532FF7BF0EAF20"
         },
         {
           "file": "accelerated-launch/service/ui/style.css",
@@ -835,6 +835,6 @@
       ]
     }
   ],
-  "manifest_digest": "DDAA1119BE5F49B4268F51A47AF0DE625B3206A07F471F1B57A94838EC247670",
+  "manifest_digest": "CC03EDAA6460E477F43F9C49D89E0F55551C01F5F022090CC8570D9011A0F61B",
   "total_file_count": 197
 }
