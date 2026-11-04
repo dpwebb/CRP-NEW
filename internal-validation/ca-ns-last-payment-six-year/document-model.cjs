@@ -70,6 +70,39 @@ function pageWords(file, page) {
   return { available: true, words };
 }
 
+/* Whole-document batch reads. The per-page helpers above remain the fallback and preserve the
+   exact previous behaviour if a batch call fails. Poppler separates pages with a form feed. */
+function allPageText(file) {
+  const text = execFileSync(PDFTOTEXT, ['-layout', file, '-'], {
+    timeout: 30000, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore']
+  });
+  const pages = text.split('\f');
+  if (pages.length && pages[pages.length - 1] === '') pages.pop();
+  /* Per-page `pdftotext -f/-l` output retains the trailing form feed; the whole-document split
+     consumes it. Re-append it so page text, character counts and hashes stay byte-identical. */
+  return pages.map(page => page.endsWith('\f') ? page : page + '\f');
+}
+
+function allPageWords(file) {
+  const xml = execFileSync(PDFTOTEXT, ['-bbox', file, '-'], {
+    timeout: 30000, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore']
+  });
+  const pages = [];
+  const pageRe = /<page[^>]*>([\s\S]*?)<\/page>/g;
+  let pageMatch;
+  while ((pageMatch = pageRe.exec(xml))) {
+    const words = [];
+    const wordRe = /<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">([^<]*)<\/word>/g;
+    let wordMatch;
+    while ((wordMatch = wordRe.exec(pageMatch[1]))) {
+      words.push({ text: wordMatch[5], x0: Number(wordMatch[1]), y0: Number(wordMatch[2]),
+        x1: Number(wordMatch[3]), y1: Number(wordMatch[4]) });
+    }
+    pages.push({ available: true, words });
+  }
+  return pages;
+}
+
 function scanForSyntheticMarkers(text) {
   const upper = text.toUpperCase();
   return SYNTHETIC_MARKERS.filter((m) => upper.includes(m));
@@ -161,6 +194,7 @@ function buildPdfDocumentModel(file, options) {
     kind: 'PDF', synthetic: false, synthetic_label: null, path: file, sha256: null, bytes: null,
     encrypted: null, page_count: null, page_size: null, producer: null, creator: null,
     text_extraction_tool: 'pdftotext -f <page> -l <page> -layout <file> - (poppler)',
+    text_extraction_batch: false,
     structure_tool: 'pdfinfo (poppler)', pages: [], read_errors: [], synthetic_markers_found: [],
     not_a_pdf: false, encryption: null, text_extraction_permitted: null,
     read_when_encryption_permits_copy_requested: opts.readWhenEncryptionPermitsCopy === true
@@ -200,19 +234,38 @@ function buildPdfDocumentModel(file, options) {
   }
 
   const images = pageImages(file);
+  /* Batch the two per-page poppler calls into one whole-document call each. The per-page helpers
+     remain the fallback, so a batch failure cannot change the reading semantics. */
+  let batchText = null;
+  let batchWords = null;
+  try {
+    batchText = allPageText(file);
+  } catch (err) {
+    model.read_errors.push({ stage: 'pdftotext-batch', error: 'whole-document text read failed; using per-page reads' });
+  }
+  try {
+    batchWords = allPageWords(file);
+  } catch (err) {
+    model.read_errors.push({ stage: 'pdftotext-bbox-batch', error: 'whole-document word read failed; using per-page reads' });
+  }
+  model.text_extraction_batch = Boolean(batchText && batchWords);
   for (let page = 1; page <= model.page_count; page += 1) {
 
     let text = '';
-    try {
-      text = pageText(file, page);
-    } catch (err) {
-      model.read_errors.push({ stage: 'pdftotext', page, error: 'the page could not be read' });
+    if (batchText && batchText[page - 1] !== undefined) {
+      text = batchText[page - 1];
+    } else {
+      try {
+        text = pageText(file, page);
+      } catch (err) {
+        model.read_errors.push({ stage: 'pdftotext', page, error: 'the page could not be read' });
+      }
     }
     const lines = text.split('\n');
     /* GAP-INGEST-008: a page that prints only a sliver of native text while the document is a full report is
        treated as having an incomplete text layer; the reading stage can supplement it with local OCR. */
     const native_text_incomplete = text.trim().length > 0 && text.trim().length < 60;
-    const wordReading = pageWords(file, page);
+    const wordReading = batchWords && batchWords[page - 1] ? batchWords[page - 1] : pageWords(file, page);
     const image_regions = (images.by_page[page] || []).slice();
     const has_image_region = image_regions.length > 0;
     model.pages.push({
