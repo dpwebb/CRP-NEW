@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-11-04T20:18:04.675Z",
+  "generated_at": "2026-11-04T23:35:52.788Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -557,7 +557,7 @@
     {
       "id": "READER_SUPPORT",
       "file_count": 9,
-      "digest": "FCFDF8F1CE6FF97C6E5FB51916BE4813F3C172DA2D30836D75633AF36FF34601",
+      "digest": "497446BC468DD5D7C3D2B8CD1650627B1D4EE5E2E1F71EC409F8A0F34B38B0E0",
       "files": [
         {
           "file": "internal-validation/ca-ns-last-payment-six-year/constants.cjs",
@@ -565,7 +565,7 @@
         },
         {
           "file": "internal-validation/ca-ns-last-payment-six-year/document-model.cjs",
-          "sha256": "3DF1922DF54A33DA9538AFD2C89BD877D3173712774BEF87B77D7787FF90C03F"
+          "sha256": "DFB51F8ADB452631F6E6D44BE2F8B5BCE11B9C07181C086A6A8DFF0A0B79AB5F"
         },
         {
           "file": "internal-validation/ca-ns-last-payment-six-year/extraction.cjs",
@@ -839,6 +839,6 @@
       ]
     }
   ],
-  "manifest_digest": "F290BBE4AB7AC6C850A726439A747D9D74CD59C1F20D979D8F847972DBC5CE9A",
+  "manifest_digest": "89EC75E5247CD1A159AD125330DEA258B4672EFFD299096E7035852077B895D1",
   "total_file_count": 198
 }
