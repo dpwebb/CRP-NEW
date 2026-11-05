@@ -102,8 +102,13 @@ async function recordVerifiedEvent(store, event, provider) {
     const intent = checkout && state.checkout_sessions.find(c => c.checkout_id === checkout.checkout_id);
     if (['ACTIVATE', 'UPGRADE', 'RENEW'].includes(effect)) {
       const paidAt = event.occurred_at || at;
+      const fullMonthlyBasis = event.plan_code === 'monthly' && ['ACTIVATE', 'UPGRADE'].includes(effect) &&
+        (checkout?.credit_applied_cents || 0) > 0
+        ? event.amount_cents + checkout.credit_applied_cents
+        : undefined;
       const receipt = credits.recordPayment(state, { account_id: accountId, payment_id: event.invoice_reference || event.session_reference,
         payment_intent: event.payment_intent || null, plan_code: event.plan_code, amount_cents: event.amount_cents,
+        credit_basis_cents: fullMonthlyBasis,
         currency: event.currency, paid_at: paidAt, verified_payment: true });
       if (!receipt.created && !['PAYMENT_ALREADY_RECORDED', 'NO_CASH_PAYMENT'].includes(receipt.reason)) {
         throw new ServiceError('BILLING_EVENT_REJECTED', { reason: receipt.reason });

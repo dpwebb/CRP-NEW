@@ -692,10 +692,24 @@ function recoveryKeyBlock() {
     <button class="primary" id="saved-recovery-key">I saved my key</button><p id="recovery-key-status" role="status"></p></section>` : '';
 }
 
+function authenticatorQr(uri) {
+  if (typeof uri !== 'string' || !uri.startsWith('otpauth://totp/') || typeof qrcode !== 'function') return '';
+  try {
+    const code = qrcode(0, 'M');
+    code.addData(uri);
+    code.make();
+    return '<div id="two-factor-qr">' + code.createSvgTag({
+      cellSize: 5, margin: 20, alt: 'Scan this code with your authenticator app'
+    }) + '</div>';
+  } catch {
+    return '';
+  }
+}
+
 function twoFactorFields() {
   if(state.accountSecurity?.two_factor_enabled)return '<p class="note">Two-factor authentication is enabled. Use your authenticator app when you sign in.</p>';
   if(!state.twoFactorSetup)return '<label for="two-factor-password">Current password</label><input id="two-factor-password" type="password" autocomplete="current-password"><button id="two-factor-start" class="secondary">Set up my authenticator app</button>';
-  return `<p>In your authenticator app, add an account with this setup key. Choose a time-based code.</p><label for="two-factor-secret">Setup key</label><input id="two-factor-secret" readonly autocomplete="off" value="${esc(state.twoFactorSetup.secret)}"><label for="two-factor-code">Six-digit code from your app</label><input id="two-factor-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><button id="two-factor-confirm" class="primary">Confirm authenticator</button>`;
+  return `<p>Scan the QR code with your authenticator app, or enter the setup key manually. Choose a time-based code.</p>${authenticatorQr(state.twoFactorSetup.otpauth_uri)}<label for="two-factor-secret">Setup key</label><input id="two-factor-secret" readonly autocomplete="off" value="${esc(state.twoFactorSetup.secret)}"><label for="two-factor-code">Six-digit code from your app</label><input id="two-factor-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><button id="two-factor-confirm" class="primary">Confirm authenticator</button>`;
 }
 function wireTwoFactor() {
   if(el('two-factor-start'))el('two-factor-start').onclick=()=>run(async()=>{const ensure=accountContext(),password=el('two-factor-password').value;const setup=await api('POST','/api/account/2fa/setup',{password});ensure();state.twoFactorSetup=setup;});
@@ -734,7 +748,7 @@ function renderSecuritySettings(panel) {
     panel.innerHTML += '<h2>Google sign-in</h2><p>Google is connected to your CRP account. To disconnect it, enter your current password above. This signs you out of CRP on all devices. Your password and recovery key will still work.</p><button id="disconnect-google" class="secondary">Disconnect Google and sign out</button>';
   }
   wireRecoveryKey();wireNewRecoveryKey();wireTwoFactor();attachStagingInbox(panel);
-  el('security-back').onclick=()=>{state.securityMode=false;render();};
+  el('security-back').onclick=()=>{state.securityMode=false;state.twoFactorSetup=null;render();};
   if (el('disconnect-google')) el('disconnect-google').onclick = () => run(async () => {
     const ensure = accountContext();
     await api('DELETE', '/api/account/google-identity', { password: el('security-password').value });
@@ -3500,6 +3514,7 @@ if(typeof window!=='undefined'&&window.addEventListener){
   window.addEventListener('pagehide',()=>{
     signInRestorePending=Boolean(signInChallenge||state.signInInvitation||(state.step===STEP.ACCOUNT&&state.twoFactorSetup&&el('two-factor-secret'))||(!state.account&&state.step===STEP.ACCOUNT&&typeof location!=='undefined'&&location.hash==='#signin'));
     state.twoFactorSetup=null;
+    el('two-factor-qr')?.remove();
     if(!signInRestorePending)return;
     cancelSignInAttempt();state.twoFactorSetup=null;state.signInInvitation=null;
     for(const id of ['password','signin-code','two-factor-password','two-factor-secret','two-factor-code']){const node=el(id);if(node){node.value='';node.removeAttribute?.('value');}}

@@ -1,8 +1,10 @@
 'use strict';
 /**
  * Unused, verified lower-plan payments count toward upgrades without expiring.
- * Each receipt preserves its actual cash payment. Allocations reserve that money
- * for one checkout, and settlement consumes only the amount actually credited.
+ * Each receipt preserves its actual cash payment. `credit_basis_cents` lets a
+ * paid monthly invoice retain its full plan value when a lower-plan credit was
+ * applied to that invoice; that basis is used once for a later upgrade, while
+ * the underlying lower-plan receipt remains consumed.
  * Call recordPayment/settleReservations inside the entitlement's atomic update.
  */
 const crypto = require('node:crypto');
@@ -26,12 +28,14 @@ function normalized(row) {
   const sourcePlan = row.source_plan_code || row.plan_code || (legacy ? 'report_once' : null);
   if (!plans.isPlanCode(sourcePlan) || (!legacy && row.verified_payment !== true)) return null;
   if (!Object.values(CREDIT_STATES).includes(row.state)) return null;
+  const creditBasis = row.credit_basis_cents === undefined ? row.amount_cents : row.credit_basis_cents;
+  if (!validAmount(creditBasis) || creditBasis < row.amount_cents) return null;
   const consumed = row.consumed_cents === undefined
-    ? (row.state === CREDIT_STATES.REDEEMED ? row.amount_cents : 0) : row.consumed_cents;
-  if (!validAmount(consumed) || consumed > row.amount_cents) return null;
+    ? (row.state === CREDIT_STATES.REDEEMED ? creditBasis : 0) : row.consumed_cents;
+  if (!validAmount(consumed) || consumed > creditBasis) return null;
   const refunded = row.refunded_cents || 0;
   if (!validAmount(refunded) || refunded > row.amount_cents) return null;
-  const remaining = Math.max(0, row.amount_cents - consumed - refunded);
+  const remaining = Math.max(0, creditBasis - consumed - refunded);
   if (row.remaining_amount_cents !== undefined && row.remaining_amount_cents !== remaining) return null;
   // A historically fully-redeemed receipt is never reset to eligible by migration.
   if (row.state === CREDIT_STATES.REDEEMED && remaining !== 0) return null;
@@ -43,7 +47,7 @@ function normalized(row) {
   if (row.refunded || row.disputed) state = CREDIT_STATES.REVOKED;
   if (remaining === 0 && state !== CREDIT_STATES.REVOKED) state = CREDIT_STATES.REDEEMED;
   return { ...row, source_plan_code: sourcePlan, verified_payment: true,
-    consumed_cents: consumed, remaining_amount_cents: remaining,
+    credit_basis_cents: creditBasis, consumed_cents: consumed, remaining_amount_cents: remaining,
     reserved_amount_cents: state === CREDIT_STATES.RESERVED ? reserved : 0,
     state, expires_at: null };
 }
@@ -111,13 +115,21 @@ function recordPayment(state, payment) {
       !Number.isFinite(Date.parse(value.paid_at)) || Date.parse(value.paid_at) > Date.now() ||
       value.refunded || value.disputed) return { created: false, credit: null, reason: 'INVALID_VERIFIED_PAYMENT' };
   if (value.amount_cents === 0) return { created: false, credit: null, reason: 'NO_CASH_PAYMENT' };
+  const suppliedBasis = value.credit_basis_cents;
+  const creditBasis = suppliedBasis === undefined ? value.amount_cents : suppliedBasis;
+  if (!validAmount(creditBasis) || creditBasis < value.amount_cents ||
+      creditBasis > plans.plan(value.plan_code, value.currency).amount_cents) {
+    return { created: false, credit: null, reason: 'INVALID_CREDIT_BASIS' };
+  }
   normalizeRows(state);
   const paymentIntent = validId(value.payment_intent) ? value.payment_intent : null;
   const existing = state.upgrade_credits.find(row => row.payment_id === value.payment_id ||
     (paymentIntent && row.payment_intent === paymentIntent));
   if (existing) {
+    const existingBasis = existing.credit_basis_cents === undefined ? existing.amount_cents : existing.credit_basis_cents;
     if (existing.account_id !== value.account_id || existing.source_plan_code !== value.plan_code ||
         existing.amount_cents !== value.amount_cents || existing.currency !== value.currency ||
+        (suppliedBasis !== undefined && existingBasis !== creditBasis) ||
         (paymentIntent && existing.payment_intent && existing.payment_intent !== paymentIntent) ||
         (paymentIntent && state.upgrade_credits.some(row => row !== existing && row.payment_intent === paymentIntent))) {
       return { created: false, credit: null, reason: 'PAYMENT_RECEIPT_MISMATCH' };
@@ -128,9 +140,10 @@ function recordPayment(state, payment) {
   }
   const credit = { credit_id: 'crd_' + crypto.randomBytes(12).toString('hex'),
     account_id: value.account_id, payment_id: value.payment_id, payment_intent: paymentIntent,
-    source_plan_code: value.plan_code, amount_cents: value.amount_cents, currency: value.currency,
+    source_plan_code: value.plan_code, amount_cents: value.amount_cents, credit_basis_cents: creditBasis,
+    currency: value.currency,
     verified_payment: true, state: CREDIT_STATES.ELIGIBLE, paid_at: value.paid_at,
-    expires_at: null, consumed_cents: 0, remaining_amount_cents: value.amount_cents,
+    expires_at: null, consumed_cents: 0, remaining_amount_cents: creditBasis,
     reserved_amount_cents: 0, reserved_total_cents: null, reserved_for_checkout_id: null, reserved_at: null,
     redeemed_at: null, redeemed_checkout_id: null, redeemed_plan_code: null,
     allocations: [], revoked_reason: null };

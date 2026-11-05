@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-11-03T21:41:26.488Z",
+  "generated_at": "2026-11-04T20:18:04.675Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 122,
-      "digest": "DC8C3E1FF64ADE8C9DBA1D0F07057C2C1AB18EAA6FE9A99DA9024686169A372E",
+      "digest": "09D473B9A3F2FDB6CAEE5297E144C5BA838EA85320624AF958CF46B3087EC394",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -106,7 +106,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "44BEC26C39293A8BCCE67EE1623403410B1F820A3031C38A3B8EFC7B5B3A6160"
+          "sha256": "5321FC84C426EE1700F3AC9EED5334D1FCEBEDD93511B7B963C2923455715943"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -673,8 +673,8 @@
     },
     {
       "id": "SERVED_ASSETS",
-      "file_count": 39,
-      "digest": "2479EB07EE09FE2EAFA7AA063530AD1AC126A48434E2FA8BF890FB9118C74226",
+      "file_count": 40,
+      "digest": "0056B062A9A1A9676178AF87B4D429AECC39EA4C1F9D335F9CDF366A71817245",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -714,7 +714,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "B613B9067DA47B75F277DAF55BB54198346D30CD52E3672060EE7DF96CA075C2"
+          "sha256": "81F494BEE4EEBD94BC4B7DE980DF6C86B1CC8E867DC0A04C996B3A05320DF76C"
         },
         {
           "file": "accelerated-launch/service/ui/brand-logo.png",
@@ -742,7 +742,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/index.html",
-          "sha256": "DCEDA85F2E9E2CB17493BFE624E0E73495DC48E9A7DF593629C6C7B75178F8B8"
+          "sha256": "64AC11DC6E67D5DCF1648218AA85034345ECCE9228BB5721AD2E71BE55DADF2A"
         },
         {
           "file": "accelerated-launch/service/ui/landing.css",
@@ -793,6 +793,10 @@
           "sha256": "E7442B505F58168BDE1E702D7CC9446C0BC70744C14121FAB7EF8F24DE6D3B81"
         },
         {
+          "file": "accelerated-launch/service/ui/qrcode-generator.js",
+          "sha256": "2E283CCBB7F1F6DCD56803E7310273E84EEF599D8EC38F1F42723756F844ADC9"
+        },
+        {
           "file": "accelerated-launch/service/ui/referrals.css",
           "sha256": "2C96F1191FF7ACDA3CBFDBFF637E2FFD72CE77F08EA12243F10E963D2E325602"
         },
@@ -835,6 +839,6 @@
       ]
     }
   ],
-  "manifest_digest": "CC03EDAA6460E477F43F9C49D89E0F55551C01F5F022090CC8570D9011A0F61B",
-  "total_file_count": 197
+  "manifest_digest": "F290BBE4AB7AC6C850A726439A747D9D74CD59C1F20D979D8F847972DBC5CE9A",
+  "total_file_count": 198
 }
