@@ -103,6 +103,20 @@ async function run(t, check) {
     false, 'refunded receipt replay cannot restore credit');
   check.equal(view().annual.credit_cents, 395, 'refunded money is excluded');
 
+  const basisAccount = 'eo_basis_account';
+  add(receipt('basis_report', { account_id: basisAccount, payment_id: 'basis_report', payment_intent: 'pi_basis_report' }));
+  const basisReservation = credits.reserveCredit(store, basisAccount, 'eo_basis_monthly', now, 'monthly');
+  check.equal(basisReservation.amount_cents, 1595, 'report credit reduces the first monthly invoice');
+  store.update(state => credits.settleReservations(state, 'eo_basis_monthly', 'monthly', now));
+  const basisReceipt = add(receipt('basis_monthly', { account_id: basisAccount, plan_code: 'monthly',
+    payment_id: 'basis_monthly', payment_intent: 'pi_basis_monthly', amount_cents: 1200, credit_basis_cents: 2795 }));
+  check.equal(basisReceipt.created, true, 'monthly receipt retains its full monthly credit basis');
+  const basisAnnual = view(basisAccount).annual;
+  check.equal(basisAnnual.credit_cents, 2795, 'annual upgrade credits the full monthly value, including the consumed report credit');
+  check.equal(basisAnnual.first_invoice_cents, 25155, 'annual first invoice reflects the full monthly credit');
+  check.equal(basisAnnual.available_credit_cents, 2795, 'the report credit is not counted separately a second time');
+  check.equal(basisAnnual.source_plan_codes.includes('monthly'), true, 'the full monthly basis is sourced from the monthly plan');
+
   store.update(state => {
     for (const status of ['EXPIRED', 'REDEEMED', 'REVOKED']) state.upgrade_credits.push({
       credit_id: 'legacy_' + status, account_id: 'eo_legacy', payment_id: 'legacy_' + status,
