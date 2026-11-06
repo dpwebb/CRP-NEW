@@ -148,6 +148,8 @@ function sessionToken(req) {
 
 /** Route table. `auth: true` means the dispatcher resolves the session BEFORE the handler runs. */
 const ROUTES = Object.freeze([
+  ['GET', '/auth/admin/start', false, 'cgssAdminStart'],
+  ['GET', '/auth/admin/callback', false, 'cgssAdminCallback'],
   ['POST', '/api/auth/google/start', false, 'startGoogleSignIn'],
   ['GET', '/api/auth/google/callback', false, 'googleSignInCallback'],
   ['GET', '/api/auth/google/pending', false, 'googleSignInPending'],
@@ -378,8 +380,53 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
     const nextPath = adminStore && require('./admin-access.cjs').ownerSignInPath(adminStore, account, token);
     return nextPath === '/admin' ? { next_path: '/admin' } : {};
   };
+  const cgssAdmin = adminStore
+    ? require('./cgss-admin-sso.cjs').createCgssAdmin({
+        store,
+        adminStore,
+        accounts,
+        adminAccess: require('./admin-access.cjs'),
+        logger,
+        env: process.env,
+      })
+    : null;
   return {
     /* ------------------------------------------------------------ accounts and sessions */
+
+    cgssAdminStart: async ({ req }) => {
+      if (!cgssAdmin) throw new ServiceError('NOT_FOUND');
+      try {
+        return { status: 302, text: '', content_type: 'text/plain', headers: { Location: await cgssAdmin.start(req) } };
+      } catch (error) {
+        logger.log({ event: 'CGSSO_ADMIN_ERROR', outcome: error.code || error.name || 'UNKNOWN' });
+        throw new ServiceError(error.statusCode === 403 ? 'NOT_AUTHORIZED' : 'SERVICE_STATE_UNAVAILABLE');
+      }
+    },
+    cgssAdminCallback: async ({ req }) => {
+      if (!cgssAdmin) throw new ServiceError('NOT_FOUND');
+      let opened;
+      try {
+        opened = await cgssAdmin.callback(req);
+      } catch (error) {
+        logger.log({ event: 'CGSSO_ADMIN_ERROR', outcome: error.code || error.name || 'UNKNOWN' });
+        if (error.statusCode === 401) throw new ServiceError('AUTHENTICATION_REQUIRED');
+        if (error.statusCode === 403) throw new ServiceError('NOT_AUTHORIZED');
+        if (error.statusCode === 400) throw new ServiceError('INVALID_REQUEST');
+        throw new ServiceError('SERVICE_STATE_UNAVAILABLE');
+      }
+      const secure = process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : '';
+      return {
+        status: 303,
+        json: { ok: true, signed_in: true },
+        headers: {
+          Location: '/admin',
+          'Set-Cookie': [
+            sessionCookie(opened.token, 900),
+            `${ADMIN_COOKIE}=${opened.adminToken}; HttpOnly; SameSite=Strict; Path=/api/admin/; Max-Age=900${secure}`,
+          ],
+        },
+      };
+    },
 
     startGoogleSignIn: ({ req }) => googleSignIn.start(req),
     googleSignInCallback: ({ req }) => googleSignIn.callback(req),
@@ -1097,7 +1144,7 @@ function createService(options) {
       if (referral) { sendText(res, referral.status, '', 'text/plain', referral.headers); return; }
       const seo = require('./public-seo.cjs');
       if (seo.noIndex(urlPath, process.env.CRP_DEPLOYMENT_ENV)) res.setHeader('X-Robots-Tag', 'noindex');
-      if (!urlPath.startsWith('/api/')) {
+      if (!urlPath.startsWith('/api/') && !urlPath.startsWith('/auth/admin/')) {
         const discovery = ['GET', 'HEAD'].includes(req.method) && seo.discovery(urlPath);
         if (discovery) {
           sendPublicText(req, res, discovery.status, discovery.text, discovery.content_type);

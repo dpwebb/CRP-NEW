@@ -25,6 +25,9 @@ const server = http.createServer((req, res) => {
     res.writeHead(ready?200:503,{...SECURITY_HEADERS,'Content-Type':'application/json','Cache-Control':'no-store'});
     return res.end(req.method==='HEAD'?'':JSON.stringify({...identity(),ok:ready,storage_ready:ready,storage_recovered:dispatcher.storage?.recovered===true}));
   }
+  if ((req.method === 'GET' || req.method === 'HEAD') && pathname.startsWith('/auth/admin/')) {
+    return dispatcher.handle(req, res);
+  }
   if ((req.method === 'GET' || req.method === 'HEAD') && !pathname.startsWith('/api/')) {
     if (req.method === 'GET' && pathname === '/affiliate/referral') return dispatcher.handle(req, res);
     // Public HTML/discovery use the same renderer and IP model as the existing

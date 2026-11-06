@@ -1,0 +1,9 @@
+{
+  "name": "crp-consumer-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local CRP Consumer service with the shared CGSSO adapter.",
+  "dependencies": {
+    "@compnd/cgsso-adapter": "file:../../../../governance/portfolio/sso/adapter"
+  }
+}

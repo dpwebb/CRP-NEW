@@ -458,8 +458,34 @@ function signOutEverywhere(store, accountId) {
   });
 }
 
+/**
+ * Open a short native session for an account after an independently verified
+ * portfolio-admin sign-in. This does not create an account, membership or
+ * administrative unlock; those remain separate checks.
+ */
+function openSessionForAccount(store, accountId, { ttlMs = 15 * 60_000 } = {}) {
+  if (!Number.isInteger(ttlMs) || ttlMs < 60_000 || ttlMs > 60 * 60_000) {
+    throw new ServiceError('INVALID_REQUEST');
+  }
+  const session = createSessionRow(accountId);
+  const now = Date.now();
+  session.row.created_at = new Date(now).toISOString();
+  session.row.last_seen_at = session.row.created_at;
+  session.row.expires_at = new Date(now + ttlMs).toISOString();
+  session.row.idle_expires_at = session.row.expires_at;
+  const account = store.update((state) => {
+    const row = state.accounts.find((item) => item.account_id === accountId);
+    if (!row) throw new ServiceError('AUTHENTICATION_REQUIRED');
+    state.sessions.push(session.row);
+    trimSessions(state, accountId);
+    return { account_id: row.account_id, email: row.email };
+  });
+  return { account, token: session.token };
+}
+
 module.exports = {
   loginMfaVerified, markLoginMfaVerified,
+  openSessionForAccount,
   disconnectGoogle,
   signInWithGoogle,
   verifyAccountPassword,

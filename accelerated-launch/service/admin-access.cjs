@@ -19,6 +19,24 @@ function accountSession(store,actor,token){
   if(!isEligible(account))fail('ADMIN_SECURITY_REQUIRED',403);
   return {account,session};
 }
+function cgssAccountSession(store,actor,consumerSessionToken){
+  if(!store.consumerStore||typeof consumerSessionToken!=='string'||!consumerSessionToken)fail('AUTHENTICATION_REQUIRED',401);
+  const state=store.consumerStore.state(),session=state.sessions.find(r=>r.token_sha256===accounts.tokenDigest(consumerSessionToken));
+  if(!session||session.account_id!==actor?.account_id||accounts.sessionExpired(session,Date.now()))fail('AUTHENTICATION_REQUIRED',401);
+  const account=state.accounts.find(r=>r.account_id===session.account_id);
+  if(!account)fail('AUTHENTICATION_REQUIRED',401);
+  // CGSSO supplies the second factor; the account must still have completed its own email/signup setup.
+  if(!Number.isFinite(Date.parse(account.email_verified_at))||!Number.isFinite(Date.parse(account.signup_complete_at)))fail('ADMIN_SECURITY_REQUIRED',403);
+  return {account,session};
+}
+// Called only after the CGSSO adapter verified the exact admin subject, admin group and provider MFA.
+function unlockWithCgss(store,actor,consumerSessionToken){
+  const {account,session}=cgssAccountSession(store,actor,consumerSessionToken),member=memberFor(store,account.account_id);
+  if(member.role!=='owner')fail('NOT_AUTHORIZED',403);
+  const token=crypto.randomBytes(32).toString('base64url'),expires=new Date(Date.now()+UNLOCK_MS).toISOString();
+  store.update(state=>{for(const row of state.unlocks)if(row.session_id===session.session_id&&!row.revoked_at)row.revoked_at=new Date().toISOString();state.unlocks.push({unlock_id:id('adm_unlock'),token_sha256:digest(token),admin_id:member.admin_id,account_id:account.account_id,session_id:session.session_id,revision:member.revision,mfa_sha256:mfaFingerprint(account),method:'CGSSO_MFA',issued_at:new Date().toISOString(),absolute_expires_at:new Date(Date.now()+MAX_UNLOCK_MS).toISOString(),expires_at:expires,revoked_at:null});store.appendAudit(state,member,'ADMIN_UNLOCKED',{operation:'CGSSO_MFA'});});
+  return {admin_token:token,expires_at:expires};
+}
 function memberFor(store,accountId){const state=store.state(),members=state.memberships.filter(r=>r.account_id===accountId&&r.status==='ACTIVE'),member=members[0];if(members.length!==1||!['owner','staff','partner'].includes(member.role)||!Number.isInteger(member.revision)||member.revision<1||!Array.isArray(member.permissions)||new Set(member.permissions).size!==member.permissions.length||member.permissions.some(p=>!PERMISSIONS.includes(p)))fail('NOT_AUTHORIZED',403);if(member.role==='staff'&&member.permissions.some(p=>OWNER_ONLY.has(p))||member.role==='partner'&&(member.permissions.some(p=>!PARTNER_ALLOWED.has(p))||!state.organizations.some(r=>r.org_id===member.org_id&&r.status==='ACTIVE')))fail('NOT_AUTHORIZED',403);return member;}
 // A navigation hint only: never consumes MFA or creates an administrative unlock.
 // Optional administration must not prevent an otherwise valid consumer sign-in.
@@ -125,4 +143,4 @@ function updateMembership(store,actor,adminId,input){requireCapability(store,act
 function createOrganization(store,actor,input){requireCapability(store,actor,'organizations.manage');const name=typeof input.name==='string'?input.name.trim():'',status=input.status??'ACTIVE';if(!name||name.length>120||!['ACTIVE','DISABLED'].includes(status))fail('INVALID_REQUEST',400);return store.update(state=>{const org={org_id:id('org'),name,status,created_at:new Date().toISOString()};state.organizations.push(org);store.appendAudit(state,actor,'ADMIN_ORGANIZATION_CREATED',{org_id:org.org_id,status});return org;});}
 function updateOrganization(store,actor,orgId,input){requireCapability(store,actor,'organizations.manage');if(input.status!==undefined&&!['ACTIVE','DISABLED'].includes(input.status)||input.name!==undefined&&(typeof input.name!=='string'||!input.name.trim()||input.name.trim().length>120))fail('INVALID_REQUEST',400);return store.update(state=>{const org=state.organizations.find(r=>r.org_id===orgId);if(!org)fail('NOT_FOUND',404);if(input.name!==undefined)org.name=input.name.trim();if(input.status!==undefined){org.status=input.status;const admins=new Set(state.memberships.filter(r=>r.org_id===orgId).map(r=>r.admin_id));for(const row of state.unlocks)if(admins.has(row.admin_id)&&!row.revoked_at)row.revoked_at=new Date().toISOString();}store.appendAudit(state,actor,'ADMIN_ORGANIZATION_UPDATED',{org_id:orgId,status:org.status});return org;});}
 const addAudit=(store,actor,event,metadata)=>store.audit(actor,event,metadata);
-module.exports={AdminError,PERMISSIONS,PARTNER_ALLOWED,UNLOCK_MS,MAX_UNLOCK_MS,principal,unlock,touch,lock,ownerSignInPath,requireCapability,bootstrapOwner,recoverOrphanedOwner,createMembership,updateMembership,createOrganization,updateOrganization,addAudit};
+module.exports={AdminError,PERMISSIONS,PARTNER_ALLOWED,UNLOCK_MS,MAX_UNLOCK_MS,principal,unlock,unlockWithCgss,touch,lock,ownerSignInPath,requireCapability,bootstrapOwner,recoverOrphanedOwner,createMembership,updateMembership,createOrganization,updateOrganization,addAudit};
