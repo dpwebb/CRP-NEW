@@ -8,7 +8,7 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
 const DEFAULT_ADMIN_GROUP = 'portfolio-superadmin';
-const ADAPTER_PATH = process.env.CGSSO_ADAPTER_PATH || path.resolve(__dirname, '../../../../governance/portfolio/sso/adapter/index.mjs');
+const ADAPTER_PATH = process.env.CGSSO_ADAPTER_PATH || path.resolve(__dirname, 'vendor/cgss-adapter/index.mjs');
 let adapter;
 let client;
 
