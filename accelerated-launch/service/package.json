@@ -4,6 +4,6 @@
   "private": true,
   "description": "Local CRP Consumer service with the shared CGSSO adapter.",
   "dependencies": {
-    "@compnd/cgsso-adapter": "file:../../../../governance/portfolio/sso/adapter"
+    "@compnd/cgsso-adapter": "file:vendor/cgss-adapter"
   }
 }
