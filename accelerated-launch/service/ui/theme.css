@@ -4,3 +4,22 @@ body{background:var(--crp-white);color:var(--crp-navy)}
 .sidebar .workspace-label{color:#c4d5e6}
 input:not([type=checkbox]):not([type=radio]),select,textarea{border-color:#64748b}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--crp-blue);outline-offset:3px}
+
+:root{color-scheme:light}
+/* Dropdown option contrast — group standard, 6 November 2026. */
+select option,
+select optgroup {
+  color: var(--ink, #16324f);
+  background-color: #ffffff;
+}
+
+select option:checked,
+select option:hover {
+  color: #ffffff;
+  background-color: #245b91;
+}
+
+select option:disabled {
+  color: var(--muted, #52616f);
+  background-color: #ffffff;
+}

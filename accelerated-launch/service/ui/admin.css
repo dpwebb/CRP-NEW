@@ -72,3 +72,22 @@
 @media(max-width:350px){
   .identity>span:not(.avatar){display:none}
 }
+
+:root{color-scheme:light}
+/* Dropdown option contrast — group standard, 6 November 2026. */
+select option,
+select optgroup {
+  color: var(--ink, #16324f);
+  background-color: #ffffff;
+}
+
+select option:checked,
+select option:hover {
+  color: #ffffff;
+  background-color: #245b91;
+}
+
+select option:disabled {
+  color: var(--muted, #52616f);
+  background-color: #ffffff;
+}

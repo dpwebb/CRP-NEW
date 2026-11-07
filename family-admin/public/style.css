@@ -762,3 +762,22 @@ dialog::backdrop {
 }
 
 .campaign-banner-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:20px}.campaign-banner-grid article{min-width:0;border:1px solid #c8d3dd;border-radius:8px;padding:16px}.campaign-banner-grid img{display:block;max-width:100%;width:auto;height:auto;max-height:360px;object-fit:contain;margin:16px auto}.campaign-banner-grid label{display:block;margin-top:16px}.campaign-banner-grid textarea{width:100%;box-sizing:border-box}
+
+:root{color-scheme:light}
+/* Dropdown option contrast — group standard, 6 November 2026. */
+select option,
+select optgroup {
+  color: var(--ink, #16324f);
+  background-color: #ffffff;
+}
+
+select option:checked,
+select option:hover {
+  color: #ffffff;
+  background-color: #245b91;
+}
+
+select option:disabled {
+  color: var(--muted, #52616f);
+  background-color: #ffffff;
+}
