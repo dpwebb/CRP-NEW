@@ -8,7 +8,7 @@ const path = require('node:path');
 const { createCgssAdmin } = require('../cgss-admin-sso.cjs');
 
 const ADMIN_SUBJECT = 'e0dab951-27da-4d75-b1df-ced8fcb250e5';
-const ADMIN_EMAIL = 'admin@compnd.systems';
+const ADMIN_EMAIL = 'admin@creditregulatorpro.com';
 const HOST = '127.0.0.1:8787';
 const env = {
   CGSS_ISSUER: 'http://issuer.test/application/o/crp-new/',
