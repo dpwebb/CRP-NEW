@@ -68,6 +68,10 @@ export function createPortal(raw, options = {}) {
       ["/", ["index.html", "text/html; charset=utf-8"]],
       ["/app.js", ["app.js", "text/javascript; charset=utf-8"]],
       ["/style.css", ["style.css", "text/css; charset=utf-8"]],
+      ["/brand/logo-dark.png", ["brand/logo-dark.png", "image/png"]],
+      ["/brand/logo-light.png", ["brand/logo-light.png", "image/png"]],
+      ["/brand/app-icon-512.png", ["brand/app-icon-512.png", "image/png"]],
+      ["/brand/favicon.ico", ["brand/favicon.ico", "image/x-icon"]],
       ["/banner-preview.js", ["banner-preview.js", "text/javascript; charset=utf-8"]],
       ["/approved-banners-2026-10-23/manifest.json", ["approved-banners-2026-10-23/manifest.json", "application/json"]],
       ...Array.from({length:10}, (_,i) => {

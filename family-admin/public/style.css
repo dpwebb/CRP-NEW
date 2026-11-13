@@ -143,23 +143,15 @@ textarea:focus-visible {
   outline: 3px solid #2369c4;
   outline-offset: 3px;
 }
-.logo {
-  font-size: 45px;
-  font-weight: 800;
-  border: 1px solid #7892ad;
-  border-radius: 18px;
-  display: inline-block;
-  padding: 8px 18px;
-  letter-spacing: -5px;
+.auth-logo {
+  display: block;
+  width: min(260px, 100%);
+  height: auto;
 }
-.logo span {
-  color: #6cbbff;
-}
-.logo.small {
-  padding: 5px 9px;
-  border-radius: 9px;
-  font-size: 24px;
-  letter-spacing: -2px;
+.brand-logo {
+  display: block;
+  width: 194px;
+  height: auto;
 }
 .auth {
   min-height: 100vh;
