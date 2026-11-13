@@ -39,7 +39,8 @@ const server = http.createServer((req, res) => {
     if (asset.public_homepage || asset.public_guide) return dispatcher.handle(req, res);
     if (asset.content_type.startsWith('text/html')) res.setHeader('X-Robots-Tag', 'noindex');
     const transfer = asset.content_type.startsWith('text/html') ? { payload: asset.text, headers: {} } : require('./public-transfer.cjs').representation(asset.text, asset.content_type, req.headers['accept-encoding']);
-    res.writeHead(asset.status, { ...SECURITY_HEADERS, 'Content-Type': asset.content_type, 'Cache-Control': 'no-store', ...transfer.headers });
+    const brandResource = pathname.startsWith('/brand/') ? { 'Cross-Origin-Resource-Policy': 'cross-origin' } : {};
+    res.writeHead(asset.status, { ...SECURITY_HEADERS, ...brandResource, 'Content-Type': asset.content_type, 'Cache-Control': 'no-store', ...transfer.headers });
     return res.end(req.method === 'HEAD' ? '' : transfer.payload);
   }
   dispatcher.handle(req, res);
