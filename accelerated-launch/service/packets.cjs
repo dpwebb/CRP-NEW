@@ -179,7 +179,7 @@ function canonicalVersion(packetRow, resultRow, selectedIssues, unsigned = false
   // Display order is material to the numbered letter requests.
   const ordered = selectedIssues;
   const parts = [
-    'packet-format:consumer-letter-evidence-pdf-3',
+    'packet-format:consumer-letter-evidence-pdf-4',
     `composer:${COMPOSER_VERSION}`,
     `result:${packetRow.result_id || ''}`,
     `selection:${ordered.map((i) => i.issue_id).join(',')}`,
@@ -890,6 +890,32 @@ function documentText(packet, row, selected) {
     .replace(/\r\n?/g, '\n').replace(/\t/g, '    ');
 }
 
+/** One bounded checklist for the removable instruction sheet. It uses only the packet's verified support
+ *  snapshot and selected report copies: the recorded bureau route, the selected report page numbers and the
+ *  number of selected copies. The letter already names every copy, so the checklist points there instead of
+ *  repeating long filenames and pushing this fixed one-page sheet past its line limit. */
+function packetChecklistLines(packet) {
+  const support = packet?.support_snapshot;
+  const requirements = support && support.requirements;
+  if (!requirements || !requirements.postal) return [];
+  const pages = [...new Set((packet.report_snapshot?.copies || [])
+    .flatMap(copy => copy.relevant_pages || [])
+    .filter(page => Number.isInteger(page) && page > 0))].sort((a, b) => a - b);
+  const shown = pages.slice(0, 12);
+  const pageList = pages.length
+    ? `${pages.length} selected: ${shown.join(', ')}${pages.length > shown.length ? ` and ${pages.length - shown.length} more` : ''}`
+    : 'none selected';
+  const documents = (support.documents || []).length;
+  return [
+    'PACKET CHECKLIST',
+    '[ ] This sheet - keep it; do not put it in the envelope.',
+    '[ ] Letter - starts on page 2; sign and date it.',
+    `[ ] Report pages - ${pageList}.`,
+    `[ ] Document copies - ${documents ? `${documents} selected (listed in your letter)` : 'none selected'}.`,
+    `[ ] Mail to - ${requirements.label}: ${requirements.postal}.`
+  ];
+}
+
 function completePdf(store, actor, packet, row, selected) {
   const signed = packet.signature && packet.signature.content_version === canonicalVersion(packet, row, selected, true);
   let letter = documentText(packet, row, selected);
@@ -904,14 +930,18 @@ function completePdf(store, actor, packet, row, selected) {
   const reports = (packet.report_snapshot?.copies || []).map(copy => ({ ...copy,
     filename: packet.report_snapshot.manifest?.find(item => item.file_id === copy.file_id)?.original_filename || '',
     annotations: (packet.annotations || []).filter(annotation => annotation.file_id === copy.file_id && copy.relevant_pages.includes(annotation.page)) }));
-  const composed = composePacket({ letter_text: letter, instructions: !signed && packet.support?.channel === 'POSTAL' ? [
+  const checklist = packetChecklistLines(packet);
+  const instructions = !signed && packet.support?.channel === 'POSTAL' ? [
+    ...checklist,
+    ...(checklist.length ? [''] : []),
     '1. Keep this instruction sheet for yourself. It is not part of the packet you send to the bureau.',
     '', '2. Check every remaining page. Make sure the letter, report pages and supporting copies are the ones you approved.',
     '', '3. Print pages 2 onward. Sign and date your letter where shown. If you change the letter, check the final version before sending.',
     '', '4. Put the signed letter and the included copies in your envelope. Keep your original documents. Do not put this instruction sheet in the envelope.',
     '', '5. Mail the packet to the bureau address shown on your letter.',
     '', '6. Keep a copy of what you sent and your mailing receipt, if you have one.'
-  ].join('\n') : null,
+  ].join('\n') : null;
+  const composed = composePacket({ letter_text: letter, instructions,
     ...(signed?{signature:{name:packet.signature.name,date:packet.signature.date}}:{}),reports, documents });
   return { ...composed, reading_signature: signed ? { name:packet.signature.name, date:packet.signature.date } : null };
 }
@@ -951,6 +981,7 @@ module.exports = {
   packetDownload,
   packetPrint,
   eligibleIssues,
+  packetChecklistLines,
   canonicalVersion,
   issueContent,
   RECIPIENT_TYPE

@@ -7,7 +7,7 @@
 1. Sign in and complete the account's required security steps.
 2. Upload a supported report. Confirm the correct person, report date, country, region, and bureau. Unsupported or unreadable input needs a supported replacement; it must not be presented as a successful assessment.
 3. Review the findings and their source evidence. The results start with the strongest supported issue, the report page and line that show it, and one plain next action. Choosing that issue prepares the letter and supporting pages for review; nothing is sent to a bureau automatically. A finding supports review and correspondence; it does not guarantee a legal conclusion, deletion, or bureau response.
-4. Select the relevant findings and prepare the packet. Review every generated page, recipient, date, identification attachment, and edited letter.
+4. Select the relevant findings and prepare the packet. The first page is a checklist of the letter, selected report pages, document copies and the bureau mailing address; keep that page out of the envelope. Review every generated page, recipient, date, identification attachment, and edited letter.
 5. Approve the exact packet version. Changed content requires the applicable review and approval again.
 6. Download the approved PDF and keep the evidence. Customers may mail it themselves.
 7. For the optional paid mailing service, review the exact quote and final printing copy, satisfy payment requirements, and explicitly authorize mailing. Follow order status inside CRP.
