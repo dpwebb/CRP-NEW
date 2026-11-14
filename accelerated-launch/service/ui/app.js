@@ -1902,8 +1902,19 @@ function renderResults(panel) {
   if (renewalPlans) renewalPlans.onclick = () => navigateStep(STEP.BILLING);
 
   wireResultSelector(panel, view);
+  wireStrongestIssue();
   wireClarification(panel, view);
   wirePendingPayment();
+}
+
+/* The card's one control: bring the matching issue card into view. It changes no selection or packet state. */
+function wireStrongestIssue() {
+  const jump = el('strongest-issue-jump');
+  if (!jump) return;
+  jump.onclick = () => {
+    const target = el('issue-' + jump.dataset.issue);
+    if (target && typeof target.scrollIntoView === 'function') target.scrollIntoView({ block: 'start' });
+  };
 }
 
 function resultBlock(result, demo, selectable = false) {
@@ -1962,11 +1973,38 @@ function assessmentDateLine(holder) {
 
 /* OWNER-POTENTIAL-ISSUE-001: supported potential reporting issues, rendered as review cards (never NOT_DETECTED,
    never failed-check diagnostics). Each states what the report says, why it merits attention and its uncertainty. */
+/* The strongest supported issue, the exact report page behind it and one plain next action. The strongest
+   issue is the server's owner-approved priority pick (assessment_summary.teaser); this block neither re-ranks
+   findings nor adds a score. It only renders inside the complete results block, so the assessment and packet
+   entitlement boundary and the postal-only instruction stay exactly where they were. */
+function strongestIssueCard(result, selectable) {
+  const teaser = state.view?.assessment_summary?.teaser;
+  if (!teaser || !teaser.title || teaser.confidence_label !== 'VIOLATION') return '';
+  const issue = (result.issues || []).find(candidate => candidate.issue_id === teaser.issue_id);
+  if (!issue) return '';
+  const location = issue.source_location || {};
+  const page = location.page !== undefined && location.page !== null
+    ? `page <b>${esc(location.page)}</b>${location.line !== undefined && location.line !== null ? `, line <b>${esc(location.line)}</b>` : ''}`
+    : null;
+  const where = page ? `${location.section ? esc(location.section) + ', ' : ''}${page}` : null;
+  const action = selectable && issue.eligible
+    ? 'Tick <b>Dispute this issue</b> below, then choose <b>Create my dispute packet</b>. You will review every page and attachment, approve the exact packet, then print it and mail it to the bureau.'
+    : 'This unlocked report includes the finding and your PDF. Dispute packets you review, approve, print and mail are included with a subscription.';
+  return `<section class="obs strongest-issue" aria-label="Start with this issue">
+    <span class="pill">START HERE</span>
+    <h3>${esc(teaser.title)}</h3>
+    <p>${esc(teaser.explanation || '')}</p>
+    ${where ? `<p class="evidence">Your report, ${where}.</p>` : ''}
+    <p class="evidence">${action}</p>
+    <button class="secondary" id="strongest-issue-jump" data-issue="${esc(issue.issue_id)}">Show this issue</button>
+  </section>`;
+}
+
 function issuesSection(result, selectable = false) {
   const issues = result.issues || [];
   const informational = i => i.limitation_concern || i.basis_type === 'LIMITATION_ASSESSMENT';
   const cards = items => items.map((i) => `
-    <div class="obs issue">
+    <div class="obs issue" id="issue-${esc(i.issue_id)}">
       ${selectable && i.eligible ? `<label class="issue-select"><input type="checkbox" data-check-issue="${esc(i.issue_id)}">Dispute this issue</label>` : ''}
       <span class="pill potential">${issueLabel(i)}</span>
       ${informational(i) ? '<p class="evidence">Information about court time limits is for you. It is not included in a dispute packet.</p>' : ''}
@@ -1991,7 +2029,7 @@ function issuesSection(result, selectable = false) {
     }
     groups.get(key).issues.push(issue);
   }
-  return `${reporting.length ? '<h2>Reporting issues for your review</h2>' : '<p class="lede">We did not find a reporting issue in the information we could review.</p>'}${[...groups].map(([key, group]) => `<section data-issue-group="${esc(key)}"><h3>${esc(group.title)}</h3>${cards(group.issues)}</section>`).join('')}`;
+  return `${reporting.length ? '<h2>Reporting issues for your review</h2>' : '<p class="lede">We did not find a reporting issue in the information we could review.</p>'}${reporting.length ? strongestIssueCard(result, selectable) : ''}${[...groups].map(([key, group]) => `<section data-issue-group="${esc(key)}"><h3>${esc(group.title)}</h3>${cards(group.issues)}</section>`).join('')}`;
 }
 
 function packetDocumentDates(settings, pv) {

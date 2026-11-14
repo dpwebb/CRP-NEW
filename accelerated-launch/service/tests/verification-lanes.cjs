@@ -38,3 +38,4 @@ LANE_IDS.security.unshift('gq-public-analytics');
 module.exports = { SOURCE_AUDIT_FILES, LANE_IDS };
 LANE_IDS.security.unshift('gr-google-signin');
 LANE_IDS.browser.unshift('gr-google-signin');
+LANE_IDS.consumer.unshift('hn-results-evidence-card');

@@ -6,7 +6,7 @@
 
 1. Sign in and complete the account's required security steps.
 2. Upload a supported report. Confirm the correct person, report date, country, region, and bureau. Unsupported or unreadable input needs a supported replacement; it must not be presented as a successful assessment.
-3. Review the findings and their source evidence. A finding supports review and correspondence; it does not guarantee a legal conclusion, deletion, or bureau response.
+3. Review the findings and their source evidence. The results start with the strongest supported issue, the report page and line that show it, and one plain next action. Choosing that issue prepares the letter and supporting pages for review; nothing is sent to a bureau automatically. A finding supports review and correspondence; it does not guarantee a legal conclusion, deletion, or bureau response.
 4. Select the relevant findings and prepare the packet. Review every generated page, recipient, date, identification attachment, and edited letter.
 5. Approve the exact packet version. Changed content requires the applicable review and approval again.
 6. Download the approved PDF and keep the evidence. Customers may mail it themselves.
