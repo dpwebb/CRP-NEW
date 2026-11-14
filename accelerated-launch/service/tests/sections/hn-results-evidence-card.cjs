@@ -188,11 +188,15 @@ async function run(t, check) {
   const unread = await draw('VIEW_UNREAD');
   check.ok(/We could not read the account details in this report/.test(unread), 'an accepted but unreadable report is named as a reading failure');
   check.ok(/no usable record facts/.test(unread), 'and the stored plain explanation is shown');
+  check.ok(/id="upload-complete-report"/.test(unread) && /id="report-file-details" open/.test(unread), 'and a visible next step opens the upload controls');
   check.ok(!/We did not find a reporting issue/.test(unread), 'the screen never claims no issues when no records could be read');
 
   const unreadFree = await draw('VIEW_UNREAD_FREE');
   check.ok(/We could not read the account details in this report/.test(unreadFree) && /SUMMARY — FREE/.test(unreadFree), 'the free summary discloses the same reading failure');
+  check.ok(/id="upload-complete-report"/.test(unreadFree), 'and offers the same upload action');
+  check.ok(!/UNLOCK THE REST/.test(unreadFree), 'without asking the consumer to buy access to an unreadable report');
   check.ok(!/We did not find a reporting issue/.test(unreadFree), 'and the free summary never claims no issues either');
+  check.ok(/UNLOCK THE REST/.test(free), 'an ordinary readable free summary keeps its purchase choices');
 
   return {
     strongest_issue_card: true,

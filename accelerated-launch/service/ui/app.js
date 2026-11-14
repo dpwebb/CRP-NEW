@@ -1814,6 +1814,7 @@ function readingFailureNote(failure) {
   return `<div class="note stop" role="status">
     <p><b>We could not read the account details in this report.</b></p>
     <p>${esc(detail)}</p>
+    <button class="primary" id="upload-complete-report">Upload a complete report</button>
   </div>`;
 }
 
@@ -1846,7 +1847,7 @@ function freeSummaryBlock(view) {
     ${summary.information_total ? '<p class="evidence">Your assessment also includes information about court time limits. This is separate from reporting issues and is not a dispute reason.</p>' : ''}
     ${preview}
   </div>
-  ${currentReportPaymentPending() ? '' : `<div class="obs">
+  ${failure || currentReportPaymentPending() ? '' : `<div class="obs">
     <span class="pill">UNLOCK THE REST</span>
     <h3>Choose what you want next</h3>${currencyChoice()}
     <p class="evidence">Nothing renews unless you choose a subscription. Your selected currency and price are shown before you buy.</p>
@@ -1874,6 +1875,7 @@ function renderResults(panel) {
   const access = view.assessment_access || {};
   const result = view.result;
   const summary = view.assessment_summary || null;
+  const readingFailure = (result && result.read_but_no_usable_facts) || (summary && summary.read_but_no_usable_facts) || null;
   const demo = result && result.support === 'DEMONSTRATION_ONLY_NOT_REPORT_SUPPORT';
   if (!summary && !result) {
     renderReport(panel, true);
@@ -1885,7 +1887,7 @@ function renderResults(panel) {
     ${currentReportIdentity(view)}
     ${view.comparison_source_removed ? '<p class="note">A comparison with a deleted report was removed. Your own report and its other findings are kept.</p>' : ''}
     ${notices()}
-    <details><summary>Report files and upload help</summary><div id="report-file-tools"></div></details>
+    <details id="report-file-details"${readingFailure ? ' open' : ''}><summary>Report files and upload help</summary><div id="report-file-tools"></div></details>
     ${pendingPaymentBlock(true)}
     ${failedPaymentBlock()}${renewalAttentionBlock(true)}
     <button class="${summary ? 'secondary' : 'primary'}" id="evaluate">${summary ? 'Check this report again' : 'Check my report'}</button>
@@ -1898,6 +1900,13 @@ function renderResults(panel) {
 
   renderReport(el('report-file-tools'), false, true);
   el('evaluate').onclick = () => checkReport();
+  const uploadComplete = el('upload-complete-report');
+  if (uploadComplete) uploadComplete.onclick = () => {
+    const details = el('report-file-details');
+    if (details && typeof details.setAttribute === 'function') details.setAttribute('open', '');
+    const tools = el('report-file-tools');
+    if (tools && typeof tools.scrollIntoView === 'function') tools.scrollIntoView({ block: 'start' });
+  };
   for (const code of ['report_once', 'monthly', 'annual']) {
     const button = el('buy-' + code);
     if (button) button.onclick = () => startCheckout(code);
