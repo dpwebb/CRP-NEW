@@ -145,6 +145,7 @@ async function run(service, check) {
     categories_sum_to_total: true,
     severity_order: results.SEVERITY_ORDER.slice(),
     teaser: null,
+    read_but_no_usable_facts: null,
     has_issues: false
   }, 'a report with nothing found yields no teaser and no invented count');
 

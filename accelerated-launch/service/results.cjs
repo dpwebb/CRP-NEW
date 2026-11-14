@@ -620,6 +620,7 @@ function summariseAssessment(rendered) {
     categories_sum_to_total: by.violation + by.probable_violation + by.potential === rows.length,
     severity_order: SEVERITY_ORDER.slice(),
     teaser: ranked.length ? teaserFor(ranked[0]) : null,
+    read_but_no_usable_facts: (rendered && rendered.read_but_no_usable_facts) || null,
     has_issues: rows.length > 0
   };
 }

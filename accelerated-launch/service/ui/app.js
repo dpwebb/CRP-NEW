@@ -1806,12 +1806,24 @@ function upgradeConfirmationBlock() {
  * The free view of a completed assessment: how many distinct issues were found, how they split across the three
  * categories, and ONE limited teaser. The complete details, the evidence and the download follow a purchase.
  */
+/* A report accepted as plausible but with no readable account records is not "no issues". This note
+   states the reading failure and what would let the checks run; it never calls the report correct. */
+function readingFailureNote(failure) {
+  if (!failure) return '';
+  const detail = failure.plain || 'We could not read the account details in this report.';
+  return `<div class="note stop" role="status">
+    <p><b>We could not read the account details in this report.</b></p>
+    <p>${esc(detail)}</p>
+  </div>`;
+}
+
 function freeSummaryBlock(view) {
   const summary = view.assessment_summary || {};
   const teaser = summary.teaser?.confidence_label === 'VIOLATION' ? summary.teaser : null;
+  const failure = summary.read_but_no_usable_facts || null;
   const total = Number(summary.distinct_total || 0);
   const concerns = Number(summary.non_violation_concern_total || 0);
-  const counts = concerns > 0
+  const counts = failure ? '' : concerns > 0
     ? `<p class="evidence">Violations: <b>${Number(summary.violation_total || 0)}</b> · Non-violation concerns: <b>${concerns}</b></p>`
     : total > 0
     ? `<p class="evidence">Reporting issues found: <b>${total}</b></p>`
@@ -1829,6 +1841,7 @@ function freeSummaryBlock(view) {
     <span class="pill">SUMMARY — FREE</span>
     <h3>What we found</h3>
     ${assessmentDateLine(summary)}
+    ${readingFailureNote(failure)}
     ${counts}
     ${summary.information_total ? '<p class="evidence">Your assessment also includes information about court time limits. This is separate from reporting issues and is not a dispute reason.</p>' : ''}
     ${preview}
@@ -1919,7 +1932,7 @@ function wireStrongestIssue() {
 
 function resultBlock(result, demo, selectable = false) {
   if (!demo) {
-    return `${assessmentDateLine(result)}${issuesSection(result, selectable)}`;
+    return `${assessmentDateLine(result)}${readingFailureNote(result.read_but_no_usable_facts)}${issuesSection(result, selectable)}`;
   }
   const observations = result.observations.filter(o => o.assessment_completed !== false).map((o) => `
     <div class="obs">
@@ -2029,7 +2042,8 @@ function issuesSection(result, selectable = false) {
     }
     groups.get(key).issues.push(issue);
   }
-  return `${reporting.length ? '<h2>Reporting issues for your review</h2>' : '<p class="lede">We did not find a reporting issue in the information we could review.</p>'}${reporting.length ? strongestIssueCard(result, selectable) : ''}${[...groups].map(([key, group]) => `<section data-issue-group="${esc(key)}"><h3>${esc(group.title)}</h3>${cards(group.issues)}</section>`).join('')}`;
+  const lede = reporting.length ? '<h2>Reporting issues for your review</h2>' : result.read_but_no_usable_facts ? '' : '<p class="lede">We did not find a reporting issue in the information we could review.</p>';
+  return `${lede}${reporting.length ? strongestIssueCard(result, selectable) : ''}${[...groups].map(([key, group]) => `<section data-issue-group="${esc(key)}"><h3>${esc(group.title)}</h3>${cards(group.issues)}</section>`).join('')}`;
 }
 
 function packetDocumentDates(settings, pv) {

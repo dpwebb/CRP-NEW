@@ -102,7 +102,8 @@ function viewForResult(store, actor, caseRow, resultRow) {
         information_total: summary.information_total,
         by_confidence: summary.by_confidence,
         teaser: summary.teaser,
-        severity_order: summary.severity_order
+        severity_order: summary.severity_order,
+        read_but_no_usable_facts: summary.read_but_no_usable_facts || null
       }
       : null,
     result: access.complete_assessment ? rendered : null,

@@ -62,6 +62,20 @@ async function run(t, check) {
   check.ok(/printed date exceeds the reporting period/.test(definitePlain.detail), 'the finding states the decisive date comparison without a tier label');
   check.ok(!/probable/i.test(definitePlain.detail), 'and never carries the probable lead');
 
+  /* An admitted report with no readable account records is a reading failure, never "no issues". */
+  const emptyEvaluation = {
+    country: 'US', region: 'US-CA', support: 'REPORT_SUPPORT',
+    results: [], unavailable_checks: [], unresolved_checks: [], not_applicable_checks: [], unresolved_applicability: [],
+    factual_checks: { performed: [], not_examinable: [], not_applicable: [], unresolved_applicability: [] },
+    common_errors: { performed: [] }, report_concerns: { performed: [] }, detected_report_information: { performed: [] },
+    assessments_performed: 0
+  };
+  const unread = results.renderResultSet({ evaluation: emptyEvaluation, extraction: { admission: { admitted: true }, records: [] } });
+  check.ok(unread.read_but_no_usable_facts && /no usable record facts/.test(unread.read_but_no_usable_facts.plain),
+    'an admitted report with no readable account records is named as a reading failure');
+  check.equal(unread.issues.length, 0, 'and no issue is invented from the unread content');
+  check.ok(results.summariseAssessment(unread).read_but_no_usable_facts, 'the free summary carries the reading failure');
+
   evidence.prioritization = 'deterministic evidence-backed ordering; no arbitrary rank/score field';
   evidence.reasons = 'plain-English source-linked common-error explanation and decisive facts';
   evidence.uncertainty = 'correct chronology does not create a violation; read failure remains separate';

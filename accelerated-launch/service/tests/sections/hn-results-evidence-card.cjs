@@ -126,6 +126,16 @@ function makeResponder() {
   };
 }
 
+const UNREAD = {
+  plain: 'Your upload was accepted as a plausible credit report and read, but no usable record facts could be extracted from it. This is not a review of your report and nothing was concluded. Upload a clearer or complete copy that shows the relevant entries with their dates.',
+  additional_material_needed: 'a clearer or complete copy showing account entries with their dates'
+};
+const UNREAD_SUMMARY = Object.assign(summaryWith(null), {
+  distinct_total: 0,
+  by_confidence: { violation: 0, probable_violation: 0, potential: 0 },
+  read_but_no_usable_facts: UNREAD
+});
+
 async function run(t, check) {
   const source = fs.readFileSync(UI_JS, 'utf8');
   const dom = makeContext(makeResponder());
@@ -135,6 +145,8 @@ async function run(t, check) {
   ctx.__VIEW_NONE = viewWith({ assessment_summary: summaryWith(null) });
   ctx.__VIEW_UNLOCKED = viewWith({ assessment_access: Object.assign({}, ACCESS, { dispute_packet: false }) });
   ctx.__VIEW_FREE = viewWith({ assessment_access: Object.assign({}, ACCESS, { complete_assessment: false, assessment_download: false, dispute_packet: false }) });
+  ctx.__VIEW_UNREAD = viewWith({ result: Object.assign({}, RESULT, { issues: [], read_but_no_usable_facts: UNREAD }), assessment_summary: UNREAD_SUMMARY });
+  ctx.__VIEW_UNREAD_FREE = viewWith({ result: null, assessment_access: Object.assign({}, ACCESS, { complete_assessment: false, assessment_download: false, dispute_packet: false }), assessment_summary: UNREAD_SUMMARY });
   vm.runInContext(source, ctx, { filename: 'ui/app.js' });
   await tick(); await tick(); await tick();
 
@@ -173,6 +185,15 @@ async function run(t, check) {
   check.ok(/SUMMARY — FREE/.test(free), 'the free summary is unchanged');
   check.ok(!/START HERE/.test(free) && !/strongest-issue-jump/.test(free), 'the evidence card stays on the complete results surface');
 
+  const unread = await draw('VIEW_UNREAD');
+  check.ok(/We could not read the account details in this report/.test(unread), 'an accepted but unreadable report is named as a reading failure');
+  check.ok(/no usable record facts/.test(unread), 'and the stored plain explanation is shown');
+  check.ok(!/We did not find a reporting issue/.test(unread), 'the screen never claims no issues when no records could be read');
+
+  const unreadFree = await draw('VIEW_UNREAD_FREE');
+  check.ok(/We could not read the account details in this report/.test(unreadFree) && /SUMMARY — FREE/.test(unreadFree), 'the free summary discloses the same reading failure');
+  check.ok(!/We did not find a reporting issue/.test(unreadFree), 'and the free summary never claims no issues either');
+
   return {
     strongest_issue_card: true,
     exact_report_page: 'page 4, line 12',
@@ -180,6 +201,7 @@ async function run(t, check) {
     priority_source: 'server assessment_summary.teaser',
     entitlement_boundary: 'unchanged; card shows the subscription message without packet access',
     free_surface: 'no evidence card',
+    unread_report_note: true,
     postal_only: 'no online-filing wording'
   };
 }

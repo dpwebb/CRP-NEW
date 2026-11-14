@@ -21,6 +21,7 @@ Read deletion and replacement dialogs carefully. Cancel preserves the current wo
 ## Limits and help
 
 - A four-country homepage does not establish support for every bureau, report layout, or region. Use the exact accepted coverage cell.
+- If the uploaded report cannot be read, the results say so and ask for a clearer or complete copy. That is a reading failure, not a finding that the report has no issues.
 - A subscription entitlement is not mailing permission. A successful payment is not proof of provider submission or delivery.
 - Mailing or tracking evidence does not prove a bureau investigation or correction.
 - Report a problem with the affected page, approximate time, and minimal sanitized context. Do not send passwords, authenticator values, recovery keys, or a full credit report through an ordinary support message.
