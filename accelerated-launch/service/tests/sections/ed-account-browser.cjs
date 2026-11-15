@@ -35,7 +35,6 @@ async function run(service, check) {
     await signupPage.locator('#finish-signup').click();
     await signupPage.waitForSelector('#open');
     check.ok(await signupPage.locator('#steps').isHidden(), 'mobile journey starts collapsed behind the hamburger');
-    await signupPage.getByRole('button', { name: 'Navigation menu', exact: true }).click();
     await signupPage.locator('#workspace-account').click();
     await signupPage.keyboard.press('Escape');
     await signupPage.waitForSelector('#account-save');
@@ -70,8 +69,8 @@ async function run(service, check) {
     await page.locator('#open').click(); const created = await (await createResponse).json();
     check.equal(created.case.selected_bureau, 'TRANSUNION', 'bureau choice reaches the real case');
     await page.waitForFunction(() => document.getElementById('stepcount').textContent === 'Step 2 of 5');
-    await page.locator('#panel').getByText(/Reporting issues found:\s*1/).first().waitFor();
-    check.ok(/Reporting issues found: 1/.test(await page.locator('#panel').innerText()), 'unpaid Step2 upload automatically reaches the existing results and issue count');
+    await page.locator('#panel').getByText(/We found\s+1\s+reporting issue/).first().waitFor();
+    check.ok(/We found\s+1\s+reporting issue/.test(await page.locator('#panel').innerText()), 'unpaid Step2 upload automatically reaches the existing results and issue count');
     check.ok(/VIOLATION/.test(await page.locator('#panel').innerText()), 'the consumer sees the supported dispute concern');
     check.ok((await page.locator('#current-report-identity').innerText()).includes('fictional-credit-report.pdf')
       && (await page.locator('#current-report-identity').innerText()).includes('TransUnion'), 'Results labels the exact uploaded bureau report');
@@ -130,7 +129,7 @@ async function run(service, check) {
     const [keyDownload] = await Promise.all([page.waitForEvent('download'), page.locator('#download-recovery-key').click()]);
     check.ok(fs.readFileSync(await keyDownload.path(), 'utf8').includes(recoveryKey), 'actual browser saves the exact one-use recovery key to a private file');
     check.ok(!(await page.locator('#activity').innerText()).includes(recoveryKey), 'technical activity never displays the recovery key');
-    await page.locator('#saved-recovery-key').click(); await page.locator('#security-back').click(); await page.locator('#signout').click(); await page.waitForSelector('#forgot-password');
+    await page.locator('#saved-recovery-key').click(); await page.locator('#security-back').click(); await page.locator('#workspace-signout').click(); await page.waitForSelector('#forgot-password');
     check.equal(await page.locator('#recovery-key').count(), 0, 'sign-out removes the visible recovery secret');
     await page.locator('#forgot-password').click();
     await page.locator('#recover-email').fill(actor.email); await page.locator('#recover-key').fill(recoveryKey);

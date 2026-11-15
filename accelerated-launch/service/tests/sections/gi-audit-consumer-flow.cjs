@@ -240,7 +240,7 @@ async function browserChecks(t, check) {
       await page.locator('#create-packet').click(); await page.getByText('Packets use your latest assessment. Review these issues before choosing disputes.').waitFor();
       check.ok(true, 'historical packet entry explicitly returns to latest assessment');
       await page.locator('#current-report-identity').waitFor();
-      const navigate = async step => { const target = page.locator(`[data-step="${step}"]`); if (!await target.isVisible()) await page.getByRole('button', { name: 'Navigation menu', exact: true }).click(); await target.click(); };
+      const navigate = async step => { const target = page.locator(`[data-step="${step}"]`); if (!await target.isVisible()) await page.getByRole('button', { name: 'Tools menu', exact: true }).click(); await target.click(); };
       await navigate(6); await page.locator('#packet-letter').waitFor();
       check.equal(await page.getByLabel('Date for the prepared letter', { exact: true }).inputValue(), '2026-10-14', `${width}px custom letters clearly distinguish prepared date from their own written date`);
       check.ok((await page.locator('#packet-letter-date-help').innerText()).includes('Check its date below'), 'date guidance refers to the actual custom letter');
@@ -354,7 +354,7 @@ async function emptyAccountBrowserChecks(t, check) {
       await page.locator('#email').fill(actor.email); await page.locator('#password').fill('a-long-enough-password');
       await page.locator('#signin').click(); await page.locator('#signin-skip-two-factor').click();
       await page.getByRole('heading', { name: 'Upload your credit report', exact: true }).waitFor();
-      if (width === 390) await page.getByRole('button', { name: 'Navigation menu', exact: true }).click();
+      if (width === 390) await page.getByRole('button', { name: 'Tools menu', exact: true }).click();
       await page.getByRole('button', { name: 'Privacy and deletion', exact: true }).click();
       await page.getByText('No stored cases.', { exact: true }).waitFor();
       check.ok(await page.locator('#deleteAccount').isVisible(), `${width}px account deletion is reachable before any report or case`);
@@ -379,9 +379,9 @@ async function emptyAccountBrowserChecks(t, check) {
       check.ok(await page.locator('#deleteAccount').isVisible(), `${width}px a refused cancellation leaves empty-account deletion available`);
       check.equal((await t.request('GET', '/api/session', { token: actor.token })).status, 200, 'refused cancellation keeps the actual account');
       await page.route('**/api/privacy', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ ok: false, error: { message: 'Fictional inventory unavailable' } }) }));
-      if (width === 390) await page.getByRole('button', { name: 'Navigation menu', exact: true }).click();
+      if (width === 390) await page.getByRole('button', { name: 'Tools menu', exact: true }).click();
       await page.getByRole('button', { name: 'Help', exact: true }).click();
-      if (width === 390) await page.getByRole('button', { name: 'Navigation menu', exact: true }).click();
+      if (width === 390) await page.getByRole('button', { name: 'Tools menu', exact: true }).click();
       await page.getByRole('button', { name: 'Privacy and deletion', exact: true }).click();
       await page.getByText('Your inventory could not be loaded. Open this page again to retry.', { exact: true }).waitFor();
       check.ok(await page.locator('#deleteAccount').isEnabled(), 'inventory-read failure does not block an independent account deletion');

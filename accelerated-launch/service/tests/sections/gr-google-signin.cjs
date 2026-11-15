@@ -237,16 +237,14 @@ async function run(disabled, check) {
       const browserActor = (await browserSession.json()).account;
       check.equal(browserActor.email, 'browser-google@example.test', 'real UI reaches owned workspace after Google setup');
       browserStage = 'sign out after Google signup';
-      await page.getByRole('button', { name: 'Navigation menu' }).click();
-      await page.locator('[data-step="0"]').click(); await page.locator('#signout').click();
+      await page.locator('#workspace-signout').click();
       browserStage = 'repeat Google sign-in';
       await page.locator('#signin-google').click(); await page.locator('#google-finish').waitFor();
       check.equal(await page.locator('#google-password').count(), 0, 'repeat Google UI does not ask for a password');
       await page.locator('#google-finish').click(); await page.locator('#signin-skip-two-factor').click(); await page.locator('#file').waitFor();
       check.equal((await (await page.request.get(service.base + '/api/session')).json()).account.account_id, browserActor.account_id, 'repeat actual UI keeps the original account and workspace');
       browserStage = 'sign out before Google cancellation';
-      await page.getByRole('button', { name: 'Navigation menu' }).click();
-      await page.locator('[data-step="0"]').click(); await page.locator('#signout').click();
+      await page.locator('#workspace-signout').click();
       browserStage = 'cancel Google sign-in';
       await page.locator('#signin-google').click(); await page.locator('#google-cancel').click(); await page.locator('#password').waitFor();
       check.equal((await page.request.get(service.base + '/api/session')).status(), 401, 'actual Cancel returns to password entry without a session');

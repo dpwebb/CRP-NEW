@@ -179,7 +179,7 @@ async function run(t, check) {
   ctx.DATA = billing(); ctx.VIEW = reportView();
   vm.runInContext('state.entitlement = DATA.entitlement; state.billing = DATA; state.upgrade_quotes = DATA.upgrade_quotes; state.view = { ...VIEW, result: null, assessment_access: { complete_assessment: false }, assessment_summary: VIEW.assessment_summary }; state.checkoutReturn = { status: "pending", caseId: VIEW.case.case_id }; state.step = STEP.RESULTS; render();', ctx);
   check.ok(!/id="buy-report_once"|id="buy-monthly"|id="buy-annual"|id="download-assessment"/.test(panel.innerHTML), 'pending payment still withholds repeat purchases and paid downloads');
-  check.ok(/most serious violation/.test(panel.innerHTML), 'the existing single serious-violation preview survives the purchase presentation change');
+  check.ok(/strongest supported issue/.test(panel.innerHTML), 'the existing single serious-violation preview survives the purchase presentation change');
 
   /* A paid monthly subscriber retains usable access while an annual invoice waits for confirmation. */
   data = billing();

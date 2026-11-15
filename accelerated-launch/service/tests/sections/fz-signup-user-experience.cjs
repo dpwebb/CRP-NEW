@@ -68,7 +68,7 @@ async function run(service,check){
       await page.locator('#saved-recovery-key').click();await page.getByText('Recovery key saved',{exact:true}).waitFor();
       await page.locator('#two-factor-password').fill('a-long-enough-password');await page.locator('#two-factor-start').click();await page.locator('#two-factor-secret').waitFor();const seed=await page.locator('#two-factor-secret').inputValue();await page.locator('#two-factor-code').fill(security.totp(seed));await page.locator('#two-factor-confirm').click();await page.locator('#finish-signup').waitFor();await page.locator('#finish-signup').click();await page.locator('#open').waitFor();
       check.ok(await page.locator('#operation-progress').isHidden(),'progress clears after completion');
-      await page.getByRole('button',{name:'Navigation menu',exact:true}).click();await page.locator('[data-step="0"]').click();await page.keyboard.press('Escape');await page.locator('#account-save').waitFor();
+      await page.locator('#workspace-account').click();await page.keyboard.press('Escape');await page.locator('#account-save').waitFor();
       check.equal(await page.locator('#account-country').inputValue(),'CA','IP country is a suggestion for a blank contact country');
       check.equal(await page.locator('#account-contact_email').inputValue(),'fz-browser@example.test','sign-in email pre-populates the reply address');
       check.equal(await page.locator('#account-region').inputValue(),'','unknown IP region is not invented');

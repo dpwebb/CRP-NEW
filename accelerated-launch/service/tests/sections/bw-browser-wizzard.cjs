@@ -499,12 +499,12 @@ async function run(service, check) {
   freeCase.case_id = freeUpload.caseId;
   check.equal(await freePage.locator('#step-tiles button[data-step="2"], #step-tiles button[data-step="4"]').count(), 0, 'free consumers also reach automatically checked Results without retired Wizard steps');
   const summaryText = await freePage.locator('#panel').innerText();
-  check.ok(/SUMMARY — FREE/.test(summaryText) && /Reporting issues found: 2/.test(summaryText), 'the browser shows the two distinct issues to a free account');
+  check.ok(/FREE PREVIEW/.test(summaryText) && /We found\s+2\s+reporting issues/.test(summaryText), 'the browser shows the two distinct issues to a free account');
   check.ok(!/violations:|potential issues:/.test(summaryText), 'without confidence tier counts');
   check.ok(/VIOLATION/.test(summaryText), 'with the sole consumer breach label');
-  check.ok(/The same debt appears more than once/.test(summaryText) && /This is the most serious violation we found that you can dispute\./.test(summaryText),
+  check.ok(/The same debt appears more than once/.test(summaryText) && /This is the strongest supported issue we found\./.test(summaryText),
     'the browser previews the higher-priority duplicate and explains why it was selected');
-  check.equal((summaryText.match(/\bVIOLATION\b/g) || []).length, 1, 'the unpaid browser shows exactly one violation example');
+  check.equal(await freePage.locator('.free-teaser .pill.stop').count(), 1, 'the unpaid browser shows exactly one violation example');
   check.ok(/Unlock this report/.test(summaryText) && /\$15\.95 CAD/.test(summaryText) && /Monthly/.test(summaryText) && /Yearly/.test(summaryText), 'and the purchase choices with their recorded prices');
   check.ok(!/Check: /.test(summaryText) && !/id="packet-block"/.test(await freePage.content()), 'while the complete findings and the packet stay locked');
   const shot = `${process.env.TEMP || '.'}/crp-unpaid-summary.png`;
@@ -526,7 +526,7 @@ async function run(service, check) {
   const afterCheckout = await freePage.content();
   check.ok(/Checkout opened\./.test(afterCheckout), 'the one-time button starts a checkout for the selected assessed report (test billing)');
   check.ok(!/Check: <b>/.test(afterCheckout), 'and opening a checkout unlocks nothing on its own');
-  check.ok(/Unlock this report/.test(await freePage.locator('#panel').innerText()), 'so the report stays locked until the provider verifies the payment');
+  check.ok(/FREE PREVIEW/.test(await freePage.locator('#panel').innerText()) && (await freePage.locator('#download-assessment, #create-packet, #buy-report_once').count()) === 0, 'so the report stays locked until the provider verifies the payment');
   await freePage.goto(submittedCheckout.return_url + '&payment=paid');
   await freePage.waitForSelector('#checkout-return-retry');
   check.ok(/not been confirmed/.test(await freePage.locator('#panel').innerText()), 'returning with a fake paid flag leaves the real report awaiting payment confirmation');
@@ -542,7 +542,7 @@ async function run(service, check) {
   await freePage.waitForTimeout(1500);
   const unlockedText = await freePage.locator('#panel').innerText();
   check.ok(/Reporting issues for your review/.test(unlockedText) && /Download this assessment \(PDF\)/.test(unlockedText) && await freePage.locator('#download-assessment').isVisible(), 'a verified payment unlocks the issue list and PDF download for the consumer in the browser');
-  check.ok(!/Unlock this report/.test(unlockedText), 'and an unlocked report is offered its results instead of another purchase');
+  check.ok(!/FREE PREVIEW|Unlock this report/.test(unlockedText), 'and an unlocked report is offered its results instead of another purchase');
   const [paidReportDownload] = await Promise.all([freePage.waitForEvent('download'), freePage.locator('#download-assessment').click()]);
   const paidReportBytes = fs.readFileSync(await paidReportDownload.path());
   check.ok(/CRP-credit-report-review-.*\.pdf$/.test(paidReportDownload.suggestedFilename()), 'the paid browser control downloads a named PDF report');
