@@ -498,13 +498,13 @@ async function run(t, check) {
   ctx.ONE_TIME_VIEW = ONE_TIME_VIEW;
   ctx.CASE_VIEW = CASE_VIEW;
   vm.runInContext('state.view = FREE_VIEW; state.step = 2; render();', ctx);
-  check.ok(/<h1>Review results<\/h1>/.test(panel.innerHTML) && /Reporting issues found: <b>1<\/b>/.test(panel.innerHTML), 'an unpaid completed case shows the actual count directly on Results');
+  check.ok(/<h1>Review results<\/h1>/.test(panel.innerHTML) && /We found <b>1<\/b> reporting issue/.test(panel.innerHTML), 'an unpaid completed case shows the actual count directly on Results');
   check.ok(!/id="view-results"|Your report is ready to review/.test(panel.innerHTML), 'the free summary requires no extra result action or pre-check wording');
   vm.runInContext('state.step = 3; render();', ctx);
-  check.ok(/Reporting issues found: <b>1<\/b>/.test(panel.innerHTML), 'the results step shows the distinct total');
+  check.ok(/We found <b>1<\/b> reporting issue/.test(panel.innerHTML), 'the results step shows the distinct total');
   check.ok(!/violations:|potential issues:/.test(panel.innerHTML), 'without confidence tier counts');
   check.ok(/VIOLATION/.test(panel.innerHTML) && /Two details on the report cannot both be right/.test(panel.innerHTML), 'with the teaser title and the sole breach label');
-  check.ok(/This is the most serious violation we found that you can dispute\./.test(panel.innerHTML), 'plain wording explains why this one example was chosen');
+  check.ok(/This is the strongest supported issue we found\./.test(panel.innerHTML), 'plain wording explains why this one example was chosen');
   check.ok(/id="buy-report_once"/.test(panel.innerHTML) && /\$15\.95 CAD/.test(panel.innerHTML), 'and the one-time unlock choice with its recorded price');
   check.ok(/id="buy-monthly"/.test(panel.innerHTML) && /id="buy-annual"/.test(panel.innerHTML), 'and the two subscription choices');
   check.ok(!/Check: <b>/.test(panel.innerHTML) && !/id="packet-block"/.test(panel.innerHTML), 'while the complete findings and the packet stay out of the free view');

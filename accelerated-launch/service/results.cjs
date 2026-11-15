@@ -584,6 +584,8 @@ function teaserFor(issue) {
       ? 'Address details do not match' : TEASER_TITLE[issue.preview_category],
     confidence: issue.confidence,
     confidence_label: issues.consumerLabel(issue),
+    source_page: issue.source_location && Number.isInteger(issue.source_location.page) ? issue.source_location.page : null,
+    source_line: issue.source_location && Number.isInteger(issue.source_location.line) ? issue.source_location.line : null,
     explanation: issue.preview_category === 'RE_AGING'
       ? 'The first missed-payment date is later than the date for the same account on an earlier report.'
       : issue.preview_category === 'DATE_CONFLICT'

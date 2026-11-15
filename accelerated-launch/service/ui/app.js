@@ -1930,41 +1930,58 @@ function freeSummaryBlock(view) {
   const teaser = summary.teaser?.confidence_label === 'VIOLATION' ? summary.teaser : null;
   const failure = summary.read_but_no_usable_facts || null;
   const total = Number(summary.distinct_total || 0);
+  const violations = Number(summary.violation_total || 0);
   const concerns = Number(summary.non_violation_concern_total || 0);
-  const counts = failure ? '' : concerns > 0
-    ? `<p class="evidence">Violations: <b>${Number(summary.violation_total || 0)}</b> · Non-violation concerns: <b>${concerns}</b></p>`
-    : total > 0
-    ? `<p class="evidence">Reporting issues found: <b>${total}</b></p>`
+  const information = Number(summary.information_total || 0);
+  const hidden = Math.max(total - (teaser ? 1 : 0), 0);
+  const page = teaser && Number.isInteger(teaser.source_page) ? teaser.source_page : null;
+  const countText = failure ? '' : total > 0
+    ? `<p class="free-count">We found <b>${total}</b> reporting ${total === 1 ? 'issue' : 'issues'} in your report.${violations ? ` <b>${violations}</b> ${violations === 1 ? 'carries' : 'carry'} the VIOLATION label.` : ''}${concerns ? ` <b>${concerns}</b> non-violation ${concerns === 1 ? 'concern also needs' : 'concerns also need'} review.` : ''}</p>`
     : '<p class="evidence">We did not find a reporting issue in the information we could review.</p>';
   const preview = teaser
-    ? `<div class="obs">
-      ${teaser.confidence_label === 'VIOLATION' ? '<span class="pill">VIOLATION</span>' : ''}
+    ? `<div class="free-teaser">
+      <div class="free-teaser-head"><span class="pill stop">VIOLATION</span>${page != null ? `<span class="free-page">Your report · page ${esc(page)}</span>` : ''}</div>
       <h3>${esc(teaser.title || '')}</h3>
       <p>${esc(teaser.explanation || '')}</p>
-      <p class="evidence">This is the most serious violation we found that you can dispute.</p>
-      <p class="evidence">Unlock this report or choose a subscription to see all the issues we found and what you can do next.</p>
+      <p class="evidence">This is the strongest supported issue we found. ${hidden ? `The full assessment shows the other ${hidden} ${hidden === 1 ? 'issue' : 'issues'} with the exact report facts, pages and next steps.` : 'The full assessment shows the exact report facts, pages and next steps.'}</p>
     </div>`
+    : total > 0
+    ? `<div class="free-teaser"><p><b>${total}</b> reporting ${total === 1 ? 'issue needs' : 'issues need'} your review. The full assessment lists each one with the report facts, pages and next steps.</p></div>`
     : '';
-  return `<div class="obs">
-    <span class="pill">SUMMARY — FREE</span>
+  const offers = failure || total === 0 || currentReportPaymentPending() ? '' : `<div class="free-offers">
+    <h3>Choose how you want to see everything</h3>
+    <p class="evidence">Nothing is sent to a bureau automatically. Your report stays private.</p>
+    <div class="free-currency">${currencyChoice()}</div>
+    <div class="offer-grid">
+      <section class="offer-card" aria-label="One report">
+        <span class="pill">ONE REPORT</span>
+        <h4>Unlock this report</h4>
+        <p>Every one of the ${total} issues, the exact report facts and pages, the next steps that apply, and the full assessment PDF to keep.</p>
+        <p class="offer-price">${esc(purchasePrice('report_once'))}</p>
+        ${canChoosePlan('report_once') ? '<button class="primary" id="buy-report_once">Unlock this report</button>' : ''}
+        <p class="evidence">No subscription and no renewal. A dispute packet is not included.</p>
+      </section>
+      <section class="offer-card featured" aria-label="Subscription">
+        <span class="pill">SUBSCRIPTION</span>
+        <h4>See everything and prepare a packet</h4>
+        <p>Everything in the one-off, plus dispute packets you review and approve, report history and comparisons.</p>
+        <div class="subscription-choices">${subscriptionChoices()}</div>
+        <p class="evidence">Renews until you cancel. Cancel any time.</p>
+      </section>
+    </div>
+  </div>`;
+  return `<section class="free-summary" aria-label="Free results preview">
+    <span class="pill">FREE PREVIEW</span>
     <h3>What we found</h3>
     ${assessmentDateLine(summary)}
     ${readingFailureNote(failure)}
-    ${counts}
-    ${summary.information_total ? '<p class="evidence">Your assessment also includes information about court time limits. This is separate from reporting issues and is not a dispute reason.</p>' : ''}
+    ${countText}
+    ${information ? `<p class="evidence">Your assessment also includes ${information} court time-limit ${information === 1 ? 'note' : 'notes'}. That is separate information, not a dispute issue.</p>` : ''}
     ${preview}
-  </div>
-  ${failure || currentReportPaymentPending() ? '' : `<div class="obs">
-    <span class="pill">UNLOCK THE REST</span>
-    <h3>Choose what you want next</h3>${currencyChoice()}
-    <p class="evidence">Nothing renews unless you choose a subscription. Your selected currency and price are shown before you buy.</p>
-    ${canChoosePlan('report_once') ? `<button class="primary" id="buy-report_once">Unlock this report — ${esc(purchasePrice('report_once'))}</button>` : ''}
-    ${subscriptionChoices()}
-    <p class="evidence">Unlocking this report gives you every reporting issue found, the report facts and explanations behind them, the next steps that apply, and a PDF report to keep. Dispute packets, report history and comparison are part of a subscription.</p>
-  </div>${subscriptionBenefits('Ready to take the next step?')}`}`;
+    ${offers}
+  </section>`;
 }
 
-/** A one-time unlocked report: the complete findings, the download, and the subscriber note. */
 function oneTimeNextStepsBlock() {
   return `<div class="obs">
     <span class="pill">UNLOCKED REPORT</span>

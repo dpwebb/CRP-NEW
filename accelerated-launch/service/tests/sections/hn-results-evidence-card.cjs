@@ -90,7 +90,7 @@ function summaryWith(teaser) {
 }
 const DUPLICATE_TEASER = {
   issue_id: 'hn-dup-0001', severity: 'DUPLICATE_REPORTING', title: 'The same debt appears more than once',
-  confidence: 'DEFINITE', confidence_label: 'VIOLATION',
+  confidence: 'DEFINITE', confidence_label: 'VIOLATION', source_page: 4,
   explanation: 'The same collection debt appears twice on your report.'
 };
 const STATUS_TEASER = {
@@ -184,7 +184,10 @@ async function run(t, check) {
   check.ok(!/id="create-packet"/.test(unlockedHtml), 'and no packet action appears without the packet entitlement');
 
   const free = await draw('VIEW_FREE');
-  check.ok(/SUMMARY — FREE/.test(free), 'the free summary is unchanged');
+  check.ok(/FREE PREVIEW/.test(free), 'the free summary is a locked preview');
+  check.ok(/Choose how you want to see everything/.test(free) && /id="buy-report_once"/.test(free), 'with the one-off report offer');
+  check.ok(/See everything and prepare a packet/.test(free) && /id="buy-monthly"/.test(free), 'and the subscription offer');
+  check.ok(/page 4/.test(free), 'and the strongest issue page');
   check.ok(!/START HERE/.test(free) && !/strongest-issue-jump/.test(free), 'the evidence card stays on the complete results surface');
 
   const unread = await draw('VIEW_UNREAD');
@@ -194,11 +197,11 @@ async function run(t, check) {
   check.ok(!/We did not find a reporting issue/.test(unread), 'the screen never claims no issues when no records could be read');
 
   const unreadFree = await draw('VIEW_UNREAD_FREE');
-  check.ok(/We could not read the account details in this report/.test(unreadFree) && /SUMMARY — FREE/.test(unreadFree), 'the free summary discloses the same reading failure');
+  check.ok(/We could not read the account details in this report/.test(unreadFree) && /FREE PREVIEW/.test(unreadFree), 'the free summary discloses the same reading failure');
   check.ok(/id="upload-complete-report"/.test(unreadFree), 'and offers the same upload action');
   check.ok(!/UNLOCK THE REST/.test(unreadFree), 'without asking the consumer to buy access to an unreadable report');
   check.ok(!/We did not find a reporting issue/.test(unreadFree), 'and the free summary never claims no issues either');
-  check.ok(/UNLOCK THE REST/.test(free), 'an ordinary readable free summary keeps its purchase choices');
+  check.ok(/Choose how you want to see everything/.test(free), 'an ordinary readable free summary keeps its purchase choices');
 
   return {
     strongest_issue_card: true,
