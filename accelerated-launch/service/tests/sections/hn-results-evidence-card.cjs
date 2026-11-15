@@ -166,6 +166,8 @@ async function run(t, check) {
   check.ok(/Your report, Collection accounts, page <b>4<\/b>, line <b>12<\/b>\./.test(card), 'and names the exact report page and line');
   check.ok(/Create my dispute packet/.test(card) && /print it and mail it to the bureau/.test(card), 'with one plain postal next action from the existing packet flow');
   check.ok(/id="strongest-issue-jump"[^>]*data-issue="hn-dup-0001"/.test(card), 'and a control that points at that issue');
+  check.ok(/Go to this issue/.test(card), 'the control says it will take the consumer to the issue');
+  check.ok(html.indexOf('data-issue-group="entry:2"') < html.indexOf('data-issue-group="entry:1"'), 'the strongest issue group is moved to the top of the list');
   check.ok(/id="issue-hn-dup-0001"/.test(html) && /id="issue-hn-status-0002"/.test(html), 'each issue card keeps a stable anchor');
   check.ok(!/adapter_id|rule_assessment|COMMON-ERROR/.test(card), 'the card carries no internal identifiers');
   check.ok(!/file online|submit online|online dispute/i.test(card), 'the next action keeps the postal-only instruction');

@@ -2042,7 +2042,12 @@ function wireStrongestIssue() {
   if (!jump) return;
   jump.onclick = () => {
     const target = el('issue-' + jump.dataset.issue);
-    if (target && typeof target.scrollIntoView === 'function') target.scrollIntoView({ block: 'start' });
+    if (!target) return;
+    if (typeof target.scrollIntoView === 'function') target.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    if (target.classList && typeof target.classList.add === 'function') {
+      target.classList.add('issue-card-focus');
+      setTimeout(() => target.classList.remove('issue-card-focus'), 2600);
+    }
   };
 }
 
@@ -2125,7 +2130,8 @@ function strongestIssueCard(result, selectable) {
     <p>${esc(teaser.explanation || '')}</p>
     ${where ? `<p class="evidence">Your report, ${where}.</p>` : ''}
     <p class="evidence">${action}</p>
-    <button class="secondary" id="strongest-issue-jump" data-issue="${esc(issue.issue_id)}">Show this issue</button>
+    <button class="secondary" id="strongest-issue-jump" data-issue="${esc(issue.issue_id)}">Go to this issue</button>
+    <p class="evidence">The full issue list stays below so you can choose what to dispute.</p>
   </section>`;
 }
 
@@ -2159,7 +2165,16 @@ function issuesSection(result, selectable = false) {
     groups.get(key).issues.push(issue);
   }
   const lede = reporting.length ? '<h2>Reporting issues for your review</h2>' : result.read_but_no_usable_facts ? '' : '<p class="lede">We did not find a reporting issue in the information we could review.</p>';
-  return `${lede}${reporting.length ? strongestIssueCard(result, selectable) : ''}${[...groups].map(([key, group]) => `<section data-issue-group="${esc(key)}"><h3>${esc(group.title)}</h3>${cards(group.issues)}</section>`).join('')}`;
+  const strongestId = state.view?.assessment_summary?.teaser?.issue_id || null;
+  const orderedGroups = [...groups];
+  if (strongestId) {
+    const groupIndex = orderedGroups.findIndex(([, group]) => group.issues.some(issue => issue.issue_id === strongestId));
+    if (groupIndex > 0) orderedGroups.unshift(...orderedGroups.splice(groupIndex, 1));
+    for (const [, group] of orderedGroups) {
+      group.issues.sort((a, b) => (a.issue_id === strongestId ? -1 : b.issue_id === strongestId ? 1 : 0));
+    }
+  }
+  return `${lede}${reporting.length ? strongestIssueCard(result, selectable) : ''}${orderedGroups.map(([key, group]) => `<section data-issue-group="${esc(key)}"><h3>${esc(group.title)}</h3>${cards(group.issues)}</section>`).join('')}`;
 }
 
 function packetDocumentDates(settings, pv) {
