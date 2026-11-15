@@ -149,7 +149,7 @@ async function run(t, check) {
     await page.locator('#signin-code').fill(security.totp(setup.secret)); await page.locator('#signin').click();
     await page.locator('#open').waitFor();
     check.equal((await (await page.request.get(t.base + '/api/session')).json()).account.account_id, actor.account_id, 'new password plus the unchanged authenticator signs in to the original account');
-    await page.locator('#steps button[data-step="0"]').click(); await page.locator('#account-security-settings').click();
+    await page.locator('#workspace-account').click(); await page.locator('#account-security-settings').click();
     check.ok(/Email me a password reset link/.test(await page.locator('#panel').innerText()) && /authenticator stays enabled/.test(await page.locator('#panel').innerText()), 'Account security teaches the email reset option and its MFA boundary');
     await page.locator('#security-back').click(); await page.locator('#signout').click(); await page.locator('#forgot-password').waitFor();
 

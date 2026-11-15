@@ -19,13 +19,22 @@ const STEP_VIEWS = Object.freeze({
   PREPARE: { label: 'Prepare documents', render: renderReview },
   REVIEW: { label: 'Review and approve packet', render: renderReview }, HISTORY: { label: 'Saved reports', render: renderHistory },
   CASE: { label: 'Privacy and deletion', render: renderCase }, SUPPORT: { label: 'Help', render: renderSupport },
-  BILLING: { label: 'Plans', render: renderBilling }
+  BILLING: { label: 'Plans', render: renderBilling },
+  DOCUMENTS: { label: 'Identification and address', render: renderDocuments }
 });
 const STEP_KEYS = Object.keys(STEP_VIEWS);
 const STEPS = STEP_KEYS.map(key => STEP_VIEWS[key].label);
 const STEP = Object.freeze(Object.fromEntries(STEP_KEYS.map((key, index) => [key, index])));
 // Keep saved/internal destinations stable while showing only the five consumer steps.
-const JOURNEY_STEPS = [STEP.ACCOUNT, STEP.JURISDICTION, STEP.RESULTS, STEP.PREPARE, STEP.REVIEW];
+const JOURNEY_TILES = Object.freeze([
+  { step: STEP.JURISDICTION, title: 'Upload your report', hint: 'Start a new report or continue a saved one' },
+  { step: STEP.RESULTS, title: 'Review results', hint: 'See the findings, then choose one-off or subscription' },
+  { step: STEP.DOCUMENTS, title: 'ID and address', hint: 'Upload the copies your bureau requires' },
+  { step: STEP.PREPARE, title: 'Prepare packet', hint: 'Choose the issues, letter and attachments' },
+  { step: STEP.REVIEW, title: 'Review and send', hint: 'Approve, print, or have us send it' }
+]);
+const JOURNEY_STEPS = JOURNEY_TILES.map(tile => tile.step);
+const TOOL_STEPS = Object.freeze([STEP.HISTORY, STEP.BILLING, STEP.SUPPORT, STEP.CASE]);
 const visibleStep = step => [STEP.REPORT, STEP.CHOOSE].includes(step) ? STEP.RESULTS : step;
 const state = {
   step: 0,
@@ -33,6 +42,9 @@ const state = {
   account: null,
   accountProfile: null,
   accountDocuments: [],
+  accountDocumentsLoaded: false,
+  documentRequirements: null,
+  documentRequirementsCaseId: null,
   cases: [],
   caseId: null,
   view: null,
@@ -265,29 +277,43 @@ function readFileBase64(file) {
 /* ------------------------------------------------------------------ shell */
 
 function renderSteps() {
-  const main = JOURNEY_STEPS.map((step, index) =>
-    `<button data-step="${step}" aria-current="${step === state.step}"><span class="num">${index + 1}</span><span class="step-name">${esc(STEPS[step])}</span></button>`).join('');
-  const tools = STEPS.slice(STEP.HISTORY).map((label, offset) =>
-    `<button data-step="${STEP.HISTORY + offset}" aria-current="${STEP.HISTORY + offset === state.step}"><span class="step-name">${esc(label)}</span></button>`).join('');
-  el('steps').innerHTML = `${main}<div class="tools-label">Your tools</div>${tools}`;
-  for (const button of el('steps').querySelectorAll('button')) {
-    button.onclick = () => navigateStep(Number(button.dataset.step));
+  const current = visibleStep(state.step);
+  const tiles = el('step-tiles');
+  if (tiles) {
+    tiles.innerHTML = JOURNEY_TILES.map((tile, index) => {
+      const active = tile.step === current;
+      return `<button class="step-tile" data-step="${tile.step}" aria-current="${active ? 'step' : 'false'}"><span class="tile-num">${index + 1}</span><span class="tile-copy"><strong>${esc(tile.title)}</strong><small>${esc(tile.hint)}</small></span></button>`;
+    }).join('');
+    for (const button of tiles.querySelectorAll('button')) button.onclick = () => navigateStep(Number(button.dataset.step));
   }
+  const tools = TOOL_STEPS.map(step => `<button data-step="${step}" aria-current="${step === state.step ? 'true' : 'false'}"><span class="step-name">${esc(STEPS[step])}</span></button>`).join('');
+  el('steps').innerHTML = `<div class="tools-label">Your tools</div>${tools}`;
+  for (const button of el('steps').querySelectorAll('button')) button.onclick = () => navigateStep(Number(button.dataset.step));
+  const account = el('workspace-account');
+  if (account) { account.hidden = !state.account; account.onclick = () => navigateStep(STEP.ACCOUNT); }
   el('breadcrumb').textContent = STEPS[state.step];
-  const position = JOURNEY_STEPS.indexOf(visibleStep(state.step));
+  const position = JOURNEY_TILES.findIndex(tile => tile.step === current);
   const inJourney = position >= 0;
-  el('stepcount').textContent = inJourney ? `Step ${position + 1} of ${JOURNEY_STEPS.length}` : 'Your tools';
+  el('stepcount').textContent = inJourney ? `Step ${position + 1} of ${JOURNEY_TILES.length}` : (state.step === STEP.ACCOUNT ? 'Your account' : 'Your tools');
   el('step-label').textContent = STEPS[state.step];
-  el('bar').style.width = `${(position + 1) / JOURNEY_STEPS.length * 100}%`;
+  if (el('bar')) el('bar').style.width = inJourney ? `${(position + 1) / JOURNEY_TILES.length * 100}%` : '0%';
   const progress = el('journey-progress');
-  if (progress.setAttribute) { progress.setAttribute('aria-valuemax', String(JOURNEY_STEPS.length)); progress.setAttribute('aria-valuenow', String(position + 1)); }
-  progress.hidden = !inJourney;
+  if (progress) {
+    if (progress.setAttribute) { progress.setAttribute('aria-valuemax', String(JOURNEY_TILES.length)); progress.setAttribute('aria-valuenow', String(position + 1)); }
+    progress.hidden = !inJourney;
+  }
 }
 
 function navigateStep(step) {
   step = visibleStep(step);
-  if(state.signInInvitation){state.step=STEP.ACCOUNT;render();el('auth-title')?.focus();return;}
-  if(signInChallenge){cancelSignInAttempt();}
+  if (state.signInInvitation) { state.step = STEP.ACCOUNT; render(); el('auth-title')?.focus(); return; }
+  if (signInChallenge) { cancelSignInAttempt(); }
+  if ([STEP.PREPARE, STEP.REVIEW].includes(step) && !state.view) {
+    state.step = STEP.JURISDICTION;
+    state.notice = 'Upload your report first.';
+    render();
+    return;
+  }
   if (el('steps')?.matches?.(':popover-open')) el('steps').hidePopover?.();
   if ([STEP.CHOOSE, STEP.PREPARE, STEP.REVIEW].includes(state.step) && packetLeave) {
     const accountId = state.account?.account_id, epoch = accountEpoch, caseId = state.caseId;
@@ -479,7 +505,7 @@ async function continueSignedIn(session,ensure) {
 }
 async function acceptSignIn(data,ensure) {
   ensure();forgetSignInChallenge();
-  state.account=data.account;state.accountProfile=null;state.accountDocuments=[];
+  state.account=data.account;state.accountProfile=null;state.accountDocuments=[];state.accountDocumentsLoaded=false;state.documentRequirements=null;state.documentRequirementsCaseId=null;
   state.cases=[];state.savedReportFilter='';state.savedReportsStatus='idle';state.savedReportsAutoLoad=false;
   state.accountSecurity=data;state.recoveryKey=null;state.twoFactorSetup=null;state.packetReturn=null;state.checkoutReturn=null;state.signInInvitation=null;
   if(data.signup_complete===false){state.step=STEP.ACCOUNT;return;}
@@ -645,7 +671,7 @@ function renderAccount(panel) {
     catch (error) { ensure(); throw error; }
     ensure();
     state.account = data.account;
-    state.accountProfile = data.profile || null; state.accountDocuments = [];
+    state.accountProfile = data.profile || null; state.accountDocuments = []; state.accountDocumentsLoaded = false; state.documentRequirements = null; state.documentRequirementsCaseId = null;
     state.accountSecurity = data; state.packetReturn = null; state.recoveryKey = data.recovery_key || null;
     state.checkoutReturn = null;
     if(data.signup_complete===false){state.step=STEP.ACCOUNT;state.notice=data.confirmation_transport==='CAPTURED'?'Your confirmation code is in the staging test inbox. Nothing was emailed.':data.confirmation_sent?'Check your email for a code from support@creditregulatorpro.com.':'Your account is saved, but we could not send the confirmation email. Please try Send a new code.';return;}
@@ -814,7 +840,7 @@ function clearClientAccountForRecovery() {
   revokePrivateDocumentUrls();
   cancelSignInAttempt();state.signInInvitation=null;
   accountEpoch++; accountOperationSequence++; assessmentOperationSequence++; checkoutReturnSequence++;
-  state.account = null; state.accountProfile = null; state.accountDocuments = []; state.cases = []; state.caseId = null;
+  state.account = null; state.accountProfile = null; state.accountDocuments = []; state.accountDocumentsLoaded = false; state.documentRequirements = null; state.documentRequirementsCaseId = null; state.cases = []; state.caseId = null;
   state.savedReportsStatus = 'idle'; state.savedReportsAutoLoad = false;
   state.view = null; state.entitlement = null; state.payment = null; state.upgrade_credit = null; state.upgrade_quotes = null;
   state.upgrade_confirmation = null; state.support = null; state.billing = null; state.result_list = [];
@@ -922,6 +948,87 @@ function documentKindsForAccount() {
     .sort((a, b) => Number(a[0] === '1099') - Number(b[0] === '1099'));
 }
 let accountDetailsSequence = 0;
+function accountDocumentsMarkup() {
+  return `<h2>Documents for disputes</h2><p class="evidence">Upload copies of your ID and proof of address. Include both sides of an ID in one PDF where required. You will choose which copies go into the packet on the Prepare packet step.</p>
+    <div class="row"><div><label for="account-document-type">Purpose</label><select id="account-document-type"><option value="IDENTITY">Identification</option><option value="ADDRESS">Proof of address</option><option value="SUPPORTING">Other supporting document</option></select></div>
+    <div><label for="account-document-kind">Document</label><select id="account-document-kind">${documentKindsForAccount().map(([value, label]) => `<option value="${value}">${label}</option>`).join('')}</select></div></div>
+    <label for="account-document-file">PDF, PNG or JPEG, up to 10 MB</label><input id="account-document-file" type="file" accept="application/pdf,image/png,image/jpeg">
+    <button class="secondary" id="account-document-upload">Upload document</button>
+    <div>${state.accountDocuments.length ? state.accountDocuments.map(doc => `<p><a href="/api/account/documents/${encodeURIComponent(doc.file_id)}">${esc(doc.original_filename)}</a> — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)} <button class="secondary" data-delete-document="${esc(doc.file_id)}">Remove</button></p>`).join('') : '<p class="evidence">No documents uploaded yet.</p>'}</div>`;
+}
+
+function wireAccountDocuments(panel) {
+  el('account-document-upload').onclick = () => run(async () => {
+    const ensureAccount = accountContext(), operation = ++accountOperationSequence;
+    const file = el('account-document-file').files[0];
+    if (!file) throw new Error('Choose a document to upload.');
+    const body = { originalFilename: file.name, declaredBytes: file.size, mimeType: file.type,
+      document_type: el('account-document-type').value, document_kind: el('account-document-kind').value };
+    body.contentBase64 = await readFileBase64(file); ensureAccount();
+    await api('POST', '/api/account/documents', body); ensureAccount();
+    const saved = await api('GET', '/api/account/documents'); ensureAccount();
+    if (operation !== accountOperationSequence) throw cancelledAction();
+    state.accountDocuments = saved.documents; state.accountDocumentsLoaded = true;
+    state.notice = 'Document uploaded.';
+  });
+  for (const button of panel.querySelectorAll('[data-delete-document]')) button.onclick = () => run(async () => {
+    const ensureAccount = accountContext(), operation = ++accountOperationSequence;
+    await api('DELETE', '/api/account/documents/' + encodeURIComponent(button.dataset.deleteDocument));
+    ensureAccount(); const saved = await api('GET', '/api/account/documents'); ensureAccount();
+    if (operation !== accountOperationSequence) throw cancelledAction();
+    state.accountDocuments = saved.documents; state.accountDocumentsLoaded = true;
+    state.notice = 'Document removed.';
+  });
+}
+
+let documentsSequence = 0;
+function renderDocuments(panel) {
+  if (!state.account) { panel.innerHTML = `${notices()}<h1>Sign in to add documents</h1>${supportContactBlock()}`; return; }
+  const accountId = state.account.account_id, sequence = ++documentsSequence;
+  if (!state.accountProfile || !state.accountDocumentsLoaded) {
+    panel.innerHTML = `${notices()}<h1>Identification and address documents</h1><p>Loading your documents…</p>`;
+    Promise.all([api('GET', '/api/account/profile'), api('GET', '/api/account/documents')]).then(([profile, docs]) => {
+      if (state.step !== STEP.DOCUMENTS || state.account?.account_id !== accountId || sequence !== documentsSequence) return;
+      if (!profile.profile || !Array.isArray(docs.documents)) throw new Error('Your documents could not be loaded. Try again.');
+      state.accountProfile = profile.profile;
+      if (!state.contactLocation) state.contactLocation = { country: profile.profile.country || null, region: profile.profile.region || null };
+      state.accountDocuments = docs.documents; state.accountDocumentsLoaded = true;
+      renderDocuments(panel);
+    }).catch(error => {
+      if (state.step !== STEP.DOCUMENTS || state.account?.account_id !== accountId || sequence !== documentsSequence) return;
+      panel.innerHTML = `<h1>Identification and address documents</h1><p class="note stop">${esc(error.message)}</p><button id="documents-retry">Try again</button>`;
+      el('documents-retry').onclick = () => renderDocuments(panel);
+    });
+    return;
+  }
+  if (state.caseId && state.documentRequirementsCaseId !== state.caseId) {
+    const caseId = state.caseId;
+    panel.innerHTML = `${notices()}<h1>Identification and address documents</h1><p>Loading the bureau checklist…</p>`;
+    api('GET', `/api/cases/${caseId}/packet`).then(data => {
+      if (state.step !== STEP.DOCUMENTS || state.caseId !== caseId || sequence !== documentsSequence) return;
+      state.documentRequirements = data.view?.support?.requirements || null;
+      state.documentRequirementsCaseId = caseId;
+      renderDocuments(panel);
+    }).catch(() => {
+      if (state.step !== STEP.DOCUMENTS || state.caseId !== caseId || sequence !== documentsSequence) return;
+      state.documentRequirements = null; state.documentRequirementsCaseId = caseId;
+      renderDocuments(panel);
+    });
+    return;
+  }
+  const requirements = state.documentRequirements;
+  panel.innerHTML = `${notices()}
+    <p class="story-eyebrow">Step 3 of 5</p>
+    <h1>Identification and address documents</h1>
+    <p class="lede">Upload the copies your bureau requires. You will choose which copies go into the packet on the next step.</p>
+    ${requirements ? `<details open><summary>Bureau requirements</summary><div id="documents-bureau-checklist">${bureauChecklist(requirements)}</div></details>` : '<p class="note">The bureau checklist appears when you prepare the packet.</p>'}
+    ${accountDocumentsMarkup()}
+    <div class="row"><button class="primary" id="documents-continue">${state.caseId ? 'Continue to prepare packet' : 'Upload a report first'}</button><button class="secondary" id="documents-account">Account details</button></div>`;
+  wireAccountDocuments(panel);
+  el('documents-continue').onclick = () => navigateStep(state.caseId ? STEP.PREPARE : STEP.JURISDICTION);
+  el('documents-account').onclick = () => navigateStep(STEP.ACCOUNT);
+}
+
 function renderAccountDetails(panel) {
   const accountId = state.account.account_id, sequence = ++accountDetailsSequence;
   if (!state.accountProfile || state.contactLocation === null) {
@@ -934,7 +1041,7 @@ function renderAccountDetails(panel) {
       if (access.upgrade_credit) state.upgrade_credit = access.upgrade_credit;
       if (access.upgrade_quotes) { state.upgrade_quotes = access.upgrade_quotes; state.billing = null; }
       rememberPendingCheckout(access);
-      state.accountProfile = profile.profile;state.contactLocation=location;if(!state.accountProfile.contact_email)state.accountProfile.contact_email=state.account.email;if(!state.accountProfile.country&&location.country)state.accountProfile.country=location.country;if(!state.accountProfile.region&&location.region)state.accountProfile.region=location.region.slice(location.country.length+1); state.accountDocuments = documents.documents; state.accountSecurity = security; renderAccountDetails(panel);
+      state.accountProfile = profile.profile;state.contactLocation=location;if(!state.accountProfile.contact_email)state.accountProfile.contact_email=state.account.email;if(!state.accountProfile.country&&location.country)state.accountProfile.country=location.country;if(!state.accountProfile.region&&location.region)state.accountProfile.region=location.region.slice(location.country.length+1); state.accountDocuments = documents.documents; state.accountDocumentsLoaded = true; state.accountSecurity = security; renderAccountDetails(panel);
     }).catch(error => {
       if (state.step !== 0 || state.account?.account_id !== accountId || sequence !== accountDetailsSequence) return;
       panel.innerHTML = `<h1>Your account</h1><p class="note stop">${esc(error.message)}</p><button id="account-retry">Try again</button>`;
@@ -3151,7 +3258,7 @@ function renderCase(panel) {
     const ensure = accountContext();
     await currentRequest(ensure, 'DELETE', '/api/account');
     state.account = null;
-    state.accountProfile = null; state.accountDocuments = [];
+    state.accountProfile = null; state.accountDocuments = []; state.accountDocumentsLoaded = false; state.documentRequirements = null; state.documentRequirementsCaseId = null;
     state.cases = [];
     state.caseId = null;
     state.view = null;

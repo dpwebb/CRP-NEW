@@ -298,9 +298,9 @@ async function run(t, check) {
   ctx.signupCountry = 'England';
   check.ok(!vm.runInContext('state.accountProfile = { country: signupCountry }; documentKindsForAccount().map(([kind]) => kind)', ctx).includes('SOCIAL_SECURITY'), 'an England address also omits US identifier documents');
   vm.runInContext('state.accountProfile = null', ctx);
-  check.ok(/Step 1 of 5/.test(dom.elementById('stepcount').textContent), 'the main journey has five visible steps');
-  check.ok(!/data-step="(?:2|4)"/.test(dom.elementById('steps').innerHTML), 'Check report and Choose disputes are absent from visible navigation');
-  check.ok(/Your tools/.test(dom.elementById('steps').innerHTML), 'utilities are shown separately from the numbered main journey');
+  check.ok(/data-step="1"/.test(dom.elementById('step-tiles').innerHTML) && /data-step="3"/.test(dom.elementById('step-tiles').innerHTML) && /data-step="11"/.test(dom.elementById('step-tiles').innerHTML) && /data-step="5"/.test(dom.elementById('step-tiles').innerHTML) && /data-step="6"/.test(dom.elementById('step-tiles').innerHTML), 'the top tiles expose the five agreed consumer steps');
+  check.ok(!/data-step="(?:2|4)"/.test(dom.elementById('step-tiles').innerHTML), 'Check report and Choose disputes are absent from the visible tiles');
+  check.ok(/Your tools/.test(dom.elementById('steps').innerHTML), 'utilities are shown separately from the numbered journey');
   check.ok(/Forgot your password/.test(panel.innerHTML), 'account recovery is visible before sign-in');
 
   /* Step 1: create an account. */
@@ -391,7 +391,7 @@ async function run(t, check) {
 
   /* Report review and explicit issue selection share one visible step. */
   vm.runInContext('state.step = 4; render();', ctx);
-  check.ok(/Review results/.test(panel.innerHTML) && /Step 3 of 5/.test(dom.elementById('stepcount').textContent), 'the retired Choose step resolves to Review results');
+  check.ok(/Review results/.test(panel.innerHTML) && /Step 2 of 5/.test(dom.elementById('stepcount').textContent), 'the retired Choose step resolves to Review results');
   check.ok(/id="current-report-identity"/.test(panel.innerHTML) && /fictional-report.pdf/.test(panel.innerHTML), 'Results identifies the particular report being reviewed');
   check.ok(/data-check-issue="i1"/.test(panel.innerHTML), 'Results offers the supported issue for an explicit consumer choice');
   check.ok(!/response draft|recorded output permission|review the observations|nothing will be sent|demonstration file/i.test(panel.innerHTML),
@@ -404,6 +404,9 @@ async function run(t, check) {
   vm.runInContext('state.step = 5; render();', ctx);
   check.ok(/Prepare your documents/.test(panel.innerHTML) && /Step 4 of 5/.test(dom.elementById('stepcount').textContent), 'missing document preparation is the fourth visible step');
   check.ok(!/packet-verification-requested|packet-copies-confirmed/.test(panel.innerHTML), 'preparation omits repeated verification and copy-quality confirmations');
+  vm.runInContext('state.accountProfile = { country: "CA" }; state.accountDocumentsLoaded = true; state.accountDocuments = []; state.documentRequirementsCaseId = state.caseId; state.documentRequirements = null; state.step = STEP.DOCUMENTS; render();', ctx);
+  check.ok(/Identification and address documents/.test(panel.innerHTML) && /Step 3 of 5/.test(dom.elementById('stepcount').textContent), 'the dedicated ID and address step is the third visible step');
+  check.ok(/id="account-document-upload"/.test(panel.innerHTML) && /id="documents-continue"/.test(panel.innerHTML), 'and provides the document upload and continue controls');
   vm.runInContext('state.step = 6; render();', ctx);
   check.ok(/Review and approve packet/.test(panel.innerHTML) && /Step 5 of 5/.test(dom.elementById('stepcount').textContent), 'complete packet review is the fifth visible step');
   /* Privacy and deletion remain outside the numbered journey. */

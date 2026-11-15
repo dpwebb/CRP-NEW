@@ -225,7 +225,7 @@ async function run(t, check) {
       await page.locator('#signin-skip-two-factor').click();
       await page.waitForSelector('#open'); await page.locator('#refresh').click();
       await page.locator('[data-open="' + caseId + '"]').click();
-      await page.locator('#steps button[data-step="6"]').click();
+      await page.locator('#step-tiles button[data-step="6"]').click();
       await page.waitForSelector('#packet-block');
       await page.waitForSelector('#packet-letter');
       const text = await page.locator('#packet-letter').inputValue();

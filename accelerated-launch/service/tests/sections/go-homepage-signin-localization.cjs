@@ -178,8 +178,8 @@ async function browserChecks(service, check) {
     await optional.locator('#signin-skip-two-factor').click(); await optional.locator('#open').waitFor();
     check.equal((await sessionFor(optional)).body.account.account_id, plain.account_id, 'Not now retains the verified account');
     check.equal((await service.request('GET', '/api/account/security', { token: plain.token })).json.two_factor_enabled, false, 'Not now never enables or disables authenticator state');
-    check.equal(await optional.locator('#stepcount').innerText(), 'Step 2 of 5', 'Not now preserves the existing five-step Upload destination');
-    await optional.locator('#steps button[data-step="0"]').click(); await optional.locator('#account-full_name').waitFor();
+    check.equal(await optional.locator('#stepcount').innerText(), 'Step 1 of 5', 'Not now preserves the existing five-step Upload destination');
+    await optional.locator('#workspace-account').click(); await optional.locator('#account-full_name').waitFor();
     await optional.locator('#account-security-settings').click(); await optional.locator('#two-factor-password').fill(PASSWORD);
     await optional.locator('#two-factor-start').click(); await optional.locator('#two-factor-secret').waitFor();
     const abandonedSecuritySeed = await optional.locator('#two-factor-secret').inputValue();

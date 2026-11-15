@@ -68,7 +68,7 @@ async function run(service, check) {
     // The visible Upload screen creates a new report. Keep its actual identity for every later protected request.
     const existing = (await (await page.request.get(service.base + '/api/cases/' + existingCaseId)).json()).view.case;
     const bureau = /TransUnion/i.test(lines.join('\n')) ? 'TRANSUNION' : /Experian/i.test(lines.join('\n')) ? 'EXPERIAN' : 'EQUIFAX';
-    await page.locator('#steps button[data-step="1"]').click();
+    await page.locator('#step-tiles button[data-step="1"]').click();
     await page.waitForSelector('#file');
     await page.locator('#country').selectOption(existing.country);
     await page.locator('#region').selectOption(existing.region);
@@ -126,7 +126,7 @@ async function run(service, check) {
     return { status: 200, filename, text, bytes };
   }
   async function saveReadApprove(page) {
-    await page.locator('#steps button[data-step="6"]').click();
+    await page.locator('#step-tiles button[data-step="6"]').click();
     await page.waitForSelector('#packet-save:visible');
     const previewResponse = page.waitForResponse(response => response.url().endsWith('/packet') && response.request().method() === 'GET');
     await page.locator('#packet-save').click(); await (await previewResponse).finished();
@@ -157,7 +157,7 @@ async function run(service, check) {
     return readLetter(page);
   }
   async function createSelectedPacket(page) {
-    await page.locator('#steps button[data-step="3"]').click();
+    await page.locator('#step-tiles button[data-step="3"]').click();
     await page.waitForSelector('[data-check-issue]');
     await page.locator('#create-packet:enabled').waitFor();
     if (!await page.locator('[data-check-issue]:checked').count()) await page.locator('[data-check-issue]').first().check();
@@ -170,7 +170,7 @@ async function run(service, check) {
   async function accountContact(page, name, email, withDocuments = true) {
     const report = caseContexts.get(page);
     const usEquifax = report.country === 'US' && report.bureau === 'EQUIFAX';
-    await page.locator('#steps button[data-step="0"]').click();
+    await page.locator('#workspace-account').click();
     await page.waitForSelector('#account-save');
     check.equal(await page.locator('#signin, #create, #password').count(), 0, 'returning to Step1 while signed in shows account details, never authentication prompts');
     await page.locator('#account-country').selectOption('CA');await page.locator('#account-region').selectOption('NS');
@@ -206,7 +206,7 @@ async function run(service, check) {
   let opened = await openCasePage(pot.email, pot.password, pot.caseId, ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2020  Closed 01/01/2019']);
   pot.caseId = opened.caseId;
   let page = opened.page;
-  check.deepEqual(await page.locator('#steps button[data-step]').evaluateAll(nodes => nodes.map(node => Number(node.dataset.step)).filter(step => step < 7)), [0, 1, 3, 5, 6], 'the consumer sees exactly the five agreed Wizard steps');
+  check.deepEqual(await page.locator('#step-tiles button[data-step]').evaluateAll(nodes => nodes.map(node => Number(node.dataset.step))), [1, 3, 11, 5, 6], 'the consumer sees exactly the five agreed tiles');
   const reviewText = await page.locator('#panel').innerText();
   check.ok(!/response draft|recorded output permission|review the observations|nothing will be sent|demonstration file/i.test(reviewText),
     'the actual browser packet review has no obsolete draft, observation-only or demonstration claims');
@@ -218,7 +218,7 @@ async function run(service, check) {
   check.ok(/01\/01\/2020/.test(potBlock), 'with the printed raw readings');
   check.equal(await page.locator('#packet-preparation-content, #packet-review-controls, #review').count(), 0, 'Results combines findings and issue selection without packet preparation or repeated acknowledgement');
   check.ok(/Review results/.test(reviewText) && !/Choose disputes/.test(await page.locator('#steps').innerText()), 'issues are selected directly on Review results');
-  await page.locator('#steps button[data-step="1"]').click();
+  await page.locator('#step-tiles button[data-step="1"]').click();
   await page.waitForSelector(`[data-open="${pot.caseId}"]`);
   check.equal(await page.locator('#saved-report-list [data-open]').first().getAttribute('data-open'), pot.caseId, 'the newly uploaded report is the top saved report');
   await page.locator('#resume-latest').click();
@@ -392,7 +392,7 @@ async function run(service, check) {
   multi.caseId = opened.caseId;
   await page.locator('#create-packet').click();await page.locator('#packet-prepare-next').waitFor();
   check.ok(/Add your full name/.test(await page.locator('#packet-block').innerText()), 'the review names the necessary detail that is still missing');
-  await page.locator('#steps button[data-step="6"]').click();
+  await page.locator('#step-tiles button[data-step="6"]').click();
   await page.waitForSelector('#packet-prepare-missing');
   check.ok(/Add your name|name|reply|contact/i.test(await page.locator('#packet-block').innerText()), 'incomplete Review explains the missing preparation recovery');
   check.equal(await page.locator('#packet-preview-reviewed:enabled').count(), 0, 'a packet with missing correspondence details cannot be acknowledged as complete');
@@ -445,12 +445,12 @@ async function run(service, check) {
   check.ok(/CHANGED/.test(comparisonText), 'the comparison shows the changed issue');
   check.ok(/First report:/.test(comparisonText) && /Second report:/.test(comparisonText), 'and both report identities');
   check.ok(/never proves/.test(comparisonText), 'with the absence note');
-  await page.locator('#steps button[data-step="1"]').click();
+  await page.locator('#step-tiles button[data-step="1"]').click();
   await page.waitForSelector(`[data-open="${hist.earlierCaseId}"]`);
   await page.locator(`[data-open="${hist.earlierCaseId}"]`).click();
   await page.waitForSelector('#current-report-identity');
   check.ok(/earlier\.pdf/.test(await page.locator('#current-report-identity').innerText()) && /2025-06-01/.test(await page.locator('#current-report-identity').innerText()), 'choosing a previous report opens Results labelled with that exact report');
-  await page.locator('#steps button[data-step="1"]').click();
+  await page.locator('#step-tiles button[data-step="1"]').click();
   await page.waitForSelector('#resume-latest');
   await page.locator('#resume-latest').click();
   await page.waitForSelector('#current-report-identity');
@@ -497,7 +497,7 @@ async function run(service, check) {
         await freePage.locator('#check-report').click();
       });
   freeCase.case_id = freeUpload.caseId;
-  check.equal(await freePage.locator('#steps button[data-step="2"], #steps button[data-step="4"]').count(), 0, 'free consumers also reach automatically checked Results without retired Wizard steps');
+  check.equal(await freePage.locator('#step-tiles button[data-step="2"], #step-tiles button[data-step="4"]').count(), 0, 'free consumers also reach automatically checked Results without retired Wizard steps');
   const summaryText = await freePage.locator('#panel').innerText();
   check.ok(/SUMMARY — FREE/.test(summaryText) && /Reporting issues found: 2/.test(summaryText), 'the browser shows the two distinct issues to a free account');
   check.ok(!/violations:|potential issues:/.test(summaryText), 'without confidence tier counts');
@@ -538,7 +538,7 @@ async function run(service, check) {
   await freePage.locator('#checkout-return-retry').click();
   await freePage.waitForSelector('#download-assessment');
   await freePage.waitForTimeout(800);
-  await freePage.locator('#steps button[data-step="3"]').click();
+  await freePage.locator('#step-tiles button[data-step="3"]').click();
   await freePage.waitForTimeout(1500);
   const unlockedText = await freePage.locator('#panel').innerText();
   check.ok(/Reporting issues for your review/.test(unlockedText) && /Download this assessment \(PDF\)/.test(unlockedText) && await freePage.locator('#download-assessment').isVisible(), 'a verified payment unlocks the issue list and PDF download for the consumer in the browser');
@@ -607,7 +607,7 @@ async function run(service, check) {
   opened = await openCasePage(gen.email, gen.password, gen.caseId, limLines);
   const genPage = opened.page;
   /* The complete assessment (step 3) states the date it was assessed; the packet step follows. */
-  await genPage.locator('#steps button[data-step="3"]').click();
+  await genPage.locator('#step-tiles button[data-step="3"]').click();
   await genPage.waitForTimeout(700);
   const genPanelText = await genPage.locator('#panel').innerText();
   check.ok(/Assessed on \d{4}-\d{2}-\d{2}/.test(genPanelText), 'the complete assessment states the date it was assessed');
@@ -656,7 +656,7 @@ async function run(service, check) {
   const dualSub = await setupPaidCase(service, 'bw-dual-date@example.test', 'US', 'US-CA');
   const dualOpened = await withDualClockBrowser(dualSub, dualLines);
   /* The complete assessment is the results step; the packet step follows. */
-  await dualOpened.page.locator('#steps button[data-step="3"]').click();
+  await dualOpened.page.locator('#step-tiles button[data-step="3"]').click();
   // Leaving packet review saves selection before Results renders; await the destination, not elapsed time.
   await dualOpened.page.waitForSelector('#result-select');
   const dualPanel = await dualOpened.page.locator('#panel').innerText();
@@ -709,7 +709,7 @@ async function run(service, check) {
   });
   const copyMetadata = await (await copyPage.request.get(service.base + '/api/cases/' + currentCase.case_id + '/packet/preview/pages?version=' + encodeURIComponent(copyView.packet.preview_version))).json();
   check.equal(await copyPage.locator('#packet-all-pages .packet-page').count(), copyMetadata.page_count, 'the complete inline review shows every physical packet page');
-  await copyPage.locator('#steps button[data-step="5"]').click();
+  await copyPage.locator('#step-tiles button[data-step="5"]').click();
   await copyPage.waitForSelector('#packet-reports');
   for (const original of originals) {
     const originalFetch = copyPage.waitForResponse(response => response.url() === new URL(original.review_url, copyPage.url()).href);
@@ -726,7 +726,7 @@ async function run(service, check) {
     check.equal(await copyPage.locator(`[data-packet-report="${original.file_id}"]`).isChecked(), true, 'opening the original retains its automatically included relevant page');
     check.equal(await copyPage.locator(`[data-packet-report="${original.file_id}"]`).isVisible(), false, 'mandatory source pages have no repeated include choice');
   }
-  await copyPage.locator('#steps button[data-step="6"]').click();
+  await copyPage.locator('#step-tiles button[data-step="6"]').click();
   await copyPage.waitForSelector('#packet-preview-reviewed');
   await copyPage.locator('#packet-preview-reviewed').check(); await copyPage.locator('#packet-approve').click();
   const includedView = (await (await copyPage.request.get(copyPacketUrl)).json()).view;
@@ -740,9 +740,9 @@ async function run(service, check) {
   const mutations = [];
   const observeMutation = request => { if (request.method() === 'POST' && /\/packet\//.test(request.url())) mutations.push(request.url()); };
   copyPage.on('request', observeMutation);
-  await copyPage.locator('#steps button[data-step="3"]').click();
+  await copyPage.locator('#step-tiles button[data-step="3"]').click();
   await copyPage.waitForSelector('#result-select');
-  await copyPage.locator('#steps button[data-step="6"]').click();
+  await copyPage.locator('#step-tiles button[data-step="6"]').click();
   await copyPage.waitForSelector('#packet-download');
   const returnedView = (await (await copyPage.request.get(copyPacketUrl)).json()).view;
   check.equal(mutations.length, 0, 'unchanged navigation sends no mutating packet requests');
@@ -750,7 +750,7 @@ async function run(service, check) {
   check.equal(returnedView.packet.preview_version, includedView.packet.preview_version, 'unchanged navigation retains reviewed version');
   check.ok((await downloadText(copyPage)).bytes.equals(withCopies.bytes), 'returning retains exact approved PDF bytes');
   await editLetter(copyPage, value => value + '\nPlease verify these entries against the enclosed report copies.');
-  await copyPage.locator('#steps button[data-step="3"]').click();
+  await copyPage.locator('#step-tiles button[data-step="3"]').click();
   await copyPage.waitForSelector('#result-select');
   const editedView = (await (await copyPage.request.get(copyPacketUrl)).json()).view;
   check.ok(mutations.length > 0, 'intentional changes are saved when leaving review');
